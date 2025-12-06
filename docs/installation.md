@@ -99,31 +99,18 @@ The installer performs the following operations:
    - Generates `claude-todo` command wrapper
    - Configures script routing
 
-### Step 4: Configure PATH
+5. **Creates symlinks for immediate access**
+   - Creates `~/.local/bin/claude-todo` symlink
+   - Creates `~/.local/bin/ct` shortcut symlink
+   - Works immediately with Claude Code (no shell restart needed)
 
-Add the scripts directory to your PATH for easy command access:
+6. **Configures shell PATH (backup)**
+   - Adds PATH export to shell config as fallback
+   - Adds convenience aliases
 
-**For Bash** (`~/.bashrc` or `~/.bash_profile`):
-```bash
-export PATH="$PATH:$HOME/.claude-todo/scripts"
-```
+> **Claude Code Compatible**: The installer creates symlinks in `~/.local/bin/`, which is already in PATH for Claude Code and most modern shells. No manual PATH configuration required.
 
-**For Zsh** (`~/.zshrc`):
-```bash
-export PATH="$PATH:$HOME/.claude-todo/scripts"
-```
-
-**For Fish** (`~/.config/fish/config.fish`):
-```fish
-set -gx PATH $PATH $HOME/.claude-todo/scripts
-```
-
-**Apply changes:**
-```bash
-source ~/.bashrc  # or ~/.zshrc, or restart terminal
-```
-
-### Step 5: Verify Installation
+### Step 4: Verify Installation
 
 Confirm the installation was successful:
 
@@ -158,6 +145,10 @@ claude-todo help
 │   └── log.sh              # Logging script
 └── docs/
     └── QUICK-REFERENCE.md           # Quick reference
+
+~/.local/bin/                        # Symlinks for PATH access
+├── claude-todo → ~/.claude-todo/scripts/claude-todo
+└── ct → ~/.claude-todo/scripts/claude-todo  (shortcut)
 ```
 
 ---

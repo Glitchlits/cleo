@@ -106,6 +106,8 @@ declare -A CMD_MAP=(
   [stats]="stats.sh"
   [backup]="backup.sh"
   [restore]="restore.sh"
+  [session]="session.sh"
+  [focus]="focus.sh"
 )
 
 # Brief descriptions for main help (one-liners only)
@@ -120,6 +122,8 @@ declare -A CMD_DESC=(
   [stats]="Show statistics"
   [backup]="Create backup"
   [restore]="Restore from backup"
+  [session]="Manage work sessions (start/end/status)"
+  [focus]="Manage task focus (set/clear/note/next)"
 )
 
 show_main_help() {
@@ -129,7 +133,7 @@ show_main_help() {
   echo "       claude-todo help <command>    Show detailed command help"
   echo ""
   echo "Commands:"
-  for cmd in init validate archive log add complete list stats backup restore; do
+  for cmd in init add complete list focus session archive validate stats backup restore log; do
     printf "  %-14s %s\n" "$cmd" "${CMD_DESC[$cmd]}"
   done
   echo "  version        Show version"
@@ -139,9 +143,11 @@ show_main_help() {
   echo ""
   echo "Examples:"
   echo "  claude-todo init my-project"
-  echo "  claude-todo help archive"
+  echo "  claude-todo session start"
   echo "  claude-todo add \"Implement feature\""
-  echo "  claude-todo list --status pending"
+  echo "  claude-todo focus set <task-id>"
+  echo "  claude-todo complete <task-id>"
+  echo "  claude-todo session end --note \"Done for today\""
 }
 
 CMD="${1:-help}"
@@ -222,11 +228,37 @@ else
 fi
 
 # ============================================
+# CREATE SYMLINKS IN STANDARD LOCATIONS
+# ============================================
+log_step "Creating symlinks for global access..."
+
+# Create ~/.local/bin if it doesn't exist (XDG standard for user binaries)
+LOCAL_BIN="$HOME/.local/bin"
+mkdir -p "$LOCAL_BIN"
+
+# Create symlink for claude-todo command
+SYMLINK_TARGET="$LOCAL_BIN/claude-todo"
+if [[ -L "$SYMLINK_TARGET" ]] || [[ -e "$SYMLINK_TARGET" ]]; then
+  rm -f "$SYMLINK_TARGET"
+fi
+ln -sf "$INSTALL_DIR/scripts/claude-todo" "$SYMLINK_TARGET"
+log_info "Created symlink: $SYMLINK_TARGET"
+
+# Also create 'ct' shortcut symlink
+CT_SYMLINK="$LOCAL_BIN/ct"
+if [[ -L "$CT_SYMLINK" ]] || [[ -e "$CT_SYMLINK" ]]; then
+  rm -f "$CT_SYMLINK"
+fi
+ln -sf "$INSTALL_DIR/scripts/claude-todo" "$CT_SYMLINK"
+log_info "Created shortcut: $CT_SYMLINK"
+
+# ============================================
 # CONFIGURE PATH
 # ============================================
 log_step "Configuring shell PATH..."
 
-PATH_EXPORT="export PATH=\"\$PATH:$INSTALL_DIR/scripts\""
+# Ensure ~/.local/bin is in PATH (standard XDG location)
+PATH_EXPORT="export PATH=\"\$HOME/.local/bin:\$PATH:$INSTALL_DIR/scripts\""
 PATH_MARKER="# CLAUDE-TODO PATH"
 SHELL_CONFIG=""
 SHELL_NAME=""
@@ -287,6 +319,38 @@ else
 fi
 
 # ============================================
+# CONFIGURE ALIASES
+# ============================================
+log_step "Configuring convenience aliases..."
+
+ALIAS_MARKER="# CLAUDE-TODO ALIASES"
+
+# Check if aliases already configured
+if grep -q "$ALIAS_MARKER" "$SHELL_CONFIG" 2>/dev/null; then
+  log_info "Aliases already configured in $SHELL_CONFIG"
+else
+  # Add aliases to shell config
+  echo "" >> "$SHELL_CONFIG"
+  echo "$ALIAS_MARKER" >> "$SHELL_CONFIG"
+  if [[ "$SHELL_NAME" == "fish" ]]; then
+    # Fish shell alias syntax
+    echo "alias ct='claude-todo'" >> "$SHELL_CONFIG"
+    echo "alias ct-add='claude-todo add'" >> "$SHELL_CONFIG"
+    echo "alias ct-list='claude-todo list'" >> "$SHELL_CONFIG"
+    echo "alias ct-done='claude-todo complete'" >> "$SHELL_CONFIG"
+    echo "alias ct-focus='claude-todo focus'" >> "$SHELL_CONFIG"
+  else
+    # Bash/Zsh alias syntax
+    echo "alias ct='claude-todo'" >> "$SHELL_CONFIG"
+    echo "alias ct-add='claude-todo add'" >> "$SHELL_CONFIG"
+    echo "alias ct-list='claude-todo list'" >> "$SHELL_CONFIG"
+    echo "alias ct-done='claude-todo complete'" >> "$SHELL_CONFIG"
+    echo "alias ct-focus='claude-todo focus'" >> "$SHELL_CONFIG"
+  fi
+  log_info "Added aliases to $SHELL_CONFIG"
+fi
+
+# ============================================
 # FINALIZE
 # ============================================
 echo ""
@@ -295,17 +359,26 @@ echo -e "${GREEN}║   Installation Complete!               ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 echo ""
 echo "Installed to: $INSTALL_DIR"
+echo "Symlinks:     $LOCAL_BIN/claude-todo"
+echo "              $LOCAL_BIN/ct (shortcut)"
 echo "Shell config: $SHELL_CONFIG"
 echo ""
-echo -e "${YELLOW}To activate now, run:${NC}"
-echo ""
-if [[ "$SHELL_NAME" == "fish" ]]; then
-  echo "  source $SHELL_CONFIG"
+
+# Check if ~/.local/bin is already in PATH
+if echo "$PATH" | grep -q "$LOCAL_BIN"; then
+  echo -e "${GREEN}✓ Ready to use immediately!${NC}"
+  echo "  (Claude Code and most shells already have ~/.local/bin in PATH)"
 else
-  echo "  source $SHELL_CONFIG"
+  echo -e "${YELLOW}To activate now, run:${NC}"
+  echo ""
+  if [[ "$SHELL_NAME" == "fish" ]]; then
+    echo "  source $SHELL_CONFIG"
+  else
+    echo "  source $SHELL_CONFIG"
+  fi
+  echo ""
+  echo "Or open a new terminal."
 fi
-echo ""
-echo "Or open a new terminal."
 echo ""
 echo "Usage:"
 echo "  cd your-project"
@@ -313,4 +386,5 @@ echo "  claude-todo init"
 echo ""
 echo "Verify installation:"
 echo "  claude-todo version"
+echo "  ct version          # shortcut"
 echo ""

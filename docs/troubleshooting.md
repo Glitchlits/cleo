@@ -6,16 +6,16 @@ This guide covers common issues, their causes, and step-by-step solutions for th
 
 ```bash
 # Check system health
-~/.claude-todo/scripts/validate.sh --verbose
+claude-todo validate --verbose
 
 # Verify installation
+claude-todo version
 ls -la ~/.claude-todo/scripts/
-which validate.sh  # If added to PATH
 
 # Check current project status
 cd /path/to/project
-~/.claude-todo/scripts/validate.sh
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo validate
+claude-todo list
 ```
 
 ---
@@ -102,7 +102,7 @@ jq . .claude/todo.json
 **Step 2: Find the exact issue**
 ```bash
 # Use verbose validation
-~/.claude-todo/scripts/validate.sh --verbose
+claude-todo validate --verbose
 
 # Or manually inspect around error line
 sed -n '20,30p' .claude/todo.json  # Show lines 20-30
@@ -121,12 +121,12 @@ sed -i 's/,\s*]/]/g' .claude/todo.json
 # With:    "title": "He said \"hello\""
 
 # 3. Restore from backup if heavily corrupted
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+claude-todo restore .claude/.backups/todo.json.1
 ```
 
 **Step 4: Verify fix**
 ```bash
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 ```
 
 **Prevention:**
@@ -174,7 +174,7 @@ Issue: Missing required field "title" in task ID: task-123456
 nano .claude/todo.json
 
 # Or restore from backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+claude-todo restore .claude/.backups/todo.json.1
 ```
 
 #### Invalid Status Value
@@ -199,7 +199,7 @@ jq '.tasks = [.tasks[] | if .status == "completed" then .status = "done" else . 
   .claude/todo.json > .claude/todo.json.tmp && mv .claude/todo.json.tmp .claude/todo.json
 
 # Validate fix
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 ```
 
 #### Invalid Type
@@ -223,7 +223,7 @@ jq '.tasks = [.tasks[] | if .status == "completed" then .status = "done" else . 
 nano .claude/todo.json
 
 # Validate
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 ```
 
 **Solutions for All Schema Errors:**
@@ -280,7 +280,7 @@ sed -i "0,/task-1733395200-xyz789/s//$NEW_ID/" .claude/todo.json
 **Step 3: Verify fix**
 ```bash
 # Check no more duplicates
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 
 # Verify task count unchanged
 jq '.tasks | length' .claude/todo.json
@@ -330,24 +330,24 @@ jq '.tasks = [.tasks[] |
 
 **Step 3: Validate**
 ```bash
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 ```
 
 ---
 
 ## Installation Issues
 
-### 1. Script Not Found
+### 1. Command Not Found
 
 **Symptom:**
 ```
-bash: add-task.sh: command not found
+bash: claude-todo: command not found
 ```
 
 **Causes:**
 - Installation not completed
-- Scripts not in PATH
-- Wrong directory
+- Symlinks not created
+- `~/.local/bin` not in PATH (rare)
 
 **Solutions:**
 
@@ -356,37 +356,33 @@ bash: add-task.sh: command not found
 # Check if installed
 ls -la ~/.claude-todo/scripts/
 
-# Should see: add-task.sh, complete-task.sh, etc.
+# Should see: claude-todo, add-task.sh, complete-task.sh, etc.
 ```
 
-**Step 2: If not installed**
+**Step 2: Check symlinks**
+```bash
+# Check if symlinks exist
+ls -la ~/.local/bin/claude-todo ~/.local/bin/ct
+
+# If missing, recreate:
+mkdir -p ~/.local/bin
+ln -sf ~/.claude-todo/scripts/claude-todo ~/.local/bin/claude-todo
+ln -sf ~/.claude-todo/scripts/claude-todo ~/.local/bin/ct
+```
+
+**Step 3: If not installed, run installer**
 ```bash
 cd /path/to/claude-todo
 ./install.sh
 ```
 
-**Step 3: Add to PATH or use full path**
+**Step 4: Verify it works**
 ```bash
-# Option 1: Use full path
-~/.claude-todo/scripts/add-task.sh "My task"
+# Test the command
+claude-todo version
 
-# Option 2: Add to PATH (permanent)
-echo 'export PATH="$HOME/.claude-todo/scripts:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-
-# Now you can use:
-add-task.sh "My task"
-```
-
-**Step 4: Create alias (alternative)**
-```bash
-# Add to ~/.bashrc or ~/.zshrc
-alias todo-add='~/.claude-todo/scripts/add-task.sh'
-alias todo-list='~/.claude-todo/scripts/list-tasks.sh'
-alias todo-complete='~/.claude-todo/scripts/complete-task.sh'
-alias todo-validate='~/.claude-todo/scripts/validate.sh'
-
-source ~/.bashrc
+# Or use the shortcut
+ct version
 ```
 
 ---
@@ -421,31 +417,38 @@ jq --version
 
 ---
 
-### 3. PATH Not Configured
+### 3. PATH Not Configured (Rare since v0.2.0)
 
 **Symptom:**
-Scripts work with full path but not with short names.
+`claude-todo` command not found.
+
+**Note:** Since v0.2.0, the installer creates symlinks in `~/.local/bin/` which is already in PATH for Claude Code and most modern shells. This issue should be rare.
 
 **Solutions:**
 
 ```bash
-# Check current PATH
-echo $PATH
+# Check if symlinks exist
+ls -la ~/.local/bin/claude-todo ~/.local/bin/ct
 
-# Add to PATH temporarily (current session)
-export PATH="$HOME/.claude-todo/scripts:$PATH"
+# If missing, recreate symlinks manually
+mkdir -p ~/.local/bin
+ln -sf ~/.claude-todo/scripts/claude-todo ~/.local/bin/claude-todo
+ln -sf ~/.claude-todo/scripts/claude-todo ~/.local/bin/ct
 
-# Add to PATH permanently
+# Verify symlinks work
+claude-todo version
+
+# If ~/.local/bin is not in PATH (uncommon), add it:
 # For bash:
-echo 'export PATH="$HOME/.claude-todo/scripts:$PATH"' >> ~/.bashrc
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 # For zsh:
-echo 'export PATH="$HOME/.claude-todo/scripts:$PATH"' >> ~/.zshrc
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 
 # Verify
-which add-task.sh
+which claude-todo
 ```
 
 ---
@@ -465,13 +468,13 @@ ls -lah .claude/.backups/
 
 **Step 2: Validate backup integrity**
 ```bash
-~/.claude-todo/scripts/validate.sh .claude/.backups/todo.json.1
+claude-todo validate .claude/.backups/todo.json.1
 ```
 
 **Step 3: Restore backup**
 ```bash
 # Option 1: Use restore script
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+claude-todo restore .claude/.backups/todo.json.1
 
 # Option 2: Manual restore
 cp .claude/todo.json .claude/todo.json.corrupted  # Backup corrupted file
@@ -480,8 +483,8 @@ cp .claude/.backups/todo.json.1 .claude/todo.json
 
 **Step 4: Verify restoration**
 ```bash
-~/.claude-todo/scripts/validate.sh
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo validate
+claude-todo list
 ```
 
 **Step 5: Reconcile lost changes (if needed)**
@@ -535,7 +538,7 @@ jq --slurpfile tasks /tmp/tasks-only.json '.tasks = $tasks[0]' \
 
 **Step 4: Validate**
 ```bash
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 ```
 
 **Step 5: If still corrupted, start fresh**
@@ -585,7 +588,7 @@ chmod +x /tmp/regenerate-ids.sh
 
 **Step 3: Validate**
 ```bash
-~/.claude-todo/scripts/validate.sh .claude/todo.json.new-ids
+claude-todo validate .claude/todo.json.new-ids
 ```
 
 **Step 4: Replace if valid**
@@ -712,7 +715,7 @@ jq --arg now "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
 jq -r '.tasks[] | .title' .claude/todo.json | sort | uniq -d
 
 # Manually review and remove duplicates
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo list
 # Note ID of duplicate task
 # Manually edit to remove
 nano .claude/todo.json
@@ -738,15 +741,15 @@ du -h .claude/todo*.json
 **Step 2: Archive old completed tasks**
 ```bash
 # Archive tasks completed more than 7 days ago
-~/.claude-todo/scripts/archive.sh --days 7
+claude-todo archive --days 7
 
 # Or force immediate archive of ALL completed
-~/.claude-todo/scripts/archive.sh --force
+claude-todo archive --force
 ```
 
 **Step 3: Verify performance improvement**
 ```bash
-time ~/.claude-todo/scripts/list-tasks.sh
+time claude-todo list
 ```
 
 **Step 4: Configure automatic archiving**
@@ -777,7 +780,7 @@ nano .claude/todo-config.json
 **Archive best practices:**
 ```bash
 # Regular archiving (weekly)
-~/.claude-todo/scripts/archive.sh --days 7
+claude-todo archive --days 7
 
 # Keep archive size manageable
 jq '.tasks | length' .claude/todo-archive.json
@@ -809,12 +812,12 @@ rm .claude/archive-backup-2023.json.gz
 
 **Basic validation:**
 ```bash
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 ```
 
 **Verbose output (shows all checks):**
 ```bash
-~/.claude-todo/scripts/validate.sh --verbose
+claude-todo validate --verbose
 ```
 
 **Expected output:**
@@ -981,7 +984,7 @@ cp -r .claude ~/todo-emergency-backup/
 mv .claude .claude.corrupted
 
 # Reinitialize
-~/.claude-todo/scripts/init.sh
+claude-todo init
 ```
 
 **Step 3: Manually extract and recreate tasks**
@@ -991,14 +994,14 @@ jq -r '.tasks[] | .title' .claude.corrupted/todo.json 2>/dev/null > /tmp/task-ti
 
 # Recreate each task
 while IFS= read -r title; do
-  ~/.claude-todo/scripts/add-task.sh "$title"
+  claude-todo add "$title"
 done < /tmp/task-titles.txt
 ```
 
 **Step 4: Verify new system**
 ```bash
-~/.claude-todo/scripts/validate.sh
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo validate
+claude-todo list
 ```
 
 ---
@@ -1016,7 +1019,7 @@ echo "jq version: $(jq --version)"
 ls -la ~/.claude-todo/
 
 # File status
-~/.claude-todo/scripts/validate.sh --verbose
+claude-todo validate --verbose
 
 # Recent errors
 tail -50 .claude/todo-log.json | jq '.entries[] | select(.details.error != null)'
@@ -1047,7 +1050,7 @@ Include the diagnostic output above when reporting issues to help troubleshoot f
 | Invalid JSON | `jq . .claude/todo.json` to validate |
 | Duplicate IDs | Regenerate with timestamp + random |
 | Missing field | Add required field manually |
-| Script not found | Use full path: `~/.claude-todo/scripts/...` |
+| Command not found | Check symlinks: `ls ~/.local/bin/claude-todo` |
 | Slow performance | Archive old completed tasks |
 | Corrupted file | Restore from `.claude/.backups/` |
 | No backups | Check `.backups/` directory exists |

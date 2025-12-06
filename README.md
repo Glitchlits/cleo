@@ -25,43 +25,49 @@ CLAUDE-TODO is a robust, schema-validated task management system specifically de
 git clone <repository-url> claude-todo
 cd claude-todo
 
-# 2. Install globally
+# 2. Install globally (works immediately - no shell restart needed!)
 ./install.sh
 
-# 3. Initialize in your project
+# 3. Verify installation
+claude-todo version
+
+# 4. Initialize in your project
 cd /path/to/your/project
-~/.claude-todo/scripts/init.sh
+claude-todo init
 ```
+
+> **Claude Code Compatible**: The installer creates symlinks in `~/.local/bin/`, which is already in PATH for Claude Code and most modern shells. No manual PATH configuration required.
 
 ### Basic Usage
 
 ```bash
 # Add a task
-~/.claude-todo/scripts/add-task.sh "Implement authentication"
+claude-todo add "Implement authentication"
 
 # List all tasks
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo list
 
 # Complete a task
-~/.claude-todo/scripts/complete-task.sh task-1733395200-abc123
+claude-todo complete T001
 
 # Show statistics
-~/.claude-todo/scripts/stats.sh
+claude-todo stats
 
 # Archive completed tasks
-~/.claude-todo/scripts/archive.sh
+claude-todo archive
+
+# Get help
+claude-todo help
 ```
 
-### Recommended Aliases
+### Shortcut Command
 
-Add to your `~/.bashrc` or `~/.zshrc`:
+The installer also creates a `ct` shortcut:
 
 ```bash
-alias ct-add='~/.claude-todo/scripts/add-task.sh'
-alias ct-list='~/.claude-todo/scripts/list-tasks.sh'
-alias ct-complete='~/.claude-todo/scripts/complete-task.sh'
-alias ct-stats='~/.claude-todo/scripts/stats.sh'
-alias ct-archive='~/.claude-todo/scripts/archive.sh'
+ct list        # Same as: claude-todo list
+ct add "Task"  # Same as: claude-todo add "Task"
+ct version     # Same as: claude-todo version
 ```
 
 ## Architecture
@@ -332,22 +338,22 @@ chmod 755 ~/.claude-todo/scripts/*.sh
 **"Invalid JSON" error**
 ```bash
 # Try automatic fix
-~/.claude-todo/scripts/validate.sh --fix
+claude-todo validate --fix
 
 # Or restore from backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+claude-todo restore .claude/.backups/todo.json.1
 ```
 
 **"Duplicate ID" error**
 ```bash
-# Manually edit to regenerate ID or restore backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+# Restore from backup
+claude-todo restore .claude/.backups/todo.json.1
 ```
 
 ### Health Check
 
 ```bash
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 ```
 
 Checks:
