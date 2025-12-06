@@ -104,11 +104,12 @@ The installer performs the following operations:
    - Creates `~/.local/bin/ct` shortcut symlink
    - Works immediately with Claude Code (no shell restart needed)
 
-6. **Configures shell PATH (backup)**
+6. **Configures shell PATH (backup only)**
    - Adds PATH export to shell config as fallback
    - Adds convenience aliases
+   - **Only needed if ~/.local/bin is not already in PATH**
 
-> **Claude Code Compatible**: The installer creates symlinks in `~/.local/bin/`, which is already in PATH for Claude Code and most modern shells. No manual PATH configuration required.
+> **Claude Code Compatible**: The installer creates symlinks in `~/.local/bin/`, which is already in PATH for Claude Code and most modern shells. The symlinks work immediately - no manual PATH configuration or shell restart required. The PATH export added to your shell config (~/.bashrc or ~/.zshrc) is a backup measure for shells that don't include ~/.local/bin by default.
 
 ### Step 4: Verify Installation
 
@@ -353,23 +354,32 @@ bash: claude-todo: command not found
 
 **Solutions:**
 
-1. **Verify PATH configuration:**
+1. **Check symlink exists:**
    ```bash
-   echo $PATH | grep claude-todo
-   # Should show: /home/username/.claude-todo/scripts
+   ls -l ~/.local/bin/claude-todo
+   # Should show: ~/.local/bin/claude-todo -> /home/username/.claude-todo/scripts/claude-todo
    ```
 
-2. **Reload shell configuration:**
+2. **Verify ~/.local/bin is in PATH:**
+   ```bash
+   echo $PATH | grep ".local/bin"
+   # Should show: /home/username/.local/bin
+   ```
+
+3. **If ~/.local/bin not in PATH, reload shell configuration:**
    ```bash
    source ~/.bashrc  # or ~/.zshrc
+   # This activates the PATH export added by installer
    ```
 
-3. **Use absolute path temporarily:**
+4. **Use absolute path temporarily:**
    ```bash
+   ~/.local/bin/claude-todo version
+   # or
    ~/.claude-todo/scripts/claude-todo version
    ```
 
-4. **Check script permissions:**
+5. **Check script permissions:**
    ```bash
    ls -l ~/.claude-todo/scripts/claude-todo
    # Should be: -rwxr-xr-x (executable)

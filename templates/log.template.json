@@ -1,6 +1,6 @@
 {
   "$schema": "../schemas/log.schema.json",
-  "version": "{{VERSION}}",
+  "version": "2.1.0",
   "project": "{{PROJECT_NAME}}",
   "_meta": {
     "totalEntries": 0,

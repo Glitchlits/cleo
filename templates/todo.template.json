@@ -1,11 +1,11 @@
 {
   "$schema": "../schemas/todo.schema.json",
-  "version": "{{VERSION}}",
+  "version": "2.1.0",
   "project": "{{PROJECT_NAME}}",
   "lastUpdated": "{{TIMESTAMP}}",
   "_meta": {
     "checksum": "{{CHECKSUM}}",
-    "configVersion": "{{VERSION}}",
+    "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null
   },

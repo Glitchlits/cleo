@@ -184,19 +184,17 @@ Defaults → Global → Project → Environment → CLI Flags
 {
   "archive": {
     "enabled": true,
-    "archive_after_days": 7,
-    "max_archive_size": 1000,
-    "auto_archive_on_complete": false
+    "daysUntilArchive": 7,
+    "maxCompletedTasks": 15,
+    "preserveRecentCount": 3,
+    "archiveOnSessionEnd": true
   },
   "validation": {
-    "strict_mode": true,
-    "allow_duplicates": false,
-    "require_description": true
-  },
-  "backups": {
-    "enabled": true,
-    "max_backups": 10,
-    "backup_on_write": true
+    "strictMode": false,
+    "checksumEnabled": true,
+    "enforceAcceptance": true,
+    "requireDescription": false,
+    "maxActiveTasks": 1
   }
 }
 ```

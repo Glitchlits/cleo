@@ -405,7 +405,7 @@ todo-add.sh --no-archive-on-complete "Task description"
 
 # Override validation settings
 todo-add.sh --no-strict "Task description"
-todo-complete.sh --allow-multiple-active task-123
+todo-complete.sh --allow-multiple-active T001
 
 # Override logging settings
 todo-add.sh --log-level=verbose "Task description"
@@ -588,7 +588,7 @@ todo-list.sh --help
 
 **Validate configuration:**
 ```bash
-~/.claude-todo/scripts/validate.sh .claude/todo-config.json
+claude-todo validate .claude/todo-config.json
 ```
 
 ### Invalid Configuration Values
@@ -621,10 +621,10 @@ When upgrading between versions:
 cp .claude/todo-config.json .claude/todo-config.backup.json
 
 # Re-initialize to get new defaults (preserves existing data)
-~/.claude-todo/scripts/init.sh --force
+claude-todo init --force
 
 # Validate migrated config
-~/.claude-todo/scripts/validate.sh .claude/todo-config.json
+claude-todo validate .claude/todo-config.json
 ```
 
 > **Note**: Automated migration scripts are not yet implemented. Manual backup and re-initialization is recommended.

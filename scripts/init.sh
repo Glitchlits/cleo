@@ -239,30 +239,68 @@ if [[ "$NO_CLAUDE_MD" != true ]]; then
     if grep -q "CLAUDE-TODO:START" CLAUDE.md 2>/dev/null; then
       log_warn "CLAUDE.md already has task integration (skipped)"
     else
-      # Read the template from install location or embed minimal version
+      # Inject CLI-based task management instructions
       cat >> CLAUDE.md << 'CLAUDE_EOF'
 
 <!-- CLAUDE-TODO:START -->
-## Task Management
+## Task Management (claude-todo CLI)
 
-Tasks in `.claude/todo.json`. **Read at session start, verify checksum.**
+Use the `claude-todo` CLI for **all** task operations. Never read or edit `.claude/*.json` files directly.
 
-### Protocol
-- **START**: Read .claude/todo-config.json → Read .claude/todo.json → Verify checksum → Log session_start
-- **WORK**: ONE active task only → Update notes → Log changes to .claude/todo-log.json
-- **END**: Update sessionNote → Update checksum → Log session_end
+### Quick Reference
+```bash
+claude-todo list                    # View tasks
+claude-todo add "Task title"        # Create task
+claude-todo complete <task-id>      # Mark done
+claude-todo focus set <task-id>     # Set focus (marks active)
+claude-todo focus show              # Show current focus
+claude-todo session start           # Start session
+claude-todo session end             # End session
+claude-todo validate                # Check file integrity
+claude-todo archive                 # Archive completed tasks
+claude-todo stats                   # Show statistics
+claude-todo log --action <type>     # Add log entry
+claude-todo help                    # All commands
+```
 
-### Anti-Hallucination
-- **ALWAYS** verify checksum before writing
-- **NEVER** have 2+ active tasks
-- **NEVER** modify .claude/todo-archive.json
-- **ALWAYS** log all changes
+### Session Protocol
 
-### Files
-- `.claude/todo.json` - Active tasks
-- `.claude/todo-archive.json` - Completed (immutable)
-- `.claude/todo-config.json` - Settings
-- `.claude/todo-log.json` - Audit trail
+**START**:
+```bash
+claude-todo session start           # Logs session, shows context
+claude-todo list                    # See pending tasks
+claude-todo focus show              # Check last focus/notes
+```
+
+**WORK**:
+```bash
+claude-todo focus set <task-id>     # Set focus (one task only)
+claude-todo add "Subtask"           # Add new tasks as needed
+claude-todo focus note "Progress"   # Update session note
+```
+
+**END**:
+```bash
+claude-todo complete <task-id>      # Complete finished tasks
+claude-todo archive                 # Clean up completed tasks
+claude-todo session end             # End session
+```
+
+### Anti-Hallucination Rules
+
+- **CLI only** - Never read/edit `.claude/*.json` files directly
+- **One active task** - Use `claude-todo focus set` (enforces single active)
+- **Verify state** - Use `claude-todo list` to confirm, don't assume
+- **Session discipline** - Start/end sessions properly
+
+### Aliases (installed automatically)
+```bash
+ct          # claude-todo
+ct-add      # claude-todo add
+ct-list     # claude-todo list
+ct-done     # claude-todo complete
+ct-focus    # claude-todo focus
+```
 <!-- CLAUDE-TODO:END -->
 CLAUDE_EOF
       log_info "Updated CLAUDE.md"

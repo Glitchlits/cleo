@@ -152,12 +152,8 @@ claude-todo list --limit 10
 # Complete a task by ID
 claude-todo complete T001
 
-# Complete with completion notes
-claude-todo complete T001 \
-  --notes "Implemented JWT tokens with refresh mechanism"
-
-# Complete and auto-archive immediately
-claude-todo complete T001 --archive
+# Complete without triggering auto-archive
+claude-todo complete T001 --skip-archive
 ```
 
 #### What Happens on Completion
@@ -173,17 +169,17 @@ claude-todo complete T001 --archive
 #### Manual Archive
 
 ```bash
-# Archive completed tasks older than configured days
+# Archive completed tasks based on config retention
 claude-todo archive
 
-# Force archive all completed tasks regardless of age
+# Preview what would be archived
+claude-todo archive --dry-run
+
+# Force archive (respects preserveRecentCount)
 claude-todo archive --force
 
-# Archive completed tasks older than specific days
-claude-todo archive --days 14
-
-# Archive with verbose output
-claude-todo archive --verbose
+# Archive ALL completed tasks (ignores preserve setting)
+claude-todo archive --all
 ```
 
 #### Automatic Archive
@@ -194,13 +190,13 @@ Configure in `.claude/todo-config.json`:
 {
   "archive": {
     "enabled": true,
-    "archive_after_days": 7,
-    "auto_archive_on_complete": true
+    "daysUntilArchive": 7,
+    "archiveOnSessionEnd": true
   }
 }
 ```
 
-When enabled, tasks are automatically archived after completion when they exceed `archive_after_days` threshold.
+When enabled, tasks are automatically archived after completion when they exceed `daysUntilArchive` threshold.
 
 ---
 
@@ -256,9 +252,10 @@ When enabled, tasks are automatically archived after completion when they exceed
 ```json
 {
   "archive": {
-    "archive_after_days": 30,    // Keep completed tasks 30 days
-    "max_archive_size": 5000,    // Store up to 5000 archived tasks
-    "auto_archive_on_complete": false  // Manual archive only
+    "daysUntilArchive": 30,         // Keep completed tasks 30 days
+    "maxCompletedTasks": 50,        // Archive when completed count exceeds this
+    "preserveRecentCount": 5,       // Always keep this many recent completed tasks
+    "archiveOnSessionEnd": false    // Manual archive only
   }
 }
 ```
@@ -471,21 +468,15 @@ claude-todo complete <TASK_ID> [OPTIONS]
 - `TASK_ID`: Task identifier
 
 **Options**:
-- `--notes <text>`: Completion notes
-- `--archive`: Immediately archive after completion
-- `--no-log`: Skip logging (not recommended)
+- `--skip-archive`: Don't trigger auto-archive even if configured
 
 **Examples**:
 ```bash
 # Simple completion
 claude-todo complete T003
 
-# Complete with notes
-claude-todo complete T003 \
-  --notes "Implemented JWT tokens with 7-day refresh"
-
-# Complete and archive immediately
-claude-todo complete T003 --archive
+# Complete without triggering auto-archive
+claude-todo complete T003 --skip-archive
 ```
 
 **Validation**:
@@ -511,27 +502,27 @@ claude-todo archive [OPTIONS]
 ```
 
 **Options**:
-- `--force`: Archive all completed tasks regardless of age
-- `--days <n>`: Archive tasks completed N days ago (overrides config)
-- `--verbose`: Show detailed operation output
-- `--dry-run`: Show what would be archived without making changes
+- `--dry-run`: Preview without making changes
+- `--force`: Archive all completed (except preserved count)
+- `--all`: Archive ALL completed tasks (bypasses retention AND preserve)
+- `--count N`: Override maxCompletedTasks setting
 
 **Examples**:
 ```bash
 # Archive based on config (default: 7 days)
 claude-todo archive
 
-# Force archive all completed tasks
-claude-todo archive --force
-
-# Archive tasks older than 30 days
-claude-todo archive --days 30
-
 # Preview what would be archived
 claude-todo archive --dry-run
 
-# Verbose archive with details
-claude-todo archive --verbose
+# Force archive all completed (respects preserveRecentCount)
+claude-todo archive --force
+
+# Archive ALL completed tasks (ignores preserve setting)
+claude-todo archive --all
+
+# Override max completed tasks threshold
+claude-todo archive --count 20
 ```
 
 **Output**:
@@ -1006,8 +997,8 @@ Manage archive file size:
 # Check archive size
 wc -l .claude/todo-archive.json
 
-# Archive old tasks more aggressively
-claude-todo archive --days 3 --force
+# Archive all completed tasks immediately
+claude-todo archive --all
 
 # Extract specific archived task
 cat .claude/todo-archive.json | jq '.tasks[] | select(.id == "T008")'
@@ -1110,8 +1101,7 @@ claude-todo add "Add login endpoint" --status pending
 # When Claude Code marks internal todo complete
 # Trigger: TodoWrite status change to "completed"
 
-claude-todo complete <task-id> \
-  --notes "Completed by Claude Code in session xyz"
+claude-todo complete <task-id>
 ```
 
 ### Best Practices
@@ -1254,37 +1244,50 @@ claude-todo list --status active --format json | \
 ```json
 {
   "$schema": "../schemas/config.schema.json",
-  "version": "1.0.0",
+  "version": "2.1.0",
 
   "archive": {
     "enabled": true,
-    "archive_after_days": 7,
-    "max_archive_size": 1000,
-    "auto_archive_on_complete": false
+    "daysUntilArchive": 7,
+    "maxCompletedTasks": 15,
+    "preserveRecentCount": 3,
+    "archiveOnSessionEnd": true
   },
 
   "validation": {
-    "strict_mode": true,
-    "allow_duplicates": false,
-    "require_active_form": true
+    "strictMode": false,
+    "checksumEnabled": true,
+    "enforceAcceptance": true,
+    "requireDescription": false,
+    "maxActiveTasks": 1,
+    "validateDependencies": true,
+    "detectCircularDeps": true
   },
 
   "logging": {
     "enabled": true,
-    "log_level": "info",
-    "max_log_entries": 10000
+    "retentionDays": 30,
+    "level": "standard",
+    "logSessionEvents": true
   },
 
-  "backups": {
-    "enabled": true,
-    "max_backups": 10,
-    "backup_on_write": true
+  "defaults": {
+    "priority": "medium",
+    "phase": "core",
+    "labels": []
+  },
+
+  "session": {
+    "requireSessionNote": true,
+    "warnOnNoFocus": true,
+    "autoStartSession": true,
+    "sessionTimeoutHours": 24
   },
 
   "display": {
-    "date_format": "iso",
-    "timezone": "local",
-    "colors_enabled": true
+    "showArchiveCount": true,
+    "showLogSummary": true,
+    "warnStaleDays": 30
   }
 }
 ```
@@ -1296,9 +1299,10 @@ claude-todo list --status active --format json | \
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | boolean | `true` | Enable archive functionality |
-| `archive_after_days` | number | `7` | Days before archiving completed tasks |
-| `max_archive_size` | number | `1000` | Max tasks in archive (0 = unlimited) |
-| `auto_archive_on_complete` | boolean | `false` | Auto-archive on task completion |
+| `daysUntilArchive` | integer | `7` | Days after completion before eligible for archive |
+| `maxCompletedTasks` | integer | `15` | Max completed tasks before triggering archive |
+| `preserveRecentCount` | integer | `3` | Always keep this many recent completed tasks |
+| `archiveOnSessionEnd` | boolean | `true` | Check archive eligibility when session ends |
 
 #### Validation Settings
 
@@ -1309,30 +1313,25 @@ claude-todo list --status active --format json | \
 | `enforceAcceptance` | boolean | `true` | Require acceptance criteria for high/critical tasks |
 | `requireDescription` | boolean | `false` | Require description field for all tasks |
 | `maxActiveTasks` | integer | `1` | Maximum concurrent active tasks |
+| `validateDependencies` | boolean | `true` | Check all depends[] references exist and are valid |
+| `detectCircularDeps` | boolean | `true` | Detect and block circular dependencies |
 
 #### Logging Settings
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | boolean | `true` | Enable change logging |
-| `log_level` | string | `"info"` | Log verbosity (`debug`, `info`, `warn`, `error`) |
-| `max_log_entries` | number | `10000` | Max log entries before rotation |
-
-#### Backup Settings
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `enabled` | boolean | `true` | Enable automatic backups |
-| `max_backups` | number | `10` | Max backup files to retain |
-| `backup_on_write` | boolean | `true` | Backup before every write |
+| `retentionDays` | integer | `30` | Days to retain log entries |
+| `level` | string | `"standard"` | Log level (`minimal`, `standard`, `verbose`) |
+| `logSessionEvents` | boolean | `true` | Log session start/end events |
 
 #### Display Settings
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `date_format` | string | `"iso"` | Date format (`iso`, `relative`, `short`) |
-| `timezone` | string | `"local"` | Timezone for display |
-| `colors_enabled` | boolean | `true` | Enable colored output |
+| `showArchiveCount` | boolean | `true` | Show archived task count in status output |
+| `showLogSummary` | boolean | `true` | Show recent log summary |
+| `warnStaleDays` | integer | `30` | Warn about tasks pending longer than this |
 
 ### Environment Variables
 
@@ -1577,8 +1576,8 @@ cat .claude/todo-archive.json | jq '.tasks[] | select(.id == "<task-id>")'
 # Check archive configuration
 cat .claude/todo-config.json | jq '.archive'
 
-# Force archive with verbose output
-claude-todo archive --force --verbose
+# Force archive all completed tasks
+claude-todo archive --force
 ```
 
 **Issue**: Backup restoration failed

@@ -10,73 +10,91 @@
 # Upgrade existing installation
 ./install.sh --upgrade
 
+# Source shell config after installation
+source ~/.bashrc  # or ~/.zshrc
+
 # Initialize project
-~/.claude-todo/scripts/init.sh
+claude-todo init
 ```
 
 ### Task Management
 ```bash
 # Add new task
-~/.claude-todo/scripts/add-task.sh "Task description" --status pending
+claude-todo add "Task description"
+claude-todo add "Task description" --status pending --priority high
 
 # Complete task
-~/.claude-todo/scripts/complete-task.sh <task-id>
+claude-todo complete <task-id>
+claude-todo complete <task-id> --skip-archive
 
 # List tasks
-~/.claude-todo/scripts/list-tasks.sh
-~/.claude-todo/scripts/list-tasks.sh --status pending
-~/.claude-todo/scripts/list-tasks.sh --format json
+claude-todo list
+claude-todo list --status pending
+claude-todo list --format json
 ```
 
 ### Archival and Maintenance
 ```bash
 # Archive completed tasks (automatic based on policy)
-~/.claude-todo/scripts/archive.sh
+claude-todo archive
 
-# Archive with custom retention period
-~/.claude-todo/scripts/archive.sh --days 30
+# Preview what would be archived
+claude-todo archive --dry-run
 
-# Force immediate archive
-~/.claude-todo/scripts/archive.sh --force
+# Force archive (respects preserveRecentCount)
+claude-todo archive --force
+
+# Archive ALL completed tasks (ignores preserve)
+claude-todo archive --all
 ```
 
 ### Validation and Health Checks
 ```bash
 # Validate all JSON files
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 
 # Validate with automatic fixes
-~/.claude-todo/scripts/validate.sh --fix
-
-# Run health check
-~/.claude-todo/scripts/health-check.sh
+claude-todo validate --fix
 ```
 
 ### Statistics and Reporting
 ```bash
 # Show statistics
-~/.claude-todo/scripts/stats.sh
+claude-todo stats
 
 # Statistics for specific period
-~/.claude-todo/scripts/stats.sh --period 30
+claude-todo stats --period 30
 
 # Export statistics as JSON
-~/.claude-todo/scripts/stats.sh --format json
+claude-todo stats --format json
 ```
 
 ### Backup and Restore
 ```bash
 # Manual backup
-~/.claude-todo/scripts/backup.sh
+claude-todo backup
 
 # Backup to specific directory
-~/.claude-todo/scripts/backup.sh --destination /path/to/backup
+claude-todo backup --destination /path/to/backup
 
 # Restore from backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+claude-todo restore .claude/.backups/todo.json.1
 
 # List available backups
 ls -lh .claude/.backups/
+```
+
+### Help and Version
+```bash
+# Show all commands
+claude-todo help
+
+# Show command-specific help
+claude-todo help archive
+claude-todo help add
+
+# Show version
+claude-todo version
 ```
 
 ## Testing Commands
@@ -189,15 +207,15 @@ export CLAUDE_TODO_LOG_LEVEL=debug
 echo 'export CLAUDE_TODO_ARCHIVE_DAYS=14' >> ~/.bashrc
 ```
 
-### PATH Setup (Optional)
+### PATH Setup
 ```bash
-# Add scripts to PATH
-echo 'export PATH="$HOME/.claude-todo/scripts:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+# The installer automatically adds to PATH
+# After installation, source your shell config:
+source ~/.bashrc  # or ~/.zshrc
 
 # Now can run directly
-add-task.sh "New task"
-list-tasks.sh
+claude-todo add "New task"
+claude-todo list
 ```
 
 ## Debugging Commands
@@ -205,9 +223,9 @@ list-tasks.sh
 ### Verbose Mode
 ```bash
 # Enable debug output
-CLAUDE_TODO_LOG_LEVEL=debug ~/.claude-todo/scripts/add-task.sh "Test task"
+CLAUDE_TODO_LOG_LEVEL=debug claude-todo add "Test task"
 
-# Trace script execution
+# Trace script execution (for development)
 bash -x ~/.claude-todo/scripts/archive.sh
 ```
 
@@ -229,11 +247,11 @@ jq '[.todos[].id] | group_by(.) | map(select(length > 1))' .claude/todo.json
 ### Timing Operations
 ```bash
 # Measure command execution time
-time ~/.claude-todo/scripts/archive.sh
+time claude-todo archive
 
 # Profile with detailed timing
 TIMEFORMAT='Real: %R, User: %U, System: %S'
-time ~/.claude-todo/scripts/stats.sh
+time claude-todo stats
 ```
 
 ### File Size Monitoring
@@ -247,14 +265,14 @@ watch -n 60 'du -h .claude/todo-log.json'
 
 ## Quick Reference Aliases
 
-### Recommended Shell Aliases
+### Recommended Shell Aliases (Optional)
 ```bash
-# Add to ~/.bashrc or ~/.zshrc
-alias ct-add='~/.claude-todo/scripts/add-task.sh'
-alias ct-complete='~/.claude-todo/scripts/complete-task.sh'
-alias ct-list='~/.claude-todo/scripts/list-tasks.sh'
-alias ct-archive='~/.claude-todo/scripts/archive.sh'
-alias ct-stats='~/.claude-todo/scripts/stats.sh'
-alias ct-validate='~/.claude-todo/scripts/validate.sh'
-alias ct-backup='~/.claude-todo/scripts/backup.sh'
+# Add to ~/.bashrc or ~/.zshrc (claude-todo is already short)
+alias ct='claude-todo'
+alias ct-add='claude-todo add'
+alias ct-list='claude-todo list'
+alias ct-complete='claude-todo complete'
+alias ct-archive='claude-todo archive'
+alias ct-stats='claude-todo stats'
+alias ct-validate='claude-todo validate'
 ```

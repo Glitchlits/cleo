@@ -143,7 +143,7 @@ claude-todo validate
 ```
 Error: Invalid JSON Schema
 File: .claude/todo.json
-Issue: Missing required field "title" in task ID: task-123456
+Issue: Missing required field "title" in task ID: T001
 ```
 
 **Common Schema Errors:**
@@ -154,13 +154,13 @@ Issue: Missing required field "title" in task ID: task-123456
 ```json
 // WRONG
 {
-  "id": "task-123",
+  "id": "T001",
   "status": "pending"
 }
 
 // CORRECT
 {
-  "id": "task-123",
+  "id": "T001",
   "title": "Fix bug",
   "status": "pending",
   "priority": "medium",
@@ -241,7 +241,7 @@ claude-todo validate
 ```
 Error: Duplicate task ID detected
 File: .claude/todo.json
-Duplicate ID: task-1733395200-xyz789
+Duplicate ID: T001
 Location: Line 15 and Line 42
 Fix: Regenerate unique ID for one task
 ```
@@ -260,21 +260,18 @@ Fix: Regenerate unique ID for one task
 jq -r '.tasks[].id' .claude/todo.json | sort | uniq -d
 
 # Show full tasks with duplicate IDs
-jq '.tasks[] | select(.id == "task-1733395200-xyz789")' .claude/todo.json
+jq '.tasks[] | select(.id == "T001")' .claude/todo.json
 ```
 
 **Step 2: Regenerate unique ID**
 ```bash
-# Generate new unique ID
-NEW_ID="task-$(date +%s)-$(openssl rand -hex 3)"
+# Find the next available ID number
+LAST_ID=$(jq -r '.tasks[].id' .claude/todo.json | grep -oP 'T\K\d+' | sort -n | tail -1)
+NEW_ID="T$(printf '%03d' $((LAST_ID + 1)))"
 echo "New ID: $NEW_ID"
 
 # Manually edit and replace ONE instance
 nano .claude/todo.json
-
-# Or use sed (careful!)
-# This replaces only FIRST occurrence
-sed -i "0,/task-1733395200-xyz789/s//$NEW_ID/" .claude/todo.json
 ```
 
 **Step 3: Verify fix**
@@ -299,7 +296,7 @@ jq '.tasks | length' .claude/todo.json
 ```
 Error: Task missing required field
 Field: title
-Task ID: task-456789
+Task ID: T009
 ```
 
 **Solutions:**
@@ -740,11 +737,11 @@ du -h .claude/todo*.json
 
 **Step 2: Archive old completed tasks**
 ```bash
-# Archive tasks completed more than 7 days ago
-claude-todo archive --days 7
+# Archive based on config retention policy
+claude-todo archive
 
 # Or force immediate archive of ALL completed
-claude-todo archive --force
+claude-todo archive --all
 ```
 
 **Step 3: Verify performance improvement**
@@ -761,8 +758,8 @@ nano .claude/todo-config.json
 {
   "archive": {
     "enabled": true,
-    "archive_after_days": 7,
-    "auto_archive_on_complete": true
+    "daysUntilArchive": 7,
+    "archiveOnSessionEnd": true
   }
 }
 ```
@@ -779,11 +776,11 @@ nano .claude/todo-config.json
 
 **Archive best practices:**
 ```bash
-# Regular archiving (weekly)
-claude-todo archive --days 7
+# Regular archiving based on config
+claude-todo archive
 
 # Keep archive size manageable
-jq '.tasks | length' .claude/todo-archive.json
+jq '.archivedTasks | length' .claude/todo-archive.json
 # If >1000, consider:
 # 1. Exporting to external file
 # 2. Compressing old archives
@@ -939,9 +936,9 @@ jq '.entries | .[-5:] | .[] |
 **Search for specific task history:**
 ```bash
 # All operations for task
-TASK_ID="task-1733395200-xyz789"
+TASK_ID="T001"
 jq --arg id "$TASK_ID" \
-  '.entries[] | select(.task_id == $id)' \
+  '.entries[] | select(.taskId == $id)' \
   .claude/todo-log.json
 ```
 

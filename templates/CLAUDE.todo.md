@@ -1,109 +1,111 @@
 <!-- CLAUDE-TODO:START -->
-## Task Management System
+## Task Management (claude-todo CLI)
 
-Tasks tracked in `.claude/todo.json` with auto-archive to `.claude/todo-archive.json`, config in `.claude/todo-config.json`, and history in `.claude/todo-log.json`.
+Use the `claude-todo` CLI for **all** task operations. Never read or edit `.claude/*.json` files directly.
+
+### Quick Reference
+```bash
+claude-todo list                    # View tasks
+claude-todo add "Task title"        # Create task
+claude-todo complete <task-id>      # Mark done
+claude-todo focus set <task-id>     # Set focus (marks active)
+claude-todo focus show              # Show current focus
+claude-todo session start           # Start session
+claude-todo session end             # End session
+claude-todo validate                # Check file integrity
+claude-todo archive                 # Archive completed tasks
+claude-todo stats                   # Show statistics
+claude-todo log --action <type>     # Add log entry
+claude-todo help                    # All commands
+```
 
 ### Session Protocol
 
-**START** (MANDATORY):
-1. Read `.claude/todo-config.json` for settings
-2. Read `.claude/todo.json` - verify `_meta.checksum` matches
-3. If checksum fails: **STOP** - report corruption
-4. Generate session ID: `session_YYYYMMDD_HHMMSS_<6hex>`
-5. Log `session_start` to `.claude/todo-log.json`
-6. Set `_meta.activeSession` = session ID
-7. Check `focus.currentTask` → resume or find next actionable
+**START** (beginning of work session):
+```bash
+claude-todo session start           # Logs session, shows context
+claude-todo list                    # See pending tasks
+claude-todo focus show              # Check last focus/notes
+```
 
-**WORK**:
-- **ONE active task only** - set `status: "active"` + `focus.currentTask`
-- Append to `notes[]` (NEVER delete)
-- Update `files[]` as you modify code
-- If blocked: `status: "blocked"` + `blockedBy` reason immediately
-- Log all status changes to `.claude/todo-log.json`
+**WORK** (during session):
+```bash
+claude-todo focus set <task-id>     # Set focus (one task only)
+claude-todo add "Subtask"           # Add new tasks as needed
+claude-todo focus note "Progress"   # Update session note
+claude-todo focus next "Next step"  # Set next action hint
+```
 
-**END** (MANDATORY):
-1. Update `focus.sessionNote` with current state
-2. Set `focus.nextAction` with specific next step
-3. If task done: `status: "done"` + `completedAt` + clear `focus.currentTask`
-4. Recalculate and update `_meta.checksum`
-5. Run archive check if `config.archive.archiveOnSessionEnd`
-6. Log `session_end` to `.claude/todo-log.json`
-7. Set `_meta.activeSession` = null
+**END** (before ending session):
+```bash
+claude-todo complete <task-id>      # Complete finished tasks
+claude-todo archive                 # Clean up old completed tasks
+claude-todo focus note "Status..."  # Save context for next session
+claude-todo session end             # End session with optional note
+```
+
+### Task Commands
+```bash
+# Add task with options
+claude-todo add "Task title" \
+  --status pending \
+  --priority high \
+  --description "Details" \
+  --labels "backend,api"
+
+# Complete task
+claude-todo complete <task-id>
+
+# List with filters
+claude-todo list --status pending --priority high
+```
+
+### Focus Commands
+```bash
+claude-todo focus set <task-id>     # Set focus + mark active
+claude-todo focus clear             # Clear focus
+claude-todo focus show              # Show focus state
+claude-todo focus note "text"       # Set progress note
+claude-todo focus next "action"     # Set next action
+```
+
+### Session Commands
+```bash
+claude-todo session start           # Start new session
+claude-todo session end             # End session
+claude-todo session end --note "..."# End with note
+claude-todo session status          # Check session state
+claude-todo session info            # Detailed info
+```
+
+### Status Values
+- `pending` - Not yet started
+- `active` - Currently working (limit: ONE)
+- `blocked` - Waiting on dependency
+- `done` - Completed
 
 ### Anti-Hallucination Rules
 
-**CRITICAL - NEVER VIOLATE:**
-- **ALWAYS** read before write - verify checksum
-- **NEVER** assume task state - verify in file
-- **NEVER** have 2+ active tasks
-- **NEVER** modify archived tasks (immutable)
-- **NEVER** skip checksum update after changes
-- **ALWAYS** log changes to `.claude/todo-log.json`
+**CRITICAL - ALWAYS FOLLOW:**
+- **CLI only** - Never read/edit `.claude/*.json` files directly
+- **One active task** - Use `claude-todo focus set` (enforces single active)
+- **Verify state** - Use `claude-todo list` to confirm, don't assume
+- **Session discipline** - Start/end sessions properly
+- **Archive is immutable** - Never try to modify archived tasks
 
-**CHECKSUM PROTOCOL:**
+### Aliases (installed automatically)
+```bash
+ct          # claude-todo
+ct-add      # claude-todo add
+ct-list     # claude-todo list
+ct-done     # claude-todo complete
+ct-focus    # claude-todo focus
 ```
-1. Read .claude/todo.json
-2. Extract _meta.checksum
-3. Calculate SHA-256 of tasks array (truncate to 16 chars)
-4. If mismatch: STOP → Report "Checksum mismatch" → Await fix
-5. Only proceed if checksums match
-```
-
-**FOCUS ENFORCEMENT:**
-- `focus.currentTask` MUST equal the only task with `status="active"`
-- Before activating: verify NO other tasks are active
-- If mismatch detected: reconcile (prefer focus as truth)
-
-### Dependency Rules
-
-Before setting `status: "active"`:
-1. Check `depends[]` array
-2. ALL referenced tasks must have `status: "done"`
-3. If ANY dependency incomplete: **BLOCK** activation
-4. Circular dependencies: **ERROR** - show cycle path
-
-### Status Lifecycle
-```
-pending → active → done → (archived)
-           ↓
-        blocked → pending
-```
-
-**Valid transitions:**
-- `pending` → `active` (if deps met, no other active)
-- `pending` → `blocked`
-- `active` → `done`
-- `active` → `blocked`
-- `blocked` → `pending` (when resolved)
-
-**Invalid (ERROR):**
-- `done` → anything (immutable)
-- `pending` → `done` (must pass through active)
 
 ### Error Recovery
-
-| Error | Action |
-|-------|--------|
-| Checksum mismatch | Re-read file, DO NOT overwrite |
-| Multiple active | Run `validate.sh --fix` (from project root) |
-| Invalid focus | Reconcile to active task |
-| Missing blockedBy | Add reason or change status |
-| Orphaned deps | Remove invalid references |
-
-### Quick Commands
 ```bash
-validate.sh           # Validate .claude/todo.json
-validate.sh --fix     # Auto-fix simple issues
-archive.sh            # Run archive check
-archive.sh --dry-run  # Preview archive
-log.sh --action X     # Add log entry
+claude-todo validate --fix          # Fix issues
+claude-todo restore <backup>        # Restore from backup
+ls .claude/.backups/                # List backups
 ```
-
-### File Summary
-| File | Purpose | Modify? |
-|------|---------|---------|
-| `.claude/todo.json` | Active tasks | Yes |
-| `.claude/todo-archive.json` | Completed tasks | Append only |
-| `.claude/todo-config.json` | Settings | Rarely |
-| `.claude/todo-log.json` | Change history | Append only |
 <!-- CLAUDE-TODO:END -->

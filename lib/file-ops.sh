@@ -5,6 +5,21 @@
 
 set -euo pipefail
 
+# ============================================================================
+# LIBRARY DEPENDENCIES
+# ============================================================================
+
+_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source platform compatibility layer
+if [[ -f "$_LIB_DIR/platform-compat.sh" ]]; then
+    # shellcheck source=lib/platform-compat.sh
+    source "$_LIB_DIR/platform-compat.sh"
+else
+    echo "ERROR: Cannot find platform-compat.sh in $_LIB_DIR" >&2
+    exit 1
+fi
+
 # Configuration
 BACKUP_DIR=".claude/.backups"
 MAX_BACKUPS=10
@@ -142,8 +157,8 @@ rotate_backups() {
     # Calculate how many to delete
     local delete_count=$((backup_count - max_backups))
 
-    # Delete oldest backups (lowest numbers)
-    find "$backup_dir" -maxdepth 1 -name "$backup_pattern" -type f 2>/dev/null \
+    # Delete oldest backups (lowest numbers) - uses platform-compat safe_find
+    safe_find "$backup_dir" "$backup_pattern" \
         | sort -t. -k2 -n \
         | head -n "$delete_count" \
         | xargs rm -f 2>/dev/null || true
@@ -275,8 +290,8 @@ restore_backup() {
             return $E_FILE_NOT_FOUND
         fi
     else
-        # Find most recent backup (highest number)
-        backup_file=$(find "$backup_dir" -maxdepth 1 -name "${basename}.[0-9]*" -type f 2>/dev/null \
+        # Find most recent backup (highest number) - uses platform-compat safe_find
+        backup_file=$(safe_find "$backup_dir" "${basename}.[0-9]*" \
             | sort -t. -k2 -n \
             | tail -n 1)
 
@@ -403,16 +418,16 @@ list_backups() {
         return $E_SUCCESS
     fi
 
-    # Find and list backups with metadata
-    find "$backup_dir" -maxdepth 1 -name "${basename}.[0-9]*" -type f 2>/dev/null \
+    # Find and list backups with metadata - uses platform-compat functions
+    safe_find "$backup_dir" "${basename}.[0-9]*" \
         | sort -t. -k2 -n \
         | while read -r backup; do
             local mtime
-            mtime=$(stat -c %Y "$backup" 2>/dev/null || stat -f %m "$backup" 2>/dev/null)
+            mtime=$(get_file_mtime "$backup")
             local timestamp
-            timestamp=$(date -d "@$mtime" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date -r "$mtime" '+%Y-%m-%d %H:%M:%S' 2>/dev/null)
+            timestamp=$(date -d "@$mtime" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date -r "$mtime" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "unknown")
             local size
-            size=$(stat -c %s "$backup" 2>/dev/null || stat -f %z "$backup" 2>/dev/null)
+            size=$(get_file_size "$backup")
             printf "%s\t%s\t%s bytes\n" "$(basename "$backup")" "$timestamp" "$size"
         done
 

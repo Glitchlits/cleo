@@ -163,10 +163,13 @@ create_log_entry "$operation" "$id"  # Generate log entry
 {
   "id": "log_abc123def456",
   "timestamp": "2025-12-05T10:00:00Z",
+  "sessionId": "session_xyz789",
   "action": "status_changed",
+  "actor": "claude",
   "taskId": "T001",
   "before": {"status": "pending"},
-  "after": {"status": "active"}
+  "after": {"status": "active"},
+  "details": null
 }
 ```
 

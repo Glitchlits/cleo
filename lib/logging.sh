@@ -5,9 +5,24 @@
 set -euo pipefail
 
 # ============================================================================
+# LIBRARY DEPENDENCIES
+# ============================================================================
+
+_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source platform compatibility layer
+if [[ -f "$_LIB_DIR/platform-compat.sh" ]]; then
+    # shellcheck source=lib/platform-compat.sh
+    source "$_LIB_DIR/platform-compat.sh"
+else
+    echo "ERROR: Cannot find platform-compat.sh in $_LIB_DIR" >&2
+    exit 1
+fi
+
+# ============================================================================
 # VERSION
 # ============================================================================
-_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 _CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
 
 if [[ -f "$_CLAUDE_TODO_HOME/VERSION" ]]; then
@@ -23,28 +38,37 @@ fi
 # ============================================================================
 
 # Default log file location (relative to project .claude directory)
-readonly LOG_FILE="${CLAUDE_TODO_DIR:-.claude}/todo-log.json"
+# Only set if not already defined (prevent re-sourcing errors)
+if [[ -z "${LOG_FILE:-}" ]]; then
+    readonly LOG_FILE="${CLAUDE_TODO_DIR:-.claude}/todo-log.json"
+fi
 
 # Log entry ID format: log_<12-hex-chars>
-readonly LOG_ID_PATTERN="^log_[a-f0-9]{12}$"
+if [[ -z "${LOG_ID_PATTERN:-}" ]]; then
+    readonly LOG_ID_PATTERN="^log_[a-f0-9]{12}$"
+fi
 
 # Valid action types per schema
-readonly VALID_ACTIONS=(
-    "session_start"
-    "session_end"
-    "task_created"
-    "task_updated"
-    "status_changed"
-    "task_archived"
-    "focus_changed"
-    "config_changed"
-    "validation_run"
-    "checksum_updated"
-    "error_occurred"
-)
+if [[ -z "${VALID_ACTIONS:-}" ]]; then
+    readonly VALID_ACTIONS=(
+        "session_start"
+        "session_end"
+        "task_created"
+        "task_updated"
+        "status_changed"
+        "task_archived"
+        "focus_changed"
+        "config_changed"
+        "validation_run"
+        "checksum_updated"
+        "error_occurred"
+    )
+fi
 
 # Valid actor types
-readonly VALID_ACTORS=("human" "claude" "system")
+if [[ -z "${VALID_ACTORS:-}" ]]; then
+    readonly VALID_ACTORS=("human" "claude" "system")
+fi
 
 # ============================================================================
 # UTILITY FUNCTIONS
@@ -54,19 +78,15 @@ readonly VALID_ACTORS=("human" "claude" "system")
 # Format: log_<12-hex-chars>
 # Output: log ID string
 generate_log_id() {
-    local timestamp
     local random_hex
-
-    timestamp=$(date +%s)
-    random_hex=$(openssl rand -hex 6 2>/dev/null || head -c 6 /dev/urandom | xxd -p)
-
+    random_hex=$(generate_random_hex 6)
     echo "log_${random_hex}"
 }
 
 # Get ISO 8601 timestamp
-# Output: timestamp string in ISO format
+# Output: timestamp string in ISO format (uses platform-compat)
 get_timestamp() {
-    date -u +"%Y-%m-%dT%H:%M:%SZ"
+    get_iso_timestamp
 }
 
 # Validate action type
@@ -314,11 +334,10 @@ rotate_log() {
         return 1
     fi
 
-    # Calculate cutoff date (retention_days ago)
-    cutoff_timestamp=$(date -u -d "$retention_days days ago" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || \
-                       date -u -v-"${retention_days}d" +"%Y-%m-%dT%H:%M:%SZ")
+    # Calculate cutoff date (retention_days ago) - uses platform-compat
+    cutoff_timestamp=$(date_days_ago "$retention_days")
 
-    temp_file=$(mktemp)
+    temp_file=$(create_temp_file)
 
     # Filter entries and update metadata
     if jq \

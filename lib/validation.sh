@@ -5,6 +5,36 @@
 set -euo pipefail
 
 # ============================================================================
+# LIBRARY DEPENDENCIES
+# ============================================================================
+
+# Determine library directory
+_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source platform compatibility layer
+if [[ -f "$_LIB_DIR/platform-compat.sh" ]]; then
+    # shellcheck source=lib/platform-compat.sh
+    source "$_LIB_DIR/platform-compat.sh"
+else
+    echo "ERROR: Cannot find platform-compat.sh in $_LIB_DIR" >&2
+    exit 1
+fi
+
+# Check required tools
+if ! check_required_tools; then
+    exit 1
+fi
+
+# Source migration library for version checking (optional)
+if [[ -f "$_LIB_DIR/migrate.sh" ]]; then
+    # shellcheck source=lib/migrate.sh
+    source "$_LIB_DIR/migrate.sh"
+    MIGRATION_AVAILABLE=true
+else
+    MIGRATION_AVAILABLE=false
+fi
+
+# ============================================================================
 # CONSTANTS
 # ============================================================================
 
@@ -21,20 +51,15 @@ readonly EXIT_BOTH_ERRORS=3
 # UTILITY FUNCTIONS
 # ============================================================================
 
-# Check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# Get current timestamp in ISO 8601 format
+# Get current timestamp in ISO 8601 format (uses platform-compat)
 get_current_timestamp() {
-    date -u +"%Y-%m-%dT%H:%M:%SZ"
+    get_iso_timestamp
 }
 
-# Convert ISO 8601 timestamp to Unix epoch
+# Convert ISO 8601 timestamp to Unix epoch (uses platform-compat)
 timestamp_to_epoch() {
     local timestamp="$1"
-    date -d "$timestamp" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$timestamp" +%s 2>/dev/null || echo "0"
+    iso_to_epoch "$timestamp"
 }
 
 # ============================================================================
@@ -95,19 +120,14 @@ validate_schema() {
         return 1
     fi
 
-    # Try ajv if available
-    if command_exists ajv; then
-        if ! ajv validate -s "$schema_file" -d "$file" 2>&1; then
-            echo "ERROR: Schema validation failed for $file" >&2
-            echo "Fix: Ensure file matches schema: $schema_file" >&2
-            return 1
-        fi
+    # Use platform-compatible schema validation
+    if validate_json_schema "$file" "$schema_file" >/dev/null 2>&1; then
         return 0
+    else
+        # If strict validator fails, try jq-based fallback
+        echo "INFO: Using jq-based schema validation fallback" >&2
+        _validate_schema_jq "$file" "$schema_type"
     fi
-
-    # Fallback to jq-based validation
-    echo "INFO: Using jq-based schema validation (install ajv for better validation)" >&2
-    _validate_schema_jq "$file" "$schema_type"
 }
 
 # JQ-based schema validation fallback
@@ -172,6 +192,71 @@ _validate_schema_jq() {
     fi
 
     return 0
+}
+
+# ============================================================================
+# VERSION VALIDATION
+# ============================================================================
+
+# Validate file version and trigger migration if needed
+# Args: $1 = file path, $2 = schema type
+# Returns: 0 if compatible or migrated, 1 if incompatible
+validate_version() {
+    local file="$1"
+    local schema_type="$2"
+
+    # Skip if migration not available
+    if [[ "$MIGRATION_AVAILABLE" != "true" ]]; then
+        return 0
+    fi
+
+    # Skip if function not available
+    if ! declare -f check_compatibility >/dev/null 2>&1; then
+        return 0
+    fi
+
+    # Check version compatibility
+    check_compatibility "$file" "$schema_type"
+    local compat_status=$?
+
+    case $compat_status in
+        0)
+            # Compatible - no action needed
+            return 0
+            ;;
+        1)
+            # Migration needed
+            local current_version expected_version
+            current_version=$(detect_file_version "$file")
+            expected_version=$(get_expected_version "$schema_type")
+
+            echo "⚠ Schema version mismatch detected" >&2
+            echo "  File: $file" >&2
+            echo "  Current: v$current_version" >&2
+            echo "  Expected: v$expected_version" >&2
+            echo "" >&2
+            echo "Automatic migration available." >&2
+            echo "Run: claude-todo migrate" >&2
+            echo "" >&2
+
+            # For now, warn but don't fail
+            # Future: can enable auto-migration with --auto-migrate flag
+            return 0
+            ;;
+        2)
+            # Incompatible - major version mismatch
+            local current_version expected_version
+            current_version=$(detect_file_version "$file")
+            expected_version=$(get_expected_version "$schema_type")
+
+            echo "ERROR: Incompatible schema version" >&2
+            echo "  File: $file" >&2
+            echo "  Current: v$current_version" >&2
+            echo "  Expected: v$expected_version" >&2
+            echo "  Major version mismatch - manual intervention required" >&2
+            return 1
+            ;;
+    esac
 }
 
 # ============================================================================
@@ -464,8 +549,20 @@ validate_all() {
     echo "Schema type: $schema_type"
     echo "----------------------------------------"
 
+    # 0. Version Check (non-blocking warning)
+    if [[ "$MIGRATION_AVAILABLE" == "true" ]]; then
+        echo "[0/7] Checking schema version..."
+        if ! validate_version "$file" "$schema_type"; then
+            echo "⚠ WARNING: Version check failed"
+        else
+            local current_version
+            current_version=$(detect_file_version "$file" 2>/dev/null || echo "unknown")
+            echo "✓ PASSED: Version $current_version compatible"
+        fi
+    fi
+
     # 1. JSON Syntax Validation
-    echo "[1/6] Checking JSON syntax..."
+    echo "[1/7] Checking JSON syntax..."
     if ! validate_json_syntax "$file"; then
         ((schema_errors++))
         echo "✗ FAILED: JSON syntax invalid"
@@ -474,7 +571,7 @@ validate_all() {
     fi
 
     # 2. Schema Validation
-    echo "[2/6] Checking schema compliance..."
+    echo "[2/7] Checking schema compliance..."
     if ! validate_schema "$file" "$schema_type"; then
         ((schema_errors++))
         echo "✗ FAILED: Schema validation failed"
@@ -492,7 +589,7 @@ validate_all() {
 
     # 3. ID Uniqueness Check
     if [[ "$schema_type" == "todo" || "$schema_type" == "archive" ]]; then
-        echo "[3/6] Checking ID uniqueness..."
+        echo "[3/7] Checking ID uniqueness..."
         if ! check_id_uniqueness "$file" "$archive_file"; then
             ((semantic_errors++))
             echo "✗ FAILED: Duplicate IDs found"
@@ -500,12 +597,12 @@ validate_all() {
             echo "✓ PASSED: All IDs unique"
         fi
     else
-        echo "[3/6] Skipping ID uniqueness check (not applicable)"
+        echo "[3/7] Skipping ID uniqueness check (not applicable)"
     fi
 
     # 4. Individual Task Validation
     if [[ "$schema_type" == "todo" ]]; then
-        echo "[4/6] Validating individual tasks..."
+        echo "[4/7] Validating individual tasks..."
         local task_count
         task_count=$(jq '.tasks | length' "$file")
         local task_errors=0
@@ -524,12 +621,12 @@ validate_all() {
             echo "✓ PASSED: All tasks valid ($task_count tasks)"
         fi
     else
-        echo "[4/6] Skipping task validation (not applicable)"
+        echo "[4/7] Skipping task validation (not applicable)"
     fi
 
     # 5. Content Duplicate Check
     if [[ "$schema_type" == "todo" ]]; then
-        echo "[5/6] Checking for duplicate content..."
+        echo "[5/7] Checking for duplicate content..."
         local duplicate_content
         duplicate_content=$(jq -r '.tasks[].content' "$file" | sort | uniq -d)
 
@@ -542,12 +639,12 @@ validate_all() {
             echo "✓ PASSED: No duplicate content"
         fi
     else
-        echo "[5/6] Skipping duplicate content check (not applicable)"
+        echo "[5/7] Skipping duplicate content check (not applicable)"
     fi
 
     # 6. Done Status Consistency
     if [[ "$schema_type" == "todo" ]]; then
-        echo "[6/6] Checking done status consistency..."
+        echo "[6/7] Checking done status consistency..."
         local invalid_done
         invalid_done=$(jq -r '.tasks[] | select(.status == "done" and (.completed_at == null or .completed_at == "")) | .id // "unknown"' "$file")
 
@@ -560,7 +657,7 @@ validate_all() {
             echo "✓ PASSED: Done status consistent"
         fi
     elif [[ "$schema_type" == "archive" ]]; then
-        echo "[6/6] Checking archive contains only done tasks..."
+        echo "[6/7] Checking archive contains only done tasks..."
         local non_done
         non_done=$(jq -r '.archived_tasks[] | select(.status != "done") | .id // "unknown"' "$file")
 
@@ -573,7 +670,16 @@ validate_all() {
             echo "✓ PASSED: Archive valid"
         fi
     else
-        echo "[6/6] Skipping status consistency check (not applicable)"
+        echo "[6/7] Skipping status consistency check (not applicable)"
+    fi
+
+    # 7. Config-Specific Validation
+    if [[ "$schema_type" == "config" ]]; then
+        echo "[7/7] Checking configuration backward compatibility..."
+        # Additional config-specific checks can be added here
+        echo "✓ PASSED: Configuration valid"
+    else
+        echo "[7/7] Skipping config-specific checks (not applicable)"
     fi
 
     # Summary

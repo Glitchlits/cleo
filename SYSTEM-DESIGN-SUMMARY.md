@@ -135,14 +135,14 @@ The system implements multiple layers of protection against AI-generated errors:
 ### Layer 1: JSON Schema Enforcement
 - **Structure Validation**: Ensures all required fields present
 - **Type Checking**: Validates data types (string, number, boolean)
-- **Enum Constraints**: Status must be: `pending | in_progress | completed`
+- **Enum Constraints**: Status must be: `pending | active | blocked | done`
 - **Format Validation**: ISO 8601 timestamps, proper ID format
 
 ### Layer 2: Semantic Validation
 - **ID Uniqueness**: No duplicate IDs within or across files
-- **Timestamp Sanity**: created_at not in future, completed_at after created_at
-- **Content Pairing**: Every task must have both `content` AND `activeForm` (different values)
-- **Duplicate Detection**: Warning on identical or highly similar task descriptions
+- **Timestamp Sanity**: createdAt not in future, completedAt after createdAt
+- **Field Requirements**: Every task must have both `title` AND `description` (different values)
+- **Duplicate Detection**: Warning on identical or highly similar task titles
 - **Status Transitions**: Only valid state transitions allowed
 
 ### Layer 3: Cross-File Integrity
@@ -238,7 +238,7 @@ All write operations follow this pattern to prevent corruption:
 ### Per-Project Initialization
 
 ```bash
-~/.claude-todo/scripts/init.sh
+claude-todo init
 ```
 
 **What it does**:
@@ -321,10 +321,10 @@ After new operation:
 ls -lh .claude/.backups/
 
 # Validate specific backup
-~/.claude-todo/scripts/validate.sh .claude/.backups/todo.json.3
+claude-todo validate .claude/.backups/todo.json.3
 
 # Restore from backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.3
+claude-todo restore .claude/.backups/todo.json.3
 ```
 
 ## Change Log System
@@ -387,10 +387,10 @@ The `stats.sh` script analyzes all data sources to provide:
 ### Core Operations
 | Script | Purpose | Usage |
 |--------|---------|-------|
-| `init.sh` | Initialize project | `~/.claude-todo/scripts/init.sh` |
+| `init.sh` | Initialize project | `claude-todo init` |
 | `add-task.sh` | Create new task | `add-task.sh "Task description"` |
 | `complete-task.sh` | Mark task done | `complete-task.sh <task-id>` |
-| `archive.sh` | Archive completed | `archive.sh [--force] [--days N]` |
+| `archive.sh` | Archive completed | `archive.sh [--dry-run] [--force] [--all] [--count N]` |
 
 ### Query Operations
 | Script | Purpose | Usage |
@@ -588,31 +588,31 @@ cd claude-todo
 
 # 3. Initialize project
 cd /path/to/your/project
-~/.claude-todo/scripts/init.sh
+claude-todo init
 ```
 
 ### Basic Usage
 ```bash
 # Add task
-~/.claude-todo/scripts/add-task.sh "Implement authentication"
+claude-todo add "Implement authentication"
 
 # List tasks
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo list
 
 # Complete task
-~/.claude-todo/scripts/complete-task.sh task-1733395200-abc123
+claude-todo complete task-1733395200-abc123
 
 # Show statistics
-~/.claude-todo/scripts/stats.sh
+claude-todo stats
 ```
 
 ### Recommended Aliases
 ```bash
 # Add to ~/.bashrc or ~/.zshrc
-alias ct-add='~/.claude-todo/scripts/add-task.sh'
-alias ct-list='~/.claude-todo/scripts/list-tasks.sh'
-alias ct-complete='~/.claude-todo/scripts/complete-task.sh'
-alias ct-stats='~/.claude-todo/scripts/stats.sh'
+alias ct-add='claude-todo add'
+alias ct-list='claude-todo list'
+alias ct-complete='claude-todo complete'
+alias ct-stats='claude-todo stats'
 ```
 
 ## Documentation References

@@ -224,8 +224,8 @@ your-project/
 │   1. ID uniqueness           │
 │   2. Status enum validity    │
 │   3. Timestamp sanity        │
-│   4. Content/activeForm pair │
-│   5. No duplicate content    │
+│   4. Title/description pair  │
+│   5. No duplicate titles     │
 └────────┬─────────────────────┘
          │
          ├─── Semantic Invalid ──► Error + Details
@@ -273,7 +273,7 @@ your-project/
 cd /path/to/project
 
 # 2. Run init script
-~/.claude-todo/scripts/init.sh
+claude-todo init
 
 # 3. Init script performs:
 #    a. Check for .claude/ directory
@@ -319,9 +319,9 @@ echo ".claude/.backups/" >> .gitignore
 
 ```bash
 # Command
-~/.claude-todo/scripts/add-task.sh "Implement authentication" \
+claude-todo add "Implement authentication" \
   --status pending \
-  --activeForm "Implementing authentication"
+  --description "Add JWT-based authentication with email/password login"
 
 # Workflow
 1. Load todo-config.json for settings
@@ -336,9 +336,9 @@ echo ".claude/.backups/" >> .gitignore
 10. Display success with task ID
 
 # Anti-Hallucination Checks
-- content and activeForm must both be present
-- status must be: pending | in_progress | completed
-- No duplicate task content
+- title and description must both be present
+- status must be: pending | active | blocked | done
+- No duplicate task titles
 - ID must be unique
 - Timestamps must be reasonable (not future)
 ```
@@ -347,7 +347,7 @@ echo ".claude/.backups/" >> .gitignore
 
 ```bash
 # Command
-~/.claude-todo/scripts/complete-task.sh <task-id>
+claude-todo complete <task-id>
 
 # Workflow
 1. Load todo-config.json
@@ -373,7 +373,7 @@ echo ".claude/.backups/" >> .gitignore
 
 ```bash
 # Command
-~/.claude-todo/scripts/archive.sh [--force] [--days N]
+claude-todo archive [--dry-run] [--force] [--all] [--count N]
 
 # Workflow
 1. Load todo-config.json
@@ -405,7 +405,7 @@ echo ".claude/.backups/" >> .gitignore
 
 ```bash
 # Command
-~/.claude-todo/scripts/validate.sh [--fix]
+claude-todo validate [--fix]
 
 # Workflow
 1. Find all todo-related JSON files
@@ -437,7 +437,7 @@ echo ".claude/.backups/" >> .gitignore
 
 ```bash
 # Command
-~/.claude-todo/scripts/list-tasks.sh [--status STATUS] [--format FORMAT]
+claude-todo list [--status STATUS] [--format FORMAT]
 
 # Workflow
 1. Load todo-config.json
@@ -463,7 +463,7 @@ echo ".claude/.backups/" >> .gitignore
 
 ```bash
 # Command
-~/.claude-todo/scripts/stats.sh [--period DAYS]
+claude-todo stats [--period DAYS]
 
 # Workflow
 1. Load all todo files (current + archive + log)
@@ -499,7 +499,7 @@ echo ".claude/.backups/" >> .gitignore
 
 ```bash
 # Backup Command
-~/.claude-todo/scripts/backup.sh [--destination DIR]
+claude-todo backup [--destination DIR]
 
 # Workflow
 1. Create timestamped backup directory
@@ -508,7 +508,7 @@ echo ".claude/.backups/" >> .gitignore
 4. Display backup location
 
 # Restore Command
-~/.claude-todo/scripts/restore.sh <backup-dir>
+claude-todo restore <backup-dir>
 
 # Workflow
 1. Validate backup directory
@@ -597,10 +597,10 @@ echo ".claude/.backups/" >> .gitignore
 - created_at must not be in future
 - completed_at must be after created_at
 
-# Content Pairing Check
-- Every task must have "content" AND "activeForm"
+# Title/Description Check
+- Every task must have "title" AND "description"
 - Neither can be empty string
-- Must be different strings
+- Must be different strings (anti-hallucination)
 
 # Duplicate Content Detection
 - Check for identical task descriptions
@@ -733,8 +733,8 @@ echo ".claude/.backups/" >> .gitignore
 ```
 Error: Invalid JSON Schema
 File: .claude/todo.json
-Issue: Missing required field "activeForm" in task ID: task-123
-Fix: Add activeForm field to task
+Issue: Missing required field "description" in task ID: T016
+Fix: Add description field to task
 ```
 
 **2. Anti-Hallucination Errors**
@@ -778,10 +778,10 @@ Fix: Must be positive integer
 ls -la .claude/.backups/
 
 # Validate backup
-~/.claude-todo/scripts/validate.sh .claude/.backups/todo.json.1
+claude-todo validate .claude/.backups/todo.json.1
 
 # Restore specific backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+claude-todo restore .claude/.backups/todo.json.1
 ```
 
 **Corruption Detection**:
@@ -938,7 +938,7 @@ tests/fixtures/
 ### Health Checks
 ```bash
 # Run periodic health check
-~/.claude-todo/scripts/health-check.sh
+claude-todo health-check
 
 # Checks:
 - File integrity
