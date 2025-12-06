@@ -43,7 +43,7 @@ OUTPUT_FORMAT="text"
 CLAUDE_DIR=".claude"
 TODO_FILE="${CLAUDE_DIR}/todo.json"
 ARCHIVE_FILE="${CLAUDE_DIR}/todo-archive.json"
-LOG_FILE="${CLAUDE_DIR}/todo-log.json"
+STATS_LOG_FILE="${CLAUDE_DIR}/todo-log.json"
 CONFIG_FILE="${CLAUDE_DIR}/todo-config.json"
 
 #####################################################################
@@ -130,42 +130,42 @@ count_archived_tasks() {
 # Get tasks created in period
 count_created_in_period() {
     local cutoff_date="$1"
-    if [[ ! -f "$LOG_FILE" ]]; then
+    if [[ ! -f "$STATS_LOG_FILE" ]]; then
         echo "0"
         return
     fi
     jq -r --arg cutoff "$cutoff_date" \
         '[.entries[] | select(.operation == "create" and .timestamp >= $cutoff)] | length' \
-        "$LOG_FILE" 2>/dev/null || echo "0"
+        "$STATS_LOG_FILE" 2>/dev/null || echo "0"
 }
 
 # Get tasks completed in period
 count_completed_in_period() {
     local cutoff_date="$1"
-    if [[ ! -f "$LOG_FILE" ]]; then
+    if [[ ! -f "$STATS_LOG_FILE" ]]; then
         echo "0"
         return
     fi
     jq -r --arg cutoff "$cutoff_date" \
         '[.entries[] | select(.operation == "complete" and .timestamp >= $cutoff)] | length' \
-        "$LOG_FILE" 2>/dev/null || echo "0"
+        "$STATS_LOG_FILE" 2>/dev/null || echo "0"
 }
 
 # Get tasks archived in period
 count_archived_in_period() {
     local cutoff_date="$1"
-    if [[ ! -f "$LOG_FILE" ]]; then
+    if [[ ! -f "$STATS_LOG_FILE" ]]; then
         echo "0"
         return
     fi
     jq -r --arg cutoff "$cutoff_date" \
         '[.entries[] | select(.operation == "archive" and .timestamp >= $cutoff)] | length' \
-        "$LOG_FILE" 2>/dev/null || echo "0"
+        "$STATS_LOG_FILE" 2>/dev/null || echo "0"
 }
 
 # Calculate average completion time in hours
 calculate_avg_completion_time() {
-    if [[ ! -f "$LOG_FILE" ]]; then
+    if [[ ! -f "$STATS_LOG_FILE" ]]; then
         echo "0"
         return
     fi
@@ -177,7 +177,7 @@ calculate_avg_completion_time() {
          select(.operation == "complete") |
          {task_id: .task_id, completed_at: .timestamp}] |
         unique_by(.task_id)
-    ' "$LOG_FILE" 2>/dev/null || echo "[]")
+    ' "$STATS_LOG_FILE" 2>/dev/null || echo "[]")
 
     # Get creation times for those tasks
     local total_seconds=0
@@ -191,7 +191,7 @@ calculate_avg_completion_time() {
         local created_at
         created_at=$(jq -r --arg tid "$task_id" \
             '.entries[] | select(.operation == "create" and .task_id == $tid) | .timestamp' \
-            "$LOG_FILE" 2>/dev/null | head -1)
+            "$STATS_LOG_FILE" 2>/dev/null | head -1)
 
         local completed_at
         completed_at=$(echo "$completion_times" | jq -r --arg tid "$task_id" \
@@ -222,7 +222,7 @@ calculate_avg_completion_time() {
 
 # Get busiest day of week
 get_busiest_day() {
-    if [[ ! -f "$LOG_FILE" ]]; then
+    if [[ ! -f "$STATS_LOG_FILE" ]]; then
         echo "N/A"
         return
     fi
@@ -230,7 +230,7 @@ get_busiest_day() {
     # Count operations by day of week
     jq -r '.entries[] |
            .timestamp |
-           split("T")[0]' "$LOG_FILE" 2>/dev/null | \
+           split("T")[0]' "$STATS_LOG_FILE" 2>/dev/null | \
     xargs -I {} date -d {} +%A 2>/dev/null | \
     sort | uniq -c | sort -rn | head -1 | awk '{print $2}' || echo "N/A"
 }
@@ -353,9 +353,9 @@ generate_statistics() {
 
     # All-Time Statistics
     local total_created
-    total_created=$(jq -r '[.entries[] | select(.operation == "create")] | length' "$LOG_FILE" 2>/dev/null || echo "0")
+    total_created=$(jq -r '[.entries[] | select(.operation == "create")] | length' "$STATS_LOG_FILE" 2>/dev/null || echo "0")
     local total_completed
-    total_completed=$(jq -r '[.entries[] | select(.operation == "complete")] | length' "$LOG_FILE" 2>/dev/null || echo "0")
+    total_completed=$(jq -r '[.entries[] | select(.operation == "complete")] | length' "$STATS_LOG_FILE" 2>/dev/null || echo "0")
 
     # Build JSON output
     cat <<EOF
