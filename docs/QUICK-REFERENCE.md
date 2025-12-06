@@ -28,19 +28,25 @@
 ```bash
 # SETUP
 ./install.sh                          # Install globally
-~/.claude-todo/scripts/init.sh        # Initialize project
+claude-todo init                      # Initialize project
 
 # TASKS
-add-task.sh "Task description"        # Create task
-complete-task.sh <task-id>            # Complete task
-list-tasks.sh                         # List all tasks
-list-tasks.sh --status pending        # Filter by status
+claude-todo add "Task description"    # Create task
+claude-todo complete <task-id>        # Complete task
+claude-todo list                      # List all tasks
+claude-todo list --status pending     # Filter by status
+
+# EXPORT (TodoWrite Integration)
+claude-todo export --format todowrite # Export for Claude Code
+claude-todo export --format markdown  # Export as checklist
+claude-todo export --format json      # Export raw JSON
 
 # MAINTENANCE
-archive.sh                            # Archive completed tasks
-validate.sh                           # Validate all files
-backup.sh                             # Manual backup
-stats.sh                              # Show statistics
+claude-todo archive                   # Archive completed tasks
+claude-todo validate                  # Validate all files
+claude-todo backup                    # Manual backup
+claude-todo stats                     # Show statistics
+claude-todo help                      # Show all commands
 ```
 
 ## Data Flow Patterns
@@ -76,7 +82,7 @@ JSON → Schema Check → Anti-Hallucination → Cross-File → ✅ Valid
 
 | Check | Purpose | Example Error |
 |-------|---------|---------------|
-| **ID Uniqueness** | No duplicate IDs | "Duplicate ID: task-123" |
+| **ID Uniqueness** | No duplicate IDs | "Duplicate ID: T001" |
 | **Status Enum** | Valid status only | "Invalid status: 'completed'" |
 | **Timestamp Sanity** | Not in future | "created_at in future" |
 | **Content Pairing** | Both title & description | "Missing description" |
@@ -142,10 +148,10 @@ create_log_entry "$operation" "$id"  # Generate log entry
 
 ```json
 {
-  "id": "task-1733395200-abc123",
+  "id": "T001",
   "status": "pending|active|blocked|done",
-  "title": "Task description (imperative)",
-  "description": "Task description (continuous)",
+  "title": "Fix navigation bug",
+  "description": "Navigation links not working on mobile viewports",
   "createdAt": "2025-12-05T10:00:00Z",
   "completedAt": "2025-12-05T10:30:00Z"
 }
@@ -155,12 +161,12 @@ create_log_entry "$operation" "$id"  # Generate log entry
 
 ```json
 {
-  "id": "log-1733395200-xyz789",
+  "id": "log_abc123def456",
   "timestamp": "2025-12-05T10:00:00Z",
-  "operation": "create|update|complete|archive",
-  "task_id": "task-1733395200-abc123",
+  "action": "status_changed",
+  "taskId": "T001",
   "before": {"status": "pending"},
-  "after": {"status": "in_progress"}
+  "after": {"status": "active"}
 }
 ```
 
@@ -269,7 +275,7 @@ jq -e . .claude/todo.json && echo "Valid JSON"
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| "Duplicate ID: task-123" | Same ID exists | Regenerate ID |
+| "Duplicate ID: T001" | Same ID exists | Regenerate ID |
 | "Missing description" | Task incomplete | Add description field |
 | "Invalid status: 'completed'" | Wrong enum value | Use: pending, active, blocked, or done |
 | "Timestamp in future" | Clock skew | Check system time |
@@ -278,14 +284,14 @@ jq -e . .claude/todo.json && echo "Valid JSON"
 ## Recommended Aliases
 
 ```bash
-# Add to ~/.bashrc or ~/.zshrc
-alias ct-add='~/.claude-todo/scripts/add-task.sh'
-alias ct-complete='~/.claude-todo/scripts/complete-task.sh'
-alias ct-list='~/.claude-todo/scripts/list-tasks.sh'
-alias ct-archive='~/.claude-todo/scripts/archive.sh'
-alias ct-stats='~/.claude-todo/scripts/stats.sh'
-alias ct-validate='~/.claude-todo/scripts/validate.sh'
-alias ct-backup='~/.claude-todo/scripts/backup.sh'
+# Add to ~/.bashrc or ~/.zshrc (optional - claude-todo is already short)
+alias ct='claude-todo'
+alias ct-add='claude-todo add'
+alias ct-list='claude-todo list'
+alias ct-complete='claude-todo complete'
+alias ct-archive='claude-todo archive'
+alias ct-stats='claude-todo stats'
+alias ct-validate='claude-todo validate'
 ```
 
 ## Directory Permissions
@@ -361,15 +367,18 @@ Checks:
 
 ```bash
 # 1. Validate files
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 
-# 2. Check backups
+# 2. Try auto-fix
+claude-todo validate --fix
+
+# 3. Check backups
 ls -lh .claude/.backups/
 
-# 3. Restore if needed
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+# 4. Restore if needed
+claude-todo restore .claude/.backups/todo.json.1
 
-# 4. Check logs
+# 5. Check logs
 jq '.entries[-10:]' .claude/todo-log.json
 ```
 
@@ -378,13 +387,13 @@ jq '.entries[-10:]' .claude/todo-log.json
 - [ ] Clone repository
 - [ ] Run `./install.sh`
 - [ ] Verify `~/.claude-todo/` created
-- [ ] Add to PATH (optional)
+- [ ] Source shell config or restart terminal
 - [ ] Navigate to project
-- [ ] Run `init.sh`
+- [ ] Run `claude-todo init`
 - [ ] Verify `.claude/` created
 - [ ] Check `.gitignore` updated
-- [ ] Run `validate.sh` to confirm
-- [ ] Add first task to test
+- [ ] Run `claude-todo validate` to confirm
+- [ ] Run `claude-todo add "Test task"` to test
 
 ## Quick Troubleshooting
 
@@ -392,7 +401,7 @@ jq '.entries[-10:]' .claude/todo-log.json
 **Solution**: `chmod 755 ~/.claude-todo/scripts/*.sh`
 
 **Problem**: "Invalid JSON"
-**Solution**: `validate.sh --fix` or restore backup
+**Solution**: `claude-todo validate --fix` or restore backup
 
 **Problem**: "Duplicate ID"
 **Solution**: Edit JSON manually or restore backup

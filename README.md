@@ -50,6 +50,9 @@ claude-todo list
 # Complete a task
 claude-todo complete T001
 
+# Export to TodoWrite format (for Claude Code integration)
+claude-todo export --format todowrite
+
 # Show statistics
 claude-todo stats
 
@@ -209,6 +212,7 @@ Defaults → Global → Project → Environment → CLI Flags
 ### Query Operations
 - `list-tasks.sh` - Display tasks with filtering
 - `stats.sh` - Generate statistics and reports
+- `export.sh` - Export to TodoWrite/JSON/Markdown format
 
 ### Maintenance Operations
 - `validate.sh` - Validate all JSON files

@@ -30,10 +30,10 @@ Complete guide to using the claude-todo task management system.
 cd /path/to/your/project
 
 # 3. Initialize todo system
-~/.claude-todo/scripts/init.sh
+claude-todo init
 
 # 4. Create your first task
-~/.claude-todo/scripts/add-task.sh "Implement user authentication" \
+claude-todo add "Implement user authentication" \
   --status pending \
   --priority high \
   --description "Add JWT-based authentication with email/password login"
@@ -43,13 +43,13 @@ cd /path/to/your/project
 
 ```bash
 # List current tasks
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo list
 
 # Mark task complete
-~/.claude-todo/scripts/complete-task.sh <task-id>
+claude-todo complete <task-id>
 
 # View statistics
-~/.claude-todo/scripts/stats.sh
+claude-todo stats
 ```
 
 ---
@@ -62,15 +62,15 @@ cd /path/to/your/project
 
 ```bash
 # Minimal task (title only)
-~/.claude-todo/scripts/add-task.sh "Fix login bug"
+claude-todo add "Fix login bug"
 
 # Task with status and priority
-~/.claude-todo/scripts/add-task.sh "Add user dashboard" \
+claude-todo add "Add user dashboard" \
   --status pending \
   --priority high
 
 # Complete task with all fields
-~/.claude-todo/scripts/add-task.sh "Implement payment processing" \
+claude-todo add "Implement payment processing" \
   --status pending \
   --priority critical \
   --description "Integrate Stripe API for subscription payments" \
@@ -100,48 +100,48 @@ cd /path/to/your/project
 
 ```bash
 # List all active tasks (default)
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo list
 
 # List tasks with specific status
-~/.claude-todo/scripts/list-tasks.sh --status pending
-~/.claude-todo/scripts/list-tasks.sh --status active
-~/.claude-todo/scripts/list-tasks.sh --status blocked
-~/.claude-todo/scripts/list-tasks.sh --status done
+claude-todo list --status pending
+claude-todo list --status active
+claude-todo list --status blocked
+claude-todo list --status done
 
 # List all tasks including archived
-~/.claude-todo/scripts/list-tasks.sh --all
+claude-todo list --all
 ```
 
 #### Output Formats
 
 ```bash
 # Human-readable terminal output (default)
-~/.claude-todo/scripts/list-tasks.sh --format text
+claude-todo list --format text
 
 # JSON output for scripting
-~/.claude-todo/scripts/list-tasks.sh --format json
+claude-todo list --format json
 
 # Markdown format for documentation
-~/.claude-todo/scripts/list-tasks.sh --format markdown
+claude-todo list --format markdown
 
 # ASCII table format
-~/.claude-todo/scripts/list-tasks.sh --format table
+claude-todo list --format table
 ```
 
 #### Filtering Options
 
 ```bash
 # Filter by priority
-~/.claude-todo/scripts/list-tasks.sh --priority high
+claude-todo list --priority high
 
 # Filter by label
-~/.claude-todo/scripts/list-tasks.sh --label backend
+claude-todo list --label backend
 
 # Tasks created after specific date
-~/.claude-todo/scripts/list-tasks.sh --since 2025-12-01
+claude-todo list --since 2025-12-01
 
 # Limit number of results
-~/.claude-todo/scripts/list-tasks.sh --limit 10
+claude-todo list --limit 10
 ```
 
 ### 3. Completing Tasks
@@ -150,14 +150,14 @@ cd /path/to/your/project
 
 ```bash
 # Complete a task by ID
-~/.claude-todo/scripts/complete-task.sh task-1733395200-xyz789
+claude-todo complete T001
 
 # Complete with completion notes
-~/.claude-todo/scripts/complete-task.sh task-1733395200-xyz789 \
+claude-todo complete T001 \
   --notes "Implemented JWT tokens with refresh mechanism"
 
 # Complete and auto-archive immediately
-~/.claude-todo/scripts/complete-task.sh task-1733395200-xyz789 --archive
+claude-todo complete T001 --archive
 ```
 
 #### What Happens on Completion
@@ -174,16 +174,16 @@ cd /path/to/your/project
 
 ```bash
 # Archive completed tasks older than configured days
-~/.claude-todo/scripts/archive.sh
+claude-todo archive
 
 # Force archive all completed tasks regardless of age
-~/.claude-todo/scripts/archive.sh --force
+claude-todo archive --force
 
 # Archive completed tasks older than specific days
-~/.claude-todo/scripts/archive.sh --days 14
+claude-todo archive --days 14
 
 # Archive with verbose output
-~/.claude-todo/scripts/archive.sh --verbose
+claude-todo archive --verbose
 ```
 
 #### Automatic Archive
@@ -272,7 +272,7 @@ When enabled, tasks are automatically archived after completion when they exceed
 Initialize todo system in a project.
 
 ```bash
-~/.claude-todo/scripts/init.sh [OPTIONS]
+claude-todo init [OPTIONS]
 ```
 
 **Options**:
@@ -282,13 +282,13 @@ Initialize todo system in a project.
 **Examples**:
 ```bash
 # Standard initialization
-~/.claude-todo/scripts/init.sh
+claude-todo init
 
 # Force re-initialization
-~/.claude-todo/scripts/init.sh --force
+claude-todo init --force
 
 # Initialize with custom template
-~/.claude-todo/scripts/init.sh --template ~/my-todo-template.json
+claude-todo init --template ~/my-todo-template.json
 ```
 
 **Output**:
@@ -305,7 +305,7 @@ Initialize todo system in a project.
 Create a new task with validation.
 
 ```bash
-~/.claude-todo/scripts/add-task.sh "TASK_TITLE" [OPTIONS]
+claude-todo add "TASK_TITLE" [OPTIONS]
 ```
 
 **Required Arguments**:
@@ -325,13 +325,13 @@ Create a new task with validation.
 **Examples**:
 ```bash
 # Simple task
-~/.claude-todo/scripts/add-task.sh "Fix navigation bug"
+claude-todo add "Fix navigation bug"
 
 # Task with priority
-~/.claude-todo/scripts/add-task.sh "Security audit" --priority critical
+claude-todo add "Security audit" --priority critical
 
 # Complex task with all fields
-~/.claude-todo/scripts/add-task.sh "Implement user authentication" \
+claude-todo add "Implement user authentication" \
   --status pending \
   --priority high \
   --description "Add JWT-based auth with email/password" \
@@ -341,13 +341,13 @@ Create a new task with validation.
   --notes "Reference: https://jwt.io/introduction"
 
 # Dependent task
-~/.claude-todo/scripts/add-task.sh "Add logout endpoint" \
-  --depends task-1733395200-xyz789 \
+claude-todo add "Add logout endpoint" \
+  --depends T001 \
   --description "Implement logout with token invalidation"
 
 # Blocked task
-~/.claude-todo/scripts/add-task.sh "Deploy to production" \
-  --blocked-by task-1733395200-abc123 \
+claude-todo add "Deploy to production" \
+  --blocked-by T002 \
   --status blocked \
   --notes "Blocked until security review completes"
 ```
@@ -366,7 +366,7 @@ Create a new task with validation.
 Display current tasks with filtering.
 
 ```bash
-~/.claude-todo/scripts/list-tasks.sh [OPTIONS]
+claude-todo list [OPTIONS]
 ```
 
 **Options**:
@@ -383,34 +383,34 @@ Display current tasks with filtering.
 **Examples**:
 ```bash
 # All active tasks (default)
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo list
 
 # Only pending tasks
-~/.claude-todo/scripts/list-tasks.sh --status pending
+claude-todo list --status pending
 
 # High priority tasks
-~/.claude-todo/scripts/list-tasks.sh --priority high
+claude-todo list --priority high
 
 # Backend tasks only
-~/.claude-todo/scripts/list-tasks.sh --label backend
+claude-todo list --label backend
 
 # Recent tasks (last 7 days)
-~/.claude-todo/scripts/list-tasks.sh --since 2025-11-28
+claude-todo list --since 2025-11-28
 
 # Top 5 tasks
-~/.claude-todo/scripts/list-tasks.sh --limit 5
+claude-todo list --limit 5
 
 # JSON output for scripting
-~/.claude-todo/scripts/list-tasks.sh --format json
+claude-todo list --format json
 
 # Markdown checklist
-~/.claude-todo/scripts/list-tasks.sh --format markdown
+claude-todo list --format markdown
 
 # All tasks including archived
-~/.claude-todo/scripts/list-tasks.sh --all
+claude-todo list --all
 
 # Sort by priority, highest first
-~/.claude-todo/scripts/list-tasks.sh --sort priority --reverse
+claude-todo list --sort priority --reverse
 ```
 
 **Output Formats**:
@@ -420,12 +420,12 @@ Display current tasks with filtering.
 📋 Active Tasks (3)
 
 [pending] Fix navigation bug
-  ID: task-1733395200-abc123
+  ID: T001
   Priority: medium
   Created: 2025-12-05T10:00:00Z
 
 [active] Implement authentication
-  ID: task-1733395200-xyz789
+  ID: T002
   Priority: high
   Files: src/auth/jwt.ts, src/middleware/auth.ts
   Created: 2025-12-05T09:30:00Z
@@ -436,7 +436,7 @@ Display current tasks with filtering.
 {
   "tasks": [
     {
-      "id": "task-1733395200-xyz789",
+      "id": "T002",
       "title": "Implement authentication",
       "status": "active",
       "priority": "high",
@@ -464,7 +464,7 @@ Display current tasks with filtering.
 Mark a task as complete.
 
 ```bash
-~/.claude-todo/scripts/complete-task.sh <TASK_ID> [OPTIONS]
+claude-todo complete <TASK_ID> [OPTIONS]
 ```
 
 **Required Arguments**:
@@ -478,14 +478,14 @@ Mark a task as complete.
 **Examples**:
 ```bash
 # Simple completion
-~/.claude-todo/scripts/complete-task.sh task-1733395200-xyz789
+claude-todo complete T003
 
 # Complete with notes
-~/.claude-todo/scripts/complete-task.sh task-1733395200-xyz789 \
+claude-todo complete T003 \
   --notes "Implemented JWT tokens with 7-day refresh"
 
 # Complete and archive immediately
-~/.claude-todo/scripts/complete-task.sh task-1733395200-xyz789 --archive
+claude-todo complete T003 --archive
 ```
 
 **Validation**:
@@ -507,7 +507,7 @@ Mark a task as complete.
 Archive completed tasks.
 
 ```bash
-~/.claude-todo/scripts/archive.sh [OPTIONS]
+claude-todo archive [OPTIONS]
 ```
 
 **Options**:
@@ -519,19 +519,19 @@ Archive completed tasks.
 **Examples**:
 ```bash
 # Archive based on config (default: 7 days)
-~/.claude-todo/scripts/archive.sh
+claude-todo archive
 
 # Force archive all completed tasks
-~/.claude-todo/scripts/archive.sh --force
+claude-todo archive --force
 
 # Archive tasks older than 30 days
-~/.claude-todo/scripts/archive.sh --days 30
+claude-todo archive --days 30
 
 # Preview what would be archived
-~/.claude-todo/scripts/archive.sh --dry-run
+claude-todo archive --dry-run
 
 # Verbose archive with details
-~/.claude-todo/scripts/archive.sh --verbose
+claude-todo archive --verbose
 ```
 
 **Output**:
@@ -543,9 +543,9 @@ Age threshold: 7 days
 Archive policy: enabled
 
 Archiving:
-  ✓ task-1733388000-abc123 (completed 8 days ago)
-  ✓ task-1733390000-def456 (completed 10 days ago)
-  ✓ task-1733392000-ghi789 (completed 14 days ago)
+  ✓ T004 (completed 8 days ago)
+  ✓ T005 (completed 10 days ago)
+  ✓ T006 (completed 14 days ago)
 
 Summary:
   Archived: 3 tasks
@@ -563,12 +563,74 @@ Archive location: .claude/todo-archive.json
 
 ---
 
+### export.sh
+
+Export tasks to various formats for integration with external tools.
+
+```bash
+claude-todo export [OPTIONS]
+```
+
+**Options**:
+- `--format <format>`: Output format: `todowrite`, `json`, `markdown` (default: todowrite)
+- `--status <status>`: Comma-separated status filter (default: pending,active)
+- `--max <n>`: Maximum tasks to export (default: 10)
+- `--output <file>`: Write to file instead of stdout
+- `--quiet`: Suppress informational messages
+
+**Examples**:
+```bash
+# Export to TodoWrite format (for Claude Code)
+claude-todo export --format todowrite
+
+# Export only active tasks
+claude-todo export --format todowrite --status active
+
+# Export as markdown checklist
+claude-todo export --format markdown
+
+# Export to file
+claude-todo export --format todowrite --output tasks.json
+
+# Quiet mode (no info messages)
+claude-todo export --quiet
+```
+
+**TodoWrite Format**:
+```json
+{
+  "todos": [
+    {
+      "content": "Implement authentication",
+      "activeForm": "Implementing authentication",
+      "status": "in_progress"
+    }
+  ]
+}
+```
+
+**Status Mapping**:
+| claude-todo | TodoWrite |
+|-------------|-----------|
+| pending | pending |
+| active | in_progress |
+| blocked | pending |
+| done | completed |
+
+**Grammar Transformation**:
+The `activeForm` field is automatically derived from the task title:
+- "Fix bug" → "Fixing bug"
+- "Add feature" → "Adding feature"
+- "Implement auth" → "Implementing auth"
+
+---
+
 ### validate.sh
 
 Validate all todo JSON files.
 
 ```bash
-~/.claude-todo/scripts/validate.sh [OPTIONS]
+claude-todo validate [OPTIONS]
 ```
 
 **Options**:
@@ -580,19 +642,19 @@ Validate all todo JSON files.
 **Examples**:
 ```bash
 # Validate all files
-~/.claude-todo/scripts/validate.sh
+claude-todo validate
 
 # Validate with automatic fixes
-~/.claude-todo/scripts/validate.sh --fix
+claude-todo validate --fix
 
 # Strict mode (no warnings ignored)
-~/.claude-todo/scripts/validate.sh --strict
+claude-todo validate --strict
 
 # Validate specific file
-~/.claude-todo/scripts/validate.sh --file .claude/todo.json
+claude-todo validate --file .claude/todo.json
 
 # Verbose validation
-~/.claude-todo/scripts/validate.sh --verbose
+claude-todo validate --verbose
 ```
 
 **Validation Checks**:
@@ -630,7 +692,7 @@ Validate all todo JSON files.
    Schema: VALID
    Tasks: 48
    Warnings:
-     - Task task-1733388000-old123 has no completedAt timestamp
+     - Task T007 has no completedAt timestamp
      - Recommend: Add completion timestamp
 
 ✅ .claude/todo-config.json
@@ -662,7 +724,7 @@ Exit code: 0 (success)
 Display task statistics and reports.
 
 ```bash
-~/.claude-todo/scripts/stats.sh [OPTIONS]
+claude-todo stats [OPTIONS]
 ```
 
 **Options**:
@@ -674,22 +736,22 @@ Display task statistics and reports.
 **Examples**:
 ```bash
 # Default stats (30-day period)
-~/.claude-todo/scripts/stats.sh
+claude-todo stats
 
 # Last 7 days
-~/.claude-todo/scripts/stats.sh --period 7
+claude-todo stats --period 7
 
 # Last 90 days with charts
-~/.claude-todo/scripts/stats.sh --period 90 --chart
+claude-todo stats --period 90 --chart
 
 # Detailed statistics
-~/.claude-todo/scripts/stats.sh --detailed
+claude-todo stats --detailed
 
 # JSON output for dashboards
-~/.claude-todo/scripts/stats.sh --format json
+claude-todo stats --format json
 
 # CSV export for spreadsheets
-~/.claude-todo/scripts/stats.sh --format csv
+claude-todo stats --format csv
 ```
 
 **Output**:
@@ -745,7 +807,7 @@ Top Blockers:
 Create backup of todo files.
 
 ```bash
-~/.claude-todo/scripts/backup.sh [OPTIONS]
+claude-todo backup [OPTIONS]
 ```
 
 **Options**:
@@ -756,16 +818,16 @@ Create backup of todo files.
 **Examples**:
 ```bash
 # Default backup
-~/.claude-todo/scripts/backup.sh
+claude-todo backup
 
 # Backup to custom location
-~/.claude-todo/scripts/backup.sh --destination ~/backups/todo-backup
+claude-todo backup --destination ~/backups/todo-backup
 
 # Compressed backup
-~/.claude-todo/scripts/backup.sh --compress
+claude-todo backup --compress
 
 # Named backup
-~/.claude-todo/scripts/backup.sh --name "before-major-refactor"
+claude-todo backup --name "before-major-refactor"
 ```
 
 **Output**:
@@ -793,7 +855,7 @@ Validation: ✅ Backup integrity verified
 Restore todo files from backup.
 
 ```bash
-~/.claude-todo/scripts/restore.sh <BACKUP_DIR> [OPTIONS]
+claude-todo restore <BACKUP_DIR> [OPTIONS]
 ```
 
 **Required Arguments**:
@@ -810,13 +872,13 @@ Restore todo files from backup.
 ls -la .claude/.backups/
 
 # Restore from specific backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/backup-2025-12-05-100000/
+claude-todo restore .claude/.backups/backup-2025-12-05-100000/
 
 # Verify backup before restore
-~/.claude-todo/scripts/restore.sh .claude/.backups/backup-2025-12-05-100000/ --verify
+claude-todo restore .claude/.backups/backup-2025-12-05-100000/ --verify
 
 # Force restore without confirmation
-~/.claude-todo/scripts/restore.sh .claude/.backups/backup-2025-12-05-100000/ --force
+claude-todo restore .claude/.backups/backup-2025-12-05-100000/ --force
 ```
 
 **Workflow**:
@@ -873,7 +935,7 @@ TASKS=(
 
 for task_spec in "${TASKS[@]}"; do
   IFS='|' read -r title priority labels <<< "$task_spec"
-  ~/.claude-todo/scripts/add-task.sh "$title" \
+  claude-todo add "$title" \
     --status pending \
     --priority "$priority" \
     --labels "$labels"
@@ -886,17 +948,17 @@ Manage task dependencies and blockers:
 
 ```bash
 # Create base task
-BASE_TASK=$(~/.claude-todo/scripts/add-task.sh "Design API schema" \
+BASE_TASK=$(claude-todo add "Design API schema" \
   --priority high --format json | jq -r '.id')
 
 # Create dependent task
-~/.claude-todo/scripts/add-task.sh "Implement API endpoints" \
+claude-todo add "Implement API endpoints" \
   --depends "$BASE_TASK" \
   --status pending \
   --notes "Blocked until API schema is finalized"
 
 # Create blocker-aware task
-~/.claude-todo/scripts/add-task.sh "Deploy to staging" \
+claude-todo add "Deploy to staging" \
   --blocked-by "$BASE_TASK" \
   --status blocked
 ```
@@ -909,7 +971,7 @@ Update multiple task statuses:
 #!/bin/bash
 # start-sprint.sh - Mark all pending tasks as active
 
-PENDING_TASKS=$(~/.claude-todo/scripts/list-tasks.sh --status pending --format json | \
+PENDING_TASKS=$(claude-todo list --status pending --format json | \
   jq -r '.tasks[].id')
 
 for task_id in $PENDING_TASKS; do
@@ -925,15 +987,15 @@ Export tasks to external formats:
 
 ```bash
 # Export to CSV
-~/.claude-todo/scripts/list-tasks.sh --format json | \
+claude-todo list --format json | \
   jq -r '.tasks[] | [.id, .title, .status, .priority] | @csv' > tasks.csv
 
 # Export to GitHub Issues format
-~/.claude-todo/scripts/list-tasks.sh --format json | \
+claude-todo list --format json | \
   jq '.tasks[] | "## \(.title)\n\n\(.description // "")\n\nPriority: \(.priority)\nLabels: \(.labels | join(", "))"'
 
 # Export pending tasks to Markdown checklist
-~/.claude-todo/scripts/list-tasks.sh --status pending --format markdown > TODO.md
+claude-todo list --status pending --format markdown > TODO.md
 ```
 
 ### Archive Management
@@ -945,10 +1007,10 @@ Manage archive file size:
 wc -l .claude/todo-archive.json
 
 # Archive old tasks more aggressively
-~/.claude-todo/scripts/archive.sh --days 3 --force
+claude-todo archive --days 3 --force
 
 # Extract specific archived task
-cat .claude/todo-archive.json | jq '.tasks[] | select(.id == "task-1733388000-abc123")'
+cat .claude/todo-archive.json | jq '.tasks[] | select(.id == "T008")'
 
 # List all archived tasks from specific date
 cat .claude/todo-archive.json | \
@@ -992,7 +1054,7 @@ The claude-todo system integrates with Claude Code through `.claude/CLAUDE.md` f
 ## Current Tasks
 
 <!-- CLAUDE-TODO-START -->
-Run: ~/.claude-todo/scripts/list-tasks.sh --status pending --format markdown
+Run: claude-todo list --status pending --format markdown
 <!-- CLAUDE-TODO-END -->
 
 ## Active Sprint
@@ -1006,22 +1068,22 @@ Priority tasks for this session:
 #### 2. During Development
 
 Claude Code can:
-- Create tasks: `~/.claude-todo/scripts/add-task.sh "New task"`
-- Complete tasks: `~/.claude-todo/scripts/complete-task.sh <id>`
-- List tasks: `~/.claude-todo/scripts/list-tasks.sh`
-- Check stats: `~/.claude-todo/scripts/stats.sh`
+- Create tasks: `claude-todo add "New task"`
+- Complete tasks: `claude-todo complete <id>`
+- List tasks: `claude-todo list`
+- Check stats: `claude-todo stats`
 
 #### 3. Session End
 
 ```bash
 # Archive completed tasks
-~/.claude-todo/scripts/archive.sh
+claude-todo archive
 
 # Create session backup
-~/.claude-todo/scripts/backup.sh --name "session-2025-12-05"
+claude-todo backup --name "session-2025-12-05"
 
 # Review statistics
-~/.claude-todo/scripts/stats.sh --period 1
+claude-todo stats --period 1
 ```
 
 ### Automated Task Tracking
@@ -1038,8 +1100,8 @@ TodoWrite([
 ])
 
 // Automatically sync to claude-todo system
-~/.claude-todo/scripts/add-task.sh "Implement JWT middleware" --status pending
-~/.claude-todo/scripts/add-task.sh "Add login endpoint" --status pending
+claude-todo add "Implement JWT middleware" --status pending
+claude-todo add "Add login endpoint" --status pending
 ```
 
 #### Task Completion Automation
@@ -1048,14 +1110,14 @@ TodoWrite([
 # When Claude Code marks internal todo complete
 # Trigger: TodoWrite status change to "completed"
 
-~/.claude-todo/scripts/complete-task.sh <task-id> \
+claude-todo complete <task-id> \
   --notes "Completed by Claude Code in session xyz"
 ```
 
 ### Best Practices
 
 1. **Session Start**:
-   - List active tasks: `~/.claude-todo/scripts/list-tasks.sh`
+   - List active tasks: `claude-todo list`
    - Review high-priority items
    - Understand dependencies
 
@@ -1082,76 +1144,76 @@ TodoWrite([
 
 ```bash
 # All pending work
-~/.claude-todo/scripts/list-tasks.sh --status pending
+claude-todo list --status pending
 
 # Currently active tasks
-~/.claude-todo/scripts/list-tasks.sh --status active
+claude-todo list --status active
 
 # Blocked tasks requiring attention
-~/.claude-todo/scripts/list-tasks.sh --status blocked
+claude-todo list --status blocked
 
 # Recently completed
-~/.claude-todo/scripts/list-tasks.sh --status done --limit 10
+claude-todo list --status done --limit 10
 ```
 
 ### Priority Filtering
 
 ```bash
 # Critical tasks only
-~/.claude-todo/scripts/list-tasks.sh --priority critical
+claude-todo list --priority critical
 
 # High + Critical
-~/.claude-todo/scripts/list-tasks.sh --priority high,critical
+claude-todo list --priority high,critical
 
 # Non-urgent work
-~/.claude-todo/scripts/list-tasks.sh --priority low,medium
+claude-todo list --priority low,medium
 ```
 
 ### Label-Based Filtering
 
 ```bash
 # All backend tasks
-~/.claude-todo/scripts/list-tasks.sh --label backend
+claude-todo list --label backend
 
 # Security-related work
-~/.claude-todo/scripts/list-tasks.sh --label security
+claude-todo list --label security
 
 # Frontend UI tasks
-~/.claude-todo/scripts/list-tasks.sh --label frontend --label ui
+claude-todo list --label frontend --label ui
 ```
 
 ### Date-Based Filtering
 
 ```bash
 # Tasks from last week
-~/.claude-todo/scripts/list-tasks.sh --since 2025-11-28
+claude-todo list --since 2025-11-28
 
 # Tasks from specific date range
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --since 2025-11-01 \
   --until 2025-11-30
 
 # Today's tasks
-~/.claude-todo/scripts/list-tasks.sh --since $(date -Idate)
+claude-todo list --since $(date -Idate)
 ```
 
 ### Complex Queries
 
 ```bash
 # High-priority backend tasks
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --priority high \
   --label backend \
   --status pending
 
 # Blocked critical tasks
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --status blocked \
   --priority critical \
   --format json
 
 # Recent active work
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --status active \
   --since 2025-12-01 \
   --sort createdAt \
@@ -1162,19 +1224,19 @@ TodoWrite([
 
 ```bash
 # Tasks with specific files
-~/.claude-todo/scripts/list-tasks.sh --format json | \
+claude-todo list --format json | \
   jq '.tasks[] | select(.files | map(contains("auth")) | any)'
 
 # Tasks with acceptance criteria
-~/.claude-todo/scripts/list-tasks.sh --format json | \
+claude-todo list --format json | \
   jq '.tasks[] | select(.acceptance | length > 0)'
 
 # Tasks with dependencies
-~/.claude-todo/scripts/list-tasks.sh --format json | \
+claude-todo list --format json | \
   jq '.tasks[] | select(.depends | length > 0)'
 
 # Long-running active tasks (>7 days)
-~/.claude-todo/scripts/list-tasks.sh --status active --format json | \
+claude-todo list --status active --format json | \
   jq --arg date "$(date -d '7 days ago' -Iseconds)" \
     '.tasks[] | select(.createdAt < $date)'
 ```
@@ -1242,9 +1304,11 @@ TodoWrite([
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `strict_mode` | boolean | `true` | Enable strict validation |
-| `allow_duplicates` | boolean | `false` | Allow duplicate task titles |
-| `require_active_form` | boolean | `true` | Require activeForm field (legacy) |
+| `strictMode` | boolean | `false` | Treat warnings as errors |
+| `checksumEnabled` | boolean | `true` | Enable checksum verification (anti-hallucination) |
+| `enforceAcceptance` | boolean | `true` | Require acceptance criteria for high/critical tasks |
+| `requireDescription` | boolean | `false` | Require description field for all tasks |
+| `maxActiveTasks` | integer | `1` | Maximum concurrent active tasks |
 
 #### Logging Settings
 
@@ -1288,7 +1352,7 @@ export CLAUDE_TODO_COLORS=false
 export CLAUDE_TODO_DATE_FORMAT=relative
 
 # Run command with overrides
-~/.claude-todo/scripts/list-tasks.sh
+claude-todo list
 ```
 
 ---
@@ -1304,28 +1368,28 @@ export CLAUDE_TODO_DATE_FORMAT=relative
 SPRINT_LABEL="sprint-12"
 
 # Authentication tasks
-~/.claude-todo/scripts/add-task.sh "Design authentication UI" \
+claude-todo add "Design authentication UI" \
   --priority high \
   --labels "frontend,ui,$SPRINT_LABEL" \
   --acceptance "Mockups approved,Responsive design,Accessibility compliant"
 
-AUTH_API=$(~/.claude-todo/scripts/add-task.sh "Implement auth API" \
+AUTH_API=$(claude-todo add "Implement auth API" \
   --priority high \
   --labels "backend,api,$SPRINT_LABEL" \
   --format json | jq -r '.id')
 
-~/.claude-todo/scripts/add-task.sh "Integrate auth UI with API" \
+claude-todo add "Integrate auth UI with API" \
   --depends "$AUTH_API" \
   --priority high \
   --labels "frontend,integration,$SPRINT_LABEL"
 
-~/.claude-todo/scripts/add-task.sh "Write auth tests" \
+claude-todo add "Write auth tests" \
   --priority medium \
   --labels "testing,$SPRINT_LABEL" \
   --description "Unit tests for API + E2E tests for UI flow"
 
 # List sprint tasks
-~/.claude-todo/scripts/list-tasks.sh --label "$SPRINT_LABEL" --format markdown > SPRINT.md
+claude-todo list --label "$SPRINT_LABEL" --format markdown > SPRINT.md
 ```
 
 ### Example 2: Bug Triage Workflow
@@ -1336,7 +1400,7 @@ AUTH_API=$(~/.claude-todo/scripts/add-task.sh "Implement auth API" \
 
 # Create bug tracking tasks
 for bug_id in BUG-101 BUG-102 BUG-103; do
-  ~/.claude-todo/scripts/add-task.sh "Investigate $bug_id" \
+  claude-todo add "Investigate $bug_id" \
     --status pending \
     --priority high \
     --labels "bug,investigation" \
@@ -1345,7 +1409,7 @@ for bug_id in BUG-101 BUG-102 BUG-103; do
 done
 
 # List all bugs
-~/.claude-todo/scripts/list-tasks.sh --label bug --format table
+claude-todo list --label bug --format table
 ```
 
 ### Example 3: Daily Standup Report
@@ -1358,26 +1422,26 @@ echo "# Daily Standup - $(date -Idate)"
 echo ""
 
 echo "## Yesterday (Completed)"
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --status done \
   --since $(date -d '1 day ago' -Idate) \
   --format markdown
 
 echo ""
 echo "## Today (In Progress)"
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --status active \
   --format markdown
 
 echo ""
 echo "## Blockers"
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --status blocked \
   --format markdown
 
 echo ""
 echo "## Statistics"
-~/.claude-todo/scripts/stats.sh --period 7
+claude-todo stats --period 7
 ```
 
 ### Example 4: Release Preparation
@@ -1406,14 +1470,14 @@ echo "Creating release tasks for $RELEASE_VERSION..."
 
 for task_spec in "${TASKS[@]}"; do
   IFS='|' read -r title priority labels <<< "$task_spec"
-  ~/.claude-todo/scripts/add-task.sh "$title" \
+  claude-todo add "$title" \
     --status pending \
     --priority "$priority" \
     --labels "$labels,$RELEASE_VERSION"
 done
 
 # Generate release checklist
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --label "$RELEASE_VERSION" \
   --sort priority \
   --reverse \
@@ -1435,12 +1499,12 @@ echo "=============================="
 
 # Archive completed tasks
 echo "Archiving completed tasks..."
-~/.claude-todo/scripts/archive.sh --force
+claude-todo archive --force
 
 # Report incomplete tasks
 echo ""
 echo "Incomplete Sprint Tasks:"
-~/.claude-todo/scripts/list-tasks.sh \
+claude-todo list \
   --label "$SPRINT_LABEL" \
   --status pending,active,blocked \
   --format markdown
@@ -1448,12 +1512,12 @@ echo "Incomplete Sprint Tasks:"
 # Generate sprint statistics
 echo ""
 echo "Sprint Statistics:"
-~/.claude-todo/scripts/stats.sh --period 14
+claude-todo stats --period 14
 
 # Create sprint backup
 echo ""
 echo "Creating backup..."
-~/.claude-todo/scripts/backup.sh --name "sprint-$SPRINT_LABEL-end"
+claude-todo backup --name "sprint-$SPRINT_LABEL-end"
 
 echo ""
 echo "Cleanup complete!"
@@ -1466,13 +1530,13 @@ echo "Cleanup complete!"
 # dependency-graph.sh - Visualize task dependencies
 
 # Extract tasks with dependencies
-~/.claude-todo/scripts/list-tasks.sh --format json | \
+claude-todo list --format json | \
   jq -r '.tasks[] | select(.depends | length > 0) |
          "\(.title) depends on: \(.depends | join(", "))"'
 
 # Generate DOT graph format
 echo "digraph tasks {"
-~/.claude-todo/scripts/list-tasks.sh --format json | \
+claude-todo list --format json | \
   jq -r '.tasks[] | select(.depends | length > 0) |
          .depends[] as $dep | "  \"\($dep)\" -> \"\(.id)\";"'
 echo "}"
@@ -1489,10 +1553,10 @@ echo "}"
 **Solution**:
 ```bash
 # Validate and attempt automatic fixes
-~/.claude-todo/scripts/validate.sh --fix
+claude-todo validate --fix
 
 # If automatic fix fails, restore from backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/todo.json.1
+claude-todo restore .claude/.backups/todo.json.1
 ```
 
 **Issue**: Task not found by ID
@@ -1500,7 +1564,7 @@ echo "}"
 **Solution**:
 ```bash
 # Check if task was archived
-~/.claude-todo/scripts/list-tasks.sh --all | grep <task-id>
+claude-todo list --all | grep <task-id>
 
 # Search in archive file directly
 cat .claude/todo-archive.json | jq '.tasks[] | select(.id == "<task-id>")'
@@ -1514,7 +1578,7 @@ cat .claude/todo-archive.json | jq '.tasks[] | select(.id == "<task-id>")'
 cat .claude/todo-config.json | jq '.archive'
 
 # Force archive with verbose output
-~/.claude-todo/scripts/archive.sh --force --verbose
+claude-todo archive --force --verbose
 ```
 
 **Issue**: Backup restoration failed
@@ -1522,13 +1586,13 @@ cat .claude/todo-config.json | jq '.archive'
 **Solution**:
 ```bash
 # Verify backup integrity first
-~/.claude-todo/scripts/validate.sh --file .claude/.backups/todo.json.1
+claude-todo validate --file .claude/.backups/todo.json.1
 
 # List all available backups
 ls -lah .claude/.backups/
 
 # Restore from specific backup
-~/.claude-todo/scripts/restore.sh .claude/.backups/backup-2025-12-05-100000/
+claude-todo restore .claude/.backups/backup-2025-12-05-100000/
 ```
 
 ---
