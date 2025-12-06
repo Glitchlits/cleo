@@ -7,6 +7,24 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VERSION="$(cat "$SCRIPT_DIR/VERSION" | tr -d '[:space:]')"
 INSTALL_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
 
+# Parse arguments
+FORCE=false
+for arg in "$@"; do
+  case "$arg" in
+    -f|--force|-y|--yes)
+      FORCE=true
+      ;;
+    -h|--help)
+      echo "Usage: ./install.sh [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  -f, --force, -y, --yes   Skip confirmation prompts"
+      echo "  -h, --help               Show this help"
+      exit 0
+      ;;
+  esac
+done
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -29,11 +47,16 @@ if [[ -d "$INSTALL_DIR" ]]; then
   [[ -n "$EXISTING_VERSION" ]] && echo "  Current version: $EXISTING_VERSION"
   echo "  New version: $VERSION"
   echo ""
-  read -p "Overwrite existing installation? (y/N) " -n 1 -r
-  echo ""
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Installation cancelled."
-    exit 0
+
+  if [[ "$FORCE" == "true" ]]; then
+    log_info "Force mode: overwriting existing installation"
+  else
+    read -p "Overwrite existing installation? (y/N) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo "Installation cancelled."
+      exit 0
+    fi
   fi
   rm -rf "$INSTALL_DIR"
 fi
@@ -109,6 +132,7 @@ declare -A CMD_MAP=(
   [session]="session.sh"
   [focus]="focus.sh"
   [export]="export.sh"
+  [migrate]="migrate.sh"
 )
 
 # Brief descriptions for main help (one-liners only)
@@ -126,6 +150,7 @@ declare -A CMD_DESC=(
   [session]="Manage work sessions (start/end/status)"
   [focus]="Manage task focus (set/clear/note/next)"
   [export]="Export tasks to TodoWrite/JSON/Markdown format"
+  [migrate]="Migrate todo files to current schema version"
 )
 
 show_main_help() {
@@ -135,7 +160,7 @@ show_main_help() {
   echo "       claude-todo help <command>    Show detailed command help"
   echo ""
   echo "Commands:"
-  for cmd in init add complete list focus session archive validate stats backup restore export log; do
+  for cmd in init add complete list focus session archive validate stats backup restore export migrate log; do
     printf "  %-14s %s\n" "$cmd" "${CMD_DESC[$cmd]}"
   done
   echo "  version        Show version"
