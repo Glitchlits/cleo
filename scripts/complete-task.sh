@@ -89,15 +89,15 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
   exit 1
 fi
 
-# Verify checksum before modification
-CURRENT_CHECKSUM=$(jq -r '._meta.checksum' "$TODO_FILE")
+# Check for external modifications (informational, not blocking)
+# Note: Checksum verification is for audit/detection, not write-gating.
+# In multi-writer scenarios (TodoWrite + CLI), external modifications are expected.
+CURRENT_CHECKSUM=$(jq -r '._meta.checksum // ""' "$TODO_FILE")
 CURRENT_TASKS=$(jq -c '.tasks' "$TODO_FILE")
 CALCULATED_CHECKSUM=$(echo "$CURRENT_TASKS" | sha256sum | cut -c1-16)
 
-if [[ "$CURRENT_CHECKSUM" != "$CALCULATED_CHECKSUM" ]]; then
-  log_error "Checksum mismatch! File may be corrupted or modified externally."
-  log_error "Expected: $CURRENT_CHECKSUM, Got: $CALCULATED_CHECKSUM"
-  exit 1
+if [[ -n "$CURRENT_CHECKSUM" && "$CURRENT_CHECKSUM" != "$CALCULATED_CHECKSUM" ]]; then
+  log_info "External modification detected (checksum: $CURRENT_CHECKSUM → $CALCULATED_CHECKSUM)"
 fi
 
 # Check task exists

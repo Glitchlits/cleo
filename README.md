@@ -1,6 +1,28 @@
-# CLAUDE-TODO System
+# CLAUDE-TODO
 
-> A production-grade task management system for Claude Code with automatic archiving, comprehensive validation, and anti-hallucination protection.
+> **A production-grade task management system for Claude Code with automatic archiving, comprehensive validation, and anti-hallucination protection.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-0.3.1-blue.svg)](CHANGELOG.md)
+[![Bash](https://img.shields.io/badge/bash-4.0%2B-green.svg)](https://www.gnu.org/software/bash/)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Anti-Hallucination Protection](#anti-hallucination-protection)
+- [Architecture](#architecture)
+- [Configuration](#configuration)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Overview
 
@@ -120,7 +142,7 @@ CLAUDE-TODO implements multiple layers of protection against AI-generated errors
 
 ### Layer 2: Semantic Validation
 - **ID Uniqueness**: No duplicate IDs within or across files
-- **Timestamp Sanity**: created_at not in future, completed_at after created_at
+- **Timestamp Sanity**: `createdAt` not in future, `completedAt` after `createdAt`
 - **Field Requirements**: Every task must have both `title` AND `description`
 - **Duplicate Detection**: Warning on identical task descriptions
 - **Status Transitions**: Only valid state transitions allowed
@@ -261,28 +283,17 @@ Create integration scripts in `~/.claude-todo/integrations/`:
 
 ## Documentation
 
-Complete documentation is available in the `docs/` directory. See **docs/INDEX.md** for the full documentation map.
+Complete documentation is available in the [`docs/`](docs/) directory. Start with **[docs/INDEX.md](docs/INDEX.md)** for navigation.
 
-### Core Documents
+### Quick Links
 
-| Document | Purpose |
-|----------|---------|
-| **README.md** | This file - Quick start and overview |
-| **CLAUDE.md** | Task management protocol for Claude Code |
-| **docs/design-principles.md** | Design philosophy and architectural decisions |
-
-### Documentation Guide
-
-| Document | Purpose |
-|----------|---------|
-| **docs/INDEX.md** | Documentation navigation and index |
-| **docs/installation.md** | Detailed installation guide |
-| **docs/usage.md** | Comprehensive usage examples |
-| **docs/configuration.md** | Configuration reference |
-| **docs/schema-reference.md** | Schema documentation |
-| **docs/troubleshooting.md** | Common issues and solutions |
-| **docs/QUICK-REFERENCE.md** | Quick reference card for developers |
-| **docs/DATA-FLOW-DIAGRAMS.md** | Visual workflows and data relationships |
+| Category | Documents |
+|----------|-----------|
+| **Getting Started** | [Installation](docs/installation.md) · [Usage](docs/usage.md) · [Quick Reference](docs/QUICK-REFERENCE.md) |
+| **Architecture** | [System Architecture](docs/ARCHITECTURE.md) · [Design Principles](docs/design-principles.md) · [Data Flow Diagrams](docs/DATA-FLOW-DIAGRAMS.md) |
+| **Reference** | [Configuration](docs/configuration.md) · [Schema Reference](docs/schema-reference.md) · [Workflow Guide](docs/WORKFLOW.md) |
+| **Guides** | [Migration Guide](docs/migration-guide.md) · [Troubleshooting](docs/troubleshooting.md) |
+| **For Claude** | [CLAUDE.md](CLAUDE.md) - Protocol instructions for Claude Code integration |
 
 ## Testing
 
@@ -377,12 +388,25 @@ Migrations run automatically when needed.
 
 ## Contributing
 
-Contributions welcome! Please:
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
-1. Follow the existing code style (see code_style_conventions.md memory)
-2. Add tests for new features
-3. Update documentation
-4. Run validation before submitting
+### Quick Start for Contributors
+
+1. **Fork and clone** the repository
+2. **Create a feature branch**: `git checkout -b feature/your-feature`
+3. **Make your changes** following the existing code style
+4. **Add tests** for new features in `tests/`
+5. **Update documentation** if needed
+6. **Run validation**: `./tests/run-all-tests.sh`
+7. **Submit a pull request**
+
+### Code Standards
+
+- Bash 4.0+ compatible
+- Follow existing patterns in `lib/` and `scripts/`
+- Use jq for JSON manipulation
+- Add unit tests for new functionality
+- Update relevant documentation
 
 ## Design Philosophy
 
@@ -421,16 +445,26 @@ CLAUDE-TODO provides:
 
 ## License
 
-MIT License - See LICENSE file for details
-
-## Support
-
-For detailed information, see:
-- **docs/design-principles.md** - Design philosophy and architectural decisions
-- **docs/INDEX.md** - Documentation navigation
-- **docs/QUICK-REFERENCE.md** - Quick reference card
-- **docs/** directory - Comprehensive guides
+MIT License - See [LICENSE](LICENSE) file for details.
 
 ---
 
-**Ready to get started?** Run `./install.sh` to begin!
+## Getting Help
+
+- **Documentation**: [docs/INDEX.md](docs/INDEX.md) - Complete documentation navigation
+- **Quick Reference**: [docs/QUICK-REFERENCE.md](docs/QUICK-REFERENCE.md) - Cheat sheet for daily use
+- **Troubleshooting**: [docs/troubleshooting.md](docs/troubleshooting.md) - Common issues and solutions
+- **Issues**: Open an issue on GitHub for bugs or feature requests
+
+---
+
+<p align="center">
+  <strong>Ready to get started?</strong> Run <code>./install.sh</code> to begin!
+</p>
+
+<p align="center">
+  <a href="docs/INDEX.md">Documentation</a> ·
+  <a href="docs/installation.md">Installation</a> ·
+  <a href="docs/usage.md">Usage Guide</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>

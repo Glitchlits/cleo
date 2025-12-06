@@ -210,6 +210,26 @@ These properties must ALWAYS be true:
 - Slower than direct writes (temp → validate → rename)
 - Acceptable overhead (< 50ms) for safety
 
+### Why Checksum is Detection-Only (Not Blocking)?
+
+**Decision**: Checksum mismatches log information but don't block operations
+
+**Rationale**:
+- Multi-writer scenario: Both `claude-todo` CLI and `TodoWrite` modify todo.json
+- TodoWrite doesn't know about checksums, so mismatches are expected
+- Blocking on mismatch would break normal Claude Code workflows
+- Real protection comes from schema validation, semantic checks, and atomic writes
+
+**Trade-offs**:
+- Cannot use checksum as optimistic locking mechanism
+- External modifications proceed without explicit approval
+- Mitigated by: comprehensive audit logging, automatic backups, schema validation
+
+**What checksum IS used for**:
+- Detecting external modifications (logged for audit trail)
+- Backup integrity verification during restore
+- Corruption detection in disaster recovery scenarios
+
 ### Why Append-Only Log?
 
 **Decision**: Change log is append-only, never modified

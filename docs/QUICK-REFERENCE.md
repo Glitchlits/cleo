@@ -84,7 +84,7 @@ JSON → Schema Check → Anti-Hallucination → Cross-File → ✅ Valid
 |-------|---------|---------------|
 | **ID Uniqueness** | No duplicate IDs | "Duplicate ID: T001" |
 | **Status Enum** | Valid status only | "Invalid status: 'completed'" |
-| **Timestamp Sanity** | Not in future | "created_at in future" |
+| **Timestamp Sanity** | Not in future | "createdAt in future" |
 | **Content Pairing** | Both title & description | "Missing description" |
 | **Duplicate Content** | No identical tasks | "Duplicate: 'Fix bug'" |
 
@@ -332,11 +332,11 @@ chmod 600 .claude/.backups/*.json
 
 | Document | Purpose |
 |----------|---------|
-| **ARCHITECTURE.md** | Complete system design |
-| **DATA-FLOW-DIAGRAMS.md** | Visual workflows |
-| **SYSTEM-DESIGN-SUMMARY.md** | Executive overview |
-| **docs/usage.md** | Detailed usage guide |
-| **docs/configuration.md** | Config reference |
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Complete system design |
+| **[DATA-FLOW-DIAGRAMS.md](DATA-FLOW-DIAGRAMS.md)** | Visual workflows |
+| **[SYSTEM-DESIGN-SUMMARY.md](SYSTEM-DESIGN-SUMMARY.md)** | Executive overview |
+| **[usage.md](usage.md)** | Detailed usage guide |
+| **[configuration.md](configuration.md)** | Config reference |
 
 ## Upgrade Path
 
@@ -414,4 +414,4 @@ jq '.entries[-10:]' .claude/todo-log.json
 
 ---
 
-**For detailed information, always refer to ARCHITECTURE.md**
+**For detailed information, always refer to [ARCHITECTURE.md](ARCHITECTURE.md)**

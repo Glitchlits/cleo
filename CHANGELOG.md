@@ -5,6 +5,24 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-12-06
+
+### Changed
+- **Checksum behavior**: Changed from blocking to detection-only (INFO log instead of ERROR + exit)
+- **Multi-writer support**: CLI now works seamlessly with TodoWrite tool modifications
+- **Documentation reorganization**: Moved ARCHITECTURE.md, SYSTEM-DESIGN-SUMMARY.md, MIGRATION-SYSTEM-SUMMARY.md to docs/
+- **README.md**: Added badges, table of contents, improved structure for open source
+
+### Fixed
+- **complete-task.sh**: No longer fails when TodoWrite modifies todo.json
+- **Cross-references**: Updated all internal doc links after file moves
+- **Field naming**: Fixed snake_case to camelCase in docs (createdAt, completedAt)
+
+### Updated
+- **DATA-FLOW-DIAGRAMS.md**: Revised checksum flow diagram to reflect detection-only behavior
+- **design-principles.md**: Added architectural decision for checksum behavior
+- **INDEX.md**: Added missing docs (migration-guide.md, ENHANCEMENT-todowrite-integration.md)
+
 ## [0.3.0] - 2025-12-06
 
 ### Added

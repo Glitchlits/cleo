@@ -18,7 +18,6 @@ A robust, installable task management system for Claude Code with auto-archiving
 ```
 claude-todo/
 ├── README.md                      # User documentation
-├── ARCHITECTURE.md                # This file
 ├── LICENSE                        # MIT License
 ├── install.sh                     # Global installation script
 ├── .gitignore                     # Ignore user data files

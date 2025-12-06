@@ -141,9 +141,9 @@ Controls change history logging to `todo-log.json`.
 | `logSessionEvents` | boolean | `true` | - | Log session start/end events |
 
 **Logging Levels:**
-- **minimal**: Only status changes (pending → in_progress → completed)
+- **minimal**: Only status changes (pending → active → done)
 - **standard**: Status changes plus notes and priority changes
-- **verbose**: All field changes including labels, dependencies, estimates
+- **verbose**: All field changes including labels, dependencies
 
 **Examples:**
 ```json
@@ -648,4 +648,4 @@ claude-todo validate .claude/todo-config.json
 - [Usage Guide](./usage.md) - Working with tasks
 - [Schema Reference](./schema-reference.md) - Complete schema documentation
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
-- [ARCHITECTURE.md](../ARCHITECTURE.md) - System design and rationale
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System design and rationale

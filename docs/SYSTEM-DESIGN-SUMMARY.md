@@ -620,8 +620,9 @@ alias ct-stats='claude-todo stats'
 | Document | Purpose |
 |----------|---------|
 | `README.md` | User-facing overview and quick start |
-| `ARCHITECTURE.md` | Complete system architecture (CORE) |
-| `DATA-FLOW-DIAGRAMS.md` | Visual data flows and relationships |
+| `docs/ARCHITECTURE.md` | Complete system architecture (CORE) |
+| `docs/SYSTEM-DESIGN-SUMMARY.md` | Executive summary (this file) |
+| `docs/DATA-FLOW-DIAGRAMS.md` | Visual data flows and relationships |
 | `docs/installation.md` | Detailed installation guide |
 | `docs/usage.md` | Comprehensive usage examples |
 | `docs/configuration.md` | Configuration reference |
@@ -652,5 +653,5 @@ This system successfully provides:
 ---
 
 For detailed information, see:
-- **ARCHITECTURE.md** - Complete system design
-- **DATA-FLOW-DIAGRAMS.md** - Visual workflows and interactions
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete system design
+- **[DATA-FLOW-DIAGRAMS.md](DATA-FLOW-DIAGRAMS.md)** - Visual workflows and interactions

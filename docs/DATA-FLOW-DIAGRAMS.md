@@ -88,7 +88,7 @@
         │                       ▼                        │
         │ Valid?         ┌────────────────┐              │
         ├── No ──► ERROR │ Add Timestamp  │              │
-        │                │  completed_at  │              │
+        │                │  completedAt   │              │
         ▼ Yes            └───────┬────────┘              │
 ┌────────────────┐              │                        │
 │ Generate ID    │              ▼                        ▼
@@ -468,7 +468,7 @@ Key Properties:
 
 ---
 
-## Checksum Verification Flow (Anti-Hallucination)
+## Checksum Verification Flow (Detection, Not Blocking)
 
 ```
                     ANY WRITE OPERATION
@@ -501,19 +501,29 @@ Key Properties:
               │                         │
          MISMATCH                    MATCH
               │                         │
-              ▼                         ▼
-       ┌─────────────┐         ┌─────────────────┐
-       │  ABORT      │         │  PROCEED with   │
-       │  Operation  │         │  Write          │
-       │             │         └────────┬────────┘
-       │  Log Error: │                  │
-       │  "Checksum  │                  ▼
-       │  mismatch!  │         ┌─────────────────┐
-       │  File may   │         │  Perform Data   │
-       │  be corrupt │         │  Modification   │
-       │  or modified│         └────────┬────────┘
-       │  externally"│                  │
-       └─────────────┘                  ▼
+              ▼                         │
+       ┌─────────────┐                  │
+       │  Log Info:  │                  │
+       │  "External  │                  │
+       │  modification                  │
+       │  detected"  │                  │
+       └──────┬──────┘                  │
+              │                         │
+              └─────────────────────────┤
+                                        │
+                                        ▼
+                               ┌─────────────────┐
+                               │  PROCEED with   │
+                               │  Write          │
+                               └────────┬────────┘
+                                        │
+                                        ▼
+                               ┌─────────────────┐
+                               │  Perform Data   │
+                               │  Modification   │
+                               └────────┬────────┘
+                                        │
+                                        ▼
                                ┌─────────────────┐
                                │  Recalculate    │
                                │  New Checksum   │
@@ -543,11 +553,19 @@ Checksum Calculation:
   Hash:   SHA-256
   Output: First 16 characters of hex digest
 
-Purpose (Anti-Hallucination):
-  1. Detects external file modifications
-  2. Prevents Claude from writing stale data
-  3. Ensures read-modify-write cycle integrity
-  4. Catches file corruption early
+Purpose (Detection & Audit):
+  1. Detects external file modifications (e.g., TodoWrite)
+  2. Provides audit trail for file changes
+  3. Enables backup integrity verification
+  4. Catches file corruption during restore
+
+Design Note:
+  Checksum is for DETECTION, not BLOCKING. In multi-writer
+  scenarios (claude-todo CLI + TodoWrite), external modifications
+  are expected and legitimate. Real data protection comes from:
+  - Schema validation (Layer 1)
+  - Semantic validation (Layer 2)
+  - Atomic writes with backups (Layer 3)
 
 Commands:
   Compute:  jq -c '.tasks' todo.json | sha256sum | cut -c1-16
@@ -860,8 +878,8 @@ This ensures todo + archive are ALWAYS in sync.
           │  Parse All Tasks     │
           │  Extract Metadata:   │
           │  - status            │
-          │  - created_at        │
-          │  - completed_at      │
+          │  - createdAt         │
+          │  - completedAt       │
           └──────────┬───────────┘
                      │
                      ▼
