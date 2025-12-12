@@ -838,6 +838,6 @@ export FORCE_COLOR=1       # Force colors
 ## See Also
 
 - [Usage Guide](../usage.md) - Comprehensive usage patterns
-- [Configuration Reference](../configuration.md) - All config options
-- [Schema Reference](../reference/schema-reference.md) - Data structures
-- [Installation Guide](../getting-started/installation.md) - Setup instructions
+- [Configuration Reference](configuration.md) - All config options
+- [Schema Reference](../architecture/SCHEMAS.md) - Data structures
+- [Installation Guide](installation.md) - Setup instructions

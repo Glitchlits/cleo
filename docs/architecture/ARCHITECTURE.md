@@ -128,11 +128,16 @@ claude-todo/                        # Git repository (system files only)
 │   └── file-ops.sh                # Atomic file operations
 │
 ├── docs/                           # Documentation
-│   ├── installation.md            # Installation guide
-│   ├── usage.md                   # Usage examples
-│   ├── configuration.md           # Configuration reference
-│   ├── schema-reference.md        # Schema documentation
-│   └── troubleshooting.md         # Common issues
+│   ├── architecture/              # System design docs
+│   │   ├── ARCHITECTURE.md        # This file
+│   │   ├── DATA-FLOWS.md          # Visual diagrams
+│   │   └── SCHEMAS.md             # Schema documentation
+│   ├── integration/               # Claude Code integration
+│   ├── reference/                 # Technical reference
+│   │   ├── installation.md        # Installation guide
+│   │   ├── configuration.md       # Configuration reference
+│   │   └── troubleshooting.md     # Common issues
+│   └── usage.md                   # Usage examples
 │
 └── tests/                          # Test suite
     ├── test-validation.sh         # Schema validation tests

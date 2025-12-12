@@ -701,4 +701,4 @@ alias ct-week='claude-todo list --since $(date -d "7 days ago" -Idate)'
 
 - **Usage Guide**: See [usage.md](../usage.md) for complete command reference
 - **Output Reference**: See [CLI-OUTPUT-REFERENCE.md](../../claudedocs/CLI-OUTPUT-REFERENCE.md) for format details
-- **Configuration**: See [configuration.md](../configuration.md) for filter customization
+- **Configuration**: See [configuration.md](../reference/configuration.md) for filter customization

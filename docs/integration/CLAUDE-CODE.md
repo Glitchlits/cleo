@@ -378,5 +378,5 @@ log.sh --action session_end --session-id "session_20251205_..."
 
 **See Also**:
 - [Architecture](../architecture/ARCHITECTURE.md) - Complete system design
-- [Command Reference](../guides/command-reference.md) - All CLI commands
-- [Workflow Patterns](../guides/workflow-patterns.md) - Best practices
+- [Command Reference](../reference/command-reference.md) - All CLI commands
+- [Workflow Patterns](WORKFLOWS.md) - Best practices

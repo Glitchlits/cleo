@@ -16,23 +16,23 @@ The CLAUDE-TODO documentation is being reorganized for better discoverability, r
 docs/
 ├── architecture/                    # System design (LLM-focused)
 │   ├── ARCHITECTURE.md             # Core architecture + design principles
-│   └── DATA-FLOWS.md               # Visual data flow diagrams
+│   ├── DATA-FLOWS.md               # Visual data flow diagrams
+│   └── SCHEMAS.md                  # JSON schema documentation
 │
 ├── getting-started/                 # Onboarding
-│   ├── installation.md             # Installation guide
-│   └── quick-start.md              # First steps
+│   └── quick-start.md              # First steps guide
 │
 ├── guides/                          # How-to guides
-│   ├── command-reference.md        # Complete CLI reference
-│   ├── configuration.md            # Configuration options
-│   ├── filtering-guide.md          # Advanced filtering
-│   └── workflow-patterns.md        # Usage patterns & recipes
+│   └── filtering-guide.md          # Advanced filtering & queries
 │
 ├── integration/                     # Claude Code specific
-│   └── CLAUDE-CODE.md              # LLM-optimized integration guide
+│   ├── CLAUDE-CODE.md              # LLM-optimized integration guide
+│   └── WORKFLOWS.md                # Session workflows & patterns
 │
 ├── reference/                       # Technical reference
-│   ├── schema-reference.md         # JSON schema documentation
+│   ├── command-reference.md        # Complete CLI reference
+│   ├── configuration.md            # Configuration options
+│   ├── installation.md             # Installation guide
 │   └── troubleshooting.md          # Common issues & solutions
 │
 ├── INDEX.md                        # Comprehensive navigation
@@ -82,20 +82,18 @@ docs/
 
 | Current Files | Consideration | Priority |
 |---------------|---------------|----------|
-| `INDEX.md` + `README.md` | May have overlap - review and consolidate | Medium |
-| `schema-reference.md` | Consider moving to `architecture/SCHEMAS.md` | Low |
+| `INDEX.md` + `README.md` | Both serve as navigation - consolidate to single entry point | Medium |
 | `migration-guide.md` | Consider moving to `reference/` | Low |
+| `integration/WORKFLOWS.md` | Consider merging into `CLAUDE-CODE.md` if overlapping | Low |
 
-### Structure Refinements
+### Structure Notes
 
-The original plan suggested a `reference/` directory with:
-- usage.md
-- command-reference.md
-- configuration.md
-- troubleshooting.md
-- installation.md
-
-Current structure uses `getting-started/`, `guides/`, `reference/` which provides better progressive disclosure for users. This is a valid alternative structure.
+Current structure organizes documentation by audience:
+- **architecture/** - System internals (developers, LLMs)
+- **integration/** - Claude Code specific (AI agents)
+- **getting-started/** - New users
+- **guides/** - Users wanting to learn features
+- **reference/** - Users looking up specifics
 
 ### Target Metrics
 
@@ -127,17 +125,17 @@ Current structure uses `getting-started/`, `guides/`, `reference/` which provide
 
 ### User Guides
 
-- `getting-started/installation.md` - Setup
 - `getting-started/quick-start.md` - First steps
-- `guides/command-reference.md` - CLI commands
-- `guides/configuration.md` - Config options
 - `guides/filtering-guide.md` - Query guide
-- `guides/workflow-patterns.md` - Recipes
+- `integration/WORKFLOWS.md` - Session workflows & patterns
 
 ### Reference
 
-- `reference/schema-reference.md` - JSON schemas
+- `reference/installation.md` - Setup guide
+- `reference/command-reference.md` - CLI commands
+- `reference/configuration.md` - Config options
 - `reference/troubleshooting.md` - Problem solving
+- `architecture/SCHEMAS.md` - JSON schemas
 
 ---
 

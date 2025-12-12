@@ -8,10 +8,15 @@ Welcome to the CLAUDE-TODO documentation. This directory contains comprehensive 
 
 New to CLAUDE-TODO? Start here:
 
-- **[Installation Guide](getting-started/installation.md)** - Global installation and per-project setup
+- **[Installation Guide](reference/installation.md)** - Global installation and per-project setup
   - Prerequisites and dependencies
   - Installation steps and verification
   - Troubleshooting common installation issues
+
+- **[Quick Start](getting-started/quick-start.md)** - First steps guide
+  - Basic task creation
+  - Essential commands
+  - Your first workflow
 
 ---
 
@@ -20,16 +25,15 @@ New to CLAUDE-TODO? Start here:
 Learn how to use CLAUDE-TODO effectively:
 
 ### Core Workflows
-- **[Command Reference](guides/command-reference.md)** - Complete command documentation
+- **[Usage Guide](usage.md)** - Main usage documentation
   - Task operations (add, update, complete)
+  - Session workflows
+  - Export and reporting
+
+- **[Command Reference](reference/command-reference.md)** - Complete command documentation
+  - All CLI commands with examples
   - Query commands (list, stats)
   - Maintenance operations (validate, archive, backup)
-
-- **[Workflow Patterns](guides/workflow-patterns.md)** - Common usage patterns
-  - Session lifecycle (start/work/end)
-  - Sprint planning and tracking
-  - Daily standup reports
-  - Release preparation
 
 ### Advanced Usage
 - **[Filtering Guide](guides/filtering-guide.md)** - Advanced filtering and search
@@ -37,11 +41,16 @@ Learn how to use CLAUDE-TODO effectively:
   - Date-based queries
   - Complex multi-criteria filtering
 
-- **[Configuration Guide](guides/configuration.md)** - System configuration
+- **[Configuration Guide](reference/configuration.md)** - System configuration
   - Archive policies
   - Validation settings
   - Session management
   - Display preferences
+
+- **[Workflow Patterns](integration/WORKFLOWS.md)** - Session patterns & workflows
+  - Session lifecycle (start/work/end)
+  - Sprint planning and tracking
+  - Best practices
 
 ---
 
@@ -59,16 +68,16 @@ Deep-dive into system internals:
   - Validation pipeline visualization
   - Atomic write pattern
 
-- **[Claude Code Integration](integration/CLAUDE-CODE.md)** - LLM integration guide
-  - Anti-hallucination rules (table format)
-  - Session protocol
-  - TodoWrite integration
-
-- **[Schema Reference](reference/schema-reference.md)** - JSON schema documentation
+- **[SCHEMAS.md](architecture/SCHEMAS.md)** - JSON schema documentation
   - Task object structure
   - Configuration schema
   - Archive format
   - Log entry format
+
+- **[Claude Code Integration](integration/CLAUDE-CODE.md)** - LLM integration guide
+  - Anti-hallucination rules (table format)
+  - Session protocol
+  - TodoWrite integration
 
 - **[Troubleshooting](reference/troubleshooting.md)** - Common issues and solutions
   - Validation errors
@@ -80,10 +89,10 @@ Deep-dive into system internals:
 
 ## Quick Links
 
+- **[INDEX.md](INDEX.md)** - Comprehensive documentation index with learning paths
 - **[Main README](../README.md)** - Project overview and quick start
-- **[CLAUDE.md Integration](../CLAUDE.md)** - Claude Code integration instructions
-- **[Contributing Guidelines](../CONTRIBUTING.md)** - How to contribute
-- **[License](../LICENSE)** - MIT License
+- **[QUICK-REFERENCE.md](QUICK-REFERENCE.md)** - Developer cheatsheet
+- **[PLUGINS.md](PLUGINS.md)** - Plugin development guide
 
 ---
 
@@ -94,18 +103,19 @@ docs/
 ├── README.md                    # This file - Documentation hub
 ├── architecture/
 │   ├── ARCHITECTURE.md          # System architecture and design
-│   └── DATA-FLOWS.md            # Visual data flow diagrams
+│   ├── DATA-FLOWS.md            # Visual data flow diagrams
+│   └── SCHEMAS.md               # JSON schema documentation
 ├── integration/
-│   └── CLAUDE-CODE.md           # Claude Code integration guide
+│   ├── CLAUDE-CODE.md           # Claude Code integration guide
+│   └── WORKFLOWS.md             # Session workflows & patterns
 ├── getting-started/
-│   └── installation.md          # Installation and setup guide
+│   └── quick-start.md           # First steps guide
 ├── guides/
-│   ├── command-reference.md     # Complete command documentation
-│   ├── workflow-patterns.md     # Common usage patterns
-│   ├── filtering-guide.md       # Advanced filtering guide
-│   └── configuration.md         # Configuration reference
+│   └── filtering-guide.md       # Advanced filtering guide
 └── reference/
-    ├── schema-reference.md      # JSON schema documentation
+    ├── command-reference.md     # Complete command documentation
+    ├── configuration.md         # Configuration reference
+    ├── installation.md          # Installation and setup guide
     └── troubleshooting.md       # Problem resolution guide
 ```
 

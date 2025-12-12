@@ -326,7 +326,7 @@ claude-todo archive --all
 For comprehensive documentation on specific topics, see:
 
 ### Complete Command Reference
-**[guides/command-reference.md](guides/command-reference.md)**
+**[reference/command-reference.md](reference/command-reference.md)**
 
 Detailed documentation for all commands including:
 - `init` - Initialize todo system in a project
@@ -342,7 +342,7 @@ Detailed documentation for all commands including:
 - `restore` - Restore from backup
 
 ### Workflow Patterns & Best Practices
-**[guides/workflow-patterns.md](guides/workflow-patterns.md)**
+**[integration/WORKFLOWS.md](integration/WORKFLOWS.md)**
 
 Complete workflow guides including:
 - Task lifecycle and status transitions
@@ -366,7 +366,7 @@ Advanced filtering and search techniques:
 - Export and reporting
 
 ### Configuration Reference
-**[configuration.md](guides/configuration.md)**
+**[configuration.md](reference/configuration.md)**
 
 Complete configuration documentation covering:
 - Archive settings
@@ -425,7 +425,7 @@ Complete configuration documentation covering:
 }
 ```
 
-**For complete configuration reference, see [configuration.md](guides/configuration.md)**
+**For complete configuration reference, see [configuration.md](reference/configuration.md)**
 
 ### Environment Variables
 
@@ -590,10 +590,10 @@ NO_COLOR=1 claude-todo list -s pending -c
 
 ## Next Steps
 
-- **Complete Command Reference**: [guides/command-reference.md](guides/command-reference.md)
-- **Workflow Patterns**: [guides/workflow-patterns.md](guides/workflow-patterns.md)
+- **Complete Command Reference**: [reference/command-reference.md](reference/command-reference.md)
+- **Workflow Patterns**: [integration/WORKFLOWS.md](integration/WORKFLOWS.md)
 - **Filtering Guide**: [guides/filtering-guide.md](guides/filtering-guide.md)
-- **Configuration**: [configuration.md](guides/configuration.md)
-- **Schema Reference**: [schema-reference.md](reference/schema-reference.md)
+- **Configuration**: [configuration.md](reference/configuration.md)
+- **Schema Reference**: [schema-reference.md](architecture/SCHEMAS.md)
 - **Troubleshooting**: [troubleshooting.md](reference/troubleshooting.md)
-- **Installation**: [installation.md](getting-started/installation.md)
+- **Installation**: [installation.md](reference/installation.md)
