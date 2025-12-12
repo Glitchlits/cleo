@@ -398,6 +398,39 @@ else
 fi
 
 # ============================================
+# INSTALL TASK MANAGEMENT DOCS TO ~/.claude/
+# ============================================
+if [[ -d "$HOME/.claude" ]]; then
+  log_step "Installing Task Management documentation to ~/.claude/..."
+  DOCS_TARGET="$HOME/.claude/TODO_Task_Management.md"
+  CLAUDE_MD="$HOME/.claude/CLAUDE.md"
+
+  # Copy the file (not symlink)
+  if [[ -f "$INSTALL_DIR/docs/TODO_Task_Management.md" ]]; then
+    cp -f "$INSTALL_DIR/docs/TODO_Task_Management.md" "$DOCS_TARGET"
+    log_info "Installed: $DOCS_TARGET"
+
+    # Append reference to CLAUDE.md if not already present
+    if [[ -f "$CLAUDE_MD" ]]; then
+      if ! grep -q "@TODO_Task_Management.md" "$CLAUDE_MD" 2>/dev/null; then
+        echo "" >> "$CLAUDE_MD"
+        echo "# Task Management" >> "$CLAUDE_MD"
+        echo "@TODO_Task_Management.md" >> "$CLAUDE_MD"
+        log_info "Added @TODO_Task_Management.md reference to $CLAUDE_MD"
+      else
+        log_info "@TODO_Task_Management.md reference already in $CLAUDE_MD"
+      fi
+    else
+      log_warn "No CLAUDE.md found at $CLAUDE_MD - skipping reference injection"
+    fi
+  else
+    log_warn "TODO_Task_Management.md not found in installation"
+  fi
+else
+  log_warn "~/.claude directory not found - skipping Task Management docs install"
+fi
+
+# ============================================
 # CONFIGURE ALIASES
 # ============================================
 log_step "Configuring convenience aliases..."

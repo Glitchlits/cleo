@@ -245,22 +245,39 @@ if [[ "$NO_CLAUDE_MD" != true ]]; then
 <!-- CLAUDE-TODO:START -->
 ## Task Management (claude-todo CLI)
 
-Use the `claude-todo` CLI for **all** task operations. Never read or edit `.claude/*.json` files directly.
+Use the `claude-todo` CLI for **all** task operations. Never read/edit `.claude/*.json` files directly.
+
+**Full documentation**: `~/.claude-todo/docs/TODO_Task_Management.md`
 
 ### Quick Reference
 ```bash
 claude-todo list                    # View tasks
 claude-todo add "Task title"        # Create task
+claude-todo update <id> [OPTIONS]   # Update task fields
 claude-todo complete <task-id>      # Mark done
 claude-todo focus set <task-id>     # Set focus (marks active)
 claude-todo focus show              # Show current focus
+claude-todo focus note "Progress"   # Set session note
 claude-todo session start           # Start session
 claude-todo session end             # End session
+claude-todo export --format todowrite  # Export to TodoWrite format
 claude-todo validate                # Check file integrity
 claude-todo archive                 # Archive completed tasks
 claude-todo stats                   # Show statistics
-claude-todo log --action <type>     # Add log entry
 claude-todo help                    # All commands
+```
+
+### Common Options
+```bash
+# Add task with options
+claude-todo add "Task" --priority high --labels bug,urgent
+
+# Update task
+claude-todo update T001 --status blocked --notes "Waiting for API"
+claude-todo update T001 --labels feature-auth,backend
+
+# List with filters
+claude-todo list --status pending --label bug
 ```
 
 ### Session Protocol
@@ -276,7 +293,8 @@ claude-todo focus show              # Check last focus/notes
 ```bash
 claude-todo focus set <task-id>     # Set focus (one task only)
 claude-todo add "Subtask"           # Add new tasks as needed
-claude-todo focus note "Progress"   # Update session note
+claude-todo update <id> --notes "Progress"  # Add task note
+claude-todo focus note "Session progress"   # Update session note
 ```
 
 **END**:
@@ -292,6 +310,7 @@ claude-todo session end             # End session
 - **One active task** - Use `claude-todo focus set` (enforces single active)
 - **Verify state** - Use `claude-todo list` to confirm, don't assume
 - **Session discipline** - Start/end sessions properly
+- **Validate after errors** - Run `claude-todo validate` if something fails
 
 ### Aliases (installed automatically)
 ```bash
