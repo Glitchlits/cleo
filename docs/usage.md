@@ -7,18 +7,48 @@ Complete guide to using the claude-todo task management system.
 ## Table of Contents
 
 1. [Quick Start](#quick-start)
+   - [Short Flags Reference](#short-flags-reference)
 2. [Basic Workflow](#basic-workflow)
+   - [Output Formats](#output-formats)
 3. [Task Lifecycle](#task-lifecycle)
 4. [Command Reference](#command-reference)
 5. [Advanced Operations](#advanced-operations)
 6. [CLAUDE.md Integration](#claudemd-integration)
 7. [Filtering and Searching](#filtering-and-searching)
 8. [Configuration](#configuration)
+   - [Color Output Control](#color-output-control)
 9. [Examples and Recipes](#examples-and-recipes)
 
 ---
 
 ## Quick Start
+
+### Short Flags Reference
+
+All commands support short flags for faster workflows:
+
+| Short | Long | Commands | Description |
+|-------|------|----------|-------------|
+| `-s` | `--status` | list, add, update | Filter by or set task status |
+| `-p` | `--priority` | list, add, update | Filter by or set task priority |
+| `-l` | `--label/--labels` | list, add, update | Filter by or set labels |
+| `-f` | `--format` | list, export | Output format |
+| `-v` | `--verbose` | list | Show all task details |
+| `-c` | `--compact` | list | Compact one-line view |
+| `-q` | `--quiet` | list, add, export | Suppress informational messages |
+| `-h` | `--help` | all | Show command help |
+
+**Examples**:
+```bash
+# List high-priority backend tasks in JSON
+claude-todo list -p high -l backend -f json
+
+# Add critical security task quietly
+claude-todo add "Security audit" -p critical -l security -q
+
+# Compact view of pending tasks
+claude-todo list -s pending -c
+```
 
 ### First-Time Setup
 
@@ -182,14 +212,60 @@ claude-todo list --all
 # Human-readable terminal output (default)
 claude-todo list --format text
 
-# JSON output for scripting
+# JSON with _meta envelope for scripting
 claude-todo list --format json
+
+# JSONL streaming format (one JSON object per line)
+claude-todo list --format jsonl
 
 # Markdown format for documentation
 claude-todo list --format markdown
 
 # ASCII table format
 claude-todo list --format table
+
+# CSV export (RFC 4180 compliant)
+claude-todo list --format csv
+
+# TSV export (tab-separated values)
+claude-todo list --format tsv
+```
+
+**JSON Format Structure**:
+```json
+{
+  "_meta": {
+    "version": "2.1.0",
+    "timestamp": "2025-12-12T10:00:00Z",
+    "count": 3,
+    "filtered": true,
+    "filters": {
+      "status": ["pending", "active"]
+    }
+  },
+  "tasks": [
+    {
+      "id": "T002",
+      "title": "Implement authentication",
+      "status": "active",
+      "priority": "high"
+    }
+  ]
+}
+```
+
+**JSONL Format** (streaming, one task per line):
+```
+{"id":"T001","title":"Fix bug","status":"pending","priority":"medium"}
+{"id":"T002","title":"Implement auth","status":"active","priority":"high"}
+{"id":"T003","title":"Add dashboard","status":"pending","priority":"medium"}
+```
+
+**CSV/TSV Format** (RFC 4180 compliant with proper escaping):
+```csv
+id,title,status,priority,labels
+T001,"Fix login bug",pending,medium,"backend,security"
+T002,"Implement authentication",active,high,"backend,api"
 ```
 
 #### Filtering Options
@@ -373,15 +449,17 @@ claude-todo add "TASK_TITLE" [OPTIONS]
 - `TASK_TITLE`: Task description (quoted if contains spaces)
 
 **Options**:
-- `--status <status>`: Task status (default: `pending`)
-- `--priority <priority>`: Task priority (default: `medium`)
+- `-s, --status <status>`: Task status (default: `pending`)
+- `-p, --priority <priority>`: Task priority (default: `medium`)
 - `--description <text>`: Detailed description
 - `--files <paths>`: Comma-separated file paths
 - `--acceptance <criteria>`: Comma-separated acceptance criteria
 - `--depends <ids>`: Comma-separated task IDs this depends on
 - `--blocked-by <ids>`: Comma-separated blocking task IDs
 - `--notes <text>`: Additional notes
-- `--labels <tags>`: Comma-separated labels
+- `-l, --labels <tags>`: Comma-separated labels
+- `-f, --format <format>`: Output format for success message (`text`, `json`)
+- `-q, --quiet`: Suppress informational messages
 
 **Examples**:
 ```bash
@@ -510,20 +588,23 @@ claude-todo list [OPTIONS]
 ```
 
 **Options**:
-- `--status <status>`: Filter by status (`pending`, `active`, `blocked`, `done`)
-- `--priority <priority>`: Filter by priority (`low`, `medium`, `high`, `critical`)
+- `-s, --status <status>`: Filter by status (`pending`, `active`, `blocked`, `done`)
+- `-p, --priority <priority>`: Filter by priority (`low`, `medium`, `high`, `critical`)
 - `--phase <phase>`: Filter by phase slug
-- `--label <label>`: Filter by label
+- `-l, --label <label>`: Filter by label
 - `--since <date>`: Show tasks created after date (ISO 8601: YYYY-MM-DD)
 - `--until <date>`: Show tasks created before date (ISO 8601: YYYY-MM-DD)
 - `--limit <n>`: Limit results to N tasks
 - `--all`: Include archived tasks
-- `--format <format>`: Output format (`text`, `json`, `markdown`, `table`)
+- `-f, --format <format>`: Output format (`text`, `json`, `jsonl`, `csv`, `tsv`, `markdown`, `table`)
 - `--sort <field>`: Sort by field (`status`, `priority`, `createdAt`, `title`)
 - `--reverse`: Reverse sort order
-- `--compact, -c`: Compact one-line per task view
+- `-c, --compact`: Compact one-line per task view
 - `--flat`: Don't group by priority (flat list)
 - `-v, --verbose`: Show all task details
+- `-q, --quiet`: Suppress informational messages
+- `--delimiter <char>`: Custom delimiter for CSV/TSV output
+- `--no-header`: Omit header row in CSV/TSV output
 
 **Examples**:
 ```bash
@@ -717,11 +798,13 @@ claude-todo export [OPTIONS]
 ```
 
 **Options**:
-- `--format <format>`: Output format: `todowrite`, `json`, `markdown` (default: todowrite)
+- `--format <format>`: Output format: `todowrite`, `json`, `jsonl`, `csv`, `tsv`, `markdown` (default: todowrite)
 - `--status <status>`: Comma-separated status filter (default: pending,active)
 - `--max <n>`: Maximum tasks to export (default: 10)
 - `--output <file>`: Write to file instead of stdout
-- `--quiet`: Suppress informational messages
+- `--quiet, -q`: Suppress informational messages
+- `--delimiter <char>`: Custom delimiter for CSV/TSV (default: auto)
+- `--no-header`: Omit header row in CSV/TSV output
 
 **Examples**:
 ```bash
@@ -734,11 +817,20 @@ claude-todo export --format todowrite --status active
 # Export as markdown checklist
 claude-todo export --format markdown
 
-# Export to file
-claude-todo export --format todowrite --output tasks.json
+# Export to CSV file
+claude-todo export --format csv --output tasks.csv
+
+# Export to TSV without header
+claude-todo export --format tsv --no-header
+
+# Export to JSONL for streaming
+claude-todo export --format jsonl --output tasks.jsonl
 
 # Quiet mode (no info messages)
 claude-todo export --quiet
+
+# Custom delimiter (pipe-separated)
+claude-todo export --format csv --delimiter '|' --output tasks.psv
 ```
 
 **TodoWrite Format**:
@@ -1508,6 +1600,31 @@ export CLAUDE_TODO_DATE_FORMAT=relative
 claude-todo list
 ```
 
+### Color Output Control
+
+Control color output using standard environment variables:
+
+```bash
+# Disable all colors (NO_COLOR standard)
+export NO_COLOR=1
+claude-todo list
+
+# Force colors even without TTY (CI/CD)
+export FORCE_COLOR=1
+claude-todo list | tee output.log
+
+# Per-command color control
+NO_COLOR=1 claude-todo list
+```
+
+**Color Detection Logic**:
+1. If `NO_COLOR` is set → colors disabled
+2. If `FORCE_COLOR` is set → colors enabled
+3. If stdout is not a TTY → colors disabled
+4. Otherwise → colors enabled
+
+This follows the [NO_COLOR](https://no-color.org/) standard for maximum compatibility with terminal tools and CI/CD systems.
+
 ---
 
 ## Examples and Recipes
@@ -1752,6 +1869,7 @@ claude-todo restore .claude/.backups/backup-2025-12-05-100000/
 
 ## Next Steps
 
+- **CLI Output Reference**: See [CLI-OUTPUT-REFERENCE.md](../claudedocs/CLI-OUTPUT-REFERENCE.md) for complete output format guide
 - **Configuration**: See [configuration.md](configuration.md) for detailed config options
 - **Schema Reference**: See [schema-reference.md](schema-reference.md) for complete data structure
 - **Troubleshooting**: See [troubleshooting.md](troubleshooting.md) for common issues
@@ -1773,20 +1891,49 @@ validate.sh          # Check integrity
 stats.sh             # View statistics
 backup.sh            # Create backup
 restore.sh DIR       # Restore backup
+export.sh            # Export tasks
+
+# Short Flags
+-s, --status         # Filter/set status
+-p, --priority       # Filter/set priority
+-l, --label(s)       # Filter/set labels
+-f, --format         # Output format
+-v, --verbose        # Verbose output
+-c, --compact        # Compact view
+-q, --quiet          # Quiet mode
+-h, --help           # Show help
 
 # Common Filters
---status pending     # Pending tasks only
---priority high      # High priority
---label backend      # Backend tasks
+-s pending           # Pending tasks only
+-p high              # High priority
+-l backend           # Backend tasks
 --since 2025-12-01   # Recent tasks
 --sort createdAt     # Sort by date
 --reverse            # Reverse order
 --limit 10           # First 10 tasks
---format json        # JSON output
+
+# Output Formats
+-f text              # Human-readable (default)
+-f json              # JSON with metadata
+-f jsonl             # JSON Lines (streaming)
+-f csv               # CSV export
+-f tsv               # Tab-separated
+-f markdown          # Markdown checklist
+-f table             # ASCII table
 
 # Status Values
 pending, active, blocked, done
 
 # Priority Values
 low, medium, high, critical
+
+# Color Control
+NO_COLOR=1           # Disable colors
+FORCE_COLOR=1        # Force colors
+
+# Quick Examples
+claude-todo list -p high -l backend -f json
+claude-todo add "Task" -p critical -l security -q
+claude-todo export -f csv > tasks.csv
+NO_COLOR=1 claude-todo list -s pending -c
 ```
