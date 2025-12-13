@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 81,
+    "totalEntries": 85,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-13T19:38:49Z",
+    "lastEntry": "2025-12-13T19:44:33Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -3423,6 +3423,157 @@
       "details": {
         "field": "status",
         "operation": "complete"
+      }
+    },
+    {
+      "id": "log_e51c35529e48",
+      "timestamp": "2025-12-13T19:43:54Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_0f7b1c6dca05",
+      "timestamp": "2025-12-13T19:44:31Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T175",
+      "before": {
+        "title": "Show character count in title length validation error",
+        "status": "pending",
+        "priority": "high",
+        "description": "When title exceeds 120 char limit, error message should display actual character count to help user understand how much to trim. Example: 'Title too long (145/120 characters)'",
+        "phase": "core",
+        "labels": [
+          "error-message",
+          "ux",
+          "v0.9.6",
+          "v0.9.8",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Show character count in title length validation error",
+        "status": "pending",
+        "priority": "high",
+        "description": "When title exceeds 120 char limit, error message should display actual character count to help user understand how much to trim. Example: 'Title too long (145/120 characters)'",
+        "phase": "core",
+        "labels": [
+          "error-message",
+          "ux",
+          "v0.9.8",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_fe427cd38360",
+      "timestamp": "2025-12-13T19:44:32Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T176",
+      "before": {
+        "title": "Document --notes/--skip-notes requirement for complete command",
+        "status": "pending",
+        "priority": "high",
+        "description": "The complete command now requires either --notes 'description' or --skip-notes flag. This UX change needs documentation in help text, QUICK-REFERENCE.md, and TODO_Task_Management.md",
+        "phase": "core",
+        "labels": [
+          "complete-command",
+          "documentation",
+          "ux",
+          "v0.9.6",
+          "v0.9.8"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Document --notes/--skip-notes requirement for complete command",
+        "status": "pending",
+        "priority": "high",
+        "description": "The complete command now requires either --notes 'description' or --skip-notes flag. This UX change needs documentation in help text, QUICK-REFERENCE.md, and TODO_Task_Management.md",
+        "phase": "core",
+        "labels": [
+          "complete-command",
+          "documentation",
+          "ux",
+          "v0.9.8"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_babeb2f86f9b",
+      "timestamp": "2025-12-13T19:44:33Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T177",
+      "before": {
+        "title": "Improve phase validation errors with valid options and add-phase flag",
+        "status": "pending",
+        "priority": "high",
+        "description": "When invalid phase used: 1) List valid phases from phase index in error message, 2) Add --add-phase flag to create new phase on-the-fly when intentionally adding new phases. Example error: 'Phase not found. Valid: setup, core, polish. Use --add-phase to create new.'",
+        "phase": "core",
+        "labels": [
+          "error-message",
+          "phases",
+          "ux",
+          "v0.9.6",
+          "v0.9.8",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Improve phase validation errors with valid options and add-phase flag",
+        "status": "pending",
+        "priority": "high",
+        "description": "When invalid phase used: 1) List valid phases from phase index in error message, 2) Add --add-phase flag to create new phase on-the-fly when intentionally adding new phases. Example error: 'Phase not found. Valid: setup, core, polish. Use --add-phase to create new.'",
+        "phase": "core",
+        "labels": [
+          "error-message",
+          "phases",
+          "ux",
+          "v0.9.8",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
       }
     }
   ]
