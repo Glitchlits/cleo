@@ -5,6 +5,21 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.9] - 2025-12-13
+
+### Fixed
+- **init.sh**: Support running from source directory without global installation
+  - Falls back to `$SCRIPT_DIR/../templates` when `~/.claude-todo` doesn't exist
+  - Fixes CI test failures for init-related tests
+- **init.sh**: Correct checksum calculation to match validate.sh
+  - Changed `echo -n '[]'` to `echo '[]'` for consistent newline handling
+
+### Documentation
+- **JSON output parsing**: Added examples to prevent incorrect jq usage
+  - Added `.tasks[]` examples to TODO_Task_Management.md
+  - Added JSON parsing section to CLAUDE.todo.md template
+  - Clarifies that JSON output is wrapped: `{ "_meta": {...}, "tasks": [...] }`
+
 ## [0.9.8] - 2025-12-13
 
 ### Added

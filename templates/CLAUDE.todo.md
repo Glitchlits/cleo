@@ -58,6 +58,10 @@ claude-todo complete <task-id>
 
 # List with filters
 claude-todo list --status pending --priority high
+
+# JSON output (wrapped with metadata - access via .tasks[])
+claude-todo list --format json | jq '.tasks[] | select(.status == "pending")'
+claude-todo list --format json | jq -r '.tasks[].id'
 ```
 
 ### Focus Commands
