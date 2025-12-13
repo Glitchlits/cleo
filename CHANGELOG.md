@@ -42,6 +42,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - T173: numfmt/gnumfmt cross-platform check
 - T174: date/find POSIX tools check
 
+## [0.9.6] - 2025-12-13
+
+### Fixed
+- **T132: Task ID Collision**: Implemented atomic ID generation with flock
+  - Prevents race conditions when multiple processes add tasks concurrently
+  - Lock acquired before ID generation, held through task write
+  - 30-second timeout with proper cleanup on exit/error
+- **T144: Validate Checksum Recovery**: Fixed error counting logic
+  - `validate --fix` no longer increments error count when fix succeeds
+  - Correct exit code (0) after successful checksum repair
+- **T146: File Locking Concurrency**: Fixed lock_file function
+  - Immediate exit on flock timeout instead of retrying all FDs
+  - Proper distinction between "can't open FD" vs "lock held by other process"
+- **T160: Schema Validation**: Added missing validation checks
+  - Schema version compatibility check (major version 2.x required)
+  - Required field validation (id, title, status, priority, createdAt)
+
+### Changed
+- **CI Workflow**: Added bats-core installation for GitHub Actions
+  - Tests now run correctly in CI environment
+  - Helper libraries bundled in tests/libs/
+
+### Tests Fixed
+- **T145**: Orphaned dependency cleanup (verified already working)
+- **T147**: Stats command test assertions (case sensitivity, variable scope)
+- **T159**: Integration workflow tests (15/15 passing)
+  - Fixed pipefail interaction in circular dependency validation
+  - Fixed archive flag (--force → --all) for test scenarios
+  - Fixed focus field name (.currentTaskId → .currentTask)
+- **edge-cases.bats**: Fixed archive flag for orphaned dependency tests
+- **error-recovery.bats**: Fixed archive flag for dependency cleanup tests
+
+### Tasks Completed
+- T132: P0 - Fix task ID collision under concurrent operations
+- T144: Fix validate checksum recovery test
+- T145: Fix orphaned dependency cleanup tests
+- T146: Fix file locking concurrency tests
+- T147: Fix stats command tests
+- T159: Fix integration workflow tests
+- T160: Fix schema validation tests
+
 ## [0.9.5] - 2025-12-13
 
 ### Fixed
