@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 85,
+    "totalEntries": 90,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-13T19:44:33Z",
+    "lastEntry": "2025-12-13T19:53:55Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -3575,6 +3575,151 @@
       "details": {
         "operation": "update"
       }
+    },
+    {
+      "id": "log-1765655292-7ae2b9",
+      "timestamp": "2025-12-13T19:48:12Z",
+      "operation": "create",
+      "task_id": "T178",
+      "user": "system",
+      "details": {
+        "title": "Test task for new phase",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test task for new phase",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1765655292-71619f",
+      "timestamp": "2025-12-13T19:48:12Z",
+      "operation": "create",
+      "task_id": "T179",
+      "user": "system",
+      "details": {
+        "title": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1765655303-a876c6",
+      "timestamp": "2025-12-13T19:48:23Z",
+      "operation": "create",
+      "task_id": "T180",
+      "user": "system",
+      "details": {
+        "title": "$(printf 'a%.0s' {1..145})",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "$(printf 'a%.0s' {1..145})",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_71dcae966597",
+      "timestamp": "2025-12-13T19:48:36Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T179",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-13T19:48:36Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_93d705b884f1",
+      "timestamp": "2025-12-13T19:53:07Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T175",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-13T19:53:06Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_980ff138197b",
+      "timestamp": "2025-12-13T19:53:08Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T176",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-13T19:53:08Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_df1a1eff6f83",
+      "timestamp": "2025-12-13T19:53:09Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T177",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-13T19:53:09Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_f8d9be941007",
+      "timestamp": "2025-12-13T19:53:55Z",
+      "sessionId": "session_20251213_114354_e04f6e",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": null
     }
   ]
 }

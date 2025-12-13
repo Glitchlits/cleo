@@ -2,13 +2,13 @@
   "$schema": "./schemas/todo.schema.json",
   "version": "2.1.0",
   "project": "claude-todo",
-  "lastUpdated": "2025-12-13T19:44:33Z",
+  "lastUpdated": "2025-12-13T19:53:09Z",
   "_meta": {
-    "checksum": "1f663767d5bb5ae9",
+    "checksum": "2a4fbba6591f64f7",
     "configVersion": "2.1.0",
     "lastSessionId": null,
-    "activeSession": "session_20251213_114354_e04f6e",
-    "lastModified": "2025-12-13T19:43:54Z"
+    "activeSession": null,
+    "lastModified": "2025-12-13T19:53:55Z"
   },
   "focus": {
     "currentTask": null,
@@ -1417,7 +1417,7 @@
     {
       "id": "T175",
       "title": "Show character count in title length validation error",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-13T19:26:54Z",
       "phase": "core",
@@ -1427,12 +1427,16 @@
         "ux",
         "v0.9.8",
         "validation"
+      ],
+      "completedAt": "2025-12-13T19:53:06Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T19:53:06Z] Implemented character count display in title validation error. Shows format: Title too long (145/120 characters). Validated and tested."
       ]
     },
     {
       "id": "T176",
       "title": "Document --notes/--skip-notes requirement for complete command",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-13T19:26:57Z",
       "phase": "core",
@@ -1442,12 +1446,16 @@
         "documentation",
         "ux",
         "v0.9.8"
+      ],
+      "completedAt": "2025-12-13T19:53:08Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T19:53:08Z] Documented --notes and --skip-notes requirements in complete-task.sh help, QUICK-REFERENCE.md, and TODO_Task_Management.md. Added Complete Options table."
       ]
     },
     {
       "id": "T177",
       "title": "Improve phase validation errors with valid options and add-phase flag",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-13T19:26:58Z",
       "phase": "core",
@@ -1458,7 +1466,19 @@
         "ux",
         "v0.9.8",
         "validation"
+      ],
+      "completedAt": "2025-12-13T19:53:09Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T19:53:09Z] Added --add-phase flag to add-task.sh and update-task.sh. Phase validation now lists valid phases on error. add_new_phase() creates phases on-the-fly with auto-generated names."
       ]
+    },
+    {
+      "id": "T180",
+      "title": "$(printf 'a%.0s' {1..145})",
+      "status": "pending",
+      "priority": "medium",
+      "createdAt": "2025-12-13T19:48:23Z",
+      "description": "test"
     }
   ],
   "phases": {
