@@ -60,14 +60,14 @@ DESCRIPTION
     Claude Code integration.
 
 OPTIONS
-    --format FORMAT      Output format: todowrite, json, markdown, csv, tsv (default: todowrite)
-    --status STATUS      Comma-separated status filter (default: pending,active)
-    --max N              Maximum tasks to export (default: 10)
-    --output FILE        Write to file instead of stdout
-    --delimiter CHAR     Custom delimiter for CSV (default: comma)
-    --no-header          Skip header row in CSV/TSV output
-    --quiet              Suppress informational messages
-    -h, --help           Show this help
+    -f, --format FORMAT      Output format: todowrite, json, markdown, csv, tsv (default: todowrite)
+    -s, --status STATUS      Comma-separated status filter (default: pending,active)
+    -m, --max N              Maximum tasks to export (default: 10)
+    -o, --output FILE        Write to file instead of stdout
+    -d, --delimiter CHAR     Custom delimiter for CSV (default: comma)
+        --no-header          Skip header row in CSV/TSV output
+    -q, --quiet              Suppress informational messages
+    -h, --help               Show this help
 
 FORMATS
     todowrite    Claude Code TodoWrite format with content, activeForm, status
@@ -163,23 +163,23 @@ EOF
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --format)
+            -f|--format)
                 FORMAT="${2:-todowrite}"
                 shift 2
                 ;;
-            --status)
+            -s|--status)
                 STATUS_FILTER="${2:-pending,active}"
                 shift 2
                 ;;
-            --max)
+            -m|--max)
                 MAX_TASKS="${2:-10}"
                 shift 2
                 ;;
-            --output)
+            -o|--output)
                 OUTPUT_FILE="${2:-}"
                 shift 2
                 ;;
-            --delimiter)
+            -d|--delimiter)
                 DELIMITER="${2:-,}"
                 shift 2
                 ;;
@@ -187,7 +187,7 @@ parse_args() {
                 INCLUDE_HEADER=false
                 shift
                 ;;
-            --quiet)
+            -q|--quiet)
                 QUIET=true
                 shift
                 ;;

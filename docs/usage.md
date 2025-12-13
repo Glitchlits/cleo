@@ -82,8 +82,11 @@ claude-todo add "Implement user authentication" \
 # List current tasks
 claude-todo list
 
-# Mark task complete
-claude-todo complete <task-id>
+# Mark task complete (with notes)
+claude-todo complete <task-id> --notes "Description of what was done"
+
+# Quick complete (skip notes)
+claude-todo complete <task-id> --skip-notes
 
 # View statistics
 claude-todo stats
@@ -277,19 +280,32 @@ claude-todo list --limit 10
 ### Completing Tasks
 
 ```bash
-# Complete a task by ID
-claude-todo complete T001
+# Complete a task with notes (required by default)
+claude-todo complete T001 --notes "Implemented feature. Tests passing."
+claude-todo complete T001 -n "Fixed bug, verified with unit tests."
+
+# Complete without notes (for quick completions)
+claude-todo complete T001 --skip-notes
 
 # Complete without triggering auto-archive
-claude-todo complete T001 --skip-archive
+claude-todo complete T001 --notes "Done" --skip-archive
 ```
+
+**Completion Notes (v0.7.2+)**:
+Completion notes are required by default for better task tracking and audit trails.
+Notes should describe: what was done, how it was verified, and relevant references
+(commit hashes, PR numbers, documentation links).
+
+Notes are stored in the task's `notes` array with a `[COMPLETED timestamp]` prefix
+and preserved when the task is archived.
 
 **What Happens on Completion**:
 1. Task status changes from `pending`/`active` → `done`
 2. `completedAt` timestamp added automatically
-3. Operation logged to `todo-log.json`
-4. Auto-archive triggered if enabled in config
-5. Success message displays task ID and completion time
+3. Completion note added to task's `notes` array (if provided)
+4. Operation logged to `todo-log.json`
+5. Auto-archive triggered if enabled in config
+6. Success message displays task ID, completion time, and notes
 
 ### Archiving Tasks
 

@@ -30,6 +30,8 @@ fi
 # Defaults
 TASK_ID=""
 SKIP_ARCHIVE=false
+NOTES=""
+SKIP_NOTES=false
 
 usage() {
   cat << EOF
@@ -38,15 +40,25 @@ Usage: $(basename "$0") TASK_ID [OPTIONS]
 Mark a task as complete (status='done') and set completedAt timestamp.
 
 Arguments:
-  TASK_ID         Task ID to complete (e.g., T001)
+  TASK_ID                 Task ID to complete (e.g., T001)
 
 Options:
-  --skip-archive  Don't trigger auto-archive even if configured
-  -h, --help      Show this help
+  -n, --notes TEXT        Completion notes describing what was done (required)
+  --skip-notes            Skip notes requirement (use for quick completions)
+  --skip-archive          Don't trigger auto-archive even if configured
+  -h, --help              Show this help
+
+Notes Requirement:
+  Completion notes are required by default for better task tracking and audit trails.
+  Use --skip-notes to bypass this for quick completions.
+
+  Good notes describe: what was done, how it was verified, and any relevant references
+  (commit hashes, PR numbers, documentation links).
 
 Examples:
-  $(basename "$0") T001
-  $(basename "$0") T042 --skip-archive
+  $(basename "$0") T001 --notes "Implemented auth middleware. Tested with unit tests."
+  $(basename "$0") T042 --notes "Fixed bug #123. PR merged."
+  $(basename "$0") T042 --skip-notes --skip-archive
 
 After completion, if auto_archive_on_complete is enabled in config,
 the archive script will run automatically.
@@ -75,11 +87,30 @@ fi
 while [[ $# -gt 0 ]]; do
   case $1 in
     -h|--help) usage ;;
+    -n|--notes)
+      NOTES="${2:-}"
+      if [[ -z "$NOTES" ]]; then
+        log_error "--notes requires a text argument"
+        exit 1
+      fi
+      shift 2
+      ;;
+    --skip-notes) SKIP_NOTES=true; shift ;;
     --skip-archive) SKIP_ARCHIVE=true; shift ;;
     -*) log_error "Unknown option: $1"; exit 1 ;;
     *) TASK_ID="$1"; shift ;;
   esac
 done
+
+# Require notes unless --skip-notes is provided
+if [[ -z "$NOTES" && "$SKIP_NOTES" == false ]]; then
+  log_error "Completion notes required. Use --notes 'description' or --skip-notes to bypass."
+  echo "" >&2
+  echo "Example:" >&2
+  echo "  claude-todo complete $TASK_ID --notes 'Implemented feature. Tests passing.'" >&2
+  echo "  claude-todo complete $TASK_ID --skip-notes" >&2
+  exit 1
+fi
 
 check_deps
 
@@ -152,16 +183,30 @@ BEFORE_STATE=$(echo "$TASK" | jq '{status, completedAt}')
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 SESSION_ID=$(jq -r '._meta.activeSession // "system"' "$TODO_FILE")
 
-# Update task: set status=done, add completedAt, clear blockedBy if present
-UPDATED_TASKS=$(jq --arg id "$TASK_ID" --arg ts "$TIMESTAMP" '
-  .tasks |= map(
-    if .id == $id then
-      .status = "done" |
-      .completedAt = $ts |
-      del(.blockedBy)
-    else . end
-  )
-' "$TODO_FILE")
+# Update task: set status=done, add completedAt, clear blockedBy, and add completion note
+if [[ -n "$NOTES" ]]; then
+  COMPLETION_NOTE="[COMPLETED $TIMESTAMP] $NOTES"
+  UPDATED_TASKS=$(jq --arg id "$TASK_ID" --arg ts "$TIMESTAMP" --arg note "$COMPLETION_NOTE" '
+    .tasks |= map(
+      if .id == $id then
+        .status = "done" |
+        .completedAt = $ts |
+        del(.blockedBy) |
+        .notes = ((.notes // []) + [$note])
+      else . end
+    )
+  ' "$TODO_FILE")
+else
+  UPDATED_TASKS=$(jq --arg id "$TASK_ID" --arg ts "$TIMESTAMP" '
+    .tasks |= map(
+      if .id == $id then
+        .status = "done" |
+        .completedAt = $ts |
+        del(.blockedBy)
+      else . end
+    )
+  ' "$TODO_FILE")
+fi
 
 # Recalculate checksum
 NEW_TASKS=$(echo "$UPDATED_TASKS" | jq -c '.tasks')
@@ -206,6 +251,9 @@ echo -e "${BLUE}Task:${NC} $TASK_TITLE"
 echo -e "${BLUE}ID:${NC} $TASK_ID"
 echo -e "${BLUE}Status:${NC} $CURRENT_STATUS → done"
 echo -e "${BLUE}Completed:${NC} $TIMESTAMP"
+if [[ -n "$NOTES" ]]; then
+  echo -e "${BLUE}Notes:${NC} $NOTES"
+fi
 
 # Log the operation
 if [[ -f "$LOG_SCRIPT" ]]; then

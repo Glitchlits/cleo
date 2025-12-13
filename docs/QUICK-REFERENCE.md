@@ -32,7 +32,8 @@ claude-todo init                      # Initialize project
 
 # TASKS
 claude-todo add "Task description"    # Create task
-claude-todo complete <task-id>        # Complete task
+claude-todo complete <id> --notes "What was done"  # Complete with notes
+claude-todo complete <id> --skip-notes             # Quick complete
 claude-todo list                      # List all tasks
 claude-todo list --status pending     # Filter by status
 
