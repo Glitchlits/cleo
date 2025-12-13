@@ -95,6 +95,7 @@ claude-todo list --format json             # Output format (text|json|jsonl|mark
 ### START
 ```bash
 claude-todo session start
+claude-todo list                           # See current task state
 claude-todo dash                           # Overview of project state
 claude-todo focus show                     # Check current focus
 ```
@@ -118,14 +119,19 @@ claude-todo session end
 ## Task Organization
 
 ### Labels (Categorization)
+Use labels for grouping and filtering:
 ```bash
+# Feature tracking
 claude-todo add "JWT middleware" --labels feature-auth,backend
-claude-todo list --label feature-auth      # Filter tasks
+
+# Find all auth tasks
+claude-todo list --label feature-auth
 claude-todo labels                         # See all labels with counts
 claude-todo labels show feature-auth       # All tasks with label
 ```
 
 ### Phases (Workflow Stages)
+Predefined project phases (setup → core → polish):
 ```bash
 claude-todo add "Implement API" --phase core
 claude-todo list --phase core              # Filter by phase
@@ -134,12 +140,31 @@ claude-todo phases stats                   # Detailed breakdown
 ```
 
 ### Dependencies (Task Ordering)
+Block tasks until prerequisites complete:
 ```bash
 claude-todo add "Write tests" --depends T001,T002
+# Task stays pending until T001, T002 are done
 claude-todo deps T001                      # What depends on T001
 claude-todo blockers                       # What's blocking progress
 claude-todo blockers analyze               # Critical path analysis
 ```
+
+### Planning Pattern
+```bash
+# Phase 1 tasks
+claude-todo add "Design API" --phase setup --priority high
+claude-todo add "Create schema" --phase setup --depends T050
+
+# Phase 2 tasks (blocked until phase 1)
+claude-todo add "Implement endpoints" --phase core --depends T050,T051
+```
+
+## Notes: focus.note vs update --notes
+
+| Command | Purpose | Storage |
+|---------|---------|---------|
+| `focus note "text"` | Session-level progress | `.focus.sessionNote` (replaces) |
+| `update T001 --notes "text"` | Task-specific notes | `.tasks[].notes[]` (appends with timestamp) |
 
 ## Error Recovery
 
@@ -152,8 +177,9 @@ claude-todo blockers analyze               # Critical path analysis
 | Session already active | `claude-todo session status` then `session end` |
 | Schema outdated | `claude-todo migrate run` |
 
-## Command Aliases
+## Command Aliases (v0.6.0+)
 
+Built-in CLI aliases for faster workflows:
 ```bash
 claude-todo ls              # list
 claude-todo done T001       # complete T001
