@@ -2,9 +2,9 @@
   "$schema": "./schemas/todo.schema.json",
   "version": "2.1.0",
   "project": "claude-todo",
-  "lastUpdated": "2025-12-13T18:42:51Z",
+  "lastUpdated": "2025-12-13T18:41:35Z",
   "_meta": {
-    "checksum": "d9dc47bc57ba2403",
+    "checksum": "6c7e70fc4ca197ee",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null,
@@ -33,6 +33,44 @@
         "2025-12-09 01:17:53 UTC: Verified update command works through CLI"
       ],
       "completedAt": "2025-12-12T19:41:28Z"
+    },
+    {
+      "id": "T041",
+      "title": "Review and consolidate all documentation files",
+      "status": "done",
+      "priority": "high",
+      "createdAt": "2025-12-06T17:19:25Z",
+      "description": "Comprehensive docs review: 1) Walk through each docs/*.md file confirming content accuracy and facts 2) Move root markdown files to docs/ (keep only README.md, CHANGELOG.md, CLAUDE.md, CONTRIBUTING.md in root) 3) Files to move: ARCHITECTURE.md, SYSTEM-DESIGN-SUMMARY.md, MIGRATION-SYSTEM-SUMMARY.md 4) Update all cross-references after moves 5) Verify INDEX.md reflects final structure",
+      "labels": [
+        "documentation",
+        "cleanup",
+        "consolidation"
+      ],
+      "completedAt": "2025-12-06T18:00:38Z"
+    },
+    {
+      "id": "T042",
+      "title": "Test checksum auto-fix",
+      "status": "done",
+      "priority": "low",
+      "createdAt": "2025-12-06T18:02:46Z",
+      "completedAt": "2025-12-06T18:03:11Z"
+    },
+    {
+      "id": "T043",
+      "title": "Test new checksum behavior",
+      "status": "done",
+      "priority": "low",
+      "createdAt": "2025-12-06T18:07:13Z",
+      "completedAt": "2025-12-06T18:07:20Z"
+    },
+    {
+      "id": "T044",
+      "title": "Final test task",
+      "status": "done",
+      "priority": "low",
+      "createdAt": "2025-12-06T18:13:12Z",
+      "completedAt": "2025-12-06T18:13:18Z"
     },
     {
       "id": "T045",
@@ -900,10 +938,7 @@
         "issue",
         "test"
       ],
-      "phase": "core",
-      "notes": [
-        "2025-12-13 18:42:49 UTC: Reference docs: claudedocs/FILE-LOCKING-ANALYSIS.md, claudedocs/file-locking-quick-reference.md"
-      ]
+      "phase": "core"
     },
     {
       "id": "T147",
@@ -1141,9 +1176,6 @@
         "architecture",
         "backup-system",
         "v1.0.0"
-      ],
-      "notes": [
-        "2025-12-13 18:42:51 UTC: Reference docs: claudedocs/BACKUP-ARCHITECTURE.md, claudedocs/BACKUP-SYSTEM-STATUS.md"
       ]
     },
     {
