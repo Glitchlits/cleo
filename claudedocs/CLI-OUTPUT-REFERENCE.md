@@ -205,7 +205,6 @@ T003,"Add user dashboard",pending,medium,"frontend;ui","",2025-12-05T10:15:00Z
 ```
 
 **Commands Supporting CSV**:
-- `list --format csv`
 - `export --format csv`
 - `stats --format csv`
 
@@ -216,16 +215,16 @@ T003,"Add user dashboard",pending,medium,"frontend;ui","",2025-12-05T10:15:00Z
 **Use Cases**:
 ```bash
 # Export to Excel-compatible CSV
-claude-todo list -f csv > tasks.csv
+claude-todo export -f csv > tasks.csv
 
 # Custom delimiter (pipe-separated)
-claude-todo list -f csv --delimiter '|' > tasks.psv
+claude-todo export -f csv --delimiter '|' > tasks.psv
 
 # Import to PostgreSQL
-claude-todo list -f csv | psql -c "COPY tasks FROM STDIN CSV HEADER"
+claude-todo export -f csv | psql -c "COPY tasks FROM STDIN CSV HEADER"
 
 # No header for scripts
-claude-todo list -f csv --no-header | while IFS=, read -r id title status; do
+claude-todo export -f csv --no-header | while IFS=, read -r id title status; do
   echo "Task $id: $title ($status)"
 done
 ```
@@ -251,22 +250,21 @@ T003	Add user dashboard	pending	medium	frontend;ui		2025-12-05T10:15:00Z
 ```
 
 **Commands Supporting TSV**:
-- `list --format tsv`
 - `export --format tsv`
 
 **Use Cases**:
 ```bash
 # Cut columns with cut command
-claude-todo list -f tsv | cut -f1,2,3
+claude-todo export -f tsv | cut -f1,2,3
 
 # AWK processing
-claude-todo list -f tsv | awk -F'\t' '$3 == "active" {print $2}'
+claude-todo export -f tsv | awk -F'\t' '$3 == "active" {print $2}'
 
 # Sort by priority
-claude-todo list -f tsv --no-header | sort -t$'\t' -k4
+claude-todo export -f tsv --no-header | sort -t$'\t' -k4
 
 # Import to SQLite
-.import "|claude-todo list -f tsv" tasks
+.import "|claude-todo export -f tsv" tasks
 ```
 
 ---
@@ -480,7 +478,7 @@ tail -f tasks.jsonl | jq -c 'select(.priority == "critical")'
 **Format**: `csv`
 ```bash
 # Excel import
-claude-todo list -f csv > tasks.csv
+claude-todo export -f csv > tasks.csv
 
 # Google Sheets import
 claude-todo export -f csv | gsheet-import --sheet "Tasks"
@@ -490,10 +488,10 @@ claude-todo export -f csv | gsheet-import --sheet "Tasks"
 **Format**: `tsv`
 ```bash
 # AWK processing
-claude-todo list -f tsv | awk -F'\t' '$3 == "active" {print $2}'
+claude-todo export -f tsv | awk -F'\t' '$3 == "active" {print $2}'
 
 # Cut specific columns
-claude-todo list -f tsv | cut -f1,2,4
+claude-todo export -f tsv | cut -f1,2,4
 ```
 
 ### Documentation Generation
@@ -637,7 +635,7 @@ claude-todo list -f json -q
 ```bash
 #!/bin/bash
 # export-to-sheets.sh - Google Sheets export
-claude-todo list -f csv | \
+claude-todo export -f csv | \
   gsheet-import \
     --spreadsheet "Team Tasks" \
     --sheet "Current Sprint" \
@@ -670,7 +668,7 @@ CREATE TABLE tasks (
   created_at TIMESTAMP
 );
 
-\copy tasks FROM PROGRAM 'claude-todo list -f csv --no-header' CSV
+\copy tasks FROM PROGRAM 'claude-todo export -f csv --no-header' CSV
 ```
 
 ---
@@ -701,10 +699,10 @@ FORCE_COLOR=1 claude-todo list
 **Solution**: Claude-todo follows RFC 4180 strictly. If issues persist:
 ```bash
 # Use TSV instead
-claude-todo list -f tsv
+claude-todo export -f tsv
 
 # Or custom delimiter
-claude-todo list -f csv --delimiter '|'
+claude-todo export -f csv --delimiter '|'
 ```
 
 ### JSONL Parsing Errors

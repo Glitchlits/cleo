@@ -702,8 +702,8 @@ claude-todo list --format json | \
   jq -r '.tasks[] | "## \(.title)\n\n\(.description // "")\n\nPriority: \(.priority)\nLabels: \(.labels | join(", "))\n"' \
   > github-issues.md
 
-# Export to CSV for spreadsheet
-claude-todo list --format csv > tasks.csv
+# Export to CSV for spreadsheet (via export command)
+claude-todo export --format csv > tasks.csv
 
 # Export to JIRA import format
 claude-todo list --format json | \

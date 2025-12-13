@@ -20,6 +20,8 @@ This command is ideal for:
 - Finding bottleneck tasks that unblock the most work
 - Prioritizing which tasks to complete first
 
+> **Note**: Critical path and bottleneck analysis features require the `analysis.sh` library to be available.
+
 ## Subcommands
 
 | Subcommand | Description |
@@ -62,6 +64,16 @@ T008 - Deploy to production
 
 Total: 2 blocked tasks
 ```
+
+### Status Symbols
+
+The text output uses these status indicators:
+| Symbol | Status | Color |
+|--------|--------|-------|
+| `✓` | Done | Green |
+| `→` | Active | Yellow |
+| `⊗` | Blocked | Red |
+| ` ` | Pending | Default |
 
 ### Analyze Blocking Chains
 
@@ -112,15 +124,15 @@ JSON output example:
     "timestamp": "2025-12-12T10:30:00Z",
     "command": "blockers"
   },
-  "blocked_tasks": [
+  "blockedTasks": [
     {
       "id": "T005",
       "title": "Implement login page",
-      "blocked_by": ["T003"],
-      "chain_depth": 1
+      "blockedBy": ["T003"],
+      "chainDepth": 1
     }
   ],
-  "total_blocked": 1
+  "totalBlocked": 1
 }
 ```
 

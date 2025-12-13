@@ -5,6 +5,59 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1] - 2025-12-13
+
+### Fixed
+- **Documentation Accuracy**: Achieved 100% documentation accuracy across all priority levels
+  - **P0 Critical** (3 issues): Removed phantom features (CSV/TSV in list, validate_anti_hallucination), implemented migrate.sh --force
+  - **P1 High** (7 issues): Created missing docs (phases.md, export.md, backup.md), documented cache.sh and analysis.sh libraries
+  - **P2 Medium** (5 commands): Fixed complete-task.sh, focus.sh, labels.sh, blockers-command.sh, deps-command.sh documentation
+  - **P3 Low** (68 functions): Fully documented output-format.sh, logging.sh, file-ops.sh, validation.sh libraries
+- **Code Fixes**:
+  - `scripts/migrate.sh`: Implemented --force flag (was documented but not parsed)
+  - `scripts/focus.sh`: Fixed task ID format (T001 not task_timestamp), removed .content fallback
+
+### Changed
+- **docs/QUICK-REFERENCE.md**: Added comprehensive library documentation for 65+ functions
+- **docs/commands/**: Created phases.md, export.md, backup.md with full command references
+- **docs/INDEX.md**: Updated with all new command documentation references
+
+### Added
+- **claudedocs/FINAL-DOCUMENTATION-STATUS.md**: Complete documentation accuracy report
+
+## [0.9.0] - 2025-12-12
+
+### Added
+- **phases.sh**: New command for phase management
+  - `claude-todo phases list` - Display all phases with progress bars
+  - `claude-todo phases show <phase>` - Show tasks in specific phase
+  - `claude-todo phases stats` - Detailed phase statistics
+- **Index Caching**: O(1) label and phase lookups via cache.sh library
+- **Critical Path Analysis**: analysis.sh library for dependency analysis
+- **Golden Tests**: Comprehensive test fixtures for all commands
+
+### Changed
+- **Performance**: Significant improvements via caching layer
+- **Dashboard**: Enhanced dash command with phase integration
+
+## [0.8.3] - 2025-12-12
+
+### Fixed
+- **Atomic Archive Operations**: Implemented proper atomic operations with dependency cleanup
+- **Archive Consistency**: Fixed race conditions in archive operations
+
+## [0.8.2] - 2025-12-12
+
+### Fixed
+- **NO_COLOR Support**: Proper handling of NO_COLOR environment variable
+- **Format Validation**: Consistent format validation across all commands
+- **Short Flags**: Fixed short flag parsing inconsistencies
+
+## [0.8.1] - 2025-12-12
+
+### Fixed
+- **Critical Bug Fixes**: NO_COLOR handling, short flags, consistency improvements
+
 ## [0.7.1] - 2025-12-12
 
 ### Fixed

@@ -28,7 +28,7 @@
 | **[usage.md](usage.md)** | Usage guide and examples | Learning system operations |
 | **[PHASE-3-FEATURES.md](PHASE-3-FEATURES.md)** | Phase 3 features overview (v0.8.2) | Understanding new workflow commands |
 | **[TODO_Task_Management.md](TODO_Task_Management.md)** | CLI reference (installed to ~/.claude-todo/docs/) | Quick CLI command reference |
-| **[cli-output-formats.md](reference/cli-output-formats.md)** | Output formats reference | Understanding JSON, CSV, JSONL output |
+| **[cli-output-formats.md](reference/cli-output-formats.md)** | Output formats reference | Understanding output formats (list: text/json/jsonl/markdown/table, export: csv/tsv) |
 | **[configuration.md](reference/configuration.md)** | Configuration reference | Customizing system behavior |
 | **[schema-reference.md](architecture/SCHEMAS.md)** | Data schema documentation | Understanding data structures |
 | **[troubleshooting.md](reference/troubleshooting.md)** | Troubleshooting guide | Resolving issues |
@@ -44,6 +44,9 @@
 | **[commands/next.md](commands/next.md)** | Next command documentation | Using intelligent task suggestions |
 | **[commands/deps.md](commands/deps.md)** | Dependency visualization documentation | Understanding task dependencies |
 | **[commands/blockers.md](commands/blockers.md)** | Blockers command documentation | Analyzing blocked tasks and chains |
+| **[commands/phases.md](commands/phases.md)** | Phase management command documentation | Managing project phases and phase-based workflows |
+| **[commands/export.md](commands/export.md)** | Export command documentation | Exporting tasks in CSV, TSV, JSON, markdown formats |
+| **[commands/backup.md](commands/backup.md)** | Backup and restore command documentation | Creating, listing, and restoring backups |
 
 ### 🔬 Technical Reference
 

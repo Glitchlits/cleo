@@ -369,11 +369,11 @@ claude-todo list --format markdown
 # ASCII table
 claude-todo list --format table
 
-# CSV export (RFC 4180 compliant)
-claude-todo list --format csv
+# CSV export (RFC 4180 compliant) - via export command
+claude-todo export --format csv
 
-# TSV export (tab-separated values)
-claude-todo list --format tsv
+# TSV export (tab-separated values) - via export command
+claude-todo export --format tsv
 ```
 
 ### Format-Specific Options
@@ -435,20 +435,20 @@ claude-todo list --format json | jq '.tasks'
 #### CSV/TSV Format
 
 ```bash
-# Standard CSV with header
-claude-todo list --format csv
+# Standard CSV with header (via export command)
+claude-todo export --format csv
 
-# TSV with header
-claude-todo list --format tsv
+# TSV with header (via export command)
+claude-todo export --format tsv
 
 # CSV without header
-claude-todo list --format csv --no-header
+claude-todo export --format csv --no-header
 
 # Custom delimiter (pipe-separated)
-claude-todo list --format csv --delimiter '|'
+claude-todo export --format csv --delimiter '|'
 
 # Save to file
-claude-todo list --format csv > tasks.csv
+claude-todo export --format csv > tasks.csv
 ```
 
 #### Markdown Format
@@ -658,8 +658,8 @@ claude-todo list \
 ### Output Redirection
 
 ```bash
-# Export to CSV
-claude-todo list -f csv > tasks.csv
+# Export to CSV (via export command)
+claude-todo export -f csv > tasks.csv
 
 # Export to JSON
 claude-todo list -f json > tasks.json

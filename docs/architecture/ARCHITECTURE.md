@@ -683,7 +683,6 @@ claude-todo init
 
 ### validation.sh
 - `validate_schema()` - JSON Schema validation
-- `validate_anti_hallucination()` - Semantic checks
 - `check_duplicate_ids()` - Cross-file uniqueness
 - `validate_task_object()` - Single task validation
 

@@ -204,6 +204,133 @@
           "description": "Warn about tasks pending longer than this."
         }
       }
+    },
+
+    "output": {
+      "type": "object",
+      "description": "Output formatting and display preferences.",
+      "additionalProperties": false,
+      "properties": {
+        "defaultFormat": {
+          "type": "string",
+          "enum": ["text", "json", "jsonl", "csv", "tsv", "markdown", "table"],
+          "default": "text",
+          "description": "Default output format for list and export commands."
+        },
+        "showColor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable ANSI color output. Respects NO_COLOR env var."
+        },
+        "showUnicode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use Unicode symbols and box-drawing characters."
+        },
+        "showProgressBars": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show progress bars in dashboard and phase views."
+        },
+        "csvDelimiter": {
+          "type": "string",
+          "maxLength": 1,
+          "default": ",",
+          "description": "Delimiter for CSV export (comma, tab, semicolon)."
+        },
+        "dateFormat": {
+          "type": "string",
+          "enum": ["iso8601", "relative", "unix", "locale"],
+          "default": "iso8601",
+          "description": "Date/time display format: iso8601, relative (5min ago), unix, locale."
+        },
+        "showCompactTitles": {
+          "type": "boolean",
+          "default": false,
+          "description": "Truncate long task titles in list view."
+        },
+        "maxTitleLength": {
+          "type": "integer",
+          "minimum": 20,
+          "maximum": 200,
+          "default": 80,
+          "description": "Maximum title length when showCompactTitles is enabled."
+        }
+      }
+    },
+
+    "cli": {
+      "type": "object",
+      "description": "CLI behavior, aliases, and plugin settings.",
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "type": "object",
+          "description": "Command aliases mapping short names to commands.",
+          "additionalProperties": {
+            "type": "string",
+            "description": "Target command name."
+          },
+          "default": {
+            "ls": "list",
+            "done": "complete",
+            "new": "add",
+            "edit": "update",
+            "rm": "archive",
+            "check": "validate"
+          }
+        },
+        "plugins": {
+          "type": "object",
+          "description": "Plugin system configuration.",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable plugin discovery and loading."
+            },
+            "directories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "default": ["~/.claude-todo/plugins", "./.claude/plugins"],
+              "description": "Directories to scan for plugins (in order of priority)."
+            },
+            "autoDiscover": {
+              "type": "boolean",
+              "default": true,
+              "description": "Auto-discover plugins from directories."
+            }
+          }
+        },
+        "debug": {
+          "type": "object",
+          "description": "Debug and validation settings for CLI.",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable debug mode (verbose output, validation checks)."
+            },
+            "validateMappings": {
+              "type": "boolean",
+              "default": true,
+              "description": "Validate command-to-script mappings exist."
+            },
+            "checksumVerify": {
+              "type": "boolean",
+              "default": true,
+              "description": "Verify script checksums for integrity."
+            },
+            "showTimings": {
+              "type": "boolean",
+              "default": false,
+              "description": "Show command execution timings."
+            }
+          }
+        }
+      }
     }
   }
 }

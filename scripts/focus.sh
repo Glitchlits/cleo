@@ -64,7 +64,7 @@ Options:
   -h, --help      Show this help
 
 Examples:
-  claude-todo focus set task_1733395200_abc123
+  claude-todo focus set T001
   claude-todo focus note "Completed API endpoints, working on tests"
   claude-todo focus next "Write unit tests for auth module"
   claude-todo focus clear
@@ -204,7 +204,7 @@ cmd_set() {
 
   # Get task title for display
   local task_title
-  task_title=$(jq -r --arg id "$task_id" '.tasks[] | select(.id == $id) | .content // .title // "Unknown"' "$TODO_FILE")
+  task_title=$(jq -r --arg id "$task_id" '.tasks[] | select(.id == $id) | .title // "Unknown"' "$TODO_FILE")
 
   log_step "Focus set: $task_title"
   log_info "Task ID: $task_id"
@@ -281,7 +281,7 @@ cmd_show() {
     if [[ -n "$current_task" ]]; then
       local task_title
       local task_status
-      task_title=$(jq -r --arg id "$current_task" '.tasks[] | select(.id == $id) | .content // .title // "Unknown"' "$TODO_FILE")
+      task_title=$(jq -r --arg id "$current_task" '.tasks[] | select(.id == $id) | .title // "Unknown"' "$TODO_FILE")
       task_status=$(jq -r --arg id "$current_task" '.tasks[] | select(.id == $id) | .status // "unknown"' "$TODO_FILE")
       echo -e "Task: ${GREEN}$task_title${NC}"
       echo "  ID: $current_task"

@@ -39,6 +39,13 @@ claude-todo list --status pending     # Filter by status
 claude-todo next                      # Get next task suggestion
 claude-todo next --explain            # Show why task is suggested
 
+# FOCUS MANAGEMENT
+claude-todo focus set <id>            # Set focus to task (marks active)
+claude-todo focus clear               # Clear current focus
+claude-todo focus show                # Show current focus
+claude-todo focus note "text"         # Set session progress note
+claude-todo focus next "text"         # Set suggested next action
+
 # DASHBOARD & ANALYTICS
 claude-todo dash                      # Full dashboard overview
 claude-todo dash --compact            # Single-line summary
@@ -167,24 +174,296 @@ Defaults → Global → Project → Environment → CLI
 
 ## Library Functions
 
-### validation.sh
+### validation.sh - Data Validation
+
+#### Schema & Syntax
 ```bash
-validate_schema "$file"              # JSON Schema validation
-validate_anti_hallucination "$file"  # Semantic checks
-check_duplicate_ids "$file1" "$file2" # Cross-file uniqueness
+validate_schema "$file" "todo"       # JSON Schema validation (todo|archive|config|log)
+validate_json_syntax "$file"         # Check JSON syntax with jq
+validate_version "$file" "todo"      # Check version, trigger migration if needed
 ```
 
-### file-ops.sh
+#### Task Validation
 ```bash
-atomic_write "$file" "$content"      # Safe file writing
-backup_file "$file"                  # Create versioned backup
-restore_backup "$backup_file"        # Restore from backup
+validate_title "$title"              # Title rules (max 120, no newlines, no invisible chars)
+validate_task "$file" 0              # Validate task at index (all fields, timestamps)
+validate_status_transition "pending" "active"  # Check if transition allowed
 ```
 
-### logging.sh
+#### Anti-Hallucination Checks
 ```bash
-log_operation "create" "$task_id"    # Log to todo-log.json
-create_log_entry "$operation" "$id"  # Generate log entry
+check_id_uniqueness "$todo" "$archive"  # No duplicate IDs within/across files
+check_timestamp_sanity "$created" "$completed"  # Timestamps valid, not future
+normalize_labels "bug,feature,bug"   # Returns "bug,feature" (deduplicated/sorted)
+```
+
+#### Dependency Validation
+```bash
+validate_no_circular_deps "$file" "T001" "T002,T003"  # Check no cycles in deps
+check_circular_dependencies "$file" "T001" "T002"     # Wrapper with error handling
+```
+
+#### Timestamp Utilities
+```bash
+get_current_timestamp                # Get current ISO 8601 timestamp
+timestamp_to_epoch "$iso_timestamp"  # Convert ISO 8601 to Unix epoch
+```
+
+#### Comprehensive Validation
+```bash
+validate_all "$file" "todo" "$archive"  # Full validation suite (8 checks)
+# Returns: 0=success, 1=schema error, 2=semantic error, 3=both
+```
+
+### file-ops.sh - File Operations
+
+#### Atomic Operations
+```bash
+atomic_write "$file" "$content"      # Safe file writing with temp file
+backup_file "$file"                  # Create timestamped backup
+restore_backup "$file" [num]         # Restore from backup (most recent or by number)
+```
+
+#### Directory & Locking
+```bash
+ensure_directory "$dir"              # Create dir with 755 permissions
+lock_file "$file" fd_var [timeout]   # Acquire exclusive lock (default 30s timeout)
+unlock_file "$fd"                    # Release file lock
+```
+
+#### JSON Operations
+```bash
+load_json "$file"                    # Load and validate JSON file
+save_json "$file" "$json"            # Pretty-print and atomic write
+```
+
+#### Backup Management
+```bash
+rotate_backups "$dir" "basename" 10  # Keep only 10 most recent backups
+list_backups "$file"                 # List backups with timestamps and sizes
+```
+
+### logging.sh - Audit Logging
+
+#### Core Logging Functions
+```bash
+# Main logging operation (atomic append to log file)
+log_operation action actor taskId [before] [after] [details] [sessionId] [log_path]
+
+# Create log entry JSON object
+create_log_entry action actor taskId [before] [after] [details] [sessionId]
+```
+
+#### Utility Functions
+```bash
+# Color output detection
+should_use_color                     # Check if color output should be used (respects NO_COLOR/FORCE_COLOR)
+
+# ID and timestamp generation
+generate_log_id                      # Generate unique log entry ID (log_<12-hex-chars>)
+get_timestamp                        # Get ISO 8601 timestamp
+
+# Validation
+validate_action action               # Validate action type against schema
+validate_actor actor                 # Validate actor type (human|claude|system)
+```
+
+#### Log File Management
+```bash
+# Initialize log file with default structure
+init_log_file [log_path]
+
+# Rotation and pruning
+rotate_log retention_days [log_path]           # Rotate log based on retention policy
+check_and_rotate_log config_path [log_path]    # Check config and rotate if needed
+```
+
+#### Query Functions
+```bash
+# Get filtered log entries
+get_log_entries filter_type filter_value [log_path]
+# filter_type: action|taskId|actor|date_range|all
+# filter_value: value to filter by (or "start,end" for date_range)
+
+# Get recent entries
+get_recent_log_entries count [log_path]        # Get N most recent entries (default: 10)
+
+# Get statistics
+get_log_stats [log_path]                       # Get log metadata (totalEntries, firstEntry, etc.)
+```
+
+#### Convenience Logging Functions
+```bash
+# Task operations
+log_task_created task_id task_content [session_id]
+log_status_changed task_id old_status new_status [session_id]
+log_task_updated task_id field old_value new_value [session_id]
+
+# Session operations
+log_session_start session_id [details_json]
+log_session_end session_id [details_json]
+
+# System operations
+log_validation result details_json
+log_error error_code error_message [recoverable] [task_id]
+
+# Error handling
+handle_log_error error_message      # Handle logging errors gracefully (non-fatal)
+```
+
+#### Examples
+```bash
+# Manual logging
+log_operation "task_created" "claude" "T001" "null" "null" '{"content":"Fix bug"}' "session123"
+
+# Convenience functions
+log_task_created "T001" "Fix navigation bug" "session123"
+log_status_changed "T001" "pending" "active" "session123"
+log_task_updated "T001" "priority" "low" "high" "session123"
+log_session_start "session123" '{"note":"Started work on auth feature"}'
+log_session_end "session123" '{"tasksCompleted":3}'
+log_validation "passed" '{"errors":0,"warnings":2}'
+log_error "E001" "File not found" "true" "T001"
+
+# Query examples
+get_log_entries "action" "task_created"              # All task creation events
+get_log_entries "taskId" "T001"                      # All events for task T001
+get_log_entries "date_range" "2025-12-01,2025-12-13" # Events in date range
+get_recent_log_entries 20                            # Last 20 log entries
+get_log_stats                                        # Log metadata
+```
+
+### cache.sh
+```bash
+# Cache initialization & validation
+cache_init [todo_file]               # Initialize cache, rebuild if stale
+cache_is_valid                       # Check if cache is valid
+cache_invalidate [todo_file]         # Force cache rebuild
+cache_get_metadata                   # Get cache metadata file path
+
+# Label & phase queries
+cache_get_tasks_by_label <label>     # Get comma-separated task IDs for label
+cache_get_tasks_by_phase <phase>     # Get comma-separated task IDs in phase
+cache_get_all_labels                 # Get all cached label names
+cache_get_all_phases                 # Get all cached phase slugs
+cache_get_label_count <label>        # Get task count for label
+cache_get_phase_count <phase>        # Get task count in phase
+
+# Cache statistics
+cache_stats                          # Get cache statistics (JSON)
+
+# Example usage
+cache_init .claude/todo.json
+label_tasks=$(cache_get_tasks_by_label "bug")
+label_count=$(cache_get_label_count "bug")
+```
+
+### analysis.sh
+```bash
+# Dependency graph construction
+build_dependency_graph [todo_file]          # Build task → dependent tasks mapping
+build_reverse_dependency_graph [todo_file]  # Build task → dependencies mapping
+
+# Task filtering & analysis
+get_incomplete_tasks [todo_file]            # Get all non-completed tasks
+get_blocked_tasks [todo_file]               # Get all blocked tasks with reasons
+
+# Critical path analysis
+find_longest_path_from <task_id> <graph> <visited>  # DFS for longest chain
+find_critical_path [todo_file]              # Find longest dependency chain
+build_path_chain <start_id> <graph> <todo_file>    # Build task chain from start
+
+# Impact & bottleneck analysis
+find_bottlenecks [todo_file]                # Find tasks blocking most others
+calculate_impact <task_id> [todo_file]      # Count transitively dependent tasks
+
+# Recommendations
+generate_recommendations [todo_file]        # Generate task recommendations
+
+# Example usage
+critical_path=$(find_critical_path .claude/todo.json)
+bottlenecks=$(find_bottlenecks .claude/todo.json)
+impact=$(calculate_impact "T001" .claude/todo.json)
+```
+
+### output-format.sh - Output Formatting
+
+#### Configuration & Detection
+```bash
+load_output_config              # Load output config from file (cached)
+get_output_config "key"         # Get config value: color|unicode|progressBars|dateFormat|csvDelimiter|compactTitles|maxTitleLength
+detect_color_support            # Check terminal color support (respects NO_COLOR/FORCE_COLOR)
+detect_unicode_support          # Check Unicode/UTF-8 support (respects LC_ALL/LANG)
+get_terminal_width              # Get terminal width in columns (COLUMNS → tput cols → 80)
+```
+
+#### Format Resolution & Validation
+```bash
+validate_format "json" "text,json,csv"   # Validate format against allowed list
+resolve_format "$CLI_FMT" true "$VALID"  # Resolve format (CLI > env > config > default)
+```
+
+#### Status Formatting
+```bash
+status_color "pending"          # Get ANSI color code (37=dim white, 96=cyan, 33=yellow, 32=green)
+status_symbol "active" true     # Get status symbol (Unicode: ○◉⊗✓, ASCII: -*x+)
+```
+
+#### Priority Formatting
+```bash
+priority_color "high"           # Get ANSI color code (91=red, 93=yellow, 94=blue, 90=gray)
+priority_symbol "critical" true # Get priority symbol (Unicode: 🔴🟡🔵⚪, ASCII: !HML)
+```
+
+#### Progress Visualization
+```bash
+progress_bar 80 100 20 true     # Generate progress bar: [████████░░] 80%
+progress_bars_enabled           # Check if progress bars enabled in config
+```
+
+#### Box Drawing
+```bash
+draw_box "TL" true              # Return box character: TL|TR|BL|BR|H|V (Unicode: ╭╮╰╯─│, ASCII: ++--)
+```
+
+#### Output Helpers
+```bash
+print_colored 32 "Success" true       # Print colored text (ANSI color, text, newline)
+print_header "Section" 60 true        # Print boxed section header
+print_task_line "T001" "active" "high" "Fix bug" true  # Format task line with colors
+```
+
+#### Date & Title Formatting
+```bash
+format_date "2025-12-12T10:30:00Z"    # Format date per config (iso8601|relative|unix|locale)
+truncate_title "Long title" 50        # Truncate title with ellipsis (respects config)
+```
+
+#### CSV & Text Utilities
+```bash
+get_csv_delimiter               # Get configured CSV delimiter (default: comma)
+pluralize 5 "task" "tasks"      # Return singular/plural form (count, singular, [plural])
+```
+
+**Example Usage**:
+```bash
+# Check capabilities
+if detect_color_support; then
+  print_colored 32 "Colors enabled!"
+fi
+
+# Format with detection
+unicode=$(detect_unicode_support && echo "true" || echo "false")
+status=$(status_symbol "active" "$unicode")
+echo "$status Task in progress"
+
+# Create progress bar
+progress=$(progress_bar 75 100 30 true)
+echo "Progress: $progress"
+
+# Format dates
+formatted=$(format_date "2025-12-12T10:30:00Z")
+echo "Created: $formatted"
 ```
 
 ### config.sh
@@ -264,13 +543,12 @@ task_id="$1"
 # Custom action (notify, log, sync)
 ```
 
-### Custom Formatter
+### Custom Export Filter
 ```bash
-# ~/.claude-todo/formatters/csv-export.sh
-format_csv() {
-    local todo_file="$1"
-    jq -r '.tasks[] | [.id, .status, .title] | @csv' "$todo_file"
-}
+# Custom jq filter for export
+# Note: list command doesn't support custom formatters
+# Use export command or jq for custom output
+claude-todo export -f json | jq -r '.tasks[] | [.id, .status, .title] | @csv'
 ```
 
 ## Testing Quick Reference

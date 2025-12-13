@@ -258,11 +258,11 @@ claude-todo list --format markdown
 # ASCII table format
 claude-todo list --format table
 
-# CSV export (RFC 4180 compliant)
-claude-todo list --format csv
+# CSV export (RFC 4180 compliant) - via export command
+claude-todo export --format csv
 
-# TSV export (tab-separated values)
-claude-todo list --format tsv
+# TSV export (tab-separated values) - via export command
+claude-todo export --format tsv
 ```
 
 **JSON Format Structure**:
@@ -689,14 +689,18 @@ next --explain       # Show reasoning
 --reverse            # Reverse order
 --limit 10           # First 10 tasks
 
-# Output Formats
+# Output Formats (list command)
 -f text              # Human-readable (default)
 -f json              # JSON with metadata
 -f jsonl             # JSON Lines (streaming)
--f csv               # CSV export
--f tsv               # Tab-separated
 -f markdown          # Markdown checklist
 -f table             # ASCII table
+
+# Export Formats (export command)
+-f csv               # CSV export
+-f tsv               # Tab-separated
+-f json              # JSON export
+-f markdown          # Markdown export
 
 # Status Values
 pending, active, blocked, done

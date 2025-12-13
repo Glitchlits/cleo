@@ -64,6 +64,8 @@ Tasks with dependencies: 3
 Total dependency relationships: 6
 ```
 
+> **Note**: Arguments can appear in any order. Both `deps T001 tree` and `deps tree T001` are valid.
+
 ### Dependencies for Specific Task
 
 ```bash
@@ -229,12 +231,18 @@ If `deps` shows no dependencies:
 - Verify task IDs are valid
 - Run `claude-todo list` to confirm tasks exist
 
-### Circular dependency error
+### Circular Dependency Detection
 
-If you see circular dependency warnings:
-- Run `claude-todo validate` to identify the cycle
-- Remove one dependency to break the cycle
-- Restructure tasks to avoid mutual dependencies
+The `deps` command does not detect circular dependencies directly.
+Use `claude-todo validate` to identify and resolve circular dependencies:
+
+```bash
+# Check for circular dependencies
+claude-todo validate
+
+# If cycles found, review and fix the depends fields
+claude-todo update T001 --depends ""  # Remove problematic dependency
+```
 
 ### Missing task in tree
 

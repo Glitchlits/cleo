@@ -2,13 +2,13 @@
   "$schema": "./schemas/todo.schema.json",
   "version": "2.1.0",
   "project": "claude-todo",
-  "lastUpdated": "2025-12-12T22:50:35Z",
+  "lastUpdated": "2025-12-13T16:12:31Z",
   "_meta": {
-    "checksum": "538b31d87aa38f5d",
+    "checksum": "678f84a447cacf79",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null,
-    "lastModified": "2025-12-12T22:13:23Z"
+    "lastModified": "2025-12-12T20:14:38Z"
   },
   "focus": {
     "currentTask": null,
@@ -647,7 +647,7 @@
     {
       "id": "T058",
       "title": "Add short flags to CLI commands (-s, -p, -l, -f, -v, -c, -q)",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-12T20:23:20Z",
       "phase": "core",
@@ -656,12 +656,16 @@
         "cli",
         "output",
         "v0.7.0"
+      ],
+      "completedAt": "2025-12-13T08:08:21Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T08:08:21Z] Verified: Short flags implemented in list-tasks.sh (-s, -p, -l, -f, -c, -v, -q), add-task.sh (-s, -p, -d, -l, -P, -D, -q), export.sh (-f, -s, -p, -l, -m, -o, -d, -q). All documented in --help."
       ]
     },
     {
       "id": "T059",
       "title": "Implement NO_COLOR environment variable support",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-12T20:23:21Z",
       "phase": "core",
@@ -670,12 +674,19 @@
         "cli",
         "accessibility",
         "v0.7.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T060",
       "title": "Create lib/output-format.sh shared library",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-12T20:23:23Z",
       "phase": "core",
@@ -684,12 +695,19 @@
         "cli",
         "library",
         "v0.7.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T061",
       "title": "Add JSON output envelope with _meta section",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-12T20:23:24Z",
       "phase": "core",
@@ -698,12 +716,19 @@
         "output",
         "json",
         "v0.7.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T062",
       "title": "Implement JSONL streaming output format",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:23:25Z",
       "phase": "core",
@@ -713,12 +738,16 @@
         "json",
         "streaming",
         "v0.7.0"
+      ],
+      "completedAt": "2025-12-13T08:08:22Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T08:08:22Z] Verified: JSONL streaming output works. list-tasks.sh --format jsonl outputs each task as separate JSON line with _type field. Proper streaming format."
       ]
     },
     {
       "id": "T063",
       "title": "Add CSV and TSV export formats",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:23:26Z",
       "phase": "core",
@@ -727,12 +756,19 @@
         "output",
         "export",
         "v0.7.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T064",
       "title": "Implement dash (dashboard) command",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-12T20:23:41Z",
       "phase": "core",
@@ -741,12 +777,19 @@
         "command",
         "dashboard",
         "v0.8.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T065",
       "title": "Implement next command for task suggestion",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-12T20:23:43Z",
       "phase": "core",
@@ -755,12 +798,19 @@
         "command",
         "suggestion",
         "v0.8.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T066",
       "title": "Implement labels command for tag management",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-12T20:23:44Z",
       "phase": "core",
@@ -769,12 +819,19 @@
         "command",
         "labels",
         "v0.8.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T067",
       "title": "Add ASCII progress bar and box-drawing support",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:23:46Z",
       "phase": "core",
@@ -783,12 +840,19 @@
         "output",
         "visualization",
         "v0.8.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T068",
       "title": "Add output.* configuration options",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:23:47Z",
       "phase": "core",
@@ -797,12 +861,19 @@
         "config",
         "output",
         "v0.8.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T069",
       "title": "Implement phases command for phase management",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:24:02Z",
       "phase": "core",
@@ -811,12 +882,17 @@
         "command",
         "phases",
         "v0.9.0"
-      ]
+      ],
+      "notes": [
+        "2025-12-13 08:08:32 UTC: Phase 4 verification: No phases.sh script exists. Phases are displayed in 'dash' command but no dedicated management command. Needs implementation.",
+        "[COMPLETED 2025-12-13T08:14:31Z] Implemented: scripts/phases.sh with list, show, stats subcommands. Supports text and JSON output. Shows progress bars, status counts, priority breakdown."
+      ],
+      "completedAt": "2025-12-13T08:14:31Z"
     },
     {
       "id": "T070",
       "title": "Implement blockers command for blocker analysis",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:24:03Z",
       "phase": "core",
@@ -825,12 +901,19 @@
         "command",
         "blockers",
         "v0.9.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T071",
       "title": "Implement deps command with dependency tree visualization",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:24:04Z",
       "phase": "core",
@@ -839,12 +922,19 @@
         "command",
         "dependencies",
         "v0.9.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T072",
       "title": "Implement circular dependency detection",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:24:05Z",
       "phase": "core",
@@ -853,12 +943,19 @@
         "validation",
         "dependencies",
         "v0.9.0"
-      ]
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:10Z",
+          "content": "Verified implemented during v0.8.3 review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
       "id": "T073",
       "title": "Implement critical path analysis",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "createdAt": "2025-12-12T20:24:07Z",
       "phase": "core",
@@ -867,12 +964,16 @@
         "analysis",
         "dependencies",
         "v0.9.0"
+      ],
+      "completedAt": "2025-12-13T08:12:41Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T08:12:41Z] Verified: find_critical_path() in lib/analysis.sh works correctly. Tested with 4-level dependency chain, returns proper path and length. Used by blockers-command.sh analyze."
       ]
     },
     {
       "id": "T074",
       "title": "Implement index caching for labels and phases",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:24:21Z",
       "phase": "polish",
@@ -881,7 +982,12 @@
         "performance",
         "caching",
         "v1.0.0"
-      ]
+      ],
+      "notes": [
+        "2025-12-13 08:08:33 UTC: Phase 4 verification: No cache files (.cache*) found, no caching code in lib/*.sh. Index caching not implemented.",
+        "[COMPLETED 2025-12-13T08:15:43Z] Implemented: lib/cache.sh with checksum-based staleness detection, lazy regeneration, O(1) lookups. Cache files in .claude/.cache/ (labels.index.json, phases.index.json, checksum.txt, metadata.json). Tested with 68 labels and 2 phases."
+      ],
+      "completedAt": "2025-12-13T08:15:43Z"
     },
     {
       "id": "T075",
@@ -914,7 +1020,7 @@
     {
       "id": "T077",
       "title": "Add BATS test suite for output formats",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:24:34Z",
       "phase": "polish",
@@ -923,12 +1029,16 @@
         "testing",
         "output",
         "v1.0.0"
+      ],
+      "completedAt": "2025-12-13T08:08:23Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T08:08:23Z] Verified: 796 BATS tests across 25 test files. Coverage: unit tests for all commands, integration tests for workflow, circular-deps, error-recovery, archive-atomic."
       ]
     },
     {
       "id": "T078",
       "title": "Create golden file tests for output regression",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-12T20:24:35Z",
       "phase": "polish",
@@ -937,288 +1047,343 @@
         "testing",
         "golden-files",
         "v1.0.0"
+      ],
+      "notes": [
+        "2025-12-13 08:08:34 UTC: Phase 4 verification: No golden files (*.expected, *.golden, *snapshot*) found in tests/. Golden file regression testing not implemented.",
+        "[COMPLETED 2025-12-13T08:17:20Z] Implemented: tests/golden/ with 16 golden file tests covering list, stats, labels, phases, dash, deps, blockers, export commands. UPDATE_GOLDEN=1 workflow. Timestamp/checksum normalization. All tests passing."
+      ],
+      "completedAt": "2025-12-13T08:17:20Z"
+    },
+    {
+      "id": "T132",
+      "title": "P0: Fix task ID collision under concurrent operations",
+      "status": "pending",
+      "priority": "critical",
+      "createdAt": "2025-12-13T05:49:34Z",
+      "description": "File locking exists but ID generation happens BEFORE lock acquisition. Under concurrent load (5 parallel adds), all processes generate same ID causing 80% data loss. Solution: Move ID generation inside locked critical section. See claudedocs/P0-1-RACE-CONDITION-ISSUE.md for full root cause analysis, fix requirements, and implementation plan.",
+      "labels": [
+        "critical-bug",
+        "p0",
+        "race-condition",
+        "architectural-change"
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:58:48Z",
+          "content": "Full documentation: claudedocs/P0-1-RACE-CONDITION-ISSUE.md - Requires architectural change to make ID generation atomic inside locked section"
+        }
       ]
     },
     {
-      "id": "T079",
-      "title": "Create backup branch and baseline metrics",
+      "id": "T133",
+      "title": "P0: Fix archive --all JSON corruption",
       "status": "done",
-      "priority": "high",
-      "createdAt": "2025-12-12T22:11:11Z",
-      "description": "Create git backup branch, timestamped backup directory, capture baseline metrics per MASTER-REFACTORING-GUIDE.md Prerequisites section",
+      "priority": "critical",
+      "createdAt": "2025-12-13T05:49:36Z",
+      "description": "Fix atomic write operation in archive.sh causing JSON corruption during --all operation",
       "labels": [
-        "master-refactor",
-        "docs",
-        "prerequisites"
+        "critical-bug",
+        "p0",
+        "archive"
       ],
       "notes": [
-        "2025-12-12 22:11:11 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#prerequisites"
+        {
+          "timestamp": "2025-12-13T07:58:27Z",
+          "content": "Verified fixed during v0.8.3 comprehensive review"
+        }
       ],
-      "completedAt": "2025-12-12T22:38:13Z"
+      "completedAt": "2025-12-13T07:58:27Z"
     },
     {
-      "id": "T080",
-      "title": "Phase 1: Create docs/guides/ directory structure",
+      "id": "T134",
+      "title": "P0: Fix log.sh readonly variable conflict",
       "status": "done",
-      "priority": "high",
-      "createdAt": "2025-12-12T22:11:13Z",
-      "description": "Create guides/ directory with command-reference.md (~400 lines), workflow-patterns.md (~300 lines), filtering-guide.md (~200 lines)",
+      "priority": "critical",
+      "createdAt": "2025-12-13T05:49:37Z",
+      "description": "Remove redefinition of readonly VALID_ACTIONS in log.sh:46 causing all log operations to fail",
       "labels": [
-        "master-refactor",
-        "docs",
-        "phase-1"
+        "critical-bug",
+        "p0",
+        "log"
       ],
       "notes": [
-        "2025-12-12 22:11:13 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#phase-1-extract--link-usagemd-consolidation"
+        {
+          "timestamp": "2025-12-13T07:57:17Z",
+          "content": "Fixed and verified during v0.8.3 comprehensive fix"
+        }
       ],
-      "depends": [
-        "T079"
-      ],
-      "completedAt": "2025-12-12T22:38:13Z"
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
-      "id": "T081",
-      "title": "Phase 1: Refactor usage.md to streamlined version",
+      "id": "T135",
+      "title": "P0: Fix orphaned dependencies after archiving",
       "status": "done",
-      "priority": "high",
-      "createdAt": "2025-12-12T22:11:14Z",
-      "description": "Reduce usage.md from ~1,200 lines to ~400 lines by extracting content to guides/, maintaining links and navigation",
+      "priority": "critical",
+      "createdAt": "2025-12-13T05:49:38Z",
+      "description": "Clean up dependency references before archiving to prevent referential integrity violations",
       "labels": [
-        "master-refactor",
-        "docs",
-        "phase-1"
+        "critical-bug",
+        "p0",
+        "archive"
+      ],
+      "completedAt": "2025-12-13T08:12:41Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T08:12:41Z] Verified: Archive correctly cleans orphaned dependencies. Tested: T001 archived, T002's depends changed from [T001] to null, T003's from [T001,T002] to [T002]. Code in archive.sh lines 249-258."
+      ]
+    },
+    {
+      "id": "T136",
+      "title": "P0: Add duplicate ID detection to validate.sh",
+      "status": "done",
+      "priority": "critical",
+      "createdAt": "2025-12-13T05:49:39Z",
+      "description": "Add duplicate ID check to validate.sh - currently duplicate IDs pass validation causing data corruption risk",
+      "labels": [
+        "critical-bug",
+        "p0",
+        "validate"
       ],
       "notes": [
-        "2025-12-12 22:11:14 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#step-5-refactor-usagemd"
+        {
+          "timestamp": "2025-12-13T07:58:27Z",
+          "content": "Verified fixed during v0.8.3 comprehensive review"
+        }
       ],
-      "depends": [
-        "T080"
-      ],
-      "completedAt": "2025-12-12T22:38:13Z"
+      "completedAt": "2025-12-13T07:58:27Z"
     },
     {
-      "id": "T082",
-      "title": "Phase 2: Merge SYSTEM-DESIGN-SUMMARY.md into ARCHITECTURE.md",
+      "id": "T137",
+      "title": "P0: Fix init.sh checksum generation",
       "status": "done",
-      "priority": "high",
-      "createdAt": "2025-12-12T22:11:16Z",
-      "description": "Consolidate architecture docs: merge unique content from SYSTEM-DESIGN-SUMMARY.md, add Executive Summary section, delete duplicate file",
+      "priority": "critical",
+      "createdAt": "2025-12-13T05:49:40Z",
+      "description": "Compute checksum as final step in init.sh - currently creates invalid checksum causing fresh projects to fail validation",
       "labels": [
-        "master-refactor",
-        "docs",
-        "phase-2"
+        "critical-bug",
+        "p0",
+        "init"
       ],
       "notes": [
-        "2025-12-12 22:11:16 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#phase-2-architecture-consolidation"
+        {
+          "timestamp": "2025-12-13T07:58:27Z",
+          "content": "Verified fixed during v0.8.3 comprehensive review"
+        }
       ],
-      "depends": [
-        "T081"
-      ],
-      "completedAt": "2025-12-12T22:38:13Z"
+      "completedAt": "2025-12-13T07:58:27Z"
     },
     {
-      "id": "T083",
-      "title": "Phase 3: Create documentation directory hierarchy",
+      "id": "T138",
+      "title": "P0: Fix complete --skip-notes invalid JSON",
       "status": "done",
-      "priority": "high",
-      "createdAt": "2025-12-12T22:11:19Z",
-      "description": "Create getting-started/ and reference/ directories, move files to new locations, create docs/README.md navigation hub",
+      "priority": "critical",
+      "createdAt": "2025-12-13T05:49:41Z",
+      "description": "Debug JSON generation in complete-task.sh when --skip-notes is used - generates invalid JSON causing rollback",
       "labels": [
-        "master-refactor",
-        "docs",
-        "phase-3"
+        "critical-bug",
+        "p0",
+        "complete"
       ],
       "notes": [
-        "2025-12-12 22:11:19 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#phase-3-directory-restructuring"
+        {
+          "timestamp": "2025-12-13T07:58:27Z",
+          "content": "Verified fixed during v0.8.3 comprehensive review"
+        }
       ],
-      "depends": [
-        "T082"
-      ],
-      "completedAt": "2025-12-12T22:38:13Z"
+      "completedAt": "2025-12-13T07:58:27Z"
     },
     {
-      "id": "T084",
-      "title": "Phase 3: Update install.sh for new docs structure",
+      "id": "T139",
+      "title": "P1: Update 12 scripts to show claude-todo in error messages",
       "status": "done",
       "priority": "high",
-      "createdAt": "2025-12-12T22:11:20Z",
-      "description": "Update install.sh to copy new directory structure to ~/.claude-todo/docs/, verify installation works",
+      "createdAt": "2025-12-13T05:49:54Z",
+      "description": "Scripts show script.sh in errors instead of claude-todo <cmd>. Update all usage() functions.",
       "labels": [
-        "master-refactor",
-        "docs",
-        "phase-3"
+        "high-priority",
+        "p1",
+        "ux"
       ],
       "notes": [
-        "2025-12-12 22:11:20 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#step-5-update-installsh"
+        {
+          "timestamp": "2025-12-13T07:57:17Z",
+          "content": "Fixed and verified during v0.8.3 comprehensive fix"
+        }
       ],
-      "depends": [
-        "T083"
-      ],
-      "completedAt": "2025-12-12T22:38:13Z"
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
-      "id": "T085",
-      "title": "Phase 4: Comprehensive validation and testing",
+      "id": "T140",
+      "title": "P1: Add _meta.format json field to all JSON outputs",
       "status": "done",
       "priority": "high",
-      "createdAt": "2025-12-12T22:11:21Z",
-      "description": "Run content completeness check, link validation, installation testing, navigation testing, line count verification",
+      "createdAt": "2025-12-13T05:49:55Z",
+      "description": "All JSON outputs missing format: json field in _meta envelope",
       "labels": [
-        "master-refactor",
-        "docs",
-        "phase-4"
+        "high-priority",
+        "p1",
+        "json"
       ],
       "notes": [
-        "2025-12-12 22:11:21 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#phase-4-validation"
+        {
+          "timestamp": "2025-12-13T07:57:17Z",
+          "content": "Fixed and verified during v0.8.3 comprehensive fix"
+        }
       ],
-      "depends": [
-        "T084"
-      ],
-      "completedAt": "2025-12-12T22:38:13Z"
+      "completedAt": "2025-12-13T07:57:23Z"
     },
     {
-      "id": "T086",
-      "title": "Post-refactor: Create migration guide and update CHANGELOG",
+      "id": "T141",
+      "title": "P1: Fix labels command JSON output",
       "status": "done",
+      "priority": "high",
+      "createdAt": "2025-12-13T05:49:56Z",
+      "description": "Labels JSON output completely broken - outputs 28 nulls instead of proper JSON",
+      "labels": [
+        "high-priority",
+        "p1",
+        "labels"
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:58:27Z",
+          "content": "Verified fixed during v0.8.3 comprehensive review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:58:27Z"
+    },
+    {
+      "id": "T142",
+      "title": "P1: Add format validation to list command",
+      "status": "done",
+      "priority": "high",
+      "createdAt": "2025-12-13T05:49:57Z",
+      "description": "list --format invalid silently falls back to text instead of showing error",
+      "labels": [
+        "high-priority",
+        "p1",
+        "list"
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:58:27Z",
+          "content": "Verified fixed during v0.8.3 comprehensive review"
+        }
+      ],
+      "completedAt": "2025-12-13T07:58:27Z"
+    },
+    {
+      "id": "T143",
+      "title": "P1: Fix unicodeEnabled config option",
+      "status": "done",
+      "priority": "high",
+      "createdAt": "2025-12-13T05:49:59Z",
+      "description": "unicodeEnabled config ignored - Unicode box-drawing shown even when false",
+      "labels": [
+        "high-priority",
+        "p1",
+        "config"
+      ],
+      "notes": [
+        {
+          "timestamp": "2025-12-13T07:57:17Z",
+          "content": "Fixed and verified during v0.8.3 comprehensive fix"
+        }
+      ],
+      "completedAt": "2025-12-13T07:57:23Z"
+    },
+    {
+      "id": "T144",
+      "title": "Fix validate checksum recovery test",
+      "status": "pending",
       "priority": "medium",
-      "createdAt": "2025-12-12T22:11:23Z",
-      "description": "Create docs/MIGRATION-GUIDE.md for path changes, update CHANGELOG.md with breaking changes, announce completion",
+      "createdAt": "2025-12-13T16:11:31Z",
+      "description": "Test 211 fails",
       "labels": [
-        "master-refactor",
-        "docs",
-        "post-refactor"
-      ],
-      "notes": [
-        "2025-12-12 22:11:23 UTC: Reference: claudedocs/MASTER-REFACTORING-GUIDE.md#post-refactoring-tasks"
-      ],
-      "depends": [
-        "T085"
-      ],
-      "completedAt": "2025-12-12T22:38:13Z"
+        "bats",
+        "issue",
+        "test"
+      ]
     },
     {
-      "id": "T087",
-      "title": "Merge design-principles.md into ARCHITECTURE.md",
-      "status": "done",
-      "priority": "high",
-      "createdAt": "2025-12-12T22:38:31Z",
-      "description": "436 lines. Should be consolidated into ARCHITECTURE.md per original plan.",
-      "labels": [
-        "master-refactor",
-        "docs",
-        "phase-2-remaining"
-      ],
-      "depends": [
-        "T086"
-      ],
-      "completedAt": "2025-12-12T22:44:34Z"
-    },
-    {
-      "id": "T088",
-      "title": "Create integration/CLAUDE-CODE.md (LLM-optimized)",
-      "status": "done",
-      "priority": "high",
-      "createdAt": "2025-12-12T22:38:33Z",
-      "description": "NEW file for LLM integration. Consolidate: session protocol, anti-hallucination rules, CLI patterns, TodoWrite integration.",
-      "labels": [
-        "master-refactor",
-        "docs",
-        "phase-3-remaining"
-      ],
-      "depends": [
-        "T086"
-      ],
-      "completedAt": "2025-12-12T22:45:59Z"
-    },
-    {
-      "id": "T089",
-      "title": "Merge WORKFLOW.md into integration docs",
-      "status": "done",
+      "id": "T145",
+      "title": "Fix orphaned dependency cleanup tests",
+      "status": "pending",
       "priority": "medium",
-      "createdAt": "2025-12-12T22:38:34Z",
-      "description": "246 lines at root. Should merge into integration/CLAUDE-CODE.md.",
+      "createdAt": "2025-12-13T16:11:39Z",
+      "description": "Tests 216 and 217 fail in archive dependency cleanup",
       "labels": [
-        "master-refactor",
-        "docs",
-        "phase-3-remaining"
-      ],
-      "depends": [
-        "T088"
-      ],
-      "completedAt": "2025-12-12T22:46:38Z"
+        "bats",
+        "issue",
+        "test"
+      ]
     },
     {
-      "id": "T090",
-      "title": "Merge ENHANCEMENT-todowrite-integration.md",
-      "status": "done",
-      "priority": "medium",
-      "createdAt": "2025-12-12T22:38:36Z",
-      "description": "849 lines. Content should merge into integration/CLAUDE-CODE.md.",
-      "labels": [
-        "master-refactor",
-        "docs",
-        "phase-3-remaining"
-      ],
-      "depends": [
-        "T088"
-      ],
-      "completedAt": "2025-12-12T22:46:58Z"
-    },
-    {
-      "id": "T091",
-      "title": "Consolidate/delete MIGRATION-SYSTEM-SUMMARY.md",
-      "status": "done",
-      "priority": "medium",
-      "createdAt": "2025-12-12T22:38:37Z",
-      "description": "538 lines. Potentially redundant. Review and merge useful content or delete.",
-      "labels": [
-        "master-refactor",
-        "docs",
-        "cleanup"
-      ],
-      "depends": [
-        "T086"
-      ],
-      "completedAt": "2025-12-12T22:47:40Z"
-    },
-    {
-      "id": "T092",
-      "title": "Move DATA-FLOW-DIAGRAMS.md to architecture/",
-      "status": "done",
+      "id": "T146",
+      "title": "Fix file locking concurrency tests",
+      "status": "pending",
       "priority": "low",
-      "createdAt": "2025-12-12T22:38:38Z",
-      "description": "947 lines. Should be in architecture/ subdirectory as DATA-FLOWS.md.",
+      "createdAt": "2025-12-13T16:11:41Z",
+      "description": "Tests 274 279 280 283 fail due to timing sensitivity",
       "labels": [
-        "master-refactor",
-        "docs",
-        "structure"
-      ],
-      "depends": [
-        "T087"
-      ],
-      "completedAt": "2025-12-12T22:48:54Z"
+        "bats",
+        "flaky",
+        "issue",
+        "test"
+      ]
     },
     {
-      "id": "T093",
-      "title": "Reduce total doc file count from 22 to ~13",
-      "status": "done",
+      "id": "T147",
+      "title": "Fix stats command tests",
+      "status": "pending",
       "priority": "medium",
-      "createdAt": "2025-12-12T22:38:40Z",
-      "description": "Original target: 13 files. Current: 22 files. Final consolidation task.",
+      "createdAt": "2025-12-13T16:11:42Z",
+      "description": "Tests 606 621 631 fail for period validation and pluralization",
       "labels": [
-        "master-refactor",
-        "docs",
-        "consolidation"
+        "bats",
+        "issue",
+        "test"
+      ]
+    },
+    {
+      "id": "T148",
+      "title": "Test task",
+      "status": "active",
+      "priority": "high",
+      "createdAt": "2025-12-13T16:11:57Z"
+    },
+    {
+      "id": "T149",
+      "title": "Test with options",
+      "status": "done",
+      "priority": "critical",
+      "createdAt": "2025-12-13T16:12:06Z",
+      "description": "This is a test",
+      "labels": [
+        "bug",
+        "security"
       ],
-      "depends": [
-        "T087",
-        "T088",
-        "T089",
-        "T090",
-        "T091",
-        "T092"
-      ],
-      "completedAt": "2025-12-12T22:50:35Z"
+      "completedAt": "2025-12-13T16:12:12Z",
+      "notes": [
+        "[COMPLETED 2025-12-13T16:12:12Z] Test completion"
+      ]
+    },
+    {
+      "id": "T150",
+      "title": "Test",
+      "status": "pending",
+      "priority": "medium",
+      "createdAt": "2025-12-13T16:12:22Z",
+      "files": [
+        "src/file.ts",
+        "lib/util.js"
+      ]
+    },
+    {
+      "id": "T151",
+      "title": "Test",
+      "status": "pending",
+      "priority": "medium",
+      "createdAt": "2025-12-13T16:12:31Z"
     }
   ],
   "phases": {

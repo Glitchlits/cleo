@@ -267,8 +267,6 @@ claude-todo complete TASK_ID [OPTIONS]
 | Option | Description |
 |--------|-------------|
 | `--skip-archive` | Don't trigger auto-archive even if configured |
-| `--format` | Output format (`text`, `json`) |
-| `--quiet` | Suppress messages |
 
 **Examples:**
 ```bash
@@ -278,8 +276,8 @@ claude-todo complete T003
 # Complete without triggering auto-archive
 claude-todo complete T003 --skip-archive
 
-# JSON output, quiet mode
-claude-todo complete T003 -f json -q
+# Complete with detailed notes
+claude-todo complete T003 --notes "Implemented auth middleware. Tests passing."
 ```
 
 **Validation:**
@@ -293,6 +291,7 @@ claude-todo complete T003 -f json -q
 - Logs completion to `todo-log.json`
 - Triggers auto-archive if enabled
 - Creates backup before modification
+- Clears focus if completed task was currently focused
 
 ---
 
@@ -354,8 +353,8 @@ claude-todo list --since 2025-12-05
 # JSON output for scripting
 claude-todo list -f json
 
-# CSV export
-claude-todo list -f csv > tasks.csv
+# CSV export (via export command)
+claude-todo export -f csv > tasks.csv
 
 # Compact view of pending tasks
 claude-todo list -s pending -c

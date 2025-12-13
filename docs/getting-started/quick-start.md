@@ -194,8 +194,8 @@ claude-todo list
 # JSON for scripting
 claude-todo list --format json
 
-# CSV export
-claude-todo list --format csv > tasks.csv
+# CSV export (via export command)
+claude-todo export --format csv > tasks.csv
 
 # Markdown checklist
 claude-todo list --format markdown

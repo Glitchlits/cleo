@@ -1,6 +1,6 @@
 # labels Command
 
-**Alias**: `tags`
+**Alias**: `tags` - Use `claude-todo tags` as shorthand for `claude-todo labels`
 
 List and analyze labels (tags) across all tasks with distribution analytics and visual representations.
 
@@ -49,16 +49,14 @@ Output:
 ```
 LABELS (8 labels, 24 tasks)
 
-🏷️  backend        ███████████████████  14 tasks  ⚠️
-🏷️  frontend       ███████████████      10 tasks
-🏷️  security       ██████                4 tasks  ⚠️
-🏷️  testing        ████                  3 tasks
-🏷️  docs           ███                   2 tasks
-🏷️  performance    ██                    1 task   ⚠️
-🏷️  ui             ██                    1 task
-🏷️  database       █                     1 task
-
-⚠️  = Contains critical or high priority tasks
+  backend        ███████████████████  14 tasks  1 critical
+  frontend       ███████████████      10 tasks
+  security       ██████                4 tasks  1 critical
+  testing        ████                  3 tasks
+  docs           ███                   2 tasks
+  performance    ██                    1 task   1 critical
+  ui             ██                    1 task
+  database       █                     1 task
 ```
 
 ### Show Tasks for Specific Label
@@ -72,19 +70,13 @@ Output:
 ```
 TASKS WITH LABEL: backend (14 tasks)
 
-CRITICAL PRIORITY
-  T015  [active]   Implement user authentication
-  T023  [blocked]  Fix database connection pooling
-
-HIGH PRIORITY
-  T018  [pending]  Add error logging middleware
-  T022  [pending]  Optimize API response times
-
-MEDIUM PRIORITY
-  T019  [pending]  Refactor user service
-  T024  [pending]  Add request validation
+  ✓ [T015] Implement user authentication
+  → [T023] Fix database connection pooling
+  ○ [T018] Add error logging middleware
+  ○ [T022] Optimize API response times
+  ○ [T019] Refactor user service
+  ○ [T024] Add request validation
   ... (8 more)
-
 ```
 
 ### Detailed Statistics
@@ -118,11 +110,6 @@ LABEL COMBINATIONS (Most Common)
   frontend + ui           (2 tasks)
   backend + database      (2 tasks)
   backend + performance   (1 task)
-
-PHASE DISTRIBUTION
-  setup phase:   backend(2), frontend(3)
-  core phase:    backend(8), frontend(5), security(4)
-  polish phase:  backend(4), frontend(2), testing(3)
 ```
 
 ### JSON Output

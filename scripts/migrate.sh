@@ -126,6 +126,7 @@ cmd_run() {
     local project_dir="${1:-.}"
     local auto_migrate="${2:-false}"
     local create_backup="${3:-true}"
+    local force_migration="${4:-false}"
 
     local claude_dir="$project_dir/.claude"
 
@@ -179,9 +180,13 @@ cmd_run() {
         exit 1
     fi
 
-    if [[ "$migration_needed" == "false" ]]; then
+    if [[ "$migration_needed" == "false" && "$force_migration" == "false" ]]; then
         echo "✓ All files already at current versions"
         exit 0
+    fi
+
+    if [[ "$force_migration" == "true" ]]; then
+        echo "⚠ Force migration enabled - will re-migrate all files"
     fi
 
     # Confirm migration
@@ -230,8 +235,13 @@ cmd_run() {
         local status
         check_compatibility "$file" "$file_type" && status=$? || status=$?
 
-        if [[ $status -eq 1 ]]; then
-            echo "Migrating $file_type..."
+        # Force migration if flag is set, otherwise only migrate if needed
+        if [[ $status -eq 1 || "$force_migration" == "true" ]]; then
+            if [[ "$force_migration" == "true" && $status -eq 0 ]]; then
+                echo "Migrating $file_type (forced)..."
+            else
+                echo "Migrating $file_type..."
+            fi
 
             local current_version expected_version
             current_version=$(detect_file_version "$file")
@@ -317,6 +327,7 @@ main() {
     local project_dir="."
     local auto_migrate=false
     local create_backup=true
+    local force_migration=false
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -334,6 +345,10 @@ main() {
                 ;;
             --no-backup)
                 create_backup=false
+                shift
+                ;;
+            --force)
+                force_migration=true
                 shift
                 ;;
             -h|--help)
@@ -354,7 +369,7 @@ main() {
             cmd_check "$project_dir"
             ;;
         "run")
-            cmd_run "$project_dir" "$auto_migrate" "$create_backup"
+            cmd_run "$project_dir" "$auto_migrate" "$create_backup" "$force_migration"
             ;;
         "file")
             if [[ $# -lt 2 ]]; then

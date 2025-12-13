@@ -147,7 +147,6 @@ After running `install.sh`, this structure exists:
 
 - **validation.sh**:
   - `validate_schema()`: JSON Schema validation
-  - `validate_anti_hallucination()`: Semantic checks
   - `validate_task_object()`: Single task validation
   - `check_duplicate_ids()`: Cross-file ID uniqueness
   
