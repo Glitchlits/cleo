@@ -108,6 +108,25 @@ TIMESTAMP=$(generate_timestamp)
 CHECKSUM=$(calculate_checksum)
 TODO_DIR=".claude"
 
+# Determine templates and schemas directories (installed or source)
+if [[ -d "$CLAUDE_TODO_HOME/templates" ]]; then
+  TEMPLATES_DIR="$CLAUDE_TODO_HOME/templates"
+elif [[ -d "$SCRIPT_DIR/../templates" ]]; then
+  TEMPLATES_DIR="$SCRIPT_DIR/../templates"
+else
+  log_error "Templates directory not found at $CLAUDE_TODO_HOME/templates/ or $SCRIPT_DIR/../templates/"
+  log_error "Run install.sh to set up CLAUDE-TODO globally, or run from source directory."
+  exit 1
+fi
+
+if [[ -d "$CLAUDE_TODO_HOME/schemas" ]]; then
+  SCHEMAS_DIR="$CLAUDE_TODO_HOME/schemas"
+elif [[ -d "$SCRIPT_DIR/../schemas" ]]; then
+  SCHEMAS_DIR="$SCRIPT_DIR/../schemas"
+else
+  SCHEMAS_DIR=""
+fi
+
 log_info "Initializing CLAUDE-TODO for project: $PROJECT_NAME"
 
 # Create .claude directory structure
@@ -117,24 +136,17 @@ mkdir -p "$TODO_DIR/schemas"
 log_info "Created $TODO_DIR/ directory"
 
 # Copy schemas for local validation
-if [[ -d "$CLAUDE_TODO_HOME/schemas" ]]; then
-  cp "$CLAUDE_TODO_HOME/schemas/"*.json "$TODO_DIR/schemas/"
+if [[ -n "$SCHEMAS_DIR" ]]; then
+  cp "$SCHEMAS_DIR/"*.json "$TODO_DIR/schemas/"
   log_info "Copied schemas to $TODO_DIR/schemas/"
 else
-  log_warn "Schemas not found at $CLAUDE_TODO_HOME/schemas/ (schema validation may fail)"
-fi
-
-# Verify templates exist
-if [[ ! -d "$CLAUDE_TODO_HOME/templates" ]]; then
-  log_error "Templates directory not found at $CLAUDE_TODO_HOME/templates/"
-  log_error "Run install.sh to set up CLAUDE-TODO globally first."
-  exit 1
+  log_warn "Schemas not found (schema validation may fail)"
 fi
 
 # Create todo.json from template
 log_info "Creating todo.json from template..."
-if [[ -f "$CLAUDE_TODO_HOME/templates/todo.template.json" ]]; then
-  cp "$CLAUDE_TODO_HOME/templates/todo.template.json" "$TODO_DIR/todo.json"
+if [[ -f "$TEMPLATES_DIR/todo.template.json" ]]; then
+  cp "$TEMPLATES_DIR/todo.template.json" "$TODO_DIR/todo.json"
 
   # Substitute placeholders
   sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$TODO_DIR/todo.json"
@@ -147,14 +159,14 @@ if [[ -f "$CLAUDE_TODO_HOME/templates/todo.template.json" ]]; then
 
   log_info "Created $TODO_DIR/todo.json"
 else
-  log_error "Template not found: $CLAUDE_TODO_HOME/templates/todo.template.json"
+  log_error "Template not found: $TEMPLATES_DIR/todo.template.json"
   exit 1
 fi
 
 # Create todo-archive.json from template
 log_info "Creating todo-archive.json from template..."
-if [[ -f "$CLAUDE_TODO_HOME/templates/archive.template.json" ]]; then
-  cp "$CLAUDE_TODO_HOME/templates/archive.template.json" "$TODO_DIR/todo-archive.json"
+if [[ -f "$TEMPLATES_DIR/archive.template.json" ]]; then
+  cp "$TEMPLATES_DIR/archive.template.json" "$TODO_DIR/todo-archive.json"
 
   # Substitute placeholders
   sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$TODO_DIR/todo-archive.json"
@@ -165,14 +177,14 @@ if [[ -f "$CLAUDE_TODO_HOME/templates/archive.template.json" ]]; then
 
   log_info "Created $TODO_DIR/todo-archive.json"
 else
-  log_error "Template not found: $CLAUDE_TODO_HOME/templates/archive.template.json"
+  log_error "Template not found: $TEMPLATES_DIR/archive.template.json"
   exit 1
 fi
 
 # Create todo-config.json from template
 log_info "Creating todo-config.json from template..."
-if [[ -f "$CLAUDE_TODO_HOME/templates/config.template.json" ]]; then
-  cp "$CLAUDE_TODO_HOME/templates/config.template.json" "$TODO_DIR/todo-config.json"
+if [[ -f "$TEMPLATES_DIR/config.template.json" ]]; then
+  cp "$TEMPLATES_DIR/config.template.json" "$TODO_DIR/todo-config.json"
 
   # Substitute placeholders
   sed -i "s/{{VERSION}}/$VERSION/g" "$TODO_DIR/todo-config.json"
@@ -182,14 +194,14 @@ if [[ -f "$CLAUDE_TODO_HOME/templates/config.template.json" ]]; then
 
   log_info "Created $TODO_DIR/todo-config.json"
 else
-  log_error "Template not found: $CLAUDE_TODO_HOME/templates/config.template.json"
+  log_error "Template not found: $TEMPLATES_DIR/config.template.json"
   exit 1
 fi
 
 # Create todo-log.json from template
 log_info "Creating todo-log.json from template..."
-if [[ -f "$CLAUDE_TODO_HOME/templates/log.template.json" ]]; then
-  cp "$CLAUDE_TODO_HOME/templates/log.template.json" "$TODO_DIR/todo-log.json"
+if [[ -f "$TEMPLATES_DIR/log.template.json" ]]; then
+  cp "$TEMPLATES_DIR/log.template.json" "$TODO_DIR/todo-log.json"
 
   # Substitute placeholders
   sed -i "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" "$TODO_DIR/todo-log.json"
@@ -229,7 +241,7 @@ if [[ -f "$CLAUDE_TODO_HOME/templates/log.template.json" ]]; then
 
   log_info "Created $TODO_DIR/todo-log.json"
 else
-  log_error "Template not found: $CLAUDE_TODO_HOME/templates/log.template.json"
+  log_error "Template not found: $TEMPLATES_DIR/log.template.json"
   exit 1
 fi
 
