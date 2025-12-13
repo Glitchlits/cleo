@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 35,
+    "totalEntries": 42,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-13T18:42:51Z",
+    "lastEntry": "2025-12-13T18:48:28Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -1574,6 +1574,332 @@
         "files": null,
         "acceptance": null,
         "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_ed72456fcaca",
+      "timestamp": "2025-12-13T18:48:28Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T075",
+      "before": {
+        "title": "Add CI/CD integration documentation and examples",
+        "status": "pending",
+        "priority": "low",
+        "description": "Add docs/ci-cd-integration.md with examples for: GitHub Actions, GitLab CI, Jenkins, Azure DevOps. Task validation, report generation, pre-deployment checks.",
+        "phase": "polish",
+        "labels": [
+          "docs",
+          "ci-cd",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add CI/CD integration documentation and examples",
+        "status": "pending",
+        "priority": "low",
+        "description": "Add docs/ci-cd-integration.md with examples for: GitHub Actions, GitLab CI, Jenkins, Azure DevOps. Task validation, report generation, pre-deployment checks.",
+        "phase": "polish",
+        "labels": [
+          "ci-cd",
+          "docs",
+          "v0.10.0",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_0af8f2086684",
+      "timestamp": "2025-12-13T18:48:28Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T076",
+      "before": {
+        "title": "Optimize performance for 1000+ task datasets",
+        "status": "pending",
+        "priority": "low",
+        "description": "Ensure all commands meet performance targets (<100ms list, <1s stats) for 1000+ tasks. Streaming jq for large files, pagination defaults, lazy loading.",
+        "phase": "polish",
+        "labels": [
+          "performance",
+          "optimization",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Optimize performance for 1000+ task datasets",
+        "status": "pending",
+        "priority": "low",
+        "description": "Ensure all commands meet performance targets (<100ms list, <1s stats) for 1000+ tasks. Streaming jq for large files, pagination defaults, lazy loading.",
+        "phase": "polish",
+        "labels": [
+          "optimization",
+          "performance",
+          "v0.10.0",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b421b190b69a",
+      "timestamp": "2025-12-13T18:48:28Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T161",
+      "before": {
+        "title": "Create unified lib/backup.sh library",
+        "status": "pending",
+        "priority": "high",
+        "description": "Phase 1 of unified backup architecture. Create centralized backup library with: create_backup(type, file, options), restore_backup(backup_id, options), rotate_backups(type, max), list_backups(type), get_backup_metadata(backup_id). Types: snapshot, safety, incremental, archive, migration. See: claudedocs/BACKUP-ARCHITECTURE.md for full spec.",
+        "phase": "polish",
+        "labels": [
+          "architecture",
+          "backup-system",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create unified lib/backup.sh library",
+        "status": "pending",
+        "priority": "high",
+        "description": "Phase 1 of unified backup architecture. Create centralized backup library with: create_backup(type, file, options), restore_backup(backup_id, options), rotate_backups(type, max), list_backups(type), get_backup_metadata(backup_id). Types: snapshot, safety, incremental, archive, migration. See: claudedocs/BACKUP-ARCHITECTURE.md for full spec.",
+        "phase": "polish",
+        "labels": [
+          "architecture",
+          "backup-system",
+          "v0.10.0",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_29d48d38939e",
+      "timestamp": "2025-12-13T18:48:28Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T162",
+      "before": {
+        "title": "Integrate scripts with unified backup library",
+        "status": "pending",
+        "priority": "high",
+        "description": "Phase 2 of unified backup architecture. Update all scripts to use lib/backup.sh: complete-task.sh, archive.sh, migrate.sh, init.sh. Remove inline backup code, use centralized functions. See: claudedocs/BACKUP-ARCHITECTURE.md Phase 2.",
+        "phase": "polish",
+        "labels": [
+          "architecture",
+          "backup-system",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T161"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Integrate scripts with unified backup library",
+        "status": "pending",
+        "priority": "high",
+        "description": "Phase 2 of unified backup architecture. Update all scripts to use lib/backup.sh: complete-task.sh, archive.sh, migrate.sh, init.sh. Remove inline backup code, use centralized functions. See: claudedocs/BACKUP-ARCHITECTURE.md Phase 2.",
+        "phase": "polish",
+        "labels": [
+          "architecture",
+          "backup-system",
+          "v0.10.0",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T161"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_687869cebc3b",
+      "timestamp": "2025-12-13T18:48:28Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T163",
+      "before": {
+        "title": "Implement backup type taxonomy and directory structure",
+        "status": "pending",
+        "priority": "medium",
+        "description": "New directory structure: .claude/backups/snapshot/, .claude/backups/safety/, .claude/backups/incremental/, .claude/backups/archive/, .claude/backups/migration/. Each backup includes metadata JSON with timestamp, type, source, checksum, description. See: claudedocs/BACKUP-ARCHITECTURE.md unified directory structure.",
+        "phase": "polish",
+        "labels": [
+          "architecture",
+          "backup-system",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T161"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement backup type taxonomy and directory structure",
+        "status": "pending",
+        "priority": "medium",
+        "description": "New directory structure: .claude/backups/snapshot/, .claude/backups/safety/, .claude/backups/incremental/, .claude/backups/archive/, .claude/backups/migration/. Each backup includes metadata JSON with timestamp, type, source, checksum, description. See: claudedocs/BACKUP-ARCHITECTURE.md unified directory structure.",
+        "phase": "polish",
+        "labels": [
+          "architecture",
+          "backup-system",
+          "v0.10.0",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T161"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_a8611815c719",
+      "timestamp": "2025-12-13T18:48:28Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T164",
+      "before": {
+        "title": "Add legacy backup migration command",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Phase 3 of unified architecture. Create 'claude-todo backup migrate-legacy' command to move old backups from .claude/.backups/ to new .claude/backups/ structure. Classify by age/type, generate metadata. See: claudedocs/BACKUP-ARCHITECTURE.md Phase 3.",
+        "phase": "polish",
+        "labels": [
+          "backup-system",
+          "migration",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T162"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add legacy backup migration command",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Phase 3 of unified architecture. Create 'claude-todo backup migrate-legacy' command to move old backups from .claude/.backups/ to new .claude/backups/ structure. Classify by age/type, generate metadata. See: claudedocs/BACKUP-ARCHITECTURE.md Phase 3.",
+        "phase": "polish",
+        "labels": [
+          "backup-system",
+          "migration",
+          "v0.10.0",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T162"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_e4acd28d5a91",
+      "timestamp": "2025-12-13T18:48:28Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T165",
+      "before": {
+        "title": "Extend config schema for backup settings",
+        "status": "pending",
+        "priority": "low",
+        "description": "Add backup configuration to todo-config.json: maxBackups per type, retentionDays per type, compressionEnabled, autoCleanup settings. Update schemas/todo-config.schema.json. See: claudedocs/BACKUP-ARCHITECTURE.md config extensions.",
+        "phase": "polish",
+        "labels": [
+          "backup-system",
+          "config",
+          "schema",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T163"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Extend config schema for backup settings",
+        "status": "pending",
+        "priority": "low",
+        "description": "Add backup configuration to todo-config.json: maxBackups per type, retentionDays per type, compressionEnabled, autoCleanup settings. Update schemas/todo-config.schema.json. See: claudedocs/BACKUP-ARCHITECTURE.md config extensions.",
+        "phase": "polish",
+        "labels": [
+          "backup-system",
+          "config",
+          "schema",
+          "v0.10.0",
+          "v1.0.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T163"
+        ],
         "blockedBy": null
       },
       "details": {

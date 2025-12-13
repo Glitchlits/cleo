@@ -2,9 +2,9 @@
   "$schema": "./schemas/todo.schema.json",
   "version": "2.1.0",
   "project": "claude-todo",
-  "lastUpdated": "2025-12-13T18:42:51Z",
+  "lastUpdated": "2025-12-13T18:48:28Z",
   "_meta": {
-    "checksum": "d9dc47bc57ba2403",
+    "checksum": "7f378e81f13c5f17",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null,
@@ -562,8 +562,9 @@
       "phase": "polish",
       "description": "Add docs/ci-cd-integration.md with examples for: GitHub Actions, GitLab CI, Jenkins, Azure DevOps. Task validation, report generation, pre-deployment checks.",
       "labels": [
-        "docs",
         "ci-cd",
+        "docs",
+        "v0.10.0",
         "v1.0.0"
       ]
     },
@@ -576,8 +577,9 @@
       "phase": "polish",
       "description": "Ensure all commands meet performance targets (<100ms list, <1s stats) for 1000+ tasks. Streaming jq for large files, pagination defaults, lazy loading.",
       "labels": [
-        "performance",
         "optimization",
+        "performance",
+        "v0.10.0",
         "v1.0.0"
       ]
     },
@@ -1140,6 +1142,7 @@
       "labels": [
         "architecture",
         "backup-system",
+        "v0.10.0",
         "v1.0.0"
       ],
       "notes": [
@@ -1157,6 +1160,7 @@
       "labels": [
         "architecture",
         "backup-system",
+        "v0.10.0",
         "v1.0.0"
       ],
       "depends": [
@@ -1174,6 +1178,7 @@
       "labels": [
         "architecture",
         "backup-system",
+        "v0.10.0",
         "v1.0.0"
       ],
       "depends": [
@@ -1191,6 +1196,7 @@
       "labels": [
         "backup-system",
         "migration",
+        "v0.10.0",
         "v1.0.0"
       ],
       "depends": [
@@ -1209,6 +1215,7 @@
         "backup-system",
         "config",
         "schema",
+        "v0.10.0",
         "v1.0.0"
       ],
       "depends": [
