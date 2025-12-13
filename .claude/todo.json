@@ -2,9 +2,9 @@
   "$schema": "./schemas/todo.schema.json",
   "version": "2.1.0",
   "project": "claude-todo",
-  "lastUpdated": "2025-12-13T19:06:38Z",
+  "lastUpdated": "2025-12-13T19:09:55Z",
   "_meta": {
-    "checksum": "3125137bf419c6b2",
+    "checksum": "98e5efc390af496f",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null,
@@ -1251,11 +1251,11 @@
       "priority": "high",
       "createdAt": "2025-12-13T19:06:35Z",
       "phase": "core",
-      "description": "install.sh should check for required dependencies (jq, bash 4+) BEFORE installing. Currently installs without checking, leaving user with broken install. Add check_dependencies() function that: 1) Checks jq exists, 2) Checks bash version >= 4.0, 3) Provides platform-specific install instructions, 4) Optionally offers to install deps (apt/brew/yum).",
+      "description": "Add comprehensive dependency check to install.sh before installation begins. This is the master dependency validation that calls individual checks for: jq, bash 4+, sha256sum/shasum, tar, flock, numfmt, date/find. Must run BEFORE any files are copied. Provides clear error messages with platform-specific install instructions (apt/brew/yum/dnf). Exit code 1 if critical deps missing.",
       "labels": [
         "dependencies",
         "installation",
-        "v0.9.6"
+        "v0.9.7"
       ]
     },
     {
@@ -1269,7 +1269,7 @@
       "labels": [
         "bug-fix",
         "dependencies",
-        "v0.9.6"
+        "v0.9.7"
       ]
     },
     {
@@ -1282,7 +1282,7 @@
       "description": "Add check_bash_version() to platform-compat.sh that verifies BASH_VERSION >= 4.0. Required for associative arrays used in caching. Currently fails silently with cryptic errors on bash 3.x (macOS default).",
       "labels": [
         "dependencies",
-        "v0.9.6"
+        "v0.9.7"
       ]
     },
     {
@@ -1292,11 +1292,84 @@
       "priority": "low",
       "createdAt": "2025-12-13T19:06:36Z",
       "phase": "polish",
-      "description": "Add --install-deps flag to install.sh that automatically installs missing dependencies using detected package manager (apt, brew, yum, dnf). Include --dry-run to show what would be installed.",
+      "description": "Add --install-deps flag to install.sh that automatically installs missing dependencies using detected package manager (apt, brew, yum, dnf). Depends on all core dependency checks being in place first. Include --dry-run to show what would be installed. This is the final piece after all individual checks are implemented.",
       "labels": [
         "dependencies",
         "installation",
-        "v0.10.0"
+        "v0.9.7"
+      ],
+      "depends": [
+        "T166",
+        "T170",
+        "T171",
+        "T172",
+        "T173",
+        "T174"
+      ]
+    },
+    {
+      "id": "T170",
+      "title": "Add sha256sum/shasum check to install.sh",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2025-12-13T19:09:36Z",
+      "phase": "core",
+      "description": "Add sha256sum availability check to install.sh. Required for checksum validation. Check for sha256sum first, fallback to shasum (macOS). Fail install if neither available with platform-specific install instructions.",
+      "labels": [
+        "dependencies",
+        "v0.9.7"
+      ]
+    },
+    {
+      "id": "T171",
+      "title": "Add tar check to install.sh",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2025-12-13T19:09:36Z",
+      "phase": "core",
+      "description": "Add tar availability check to install.sh. Required for compressed backups. Provide install instructions if missing: apt install tar / brew install gnu-tar.",
+      "labels": [
+        "dependencies",
+        "v0.9.7"
+      ]
+    },
+    {
+      "id": "T172",
+      "title": "Add flock check to install.sh",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2025-12-13T19:09:36Z",
+      "phase": "core",
+      "description": "Add flock availability check to install.sh. Required for file locking to prevent concurrent write corruption. On macOS may need: brew install flock. Critical for data integrity.",
+      "labels": [
+        "dependencies",
+        "v0.9.7"
+      ]
+    },
+    {
+      "id": "T173",
+      "title": "Add numfmt check to install.sh",
+      "status": "pending",
+      "priority": "medium",
+      "createdAt": "2025-12-13T19:09:36Z",
+      "phase": "core",
+      "description": "Add numfmt (from coreutils) check to install.sh. Required for human-readable file sizes in backup/stats output. macOS: brew install coreutils. Linux: usually pre-installed.",
+      "labels": [
+        "dependencies",
+        "v0.9.7"
+      ]
+    },
+    {
+      "id": "T174",
+      "title": "Add date/find POSIX tools check to install.sh",
+      "status": "pending",
+      "priority": "high",
+      "createdAt": "2025-12-13T19:09:36Z",
+      "phase": "core",
+      "description": "Add explicit check for POSIX tools (date, find, cat, cp, mv, rm, mkdir) in install.sh. Should always exist but verify and provide helpful error if somehow missing.",
+      "labels": [
+        "dependencies",
+        "v0.9.7"
       ]
     }
   ],
