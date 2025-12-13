@@ -79,9 +79,12 @@ COMPACT=false
 QUIET=false
 GROUP_BY_PRIORITY=true
 
+# Valid format values
+VALID_FORMATS="text json jsonl markdown table"
+
 usage() {
   cat << EOF
-Usage: $(basename "$0") [OPTIONS]
+Usage: claude-todo list [OPTIONS]
 
 Display tasks from todo.json with flexible filtering and formatting.
 
@@ -111,17 +114,17 @@ Display Options:
   -h, --help                Show this help
 
 Examples:
-  $(basename "$0")                          # List all active tasks
-  $(basename "$0") -s pending               # Only pending tasks (short flag)
-  $(basename "$0") --status pending         # Only pending tasks (long flag)
-  $(basename "$0") -p critical              # Only critical priority
-  $(basename "$0") --since 2025-12-01       # Tasks created after Dec 1
-  $(basename "$0") --sort createdAt --reverse  # Newest first
-  $(basename "$0") -f json                  # JSON output
-  $(basename "$0") --all --limit 20         # Last 20 tasks including archive
-  $(basename "$0") -v                       # Verbose mode with all details
-  $(basename "$0") -s pending -p high -l backend  # Combined filters
-  $(basename "$0") -q -f json               # Quiet mode with JSON output
+  claude-todo list                          # List all active tasks
+  claude-todo list -s pending               # Only pending tasks (short flag)
+  claude-todo list --status pending         # Only pending tasks (long flag)
+  claude-todo list -p critical              # Only critical priority
+  claude-todo list --since 2025-12-01       # Tasks created after Dec 1
+  claude-todo list --sort createdAt --reverse  # Newest first
+  claude-todo list -f json                  # JSON output
+  claude-todo list --all --limit 20         # Last 20 tasks including archive
+  claude-todo list -v                       # Verbose mode with all details
+  claude-todo list -s pending -p high -l backend  # Combined filters
+  claude-todo list -q -f json               # Quiet mode with JSON output
 EOF
   exit 0
 }
@@ -165,9 +168,16 @@ done
 
 check_deps
 
+# Validate format (Issue T142: reject invalid formats instead of silent fallback)
+if ! echo "$VALID_FORMATS" | grep -qw "$FORMAT"; then
+  log_error "Invalid format: $FORMAT"
+  echo "Valid formats: $VALID_FORMATS" >&2
+  exit 1
+fi
+
 # Check if todo.json exists
 if [[ ! -f "$TODO_FILE" ]]; then
-  log_error "$TODO_FILE not found. Run init.sh first."
+  log_error "$TODO_FILE not found. Run claude-todo init first."
   exit 1
 fi
 
@@ -183,9 +193,31 @@ fi
 # Handle empty task list
 if [[ -z "$TASKS" ]]; then
   if [[ "$FORMAT" == "json" ]]; then
-    echo '{"tasks":[],"count":0,"filters":{}}'
+    # Return proper JSON envelope with _meta.format for programmatic detection
+    jq -n \
+      --arg version "$VERSION" \
+      --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+      '{
+        "$schema": "https://claude-todo.dev/schemas/output-v2.json",
+        "_meta": {
+          "format": "json",
+          "version": $version,
+          "command": "list",
+          "timestamp": $timestamp
+        },
+        "filters": {},
+        "summary": {
+          "total": 0,
+          "filtered": 0,
+          "pending": 0,
+          "active": 0,
+          "blocked": 0,
+          "done": 0
+        },
+        "tasks": []
+      }'
   elif [[ "$QUIET" != true ]]; then
-    echo "No tasks found."
+    echo "No tasks found." >&2
   fi
   exit 0
 fi
@@ -360,10 +392,22 @@ render_task() {
 
     # Show blockers/dependencies
     if [[ -n "$blockedBy" ]]; then
-      echo -e "      ${RED}⊗ Blocked by:${NC} $blockedBy"
+      local blocker_symbol
+      if [[ "$UNICODE_ENABLED" == "true" ]]; then
+        blocker_symbol="⊗"
+      else
+        blocker_symbol="x"
+      fi
+      echo -e "      ${RED}${blocker_symbol} Blocked by:${NC} $blockedBy"
     fi
     if [[ -n "$depends" ]]; then
-      echo -e "      ${CYAN}→ Depends:${NC} $depends"
+      local dep_symbol
+      if [[ "$UNICODE_ENABLED" == "true" ]]; then
+        dep_symbol="→"
+      else
+        dep_symbol="->"
+      fi
+      echo -e "      ${CYAN}${dep_symbol} Depends:${NC} $depends"
     fi
 
     # Show description only in verbose mode
@@ -373,18 +417,32 @@ render_task() {
 
     # Show files if requested
     if [[ "$SHOW_FILES" == true ]] && [[ -n "$files" ]]; then
-      echo -e "      ${CYAN}📁${NC} $files"
+      local file_symbol
+      if [[ "$UNICODE_ENABLED" == "true" ]]; then
+        file_symbol="📁"
+      else
+        file_symbol="F"
+      fi
+      echo -e "      ${CYAN}${file_symbol}${NC} $files"
     fi
 
     # Show acceptance criteria if requested
     if [[ "$SHOW_ACCEPTANCE" == true ]]; then
       local acceptance_count=$(echo "$acceptance" | jq 'length')
       if [[ "$acceptance_count" -gt 0 ]]; then
-        echo -e "      ${GREEN}✓ Acceptance:${NC}"
+        local check_symbol bullet_symbol
+        if [[ "$UNICODE_ENABLED" == "true" ]]; then
+          check_symbol="✓"
+          bullet_symbol="•"
+        else
+          check_symbol="+"
+          bullet_symbol="-"
+        fi
+        echo -e "      ${GREEN}${check_symbol} Acceptance:${NC}"
         local acc_items
         acc_items=$(echo "$acceptance" | jq -r '.[]')
         while IFS= read -r criterion; do
-          echo "        • $criterion"
+          echo "        ${bullet_symbol} $criterion"
         done <<< "$acc_items"
       fi
     fi
@@ -393,11 +451,19 @@ render_task() {
     if [[ "$SHOW_NOTES" == true ]]; then
       local notes_count=$(echo "$notes" | jq 'length')
       if [[ "$notes_count" -gt 0 ]]; then
-        echo -e "      ${BLUE}📝 Notes:${NC}"
+        local note_symbol bullet_symbol
+        if [[ "$UNICODE_ENABLED" == "true" ]]; then
+          note_symbol="📝"
+          bullet_symbol="•"
+        else
+          note_symbol="N"
+          bullet_symbol="-"
+        fi
+        echo -e "      ${BLUE}${note_symbol} Notes:${NC}"
         local note_items
         note_items=$(echo "$notes" | jq -r '.[]')
         while IFS= read -r note; do
-          echo "        • $note"
+          echo "        ${bullet_symbol} $note"
         done <<< "$note_items"
       fi
     fi
@@ -456,6 +522,7 @@ case "$FORMAT" in
       --argjson done "$DONE_COUNT" '{
       "$schema": "https://claude-todo.dev/schemas/output-v2.json",
       "_meta": {
+        format: "json",
         version: $version,
         command: "list",
         timestamp: $timestamp,

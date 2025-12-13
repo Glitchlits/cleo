@@ -113,9 +113,9 @@ detect_file_version() {
         return 1
     fi
 
-    # Try to extract version field
+    # Try to extract version field - check both top-level and _meta.version
     local version
-    version=$(jq -r '.version // "unknown"' "$file" 2>/dev/null)
+    version=$(jq -r '.version // ._meta.version // "unknown"' "$file" 2>/dev/null)
 
     if [[ "$version" == "unknown" || -z "$version" ]]; then
         # Try to infer from $schema field
@@ -339,6 +339,58 @@ rename_field() {
 # SPECIFIC MIGRATIONS
 # ============================================================================
 
+# Migration helper to rename config fields (backward compatibility)
+# Args: $1 = file path
+migrate_config_field_naming() {
+    local file="$1"
+    local temp_file="${file}.tmp"
+
+    # Rename old field names to new show* prefix pattern
+    # This maintains backward compatibility while standardizing naming
+    jq '
+        if .output then
+            .output |= (
+                # Rename colorEnabled -> showColor
+                if .colorEnabled != null then
+                    .showColor = .colorEnabled | del(.colorEnabled)
+                else . end |
+                # Rename unicodeEnabled -> showUnicode
+                if .unicodeEnabled != null then
+                    .showUnicode = .unicodeEnabled | del(.unicodeEnabled)
+                else . end |
+                # Rename progressBars -> showProgressBars
+                if .progressBars != null then
+                    .showProgressBars = .progressBars | del(.progressBars)
+                else . end |
+                # Rename compactTitles -> showCompactTitles
+                if .compactTitles != null then
+                    .showCompactTitles = .compactTitles | del(.compactTitles)
+                else . end
+            )
+        else . end
+    ' "$file" > "$temp_file" || {
+        echo "ERROR: Failed to migrate config field names" >&2
+        rm -f "$temp_file"
+        return 1
+    }
+
+    mv "$temp_file" "$file"
+}
+
+# Migration from any 2.x version to 2.1.0 for config.json
+migrate_config_to_2_1_0() {
+    local file="$1"
+
+    # Add new config sections if missing
+    add_field_if_missing "$file" ".session" '{"requireSessionNote":true,"warnOnNoFocus":true,"autoStartSession":true,"sessionTimeoutHours":24}' || return 1
+
+    # Migrate field names for consistency (idempotent)
+    migrate_config_field_naming "$file" || return 1
+
+    # Update version
+    update_version_field "$file" "2.1.0"
+}
+
 # Example: Migration from 2.0.0 to 2.1.0 for todo.json
 # migrate_todo_to_2_1_0() {
 #     local file="$1"
@@ -346,17 +398,6 @@ rename_field() {
 #     # Add new fields introduced in 2.1.0
 #     add_field_if_missing "$file" "._meta.activeSession" "null"
 #     add_field_if_missing "$file" ".focus.nextAction" "null"
-#
-#     # Update version
-#     update_version_field "$file" "2.1.0"
-# }
-
-# Example: Migration from 2.0.0 to 2.1.0 for config.json
-# migrate_config_to_2_1_0() {
-#     local file="$1"
-#
-#     # Add new config sections
-#     add_field_if_missing "$file" ".session" '{"requireSessionNote":true,"warnOnNoFocus":true,"autoStartSession":true,"sessionTimeoutHours":24}'
 #
 #     # Update version
 #     update_version_field "$file" "2.1.0"
@@ -468,6 +509,43 @@ log_migration() {
 }
 
 # ============================================================================
+# BACKWARD COMPATIBILITY ALIASES
+# ============================================================================
+
+# Alias for backward compatibility with file-ops.sh function names
+create_backup() {
+    # create_backup used to accept two arguments: file and label
+    # backup_file only accepts one argument: file
+    # The label argument is ignored for backward compatibility
+    backup_file "$1"
+}
+
+# Alias for backward compatibility with file-ops.sh function names
+restore_file() {
+    # restore_file(backup_file, target_file) -> restore_backup(target_file, backup_num)
+    # This is a different signature, so we need to handle it carefully
+    local backup="$1"
+    local target="$2"
+
+    if [[ -z "$backup" || -z "$target" ]]; then
+        echo "Error: Both backup and target file required" >&2
+        return 1
+    fi
+
+    # Simply copy the backup to target location
+    if ! cp "$backup" "$target" 2>/dev/null; then
+        echo "Error: Failed to restore from backup: $backup" >&2
+        return 1
+    fi
+
+    # Set proper permissions
+    chmod 644 "$target" 2>/dev/null || true
+
+    echo "Restored from backup: $backup" >&2
+    return 0
+}
+
+# ============================================================================
 # CLI INTERFACE
 # ============================================================================
 
@@ -503,8 +581,8 @@ show_migration_status() {
         current_version=$(detect_file_version "$file")
         expected_version=$(get_expected_version "$file_type")
 
-        check_compatibility "$file" "$file_type"
-        local status=$?
+        local status
+        check_compatibility "$file" "$file_type" && status=$? || status=$?
 
         case $status in
             0)

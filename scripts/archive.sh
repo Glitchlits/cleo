@@ -325,3 +325,34 @@ echo "Archived tasks:"
 echo "$ARCHIVE_IDS" | while read -r id; do
   echo "  - $id"
 done
+
+# Calculate and display archive statistics
+if [[ -n "$TASKS_TO_ARCHIVE" ]]; then
+  TOTAL_COUNT=$(echo "$TASKS_TO_ARCHIVE" | jq 'length')
+  CRITICAL_COUNT=$(echo "$TASKS_TO_ARCHIVE" | jq '[.[] | select(.priority == "critical")] | length')
+  HIGH_COUNT=$(echo "$TASKS_TO_ARCHIVE" | jq '[.[] | select(.priority == "high")] | length')
+  MEDIUM_COUNT=$(echo "$TASKS_TO_ARCHIVE" | jq '[.[] | select(.priority == "medium")] | length')
+  LOW_COUNT=$(echo "$TASKS_TO_ARCHIVE" | jq '[.[] | select(.priority == "low")] | length')
+
+  echo ""
+  echo "[ARCHIVE] Summary Statistics:"
+  echo "  Total archived: $TOTAL_COUNT"
+  echo "  By priority:"
+  [[ $CRITICAL_COUNT -gt 0 ]] && echo "    Critical: $CRITICAL_COUNT"
+  [[ $HIGH_COUNT -gt 0 ]] && echo "    High: $HIGH_COUNT"
+  [[ $MEDIUM_COUNT -gt 0 ]] && echo "    Medium: $MEDIUM_COUNT"
+  [[ $LOW_COUNT -gt 0 ]] && echo "    Low: $LOW_COUNT"
+
+  # Show labels breakdown if any tasks have labels
+  LABEL_STATS=$(echo "$TASKS_TO_ARCHIVE" | jq -r '[.[] | .labels // [] | .[]] | group_by(.) | map({label: .[0], count: length}) | sort_by(-.count) | .[:5] | .[] | "    \(.label): \(.count)"' 2>/dev/null)
+  if [[ -n "$LABEL_STATS" ]]; then
+    echo "  Top labels:"
+    echo "$LABEL_STATS"
+  fi
+
+  # Calculate average cycle time if available
+  AVG_CYCLE_TIME=$(echo "$TASKS_WITH_METADATA" | jq '[.[]._archive.cycleTimeDays | select(. != null)] | if length > 0 then (add / length | floor) else null end')
+  if [[ "$AVG_CYCLE_TIME" != "null" && -n "$AVG_CYCLE_TIME" ]]; then
+    echo "  Average cycle time: $AVG_CYCLE_TIME days"
+  fi
+fi

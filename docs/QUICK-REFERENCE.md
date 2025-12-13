@@ -23,7 +23,7 @@
 └─────────────────────────────────────────────────────┘
 ```
 
-## Essential Commands
+## Essential Commands (v0.8.2)
 
 ```bash
 # SETUP
@@ -36,6 +36,15 @@ claude-todo complete <id> --notes "What was done"  # Complete with notes
 claude-todo complete <id> --skip-notes             # Quick complete
 claude-todo list                      # List all tasks
 claude-todo list --status pending     # Filter by status
+claude-todo next                      # Get next task suggestion
+claude-todo next --explain            # Show why task is suggested
+
+# DASHBOARD & ANALYTICS
+claude-todo dash                      # Full dashboard overview
+claude-todo dash --compact            # Single-line summary
+claude-todo labels                    # List all labels with counts
+claude-todo labels show backend       # Show tasks with specific label
+claude-todo labels stats              # Detailed label statistics
 
 # EXPORT (TodoWrite Integration)
 claude-todo export --format todowrite # Export for Claude Code
@@ -374,6 +383,14 @@ chmod 600 .claude/.backups/*.json
 | **[ARCHITECTURE.md#executive-summary](architecture/ARCHITECTURE.md#executive-summary)** | Executive overview |
 | **[usage.md](usage.md)** | Detailed usage guide |
 | **[configuration.md](reference/configuration.md)** | Config reference |
+
+### Phase 3 Command Documentation
+
+| Command | Document | Purpose |
+|---------|----------|---------|
+| **dash** | **[commands/dash.md](commands/dash.md)** | Dashboard and project overview |
+| **labels** | **[commands/labels.md](commands/labels.md)** | Label analytics and management |
+| **next** | **[commands/next.md](commands/next.md)** | Intelligent task suggestions |
 
 ## Upgrade Path
 

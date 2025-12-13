@@ -196,6 +196,8 @@ declare -A CMD_MAP=(
   [dash]="dash.sh"
   [next]="next.sh"
   [labels]="labels.sh"
+  [deps]="deps-command.sh"
+  [blockers]="blockers-command.sh"
 )
 
 # Brief descriptions for main help
@@ -218,6 +220,8 @@ declare -A CMD_DESC=(
   [dash]="Show project dashboard (status, focus, phases, activity)"
   [next]="Suggest next task based on priority and dependencies"
   [labels]="List and analyze task labels/tags"
+  [deps]="Visualize task dependency graphs and relationships"
+  [blockers]="Analyze blocked tasks and dependency chains"
 )
 
 # ============================================
@@ -370,7 +374,7 @@ show_main_help() {
   echo "       claude-todo help <command>    Show detailed command help"
   echo ""
   echo "Commands:"
-  for cmd in init add update complete list focus session archive validate stats backup restore export migrate log; do
+  for cmd in init add update complete list focus session archive validate stats backup restore export migrate log dash next labels deps blockers; do
     printf "  %-14s %s\n" "$cmd" "${CMD_DESC[$cmd]}"
   done
   echo "  version        Show version"

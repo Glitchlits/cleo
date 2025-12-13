@@ -24,6 +24,7 @@ fi
 BACKUP_DIR=".claude/.backups"
 MAX_BACKUPS=10
 TEMP_SUFFIX=".tmp"
+LOCK_SUFFIX=".lock"
 
 # Error codes
 E_SUCCESS=0
@@ -34,6 +35,7 @@ E_BACKUP_FAILED=4
 E_VALIDATION_FAILED=5
 E_RESTORE_FAILED=6
 E_JSON_PARSE_FAILED=7
+E_LOCK_FAILED=8
 
 #######################################
 # Ensure directory exists with proper permissions
@@ -59,6 +61,93 @@ ensure_directory() {
         # Set proper permissions (owner: rwx, group: rx, other: rx)
         chmod 755 "$dir" 2>/dev/null || true
     fi
+
+    return $E_SUCCESS
+}
+
+#######################################
+# Acquire exclusive lock on a file
+# Arguments:
+#   $1 - File path to lock
+#   $2 - Lock file descriptor variable name (default: LOCK_FD)
+#   $3 - Timeout in seconds (optional, default: 30)
+# Returns:
+#   0 on success, E_LOCK_FAILED on timeout/error
+# Notes:
+#   Lock file created at {file}.lock
+#   Caller must close the FD to release the lock
+#   FD number is stored in the variable named by $2
+#######################################
+lock_file() {
+    local file="$1"
+    local fd_var="${2:-LOCK_FD}"
+    local timeout="${3:-30}"
+
+    if [[ -z "$file" ]]; then
+        echo "Error: File path required for locking" >&2
+        return $E_INVALID_ARGS
+    fi
+
+    # Ensure parent directory exists
+    local file_dir
+    file_dir="$(dirname "$file")"
+    if ! ensure_directory "$file_dir"; then
+        return $E_LOCK_FAILED
+    fi
+
+    # Create lock file path
+    local lock_file="${file}${LOCK_SUFFIX}"
+
+    # Touch lock file to ensure it exists
+    touch "$lock_file" 2>/dev/null || {
+        echo "Error: Failed to create lock file: $lock_file" >&2
+        return $E_LOCK_FAILED
+    }
+
+    # Find available file descriptor (200-210)
+    local fd
+    for fd in {200..210}; do
+        if ! { true >&"$fd"; } 2>/dev/null; then
+            # FD is available, use it
+            eval "exec $fd>'$lock_file'" 2>/dev/null || continue
+
+            # Try to acquire lock
+            if flock -w "$timeout" "$fd" 2>/dev/null; then
+                # Success - store FD in caller's variable
+                eval "$fd_var=$fd"
+                return $E_SUCCESS
+            else
+                # Failed to lock, close FD and try next
+                eval "exec $fd>&-" 2>/dev/null || true
+            fi
+        fi
+    done
+
+    echo "Error: Failed to acquire lock on $file (timeout after ${timeout}s)" >&2
+    echo "Another process may be accessing this file." >&2
+    return $E_LOCK_FAILED
+}
+
+#######################################
+# Release file lock
+# Arguments:
+#   $1 - File descriptor to unlock (optional, uses LOCK_FD if not provided)
+# Returns:
+#   Always 0 (errors are suppressed)
+# Notes:
+#   Safe to call even if no lock is held
+#   Closes the file descriptor
+#######################################
+unlock_file() {
+    local fd="${1:-${LOCK_FD:-}}"
+
+    if [[ -z "$fd" ]]; then
+        return $E_SUCCESS
+    fi
+
+    # Release lock and close file descriptor
+    flock -u "$fd" 2>/dev/null || true
+    eval "exec $fd>&-" 2>/dev/null || true
 
     return $E_SUCCESS
 }
@@ -177,16 +266,30 @@ rotate_backups() {
 atomic_write() {
     local file="$1"
     local content="${2:-}"
+    local lock_fd=""
 
     if [[ -z "$file" ]]; then
         echo "Error: File path required" >&2
         return $E_INVALID_ARGS
     fi
 
+    # Acquire exclusive lock on the file
+    # This prevents concurrent writes from causing race conditions
+    if ! lock_file "$file" lock_fd 30; then
+        echo "Error: Could not acquire lock for atomic write" >&2
+        return $E_LOCK_FAILED
+    fi
+
+    # Set up trap to ensure lock is released on exit/error
+    # Note: Using double quotes intentionally so $lock_fd and $file are expanded now
+    # shellcheck disable=SC2064
+    trap "unlock_file $lock_fd; rm -f '${file}${TEMP_SUFFIX}' 2>/dev/null || true" EXIT ERR INT TERM
+
     # Ensure parent directory exists
     local file_dir
     file_dir="$(dirname "$file")"
     if ! ensure_directory "$file_dir"; then
+        unlock_file "$lock_fd"
         return $E_WRITE_FAILED
     fi
 
@@ -198,12 +301,14 @@ atomic_write() {
         if ! echo "$content" > "$temp_file" 2>/dev/null; then
             echo "Error: Failed to write to temp file: $temp_file" >&2
             rm -f "$temp_file" 2>/dev/null || true
+            unlock_file "$lock_fd"
             return $E_WRITE_FAILED
         fi
     else
         if ! cat > "$temp_file" 2>/dev/null; then
             echo "Error: Failed to write to temp file: $temp_file" >&2
             rm -f "$temp_file" 2>/dev/null || true
+            unlock_file "$lock_fd"
             return $E_WRITE_FAILED
         fi
     fi
@@ -211,12 +316,14 @@ atomic_write() {
     # Validate temp file exists and has content
     if [[ ! -f "$temp_file" ]]; then
         echo "Error: Temp file not created: $temp_file" >&2
+        unlock_file "$lock_fd"
         return $E_WRITE_FAILED
     fi
 
     if [[ ! -s "$temp_file" ]]; then
         echo "Error: Temp file is empty: $temp_file" >&2
         rm -f "$temp_file" 2>/dev/null || true
+        unlock_file "$lock_fd"
         return $E_VALIDATION_FAILED
     fi
 
@@ -228,6 +335,7 @@ atomic_write() {
         if [[ $backup_result -ne $E_SUCCESS ]]; then
             echo "Error: Failed to backup original file" >&2
             rm -f "$temp_file" 2>/dev/null || true
+            unlock_file "$lock_fd"
             return $E_BACKUP_FAILED
         fi
     fi
@@ -243,11 +351,18 @@ atomic_write() {
         fi
 
         rm -f "$temp_file" 2>/dev/null || true
+        unlock_file "$lock_fd"
         return $E_WRITE_FAILED
     fi
 
     # Set proper permissions
     chmod 644 "$file" 2>/dev/null || true
+
+    # Release lock before successful return
+    unlock_file "$lock_fd"
+
+    # Clear trap since we're exiting successfully
+    trap - EXIT ERR INT TERM
 
     return $E_SUCCESS
 }
@@ -360,6 +475,9 @@ load_json() {
 #   $2 - JSON content (via stdin if not provided)
 # Returns:
 #   0 on success, non-zero on error
+# Notes:
+#   Locking is handled by atomic_write, so this function
+#   does not need to acquire additional locks
 #######################################
 save_json() {
     local file="$1"
@@ -381,7 +499,7 @@ save_json() {
         return $E_JSON_PARSE_FAILED
     fi
 
-    # Pretty-print JSON and write atomically
+    # Pretty-print JSON and write atomically (with locking)
     if ! echo "$json" | jq '.' | atomic_write "$file"; then
         echo "Error: Failed to save JSON to: $file" >&2
         return $E_WRITE_FAILED
@@ -436,6 +554,8 @@ list_backups() {
 
 # Export functions
 export -f ensure_directory
+export -f lock_file
+export -f unlock_file
 export -f backup_file
 export -f rotate_backups
 export -f atomic_write

@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "version": "2.1.0",
+    "checksum": "CHECKSUM"
+  },
+  "phases": {
+    "setup": {"name": "Setup", "description": "Initial setup tasks", "order": 1},
+    "core": {"name": "Core", "description": "Core functionality", "order": 2},
+    "polish": {"name": "Polish", "description": "Final polish", "order": 3}
+  },
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Setup project structure",
+      "description": "Create initial directory structure",
+      "status": "done",
+      "priority": "high",
+      "phase": "setup",
+      "labels": ["setup", "infrastructure"],
+      "createdAt": "2025-01-01T10:00:00Z",
+      "completedAt": "2025-01-02T15:30:00Z"
+    },
+    {
+      "id": "T002",
+      "title": "Implement core feature A",
+      "description": "Build the main feature",
+      "status": "done",
+      "priority": "critical",
+      "phase": "core",
+      "labels": ["feature", "core"],
+      "createdAt": "2025-01-02T09:00:00Z",
+      "completedAt": "2025-01-05T17:00:00Z",
+      "depends": ["T001"]
+    },
+    {
+      "id": "T003",
+      "title": "Add authentication",
+      "description": "Implement user authentication",
+      "status": "active",
+      "priority": "high",
+      "phase": "core",
+      "labels": ["feature", "security"],
+      "createdAt": "2025-01-03T08:00:00Z",
+      "depends": ["T001"]
+    },
+    {
+      "id": "T004",
+      "title": "Write documentation",
+      "description": "Create user documentation",
+      "status": "pending",
+      "priority": "medium",
+      "phase": "polish",
+      "labels": ["docs"],
+      "createdAt": "2025-01-04T10:00:00Z",
+      "depends": ["T002", "T003"]
+    },
+    {
+      "id": "T005",
+      "title": "Fix login bug",
+      "description": "Users cannot login with special characters",
+      "status": "blocked",
+      "priority": "high",
+      "phase": "core",
+      "labels": ["bug", "security"],
+      "createdAt": "2025-01-05T11:00:00Z",
+      "blockedBy": "Waiting for T003 to complete"
+    },
+    {
+      "id": "T006",
+      "title": "Performance optimization",
+      "description": "Optimize database queries",
+      "status": "pending",
+      "priority": "low",
+      "phase": "polish",
+      "labels": ["performance"],
+      "createdAt": "2025-01-06T09:00:00Z"
+    }
+  ],
+  "focus": {}
+}

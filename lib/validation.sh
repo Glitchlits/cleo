@@ -62,6 +62,30 @@ timestamp_to_epoch() {
     iso_to_epoch "$timestamp"
 }
 
+# Deduplicate and normalize labels
+# Args: $1 = comma-separated labels string
+# Returns: deduplicated, sorted labels string
+normalize_labels() {
+    local labels_input="$1"
+
+    # Handle empty input
+    if [[ -z "$labels_input" ]]; then
+        echo ""
+        return 0
+    fi
+
+    # Split by comma, trim whitespace, sort, deduplicate, rejoin
+    echo "$labels_input" | \
+        tr ',' '\n' | \
+        sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
+        grep -v '^$' | \
+        sort -u | \
+        tr '\n' ',' | \
+        sed 's/,$//'
+}
+
+export -f normalize_labels
+
 # ============================================================================
 # JSON SYNTAX VALIDATION
 # ============================================================================
@@ -262,6 +286,84 @@ validate_version() {
 # ============================================================================
 # TASK VALIDATION
 # ============================================================================
+
+# Validate task title - no newlines, not empty, reasonable length
+# Args: $1 = title string
+# Returns: 0 if valid, 1 if invalid
+validate_title() {
+    local title="$1"
+
+    # Check for empty
+    if [[ -z "$title" ]]; then
+        echo "[ERROR] Title cannot be empty" >&2
+        return 1
+    fi
+
+    # Check for literal newlines
+    if [[ "$title" == *$'\n'* ]]; then
+        echo "[ERROR] Title cannot contain newlines" >&2
+        return 1
+    fi
+
+    # Check for escaped newlines
+    if [[ "$title" == *'\n'* ]]; then
+        echo "[ERROR] Title cannot contain newline sequences" >&2
+        return 1
+    fi
+
+    # Check for carriage returns
+    if [[ "$title" == *$'\r'* ]]; then
+        echo "[ERROR] Title cannot contain carriage returns" >&2
+        return 1
+    fi
+
+    # Check for zero-width and invisible characters
+    # Zero-width space: U+200B (E2 80 8B), Zero-width non-joiner: U+200C (E2 80 8C)
+    # Zero-width joiner: U+200D (E2 80 8D), BOM: U+FEFF (EF BB BF)
+    # Word joiner: U+2060 (E2 81 A0), Soft hyphen: U+00AD (C2 AD)
+    # Use od to convert to hex (more portable than xxd)
+    local hex_dump
+    hex_dump=$(printf '%s' "$title" | od -An -tx1 | tr -d ' \n')
+
+    # Check for problematic Unicode sequences
+    if [[ "$hex_dump" == *"e2808b"* ]] || \
+       [[ "$hex_dump" == *"e2808c"* ]] || \
+       [[ "$hex_dump" == *"e2808d"* ]] || \
+       [[ "$hex_dump" == *"efbbbf"* ]] || \
+       [[ "$hex_dump" == *"e281a0"* ]] || \
+       [[ "$hex_dump" == *"c2ad"* ]]; then
+        echo "[ERROR] Title contains invisible/zero-width characters" >&2
+        return 1
+    fi
+
+    # Check for ASCII control characters (0x00-0x1F, 0x7F) except those already checked
+    # Need to match complete bytes, not partial hex patterns
+    # Add spaces back to hex dump to match whole bytes
+    local hex_bytes
+    hex_bytes=$(printf '%s' "$title" | od -An -tx1 | sed 's/^ *//' | tr -s ' ')
+
+    # Match control character bytes with word boundaries
+    if echo "$hex_bytes" | grep -qE '\<(0[0-8]|0[b-e]|1[0-9a-f]|7f)\>'; then
+        echo "[ERROR] Title contains control characters" >&2
+        return 1
+    fi
+
+    # Check for excessive whitespace at start/end
+    if [[ "$title" != "${title#[[:space:]]}" ]] || [[ "$title" != "${title%[[:space:]]}" ]]; then
+        echo "[WARN] Title has leading/trailing whitespace (should be trimmed)" >&2
+        # Note: This is a warning, not an error - callers should trim before validation
+    fi
+
+    # Check length (max 120 chars per schema)
+    if [[ ${#title} -gt 120 ]]; then
+        echo "[ERROR] Title too long (max 120 characters)" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+export -f validate_title
 
 # Validate a single task object
 # Args: $1 = file path, $2 = task index
@@ -531,6 +633,160 @@ validate_status_transition() {
 }
 
 # ============================================================================
+# CIRCULAR DEPENDENCY DETECTION
+# ============================================================================
+
+# Check for circular dependencies using depth-first search
+# Args: $1 = todo file, $2 = task ID, $3 = comma-separated new dependencies
+# Returns: 0 if no cycle, 1 if cycle detected
+validate_no_circular_deps() {
+    local todo_file="$1"
+    local task_id="$2"
+    local new_deps="$3"
+
+    if [[ -z "$new_deps" ]]; then
+        return 0  # No dependencies to check
+    fi
+
+    # Create temporary file with proposed changes
+    local temp_file
+    temp_file=$(mktemp)
+
+    # Add new dependencies to task in temp file
+    jq --arg id "$task_id" --arg deps "$new_deps" '
+        .tasks = [.tasks[] | if .id == $id then
+            # Split comma-separated deps and merge with existing
+            .depends = (($deps | split(",") | map(gsub("^\\s+|\\s+$";""))) + (.depends // []) | unique)
+        else . end]
+    ' "$todo_file" > "$temp_file"
+
+    # Run DFS cycle detection on temp file
+    if ! _dfs_detect_cycle "$temp_file" "$task_id"; then
+        rm -f "$temp_file"
+        return 1  # Cycle detected
+    fi
+
+    rm -f "$temp_file"
+    return 0
+}
+
+# DFS cycle detection using recursion stack
+# Args: $1 = todo file, $2 = task ID to check from
+# Returns: 0 if no cycle, 1 if cycle detected
+_dfs_detect_cycle() {
+    local todo_file="$1"
+    local start_task="$2"
+
+    # Initialize tracking arrays (using string-based sets)
+    local visited=""
+    local rec_stack=""
+    local cycle_path=""
+
+    # Helper function for DFS traversal
+    _dfs_visit() {
+        local current="$1"
+
+        # If current is already in recursion stack, we found a cycle
+        if [[ "$rec_stack" == *",$current,"* ]]; then
+            # Build cycle path
+            cycle_path="$current (cycle back to start)"
+            echo "ERROR: Circular dependency detected involving: $current" >&2
+            echo "Fix: Remove dependency that creates the cycle" >&2
+            return 1
+        fi
+
+        # If already visited (and not in rec_stack), no need to visit again
+        if [[ "$visited" == *",$current,"* ]]; then
+            return 0
+        fi
+
+        # Mark current as visited and add to recursion stack
+        visited="$visited,$current,"
+        rec_stack="$rec_stack,$current,"
+
+        # Get dependencies of current task
+        local deps
+        deps=$(jq -r --arg id "$current" '
+            .tasks[] |
+            select(.id == $id) |
+            if has("depends") and (.depends | length > 0) then
+                .depends | join(",")
+            else
+                ""
+            end
+        ' "$todo_file")
+
+        # Check each dependency
+        if [[ -n "$deps" ]]; then
+            IFS=',' read -ra dep_array <<< "$deps"
+            for dep in "${dep_array[@]}"; do
+                dep=$(echo "$dep" | xargs)  # Trim whitespace
+                [[ -z "$dep" ]] && continue
+
+                # Recurse into dependency
+                if ! _dfs_visit "$dep"; then
+                    # Propagate cycle detection and build path
+                    if [[ "$cycle_path" != *"$current"* ]]; then
+                        cycle_path="$current → $cycle_path"
+                    fi
+                    return 1
+                fi
+            done
+        fi
+
+        # Remove from recursion stack (backtrack)
+        rec_stack="${rec_stack//,$current,/,}"
+        return 0
+    }
+
+    # Start DFS from the specified task
+    if ! _dfs_visit "$start_task"; then
+        return 1
+    fi
+
+    return 0
+}
+
+# Wrapper function for better error handling and reporting
+# Args: $1 = todo file, $2 = task ID, $3 = comma-separated dependencies
+# Returns: 0 if valid, 1 if cycle detected
+check_circular_dependencies() {
+    local todo_file="$1"
+    local task_id="$2"
+    local dependencies="$3"
+
+    if [[ ! -f "$todo_file" ]]; then
+        echo "ERROR: Todo file not found: $todo_file" >&2
+        return 1
+    fi
+
+    if [[ -z "$dependencies" ]]; then
+        return 0  # No dependencies to check
+    fi
+
+    # Validate all dependency IDs exist first
+    IFS=',' read -ra dep_array <<< "$dependencies"
+    for dep_id in "${dep_array[@]}"; do
+        dep_id=$(echo "$dep_id" | xargs)
+
+        # Check if dependency exists
+        local exists
+        exists=$(jq --arg id "$dep_id" '[.tasks[].id] | index($id) != null' "$todo_file")
+        if [[ "$exists" != "true" ]]; then
+            echo "ERROR: Dependency task not found: $dep_id" >&2
+            return 1
+        fi
+    done
+
+    # Perform cycle detection
+    if ! validate_no_circular_deps "$todo_file" "$task_id" "$dependencies"; then
+        return 1
+    fi
+
+    return 0
+}
+
+# ============================================================================
 # COMPREHENSIVE VALIDATION
 # ============================================================================
 
@@ -642,9 +898,39 @@ validate_all() {
         echo "[5/7] Skipping duplicate content check (not applicable)"
     fi
 
-    # 6. Done Status Consistency
+    # 6. Circular Dependency Check
     if [[ "$schema_type" == "todo" ]]; then
-        echo "[6/7] Checking done status consistency..."
+        echo "[6/8] Checking for circular dependencies..."
+        local cycle_errors=0
+
+        # Check each task with dependencies
+        while IFS=':' read -r task_id deps; do
+            if [[ -n "$task_id" && -n "$deps" ]]; then
+                if ! validate_no_circular_deps "$file" "$task_id" "$deps" 2>/dev/null; then
+                    # Re-run to show error message
+                    validate_no_circular_deps "$file" "$task_id" "$deps"
+                    ((cycle_errors++))
+                fi
+            fi
+        done < <(jq -r '
+            .tasks[] |
+            select(has("depends") and (.depends | length > 0)) |
+            "\(.id):\(.depends | join(","))"
+        ' "$file")
+
+        if [[ $cycle_errors -gt 0 ]]; then
+            ((semantic_errors++))
+            echo "✗ FAILED: Circular dependencies detected ($cycle_errors cycles)"
+        else
+            echo "✓ PASSED: No circular dependencies"
+        fi
+    else
+        echo "[6/8] Skipping circular dependency check (not applicable)"
+    fi
+
+    # 7. Done Status Consistency
+    if [[ "$schema_type" == "todo" ]]; then
+        echo "[7/8] Checking done status consistency..."
         local invalid_done
         invalid_done=$(jq -r '.tasks[] | select(.status == "done" and (.completed_at == null or .completed_at == "")) | .id // "unknown"' "$file")
 
@@ -657,7 +943,7 @@ validate_all() {
             echo "✓ PASSED: Done status consistent"
         fi
     elif [[ "$schema_type" == "archive" ]]; then
-        echo "[6/7] Checking archive contains only done tasks..."
+        echo "[7/8] Checking archive contains only done tasks..."
         local non_done
         non_done=$(jq -r '.archived_tasks[] | select(.status != "done") | .id // "unknown"' "$file")
 
@@ -670,16 +956,16 @@ validate_all() {
             echo "✓ PASSED: Archive valid"
         fi
     else
-        echo "[6/7] Skipping status consistency check (not applicable)"
+        echo "[7/8] Skipping status consistency check (not applicable)"
     fi
 
-    # 7. Config-Specific Validation
+    # 8. Config-Specific Validation
     if [[ "$schema_type" == "config" ]]; then
-        echo "[7/7] Checking configuration backward compatibility..."
+        echo "[8/8] Checking configuration backward compatibility..."
         # Additional config-specific checks can be added here
         echo "✓ PASSED: Configuration valid"
     else
-        echo "[7/7] Skipping config-specific checks (not applicable)"
+        echo "[8/8] Skipping config-specific checks (not applicable)"
     fi
 
     # Summary

@@ -182,7 +182,7 @@ get_label_data() {
     map({
       label: .[0].label,
       count: length,
-      taskIds: [.[].id],
+      taskIds: ([.[].id] | unique),
       byStatus: (group_by(.status) | map({key: .[0].status, value: length}) | from_entries),
       byPriority: (group_by(.priority) | map({key: .[0].priority, value: length}) | from_entries)
     }) |
@@ -317,6 +317,7 @@ output_list_json() {
     --argjson labels "$label_data" \
     '{
       "_meta": {
+        "format": "json",
         "version": "0.8.0",
         "command": "labels",
         "timestamp": (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
@@ -384,6 +385,7 @@ output_show_json() {
     --argjson tasks "$tasks" \
     '{
       "_meta": {
+        "format": "json",
         "version": "0.8.0",
         "command": "labels show",
         "timestamp": (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
@@ -459,6 +461,7 @@ output_stats_json() {
     --argjson cooccurrence "$cooccurrence" \
     '{
       "_meta": {
+        "format": "json",
         "version": "0.8.0",
         "command": "labels stats",
         "timestamp": (now | strftime("%Y-%m-%dT%H:%M:%SZ"))
@@ -513,33 +516,11 @@ parse_arguments() {
         # Not a subcommand, will be parsed below
         ;;
       *)
-        # Check if it's an invalid subcommand vs a label argument
-        if [[ ! "$1" =~ ^- ]]; then
-          # Check if it looks like a subcommand (not containing special chars typical of labels)
-          if [[ "$VALID_SUBCOMMANDS" == *"$1"* ]]; then
-            # It's a valid subcommand but not matched above (shouldn't happen)
-            SUBCOMMAND="$1"
-            shift
-          elif [[ "$1" =~ ^[a-z]+$ && ${#1} -le 10 ]]; then
-            # Could be a label or invalid subcommand - treat as implicit 'show'
-            SUBCOMMAND="show"
-            LABEL_ARG="$1"
-            if [[ -z "$LABEL_ARG" ]]; then
-              echo "[ERROR] Label cannot be empty" >&2
-              exit 1
-            fi
-            shift
-          else
-            # Treat as label for implicit 'show'
-            SUBCOMMAND="show"
-            LABEL_ARG="$1"
-            if [[ -z "$LABEL_ARG" ]]; then
-              echo "[ERROR] Label cannot be empty" >&2
-              exit 1
-            fi
-            shift
-          fi
-        fi
+        # Invalid subcommand - show error
+        echo "[ERROR] Invalid subcommand: $1" >&2
+        echo "Valid subcommands: $VALID_SUBCOMMANDS" >&2
+        echo "Run 'claude-todo labels --help' for usage" >&2
+        exit 1
         ;;
     esac
   fi
@@ -549,7 +530,16 @@ parse_arguments() {
     case $1 in
       --format|-f)
         OUTPUT_FORMAT="$2"
-        if ! validate_format "$OUTPUT_FORMAT" "text,json"; then
+        # Validate format
+        local VALID_FORMATS="text json"
+        if [[ -z "$OUTPUT_FORMAT" ]]; then
+          echo "[ERROR] --format requires a value" >&2
+          echo "Valid formats: $VALID_FORMATS" >&2
+          exit 1
+        fi
+        if [[ ! " $VALID_FORMATS " =~ " $OUTPUT_FORMAT " ]]; then
+          echo "[ERROR] Invalid format: $OUTPUT_FORMAT" >&2
+          echo "Valid formats: $VALID_FORMATS" >&2
           exit 1
         fi
         shift 2

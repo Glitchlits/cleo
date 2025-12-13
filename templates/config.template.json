@@ -47,14 +47,14 @@
   },
 
   "output": {
-    "colorEnabled": true,
-    "unicodeEnabled": true,
-    "progressBars": true,
-    "dateFormat": "iso8601",
+    "defaultFormat": "text",
+    "showColor": true,
+    "showUnicode": true,
+    "showProgressBars": true,
     "csvDelimiter": ",",
-    "compactTitles": false,
-    "maxTitleLength": 80,
-    "defaultFormat": "text"
+    "dateFormat": "iso8601",
+    "showCompactTitles": false,
+    "maxTitleLength": 80
   },
 
   "cli": {

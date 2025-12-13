@@ -19,6 +19,10 @@ fi
 [[ -f "$CLAUDE_TODO_HOME/lib/logging.sh" ]] && source "$CLAUDE_TODO_HOME/lib/logging.sh"
 [[ -f "$CLAUDE_TODO_HOME/lib/file-ops.sh" ]] && source "$CLAUDE_TODO_HOME/lib/file-ops.sh"
 
+# Also try local lib directory if home installation not found
+LIB_DIR="${SCRIPT_DIR}/../lib"
+[[ ! -f "$CLAUDE_TODO_HOME/lib/file-ops.sh" && -f "$LIB_DIR/file-ops.sh" ]] && source "$LIB_DIR/file-ops.sh"
+
 TODO_FILE="${TODO_FILE:-.claude/todo.json}"
 CONFIG_FILE="${CONFIG_FILE:-.claude/todo-config.json}"
 # Note: LOG_FILE is set by lib/logging.sh (readonly) - don't reassign here
@@ -45,7 +49,7 @@ log_step()    { echo -e "${BLUE}[SESSION]${NC} $1"; }
 
 usage() {
   cat << EOF
-Usage: $(basename "$0") <command> [OPTIONS]
+Usage: claude-todo session <command> [OPTIONS]
 
 Manage claude-todo work sessions.
 
@@ -61,10 +65,10 @@ Options:
   -h, --help      Show this help
 
 Examples:
-  $(basename "$0") start                    # Start new session
-  $(basename "$0") end --note "Completed auth implementation"
-  $(basename "$0") status                   # Check current session
-  $(basename "$0") info --json              # Detailed info as JSON
+  claude-todo session start                    # Start new session
+  claude-todo session end --note "Completed auth implementation"
+  claude-todo session status                   # Check current session
+  claude-todo session info --json              # Detailed info as JSON
 EOF
   exit 0
 }
@@ -117,16 +121,22 @@ cmd_start() {
   timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
   # Update todo.json with new session
-  jq --arg sid "$session_id" --arg ts "$timestamp" '
+  local updated_todo
+  updated_todo=$(jq --arg sid "$session_id" --arg ts "$timestamp" '
     ._meta.activeSession = $sid |
     ._meta.lastModified = $ts
-  ' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+  ' "$TODO_FILE")
+  save_json "$TODO_FILE" "$updated_todo" || {
+    log_error "Failed to start session"
+    exit 1
+  }
 
   # Log session start
   if [[ -f "$LOG_FILE" ]]; then
     local log_id
     log_id="log_$(head -c 6 /dev/urandom | od -An -tx1 | tr -d ' \n')"
-    jq --arg id "$log_id" --arg ts "$timestamp" --arg sid "$session_id" '
+    local updated_log
+    updated_log=$(jq --arg id "$log_id" --arg ts "$timestamp" --arg sid "$session_id" '
       .entries += [{
         id: $id,
         timestamp: $ts,
@@ -140,7 +150,8 @@ cmd_start() {
       }] |
       ._meta.totalEntries += 1 |
       ._meta.lastEntry = $ts
-    ' "$LOG_FILE" > "${LOG_FILE}.tmp" && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+    ' "$LOG_FILE")
+    save_json "$LOG_FILE" "$updated_log" || log_warn "Failed to write log entry"
   fi
 
   log_step "Session started: $session_id"
@@ -205,15 +216,19 @@ cmd_end() {
   fi
 
   # Update todo.json
+  local updated_todo
   if [[ -n "$note" ]]; then
-    jq --arg ts "$timestamp" --arg note "$note" "$update_expr" "$TODO_FILE" > "${TODO_FILE}.tmp"
+    updated_todo=$(jq --arg ts "$timestamp" --arg note "$note" "$update_expr" "$TODO_FILE")
   else
-    jq --arg ts "$timestamp" '
+    updated_todo=$(jq --arg ts "$timestamp" '
       ._meta.activeSession = null |
       ._meta.lastModified = $ts
-    ' "$TODO_FILE" > "${TODO_FILE}.tmp"
+    ' "$TODO_FILE")
   fi
-  mv "${TODO_FILE}.tmp" "$TODO_FILE"
+  save_json "$TODO_FILE" "$updated_todo" || {
+    log_error "Failed to end session"
+    exit 1
+  }
 
   # Log session end
   if [[ -f "$LOG_FILE" ]]; then
@@ -226,7 +241,8 @@ cmd_end() {
       details_json="null"
     fi
 
-    jq --arg id "$log_id" --arg ts "$timestamp" --arg sid "$current_session" --argjson details "$details_json" '
+    local updated_log
+    updated_log=$(jq --arg id "$log_id" --arg ts "$timestamp" --arg sid "$current_session" --argjson details "$details_json" '
       .entries += [{
         id: $id,
         timestamp: $ts,
@@ -240,11 +256,12 @@ cmd_end() {
       }] |
       ._meta.totalEntries += 1 |
       ._meta.lastEntry = $ts
-    ' "$LOG_FILE" > "${LOG_FILE}.tmp" && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+    ' "$LOG_FILE")
+    save_json "$LOG_FILE" "$updated_log" || log_warn "Failed to write log entry"
   fi
 
   log_step "Session ended: $current_session"
-  [[ -n "$note" ]] && log_info "Note saved: $note"
+  [[ -n "$note" ]] && log_info "Note saved: $note" || true
 }
 
 # Show session status
@@ -296,8 +313,8 @@ cmd_status() {
       echo -e "Focus Task: $task_title ($focus_task)"
     fi
 
-    [[ -n "$session_note" ]] && echo -e "Session Note: $session_note"
-    [[ -n "$next_action" ]] && echo -e "Next Action: $next_action"
+    [[ -n "$session_note" ]] && echo -e "Session Note: $session_note" || true
+    [[ -n "$next_action" ]] && echo -e "Next Action: $next_action" || true
   fi
 }
 
@@ -366,7 +383,7 @@ case "$COMMAND" in
   -h|--help|help) usage ;;
   *)
     log_error "Unknown command: $COMMAND"
-    echo "Run '$(basename "$0") --help' for usage"
+    echo "Run 'claude-todo session --help' for usage"
     exit 1
     ;;
 esac

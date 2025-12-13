@@ -23,6 +23,15 @@ claude-todo export --format todowrite  # Export to TodoWrite format
 claude-todo archive                 # Archive completed tasks
 claude-todo validate                # Validate all JSON files
 claude-todo stats                   # Show statistics
+
+# Phase 3 Commands (v0.8.2)
+claude-todo dash                    # Comprehensive dashboard overview
+claude-todo dash --compact          # Single-line summary
+claude-todo labels                  # List all labels with counts
+claude-todo labels show <label>     # Show tasks with specific label
+claude-todo next                    # Get next task suggestion
+claude-todo next --explain          # Show reasoning for suggestion
+
 claude-todo help                    # Show all commands
 ```
 
@@ -63,10 +72,13 @@ You cannot accurately predict time. Estimates create false precision and bad dec
 **Instead**: Describe scope, complexity, and dependencies. Use relative sizing if pressed (small/medium/large). If a user insists on time estimates, state clearly that you cannot provide accurate predictions and redirect to scope-based planning.
 
 ## Docs
-- Architecture: @docs/architecture/ARCHITECTURE.md
-- Data Flows: @docs/architecture/DATA-FLOWS.md
-- Installation: @docs/reference/installation.md
-- Usage: @docs/usage.md
+- Main Index for docs: docs/INDEX.md
+- Quick Reference for Claude-TODO: docs/QUICK-REFERENCE.md
+### 
+- Architecture: docs/architecture/ARCHITECTURE.md
+- Data Flows: docs/architecture/DATA-FLOWS.md
+- Installation: docs/reference/installation.md
+- Usage: docs/usage.md
 
 <!-- CLAUDE-TODO:START -->
 ## Task Management (claude-todo CLI)

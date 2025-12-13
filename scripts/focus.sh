@@ -19,6 +19,10 @@ fi
 [[ -f "$CLAUDE_TODO_HOME/lib/logging.sh" ]] && source "$CLAUDE_TODO_HOME/lib/logging.sh"
 [[ -f "$CLAUDE_TODO_HOME/lib/file-ops.sh" ]] && source "$CLAUDE_TODO_HOME/lib/file-ops.sh"
 
+# Also try local lib directory if home installation not found
+LIB_DIR="${SCRIPT_DIR}/../lib"
+[[ ! -f "$CLAUDE_TODO_HOME/lib/file-ops.sh" && -f "$LIB_DIR/file-ops.sh" ]] && source "$LIB_DIR/file-ops.sh"
+
 TODO_FILE="${TODO_FILE:-.claude/todo.json}"
 # Note: LOG_FILE is set by lib/logging.sh (readonly) - don't reassign here
 # If library wasn't sourced, set a fallback
@@ -44,7 +48,7 @@ log_step()    { echo -e "${BLUE}[FOCUS]${NC} $1"; }
 
 usage() {
   cat << EOF
-Usage: $(basename "$0") <command> [OPTIONS]
+Usage: claude-todo focus <command> [OPTIONS]
 
 Manage task focus for single-task workflow.
 
@@ -60,11 +64,11 @@ Options:
   -h, --help      Show this help
 
 Examples:
-  $(basename "$0") set task_1733395200_abc123
-  $(basename "$0") note "Completed API endpoints, working on tests"
-  $(basename "$0") next "Write unit tests for auth module"
-  $(basename "$0") clear
-  $(basename "$0") show --json
+  claude-todo focus set task_1733395200_abc123
+  claude-todo focus note "Completed API endpoints, working on tests"
+  claude-todo focus next "Write unit tests for auth module"
+  claude-todo focus clear
+  claude-todo focus show --json
 EOF
   exit 0
 }
@@ -112,7 +116,8 @@ log_focus_change() {
   [[ -n "$old_task" ]] && before_json=$(jq -n --arg t "$old_task" '{currentTask: $t}')
   [[ -n "$new_task" ]] && after_json=$(jq -n --arg t "$new_task" '{currentTask: $t}')
 
-  jq --arg id "$log_id" \
+  local updated_log
+  updated_log=$(jq --arg id "$log_id" \
      --arg ts "$timestamp" \
      --arg sid "$session_id" \
      --arg action "$action" \
@@ -131,7 +136,10 @@ log_focus_change() {
     }] |
     ._meta.totalEntries += 1 |
     ._meta.lastEntry = $ts
-  ' "$LOG_FILE" > "${LOG_FILE}.tmp" && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+  ' "$LOG_FILE")
+
+  # Use save_json with file locking to prevent race conditions
+  save_json "$LOG_FILE" "$updated_log" || log_warn "Failed to write log entry"
 }
 
 # Set focus to a task
@@ -140,7 +148,7 @@ cmd_set() {
 
   if [[ -z "$task_id" ]]; then
     log_error "Task ID required"
-    echo "Usage: $(basename "$0") set <task-id>"
+    echo "Usage: claude-todo focus set <task-id>"
     exit 1
   fi
 
@@ -166,20 +174,30 @@ cmd_set() {
   if [[ "$active_count" -gt 0 ]]; then
     log_warn "Another task is already active. Setting to pending first..."
     # Set other active tasks to pending
-    jq --arg id "$task_id" '
+    local updated_todo
+    updated_todo=$(jq --arg id "$task_id" '
       .tasks = [.tasks[] | if .status == "active" and .id != $id then .status = "pending" else . end]
-    ' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+    ' "$TODO_FILE")
+    save_json "$TODO_FILE" "$updated_todo" || {
+      log_error "Failed to update task statuses"
+      exit 1
+    }
   fi
 
   local timestamp
   timestamp=$(get_timestamp)
 
   # Set focus and mark task as active
-  jq --arg id "$task_id" --arg ts "$timestamp" '
+  local updated_todo
+  updated_todo=$(jq --arg id "$task_id" --arg ts "$timestamp" '
     .focus.currentTask = $id |
     ._meta.lastModified = $ts |
     .tasks = [.tasks[] | if .id == $id then .status = "active" else . end]
-  ' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+  ' "$TODO_FILE")
+  save_json "$TODO_FILE" "$updated_todo" || {
+    log_error "Failed to set focus"
+    exit 1
+  }
 
   # Log the focus change
   log_focus_change "$old_focus" "$task_id"
@@ -208,17 +226,29 @@ cmd_clear() {
   local timestamp
   timestamp=$(get_timestamp)
 
-  # Clear focus (but don't change task status - user should complete or explicitly change)
-  jq --arg ts "$timestamp" '
+  # Reset task status from active to pending, then clear focus
+  local updated_todo
+  updated_todo=$(jq --arg id "$old_focus" --arg ts "$timestamp" '
+    .tasks = [.tasks[] |
+      if .id == $id and .status == "active" then
+        .status = "pending"
+      else
+        .
+      end
+    ] |
     .focus.currentTask = null |
     ._meta.lastModified = $ts
-  ' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+  ' "$TODO_FILE")
+  save_json "$TODO_FILE" "$updated_todo" || {
+    log_error "Failed to clear focus"
+    exit 1
+  }
 
   # Log the focus change
   log_focus_change "$old_focus" ""
 
   log_step "Focus cleared"
-  log_info "Previous focus: $old_focus"
+  log_info "Previous focus: $old_focus (status reset to pending)"
 }
 
 # Show current focus
@@ -282,7 +312,7 @@ cmd_note() {
 
   if [[ -z "$note" ]]; then
     log_error "Note text required"
-    echo "Usage: $(basename "$0") note \"Your progress note\""
+    echo "Usage: claude-todo focus note \"Your progress note\""
     exit 1
   fi
 
@@ -291,10 +321,15 @@ cmd_note() {
   local timestamp
   timestamp=$(get_timestamp)
 
-  jq --arg note "$note" --arg ts "$timestamp" '
+  local updated_todo
+  updated_todo=$(jq --arg note "$note" --arg ts "$timestamp" '
     .focus.sessionNote = $note |
     ._meta.lastModified = $ts
-  ' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+  ' "$TODO_FILE")
+  save_json "$TODO_FILE" "$updated_todo" || {
+    log_error "Failed to update session note"
+    exit 1
+  }
 
   log_step "Session note updated"
   log_info "$note"
@@ -306,7 +341,7 @@ cmd_next() {
 
   if [[ -z "$action" ]]; then
     log_error "Action text required"
-    echo "Usage: $(basename "$0") next \"Suggested next action\""
+    echo "Usage: claude-todo focus next \"Suggested next action\""
     exit 1
   fi
 
@@ -315,10 +350,15 @@ cmd_next() {
   local timestamp
   timestamp=$(get_timestamp)
 
-  jq --arg action "$action" --arg ts "$timestamp" '
+  local updated_todo
+  updated_todo=$(jq --arg action "$action" --arg ts "$timestamp" '
     .focus.nextAction = $action |
     ._meta.lastModified = $ts
-  ' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+  ' "$TODO_FILE")
+  save_json "$TODO_FILE" "$updated_todo" || {
+    log_error "Failed to update next action"
+    exit 1
+  }
 
   log_step "Next action set"
   log_info "$action"
@@ -337,7 +377,7 @@ case "$COMMAND" in
   -h|--help|help) usage ;;
   *)
     log_error "Unknown command: $COMMAND"
-    echo "Run '$(basename "$0") --help' for usage"
+    echo "Run 'claude-todo focus --help' for usage"
     exit 1
     ;;
 esac

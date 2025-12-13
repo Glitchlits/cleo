@@ -446,6 +446,7 @@ output_json_format() {
     --argjson requestedCount "$SUGGESTION_COUNT" \
     '{
       "_meta": {
+        "format": "json",
         "version": "0.8.0",
         "command": "next",
         "timestamp": (now | strftime("%Y-%m-%dT%H:%M:%SZ"))

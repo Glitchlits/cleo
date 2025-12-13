@@ -1,72 +1,200 @@
 #!/usr/bin/env bash
-# CLAUDE-TODO Test Runner
-# Usage: ./run-all-tests.sh [--verbose] [--suite NAME]
+# =============================================================================
+# run-all-tests.sh - Claude-Todo Test Suite Runner
+# =============================================================================
+# Runs all BATS tests in the test suite.
+#
+# Usage:
+#   ./run-all-tests.sh [OPTIONS]
+#
+# Options:
+#   --verbose, -v      Show detailed output for each test
+#   --unit             Run only unit tests
+#   --integration      Run only integration tests
+#   --filter PATTERN   Run tests matching pattern
+#   --help, -h         Show this help message
+# =============================================================================
 
 set -euo pipefail
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+# Colors (respect NO_COLOR)
+if [[ -z "${NO_COLOR:-}" ]]; then
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[1;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m'
+else
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    NC=''
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Options
 VERBOSE=false
-SUITE=""
-PASSED=0
-FAILED=0
-SKIPPED=0
+RUN_UNIT=true
+RUN_INTEGRATION=true
+FILTER=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
-  case $1 in
-    --verbose) VERBOSE=true; shift ;;
-    --suite) SUITE="$2"; shift 2 ;;
-    *) echo "Unknown option: $1"; exit 1 ;;
-  esac
+    case $1 in
+        --verbose|-v)
+            VERBOSE=true
+            shift
+            ;;
+        --unit)
+            RUN_UNIT=true
+            RUN_INTEGRATION=false
+            shift
+            ;;
+        --integration)
+            RUN_UNIT=false
+            RUN_INTEGRATION=true
+            shift
+            ;;
+        --filter)
+            FILTER="$2"
+            shift 2
+            ;;
+        --help|-h)
+            echo "Claude-Todo Test Suite Runner"
+            echo ""
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --verbose, -v      Show detailed output for each test"
+            echo "  --unit             Run only unit tests"
+            echo "  --integration      Run only integration tests"
+            echo "  --filter PATTERN   Run tests matching pattern"
+            echo "  --help, -h         Show this help message"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Unknown option: $1${NC}"
+            exit 1
+            ;;
+    esac
 done
 
-# Test execution function
-run_test() {
-  local test_file="$1"
-  local test_name=$(basename "$test_file" .sh)
+# Check for bats
+if ! command -v bats &> /dev/null; then
+    echo -e "${RED}Error: bats is not installed${NC}"
+    echo "Install with:"
+    echo "  macOS:  brew install bats-core"
+    echo "  Ubuntu: sudo apt-get install bats"
+    exit 1
+fi
 
-  if [[ -n "$SUITE" && "$test_name" != *"$SUITE"* ]]; then
-    SKIPPED=$((SKIPPED + 1))
-    return 0
-  fi
+# Check for git submodules
+if [[ ! -d "$SCRIPT_DIR/libs/bats-support" ]]; then
+    echo -e "${YELLOW}Initializing git submodules...${NC}"
+    cd "$PROJECT_ROOT"
+    git submodule update --init --recursive
+fi
 
-  echo -n "Running $test_name... "
+# Check for jq
+if ! command -v jq &> /dev/null; then
+    echo -e "${YELLOW}Warning: jq is not installed. Some tests may fail.${NC}"
+fi
 
-  if bash "$test_file" > /tmp/test_output.txt 2>&1; then
-    echo -e "${GREEN}✅ PASSED${NC}"
-    PASSED=$((PASSED + 1))
-    if [[ "$VERBOSE" == true ]]; then cat /tmp/test_output.txt; fi
-  else
-    echo -e "${RED}❌ FAILED${NC}"
-    FAILED=$((FAILED + 1))
-    cat /tmp/test_output.txt
-  fi
+echo ""
+echo -e "${BLUE}============================================${NC}"
+echo -e "${BLUE}      Claude-Todo Test Suite${NC}"
+echo -e "${BLUE}============================================${NC}"
+echo ""
+
+TOTAL_PASSED=0
+TOTAL_FAILED=0
+TOTAL_SKIPPED=0
+
+run_test_suite() {
+    local suite_name="$1"
+    local suite_dir="$2"
+
+    if [[ ! -d "$suite_dir" ]]; then
+        echo -e "${YELLOW}Directory not found: $suite_dir${NC}"
+        return
+    fi
+
+    local test_files=("$suite_dir"/*.bats)
+    if [[ ! -f "${test_files[0]}" ]]; then
+        echo -e "${YELLOW}No test files found in $suite_dir${NC}"
+        return
+    fi
+
+    echo -e "${BLUE}Running $suite_name tests...${NC}"
+    echo ""
+
+    local bats_args=()
+
+    if [[ "$VERBOSE" == true ]]; then
+        bats_args+=(--verbose-run)
+    fi
+
+    if [[ -n "$FILTER" ]]; then
+        bats_args+=(--filter "$FILTER")
+    fi
+
+    # Run bats and capture output
+    local output
+    local status=0
+
+    if output=$(bats "${bats_args[@]}" "${test_files[@]}" 2>&1); then
+        status=0
+    else
+        status=$?
+    fi
+
+    echo "$output"
+    echo ""
+
+    # Parse results from bats output
+    # bats outputs lines like: "1..N" at start, "ok N" or "not ok N" for each test
+    local passed=$(echo "$output" | grep -c "^ok " || echo "0")
+    local failed=$(echo "$output" | grep -c "^not ok " || echo "0")
+    local skipped=$(echo "$output" | grep -c "# skip" || echo "0")
+
+    TOTAL_PASSED=$((TOTAL_PASSED + passed))
+    TOTAL_FAILED=$((TOTAL_FAILED + failed))
+    TOTAL_SKIPPED=$((TOTAL_SKIPPED + skipped))
+
+    if [[ $status -eq 0 ]]; then
+        echo -e "${GREEN}✓ $suite_name tests passed${NC}"
+    else
+        echo -e "${RED}✗ $suite_name tests had failures${NC}"
+    fi
+    echo ""
 }
 
-# Run all test files
-echo "=========================================="
-echo "CLAUDE-TODO Test Suite"
-echo "=========================================="
-echo ""
+# Run test suites
+if [[ "$RUN_UNIT" == true ]]; then
+    run_test_suite "Unit" "$SCRIPT_DIR/unit"
+fi
 
-for test_file in "$SCRIPT_DIR"/test-*.sh; do
-  [[ -f "$test_file" ]] && run_test "$test_file"
-done
+if [[ "$RUN_INTEGRATION" == true ]]; then
+    run_test_suite "Integration" "$SCRIPT_DIR/integration"
+fi
 
 # Summary
+echo -e "${BLUE}============================================${NC}"
+echo -e "${BLUE}                 Summary${NC}"
+echo -e "${BLUE}============================================${NC}"
 echo ""
-echo "=========================================="
-echo "Test Results"
-echo "=========================================="
-echo -e "Passed:  ${GREEN}$PASSED${NC}"
-echo -e "Failed:  ${RED}$FAILED${NC}"
-echo -e "Skipped: ${YELLOW}$SKIPPED${NC}"
+echo -e "Passed:  ${GREEN}$TOTAL_PASSED${NC}"
+echo -e "Failed:  ${RED}$TOTAL_FAILED${NC}"
+echo -e "Skipped: ${YELLOW}$TOTAL_SKIPPED${NC}"
 echo ""
 
-[[ $FAILED -eq 0 ]] && exit 0 || exit 1
+if [[ $TOTAL_FAILED -eq 0 ]]; then
+    echo -e "${GREEN}All tests passed!${NC}"
+    exit 0
+else
+    echo -e "${RED}Some tests failed${NC}"
+    exit 1
+fi

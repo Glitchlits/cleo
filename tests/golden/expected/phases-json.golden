@@ -1,0 +1,45 @@
+{
+  "phases": [
+    {
+      "slug": "setup",
+      "name": "Setup",
+      "description": "Initial setup tasks",
+      "order": 1,
+      "total": 1,
+      "done": 1,
+      "pending": 0,
+      "active": 0,
+      "blocked": 0,
+      "percent": 100
+    },
+    {
+      "slug": "core",
+      "name": "Core",
+      "description": "Core functionality",
+      "order": 2,
+      "total": 3,
+      "done": 1,
+      "pending": 0,
+      "active": 1,
+      "blocked": 1,
+      "percent": 33
+    },
+    {
+      "slug": "polish",
+      "name": "Polish",
+      "description": "Final polish",
+      "order": 3,
+      "total": 2,
+      "done": 0,
+      "pending": 2,
+      "active": 0,
+      "blocked": 0,
+      "percent": 0
+    }
+  ],
+  "summary": {
+    "totalPhases": 3,
+    "totalTasks": 6,
+    "completedTasks": 2
+  }
+}

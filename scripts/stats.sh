@@ -13,13 +13,14 @@
 #   stats.sh [OPTIONS]
 #
 # Options:
-#   --period DAYS     Analysis period in days (default: 30)
+#   --period PERIOD   Analysis period: named (week/month/etc) or days (default: 30)
 #   --format FORMAT   Output format: text | json (default: text)
 #   --help           Show this help message
 #
 # Examples:
 #   stats.sh                    # Full statistics (30 days)
-#   stats.sh --period 7         # Last week statistics
+#   stats.sh --period week      # Last week statistics
+#   stats.sh --period 7         # Last 7 days (same as week)
 #   stats.sh --format json      # JSON output for scripting
 #####################################################################
 
@@ -53,6 +54,41 @@ CONFIG_FILE="${CLAUDE_DIR}/todo-config.json"
 # Helper Functions
 #####################################################################
 
+# Pluralize words based on count
+pluralize() {
+    local count="$1"
+    local singular="$2"
+    local plural="${3:-${singular}s}"
+
+    if [[ "$count" -eq 1 ]]; then
+        echo "$count $singular"
+    else
+        echo "$count $plural"
+    fi
+}
+
+# Resolve named period aliases to numeric days
+resolve_period() {
+    local period="$1"
+    case "$period" in
+        today|t)     echo 1 ;;
+        week|w)      echo 7 ;;
+        month|m)     echo 30 ;;
+        quarter|q)   echo 90 ;;
+        year|y)      echo 365 ;;
+        *)
+            # If numeric, use as-is
+            if [[ "$period" =~ ^[0-9]+$ ]]; then
+                echo "$period"
+            else
+                echo "[ERROR] Invalid period: $period" >&2
+                echo "Valid values: today/t, week/w, month/m, quarter/q, year/y, or a number" >&2
+                return 1
+            fi
+            ;;
+    esac
+}
+
 usage() {
     cat << EOF
 Usage: claude-todo stats [OPTIONS]
@@ -60,14 +96,25 @@ Usage: claude-todo stats [OPTIONS]
 Generate comprehensive statistics from todo system files.
 
 Options:
-    -p, --period DAYS     Analysis period in days (default: 30)
+    -p, --period PERIOD   Analysis period (default: 30)
+                          Named: today/t, week/w, month/m, quarter/q, year/y
+                          Numeric: any positive integer (days)
     -f, --format FORMAT   Output format: text | json (default: text)
     -h, --help            Show this help message
 
 Examples:
     claude-todo stats                    # Full statistics (30 days)
-    claude-todo stats -p 7               # Last week statistics
-    claude-todo stats -f json            # JSON output for scripting
+    claude-todo stats -p week            # Last week statistics
+    claude-todo stats -p 7               # Last 7 days (same as week)
+    claude-todo stats -p month -f json   # Last month in JSON format
+    claude-todo stats -p q               # Last quarter (90 days)
+
+Period Aliases:
+    today, t      1 day
+    week, w       7 days
+    month, m      30 days
+    quarter, q    90 days
+    year, y       365 days
 
 Statistics Categories:
     Current State: Tasks by status and priority
@@ -305,43 +352,56 @@ output_text_format() {
     # Current State
     echo "$ICON_STATUS CURRENT STATE"
     echo "----------------"
-    echo "Pending:      $(echo "$stats_json" | jq -r '.data.current_state.pending')"
-    echo "In Progress:  $(echo "$stats_json" | jq -r '.data.current_state.in_progress')"
-    echo "Completed:    $(echo "$stats_json" | jq -r '.data.current_state.completed')"
-    echo "Total Active: $(echo "$stats_json" | jq -r '.data.current_state.total_active')"
+    local pending_count=$(echo "$stats_json" | jq -r '.data.current_state.pending')
+    local in_progress_count=$(echo "$stats_json" | jq -r '.data.current_state.in_progress')
+    local completed_count=$(echo "$stats_json" | jq -r '.data.current_state.completed')
+    local total_active_count=$(echo "$stats_json" | jq -r '.data.current_state.total_active')
+    echo "Pending:      $(pluralize "$pending_count" "Task")"
+    echo "In Progress:  $(pluralize "$in_progress_count" "Task")"
+    echo "Completed:    $(pluralize "$completed_count" "Task")"
+    echo "Total Active: $(pluralize "$total_active_count" "Task")"
     echo ""
 
     # Completion Metrics
     local period=$(echo "$stats_json" | jq -r '.data.completion_metrics.period_days')
-    echo "$ICON_METRICS COMPLETION METRICS (Last $period days)"
+    echo "$ICON_METRICS COMPLETION METRICS (Last $(pluralize "$period" "Day"))"
     echo "----------------"
-    echo "Tasks Completed:     $(echo "$stats_json" | jq -r '.data.completion_metrics.completed_in_period')"
-    echo "Tasks Created:       $(echo "$stats_json" | jq -r '.data.completion_metrics.created_in_period')"
+    local completed_period=$(echo "$stats_json" | jq -r '.data.completion_metrics.completed_in_period')
+    local created_period=$(echo "$stats_json" | jq -r '.data.completion_metrics.created_in_period')
+    echo "Tasks Completed:     $(pluralize "$completed_period" "Task")"
+    echo "Tasks Created:       $(pluralize "$created_period" "Task")"
     echo "Completion Rate:     $(echo "$stats_json" | jq -r '.data.completion_metrics.completion_rate')%"
     echo "Avg Time to Complete: $(echo "$stats_json" | jq -r '.data.completion_metrics.avg_completion_hours')h"
     echo ""
 
     # Activity Metrics
-    echo "$ICON_ACTIVITY ACTIVITY METRICS (Last $period days)"
+    echo "$ICON_ACTIVITY ACTIVITY METRICS (Last $(pluralize "$period" "Day"))"
     echo "----------------"
-    echo "Tasks Created:    $(echo "$stats_json" | jq -r '.data.activity_metrics.created_in_period')"
-    echo "Tasks Completed:  $(echo "$stats_json" | jq -r '.data.activity_metrics.completed_in_period')"
-    echo "Tasks Archived:   $(echo "$stats_json" | jq -r '.data.activity_metrics.archived_in_period')"
+    local activity_created=$(echo "$stats_json" | jq -r '.data.activity_metrics.created_in_period')
+    local activity_completed=$(echo "$stats_json" | jq -r '.data.activity_metrics.completed_in_period')
+    local activity_archived=$(echo "$stats_json" | jq -r '.data.activity_metrics.archived_in_period')
+    echo "Tasks Created:    $(pluralize "$activity_created" "Task")"
+    echo "Tasks Completed:  $(pluralize "$activity_completed" "Task")"
+    echo "Tasks Archived:   $(pluralize "$activity_archived" "Task")"
     echo "Busiest Day:      $(echo "$stats_json" | jq -r '.data.activity_metrics.busiest_day')"
     echo ""
 
     # Archive Statistics
     echo "$ICON_ARCHIVE ARCHIVE STATISTICS"
     echo "----------------"
-    echo "Total Archived:    $(echo "$stats_json" | jq -r '.data.archive_stats.total_archived')"
-    echo "Archived (Period): $(echo "$stats_json" | jq -r '.data.archive_stats.archived_in_period')"
+    local archive_total=$(echo "$stats_json" | jq -r '.data.archive_stats.total_archived')
+    local archive_period=$(echo "$stats_json" | jq -r '.data.archive_stats.archived_in_period')
+    echo "Total Archived:    $(pluralize "$archive_total" "Task")"
+    echo "Archived (Period): $(pluralize "$archive_period" "Task")"
     echo ""
 
     # All-Time Statistics
     echo "$ICON_ALLTIME ALL-TIME STATISTICS"
     echo "----------------"
-    echo "Total Tasks Created: $(echo "$stats_json" | jq -r '.data.all_time.total_tasks_created')"
-    echo "Total Tasks Completed: $(echo "$stats_json" | jq -r '.data.all_time.total_tasks_completed')"
+    local alltime_created=$(echo "$stats_json" | jq -r '.data.all_time.total_tasks_created')
+    local alltime_completed=$(echo "$stats_json" | jq -r '.data.all_time.total_tasks_completed')
+    echo "Total Created: $(pluralize "$alltime_created" "Task")"
+    echo "Total Completed: $(pluralize "$alltime_completed" "Task")"
     echo ""
 
     echo "================================================"
@@ -409,6 +469,7 @@ generate_statistics() {
 {
   "\$schema": "https://claude-todo.dev/schemas/output-v2.json",
   "_meta": {
+    "format": "json",
     "version": "$version",
     "command": "stats",
     "timestamp": "$timestamp",
@@ -455,11 +516,7 @@ parse_arguments() {
     while [[ $# -gt 0 ]]; do
         case $1 in
             -p|--period)
-                PERIOD_DAYS="$2"
-                if ! [[ "$PERIOD_DAYS" =~ ^[0-9]+$ ]]; then
-                    echo "Error: --period must be a positive integer" >&2
-                    exit 1
-                fi
+                PERIOD_DAYS=$(resolve_period "$2") || exit 1
                 shift 2
                 ;;
             -f|--format)

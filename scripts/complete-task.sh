@@ -16,6 +16,12 @@ if [[ -f "$LIB_DIR/logging.sh" ]]; then
   source "$LIB_DIR/logging.sh"
 fi
 
+# Source file operations library for atomic writes with locking
+if [[ -f "$LIB_DIR/file-ops.sh" ]]; then
+  # shellcheck source=../lib/file-ops.sh
+  source "$LIB_DIR/file-ops.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -35,7 +41,7 @@ SKIP_NOTES=false
 
 usage() {
   cat << EOF
-Usage: $(basename "$0") TASK_ID [OPTIONS]
+Usage: claude-todo complete TASK_ID [OPTIONS]
 
 Mark a task as complete (status='done') and set completedAt timestamp.
 
@@ -56,9 +62,9 @@ Notes Requirement:
   (commit hashes, PR numbers, documentation links).
 
 Examples:
-  $(basename "$0") T001 --notes "Implemented auth middleware. Tested with unit tests."
-  $(basename "$0") T042 --notes "Fixed bug #123. PR merged."
-  $(basename "$0") T042 --skip-notes --skip-archive
+  claude-todo complete T001 --notes "Implemented auth middleware. Tested with unit tests."
+  claude-todo complete T042 --notes "Fixed bug #123. PR merged."
+  claude-todo complete T042 --skip-notes --skip-archive
 
 After completion, if auto_archive_on_complete is enabled in config,
 the archive script will run automatically.
@@ -122,12 +128,12 @@ fi
 
 # Check files exist
 if [[ ! -f "$TODO_FILE" ]]; then
-  log_error "$TODO_FILE not found. Run init.sh first."
+  log_error "$TODO_FILE not found. Run claude-todo init first."
   exit 1
 fi
 
 if [[ ! -f "$CONFIG_FILE" ]]; then
-  log_error "$CONFIG_FILE not found. Run init.sh first."
+  log_error "$CONFIG_FILE not found. Run claude-todo init first."
   exit 1
 fi
 
@@ -195,7 +201,10 @@ if [[ -n "$NOTES" ]]; then
         .notes = ((.notes // []) + [$note])
       else . end
     )
-  ' "$TODO_FILE")
+  ' "$TODO_FILE") || {
+    log_error "jq failed to update tasks (with notes)"
+    exit 1
+  }
 else
   UPDATED_TASKS=$(jq --arg id "$TASK_ID" --arg ts "$TIMESTAMP" '
     .tasks |= map(
@@ -205,7 +214,23 @@ else
         del(.blockedBy)
       else . end
     )
-  ' "$TODO_FILE")
+  ' "$TODO_FILE") || {
+    log_error "jq failed to update tasks (no notes)"
+    exit 1
+  }
+fi
+
+# Verify UPDATED_TASKS is valid JSON and not empty
+if [[ -z "$UPDATED_TASKS" ]]; then
+  log_error "Generated empty JSON structure"
+  exit 1
+fi
+
+if ! echo "$UPDATED_TASKS" | jq empty 2>/dev/null; then
+  log_error "Generated invalid JSON structure"
+  echo "DEBUG: UPDATED_TASKS content:" >&2
+  echo "$UPDATED_TASKS" >&2
+  exit 1
 fi
 
 # Recalculate checksum
@@ -218,26 +243,23 @@ FINAL_JSON=$(echo "$UPDATED_TASKS" | jq --arg checksum "$NEW_CHECKSUM" --arg ts 
   .lastUpdated = $ts
 ')
 
-# Atomic write
-echo "$FINAL_JSON" > "${TODO_FILE}.tmp"
-
-# Validate the updated file structure
-if ! jq empty "${TODO_FILE}.tmp" 2>/dev/null; then
-  log_error "Generated invalid JSON. Rolling back."
-  rm -f "${TODO_FILE}.tmp"
+# Atomic write with file locking (prevents race conditions)
+# Using save_json from lib/file-ops.sh which includes:
+# - File locking to prevent concurrent writes
+# - Atomic write with backup
+# - JSON validation
+# - Proper error handling
+if ! save_json "$TODO_FILE" "$FINAL_JSON"; then
+  log_error "Failed to write todo file. Rolling back."
   exit 1
 fi
 
 # Verify task was actually updated
-VERIFY_STATUS=$(jq --arg id "$TASK_ID" '.tasks[] | select(.id == $id) | .status' "${TODO_FILE}.tmp")
+VERIFY_STATUS=$(jq --arg id "$TASK_ID" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
 if [[ "$VERIFY_STATUS" != '"done"' ]]; then
-  log_error "Failed to update task status. Rolling back."
-  rm -f "${TODO_FILE}.tmp"
+  log_error "Failed to update task status."
   exit 1
 fi
-
-# Commit changes
-mv "${TODO_FILE}.tmp" "$TODO_FILE"
 
 # Capture after state
 AFTER_STATE=$(jq --arg id "$TASK_ID" '.tasks[] | select(.id == $id) | {status, completedAt}' "$TODO_FILE")

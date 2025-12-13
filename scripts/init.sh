@@ -15,9 +15,19 @@ else
   VERSION="unknown"
 fi
 
-# Source library functions
-if [[ -f "$CLAUDE_TODO_HOME/lib/logging.sh" ]]; then
-  source "$CLAUDE_TODO_HOME/lib/logging.sh"
+# Unset any existing log functions to prevent conflicts on re-initialization
+unset -f log_info log_error log_warn log_debug 2>/dev/null || true
+
+# Guard for re-sourcing libraries
+if [[ -n "${_INIT_LOGGING_SOURCED:-}" ]]; then
+    # Already sourced, skip
+    :
+else
+    # Source library functions
+    if [[ -f "$CLAUDE_TODO_HOME/lib/logging.sh" ]]; then
+        source "$CLAUDE_TODO_HOME/lib/logging.sh"
+        _INIT_LOGGING_SOURCED=true
+    fi
 fi
 
 # Always define console logging functions (lib/logging.sh provides task logging, not console output)
@@ -27,9 +37,13 @@ log_success() { echo "[SUCCESS] $1"; }
 # Only define log_error if not already defined by library
 type -t log_error &>/dev/null || log_error() { echo "[ERROR] $1" >&2; }
 
-# Optional: source other libraries if needed
-[[ -f "$CLAUDE_TODO_HOME/lib/file-ops.sh" ]] && source "$CLAUDE_TODO_HOME/lib/file-ops.sh" || true
-[[ -f "$CLAUDE_TODO_HOME/lib/validation.sh" ]] && source "$CLAUDE_TODO_HOME/lib/validation.sh" || true
+# Optional: source other libraries if needed (with guards)
+if [[ -z "${_INIT_FILE_OPS_SOURCED:-}" ]]; then
+    [[ -f "$CLAUDE_TODO_HOME/lib/file-ops.sh" ]] && source "$CLAUDE_TODO_HOME/lib/file-ops.sh" && _INIT_FILE_OPS_SOURCED=true || true
+fi
+if [[ -z "${_INIT_VALIDATION_SOURCED:-}" ]]; then
+    [[ -f "$CLAUDE_TODO_HOME/lib/validation.sh" ]] && source "$CLAUDE_TODO_HOME/lib/validation.sh" && _INIT_VALIDATION_SOURCED=true || true
+fi
 
 # Defaults
 FORCE=false
@@ -38,7 +52,7 @@ PROJECT_NAME=""
 
 usage() {
   cat << EOF
-Usage: $(basename "$0") [PROJECT_NAME] [OPTIONS]
+Usage: claude-todo init [PROJECT_NAME] [OPTIONS]
 
 Initialize CLAUDE-TODO in the current directory.
 
@@ -84,7 +98,8 @@ PROJECT_NAME=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0
 
 # Check for existing files
 if [[ -f ".claude/todo.json" ]] && [[ "$FORCE" != true ]]; then
-  log_error ".claude/todo.json already exists. Use --force to overwrite."
+  log_warn "Project already initialized at .claude/todo.json"
+  log_warn "Use --force to reinitialize (will preserve existing tasks but reset config)"
   exit 1
 fi
 
@@ -215,6 +230,20 @@ if [[ -f "$CLAUDE_TODO_HOME/templates/log.template.json" ]]; then
 else
   log_error "Template not found: $CLAUDE_TODO_HOME/templates/log.template.json"
   exit 1
+fi
+
+# Recalculate checksum from actual tasks array to ensure validity
+log_info "Recalculating checksum from actual tasks array..."
+if command -v jq &> /dev/null && [[ -f "$TODO_DIR/todo.json" ]]; then
+  ACTUAL_TASKS=$(jq -c '.tasks' "$TODO_DIR/todo.json")
+  FINAL_CHECKSUM=$(echo "$ACTUAL_TASKS" | sha256sum | cut -c1-16)
+
+  # Update checksum in the file
+  jq --arg cs "$FINAL_CHECKSUM" '._meta.checksum = $cs' "$TODO_DIR/todo.json" > "$TODO_DIR/todo.json.tmp"
+  mv "$TODO_DIR/todo.json.tmp" "$TODO_DIR/todo.json"
+  log_info "Updated checksum to: $FINAL_CHECKSUM"
+else
+  log_warn "jq not installed - skipping checksum recalculation"
 fi
 
 # Validate created files

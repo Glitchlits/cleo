@@ -100,8 +100,8 @@ cmd_check() {
             continue
         fi
 
-        check_compatibility "$file" "$file_type"
-        local status=$?
+        local status
+        check_compatibility "$file" "$file_type" && status=$? || status=$?
 
         if [[ $status -eq 1 ]]; then
             needs_migration=true
@@ -163,8 +163,8 @@ cmd_run() {
             continue
         fi
 
-        check_compatibility "$file" "$file_type"
-        local status=$?
+        local status
+        check_compatibility "$file" "$file_type" && status=$? || status=$?
 
         if [[ $status -eq 1 ]]; then
             migration_needed=true
@@ -227,8 +227,8 @@ cmd_run() {
             continue
         fi
 
-        check_compatibility "$file" "$file_type"
-        local status=$?
+        local status
+        check_compatibility "$file" "$file_type" && status=$? || status=$?
 
         if [[ $status -eq 1 ]]; then
             echo "Migrating $file_type..."
@@ -266,8 +266,8 @@ cmd_file() {
         exit 1
     fi
 
-    check_compatibility "$file" "$file_type"
-    local status=$?
+    local status
+    check_compatibility "$file" "$file_type" && status=$? || status=$?
 
     case $status in
         0)
@@ -304,6 +304,12 @@ cmd_file() {
 # ============================================================================
 
 main() {
+    # Handle global help flag first
+    if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+        show_usage
+        exit 0
+    fi
+
     local command="${1:-}"
     shift || true
 

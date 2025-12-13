@@ -33,6 +33,8 @@ fi
 DESTINATION=""
 COMPRESS=false
 VERBOSE=false
+CUSTOM_NAME=""
+LIST_MODE=false
 
 usage() {
   cat << EOF
@@ -43,6 +45,8 @@ Create timestamped backup of all todo system files.
 Options:
   --destination DIR   Custom backup location (default: .claude/.backups)
   --compress          Create compressed tarball of backup
+  --name NAME         Custom backup name (appended to timestamp)
+  --list              List available backups
   --verbose           Show detailed output
   -h, --help          Show this help
 
@@ -57,6 +61,12 @@ Output:
   - Files included
   - Total size
   - Validation status
+
+Examples:
+  $(basename "$0")                              # Default timestamped backup
+  $(basename "$0") --name "before-refactor"     # Named backup
+  $(basename "$0") --compress                   # Compressed backup
+  $(basename "$0") --list                       # List all backups
 EOF
   exit 0
 }
@@ -112,6 +122,103 @@ get_size() {
   fi
 }
 
+# List available backups
+list_backups() {
+  local backup_dir="$1"
+
+  if [[ ! -d "$backup_dir" ]]; then
+    echo "No backups found"
+    return 0
+  fi
+
+  echo ""
+  echo -e "${BLUE}╔══════════════════════════════════════════════════════════════════════════════╗${NC}"
+  echo -e "${BLUE}║                           AVAILABLE BACKUPS                                  ║${NC}"
+  echo -e "${BLUE}╚══════════════════════════════════════════════════════════════════════════════╝${NC}"
+  echo ""
+
+  # Find all backup directories and tarballs
+  local found_backups=0
+
+  # List directories
+  while IFS= read -r -d '' backup; do
+    if [[ -d "$backup" ]]; then
+      found_backups=1
+      local backup_name
+      backup_name=$(basename "$backup")
+
+      # Get metadata if available
+      local metadata_file="${backup}/backup-metadata.json"
+      if [[ -f "$metadata_file" ]]; then
+        local timestamp
+        timestamp=$(jq -r '.timestamp // "unknown"' "$metadata_file" 2>/dev/null || echo "unknown")
+        local file_count
+        file_count=$(jq -r '.files | length' "$metadata_file" 2>/dev/null || echo "0")
+        local total_size
+        total_size=$(jq -r '.totalSize' "$metadata_file" 2>/dev/null || echo "0")
+
+        # Convert size to human readable
+        local size_human
+        if command -v numfmt &> /dev/null; then
+          size_human=$(numfmt --to=iec-i --suffix=B "$total_size" 2>/dev/null || echo "${total_size}B")
+        else
+          size_human="${total_size}B"
+        fi
+
+        echo -e "  ${GREEN}▸${NC} ${BLUE}$backup_name${NC}"
+        echo -e "    Timestamp: $timestamp"
+        echo -e "    Files: $file_count | Size: $size_human"
+        echo -e "    Path: $backup"
+        echo ""
+      else
+        # No metadata, just show basic info
+        local mtime
+        if [[ "$(uname)" == "Darwin" ]]; then
+          mtime=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" "$backup" 2>/dev/null || echo "unknown")
+        else
+          mtime=$(stat -c "%y" "$backup" 2>/dev/null | cut -d'.' -f1 || echo "unknown")
+        fi
+
+        echo -e "  ${GREEN}▸${NC} ${BLUE}$backup_name${NC}"
+        echo -e "    Modified: $mtime"
+        echo -e "    Path: $backup"
+        echo ""
+      fi
+    fi
+  done < <(find "$backup_dir" -maxdepth 1 -type d -name "backup_*" -print0 2>/dev/null | sort -z)
+
+  # List tarballs
+  while IFS= read -r -d '' tarball; do
+    if [[ -f "$tarball" ]]; then
+      found_backups=1
+      local tarball_name
+      tarball_name=$(basename "$tarball")
+      local size
+      size=$(get_size "$tarball")
+
+      local mtime
+      if [[ "$(uname)" == "Darwin" ]]; then
+        mtime=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" "$tarball" 2>/dev/null || echo "unknown")
+      else
+        mtime=$(stat -c "%y" "$tarball" 2>/dev/null | cut -d'.' -f1 || echo "unknown")
+      fi
+
+      echo -e "  ${GREEN}▸${NC} ${BLUE}$tarball_name${NC} (compressed)"
+      echo -e "    Modified: $mtime"
+      echo -e "    Size: $size"
+      echo -e "    Path: $tarball"
+      echo ""
+    fi
+  done < <(find "$backup_dir" -maxdepth 1 -type f -name "backup_*.tar.gz" -print0 2>/dev/null | sort -z)
+
+  if [[ $found_backups -eq 0 ]]; then
+    echo "  No backups found in: $backup_dir"
+    echo ""
+  fi
+
+  return 0
+}
+
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -121,6 +228,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --compress)
       COMPRESS=true
+      shift
+      ;;
+    --name|-n)
+      CUSTOM_NAME="$2"
+      shift 2
+      ;;
+    --list|-l)
+      LIST_MODE=true
       shift
       ;;
     --verbose)
@@ -147,9 +262,24 @@ if [[ -n "$DESTINATION" ]]; then
   BACKUP_DIR="$DESTINATION"
 fi
 
+# Handle --list mode
+if [[ "$LIST_MODE" == true ]]; then
+  list_backups "$BACKUP_DIR"
+  exit 0
+fi
+
 # Create timestamped backup directory
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_NAME="backup_${TIMESTAMP}"
+
+# Build backup name with optional custom name
+if [[ -n "$CUSTOM_NAME" ]]; then
+  # Sanitize custom name (remove special chars, replace spaces with hyphens)
+  SAFE_NAME=$(echo "$CUSTOM_NAME" | tr -cs '[:alnum:]-' '-' | tr '[:upper:]' '[:lower:]' | sed 's/^-//;s/-$//')
+  BACKUP_NAME="backup_${TIMESTAMP}_${SAFE_NAME}"
+else
+  BACKUP_NAME="backup_${TIMESTAMP}"
+fi
+
 BACKUP_PATH="${BACKUP_DIR}/${BACKUP_NAME}"
 
 log_info "Creating backup: $BACKUP_NAME"
@@ -204,10 +334,19 @@ fi
 
 # Create metadata file
 METADATA_FILE="${BACKUP_PATH}/backup-metadata.json"
+
+# Build JSON with optional customName field
+if [[ -n "$CUSTOM_NAME" ]]; then
+  CUSTOM_NAME_JSON="\"customName\": \"$CUSTOM_NAME\","
+else
+  CUSTOM_NAME_JSON=""
+fi
+
 cat > "$METADATA_FILE" << EOF
 {
   "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "backupName": "$BACKUP_NAME",
+  ${CUSTOM_NAME_JSON}
   "files": $(printf '%s\n' "${BACKED_UP_FILES[@]}" | jq -R . | jq -s .),
   "totalSize": $TOTAL_SIZE,
   "validationErrors": $VALIDATION_ERRORS,

@@ -15,6 +15,18 @@ if [[ -f "$LIB_DIR/logging.sh" ]]; then
   source "$LIB_DIR/logging.sh"
 fi
 
+# Source validation library for circular dependency check
+if [[ -f "$LIB_DIR/validation.sh" ]]; then
+  # shellcheck source=../lib/validation.sh
+  source "$LIB_DIR/validation.sh"
+fi
+
+# Source file operations library for atomic writes with locking
+if [[ -f "$LIB_DIR/file-ops.sh" ]]; then
+  # shellcheck source=../lib/file-ops.sh
+  source "$LIB_DIR/file-ops.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -58,7 +70,7 @@ NOTE_TO_ADD=""
 
 usage() {
   cat << 'EOF'
-Usage: update-task.sh TASK_ID [OPTIONS]
+Usage: claude-todo update TASK_ID [OPTIONS]
 
 Update an existing task's fields.
 
@@ -68,7 +80,7 @@ Arguments:
 Scalar Field Options:
   -t, --title "New title"   Update task title
   -s, --status STATUS       Change status (pending|active|blocked)
-                            Note: Use 'complete-task.sh' for done status
+                            Note: Use 'claude-todo complete' for done status
   -p, --priority PRIORITY   Update priority (critical|high|medium|low)
   -d, --description DESC    Update description
   -P, --phase PHASE         Update phase slug
@@ -97,11 +109,11 @@ General Options:
   -h, --help                Show this help
 
 Examples:
-  update-task.sh T001 --priority high
-  update-task.sh T002 --labels bug,urgent --status active
-  update-task.sh T003 --set-labels "frontend,ui" --clear-files
-  update-task.sh T004 --blocked-by "Waiting for API spec"
-  update-task.sh T005 --notes "Started implementation"
+  claude-todo update T001 --priority high
+  claude-todo update T002 --labels bug,urgent --status active
+  claude-todo update T003 --set-labels "frontend,ui" --clear-files
+  claude-todo update T004 --blocked-by "Waiting for API spec"
+  claude-todo update T005 --notes "Started implementation"
 
 Exit Codes:
   0 = Success
@@ -130,7 +142,7 @@ validate_status() {
       return 0
       ;;
     done)
-      log_error "Use 'complete-task.sh' to mark tasks as done"
+      log_error "Use 'claude-todo complete' to mark tasks as done"
       return 1
       ;;
     *)
@@ -154,17 +166,15 @@ validate_priority() {
   esac
 }
 
-# Validate title
-validate_title() {
+# Validate title (local wrapper - calls lib/validation.sh function)
+validate_title_local() {
   local title="$1"
-  if [[ -z "$title" ]]; then
-    log_error "Task title cannot be empty"
+
+  # Call the shared validation function from lib/validation.sh
+  if ! validate_title "$title"; then
     return 1
   fi
-  if [[ ${#title} -gt 120 ]]; then
-    log_error "Task title too long (max 120 chars, got ${#title})"
-    return 1
-  fi
+
   return 0
 }
 
@@ -242,51 +252,8 @@ validate_depends() {
   return 0
 }
 
-# Atomic file write with backup
-atomic_write() {
-  local file="$1"
-  local content="$2"
-  local backup_dir=".claude/.backups"
-
-  mkdir -p "$backup_dir" || {
-    log_error "Failed to create backup directory: $backup_dir"
-    return 1
-  }
-
-  if [[ -f "$file" ]]; then
-    local backup_file="${backup_dir}/$(basename "$file").$(date +%s).bak"
-    cp "$file" "$backup_file" || {
-      log_error "Failed to create backup: $backup_file"
-      return 1
-    }
-    # Keep only last 10 backups
-    local backup_count
-    backup_count=$(find "$backup_dir" -name "$(basename "$file").*.bak" 2>/dev/null | wc -l)
-    if [[ "$backup_count" -gt 10 ]]; then
-      find "$backup_dir" -name "$(basename "$file").*.bak" -type f | sort | head -n -10 | xargs rm -f
-    fi
-  fi
-
-  local temp_file="${file}.tmp"
-  echo "$content" > "$temp_file" || {
-    log_error "Failed to write temp file: $temp_file"
-    return 1
-  }
-
-  if ! jq empty "$temp_file" 2>/dev/null; then
-    log_error "Generated invalid JSON"
-    rm -f "$temp_file"
-    return 1
-  fi
-
-  mv "$temp_file" "$file" || {
-    log_error "Failed to move temp file to $file"
-    rm -f "$temp_file"
-    return 1
-  }
-
-  return 0
-}
+# Note: atomic_write function removed - now using library's save_json directly
+# which includes file locking to prevent race conditions
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -398,7 +365,7 @@ check_deps
 # Validate task ID provided
 if [[ -z "$TASK_ID" ]]; then
   log_error "Task ID is required"
-  echo "Usage: update-task.sh TASK_ID [OPTIONS]" >&2
+  echo "Usage: claude-todo update TASK_ID [OPTIONS]" >&2
   echo "Use --help for more information" >&2
   exit 1
 fi
@@ -412,7 +379,7 @@ fi
 # Check todo file exists
 if [[ ! -f "$TODO_FILE" ]]; then
   log_error "Todo file not found: $TODO_FILE"
-  echo "Run init.sh first to initialize the todo system" >&2
+  echo "Run claude-todo init first to initialize the todo system" >&2
   exit 1
 fi
 
@@ -433,8 +400,16 @@ if [[ "$CURRENT_STATUS" == "done" ]]; then
   exit 1
 fi
 
+# Normalize labels to remove duplicates
+if [[ -n "$LABELS_TO_ADD" ]]; then
+  LABELS_TO_ADD=$(normalize_labels "$LABELS_TO_ADD")
+fi
+if [[ -n "$LABELS_TO_SET" ]]; then
+  LABELS_TO_SET=$(normalize_labels "$LABELS_TO_SET")
+fi
+
 # Validate inputs
-[[ -n "$NEW_TITLE" ]] && { validate_title "$NEW_TITLE" || exit 1; }
+[[ -n "$NEW_TITLE" ]] && { validate_title_local "$NEW_TITLE" || exit 1; }
 [[ -n "$NEW_STATUS" ]] && { validate_status "$NEW_STATUS" || exit 1; }
 [[ -n "$NEW_PRIORITY" ]] && { validate_priority "$NEW_PRIORITY" || exit 1; }
 [[ -n "$NEW_PHASE" ]] && { validate_phase "$NEW_PHASE" || exit 1; }
@@ -442,6 +417,31 @@ fi
 [[ -n "$LABELS_TO_SET" ]] && { validate_labels "$LABELS_TO_SET" || exit 1; }
 [[ -n "$DEPENDS_TO_ADD" ]] && { validate_depends "$DEPENDS_TO_ADD" || exit 1; }
 [[ -n "$DEPENDS_TO_SET" ]] && { validate_depends "$DEPENDS_TO_SET" || exit 1; }
+
+# Check for circular dependencies when updating dependencies
+if [[ -n "$DEPENDS_TO_ADD" || -n "$DEPENDS_TO_SET" ]]; then
+  # Get current dependencies
+  CURRENT_DEPS=$(echo "$TASK" | jq -r '.depends // [] | join(",")')
+
+  # Determine final dependencies after update
+  FINAL_DEPS=""
+  if [[ -n "$DEPENDS_TO_SET" ]]; then
+    FINAL_DEPS="$DEPENDS_TO_SET"
+  elif [[ -n "$DEPENDS_TO_ADD" ]]; then
+    if [[ -n "$CURRENT_DEPS" ]]; then
+      FINAL_DEPS="$CURRENT_DEPS,$DEPENDS_TO_ADD"
+    else
+      FINAL_DEPS="$DEPENDS_TO_ADD"
+    fi
+  fi
+
+  if [[ -n "$FINAL_DEPS" ]]; then
+    if ! check_circular_dependencies "$TODO_FILE" "$TASK_ID" "$FINAL_DEPS"; then
+      log_error "Cannot update task: would create circular dependency"
+      exit 1
+    fi
+  fi
+fi
 
 # Check if any update requested
 if [[ -z "$NEW_TITLE" && -z "$NEW_STATUS" && -z "$NEW_PRIORITY" && \
@@ -614,8 +614,8 @@ FINAL_JSON=$(echo "$UPDATED_TODO" | jq --arg checksum "$NEW_CHECKSUM" '
   ._meta.checksum = $checksum
 ')
 
-# Atomic write
-if ! atomic_write "$TODO_FILE" "$FINAL_JSON"; then
+# Atomic write using library's save_json with file locking
+if ! save_json "$TODO_FILE" "$FINAL_JSON"; then
   log_error "Failed to write todo file"
   exit 2
 fi

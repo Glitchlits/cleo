@@ -15,15 +15,15 @@ else
   VERSION="0.1.0"
 fi
 
-LOG_FILE="${LOG_FILE:-.claude/todo-log.json}"
-TODO_FILE="${TODO_FILE:-.claude/todo.json}"
-
 # Source logging library for should_use_color function
 LIB_DIR="${SCRIPT_DIR}/../lib"
 if [[ -f "$LIB_DIR/logging.sh" ]]; then
   # shellcheck source=../lib/logging.sh
   source "$LIB_DIR/logging.sh"
 fi
+
+# Set TODO_FILE after sourcing logging.sh (LOG_FILE is set by logging.sh)
+TODO_FILE="${TODO_FILE:-.claude/todo.json}"
 
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
@@ -43,16 +43,39 @@ AFTER=""
 DETAILS=""
 ACTOR="claude"
 
-VALID_ACTIONS="session_start session_end task_created task_updated status_changed task_archived focus_changed config_changed validation_run checksum_updated error_occurred"
+# Helper function to validate action against library's VALID_ACTIONS array
+validate_action() {
+  local action="$1"
+  # Check if VALID_ACTIONS array is available from logging.sh
+  if declare -p VALID_ACTIONS 2>/dev/null | grep -q 'declare -ar'; then
+    for valid in "${VALID_ACTIONS[@]}"; do
+      [[ "$action" == "$valid" ]] && return 0
+    done
+    return 1
+  else
+    # Fallback if library not sourced (shouldn't happen)
+    local valid_actions="session_start session_end task_created task_updated status_changed task_archived focus_changed config_changed validation_run checksum_updated error_occurred"
+    echo "$valid_actions" | grep -qw "$action"
+  fi
+}
+
+# Helper function to get valid actions string for display
+get_valid_actions_string() {
+  if declare -p VALID_ACTIONS 2>/dev/null | grep -q 'declare -ar'; then
+    echo "${VALID_ACTIONS[*]}"
+  else
+    echo "session_start session_end task_created task_updated status_changed task_archived focus_changed config_changed validation_run checksum_updated error_occurred"
+  fi
+}
 
 usage() {
   cat << EOF
-Usage: $(basename "$0") --action ACTION [OPTIONS]
+Usage: claude-todo log --action ACTION [OPTIONS]
 
 Add an entry to todo-log.json.
 
 Required:
-  --action ACTION   One of: $VALID_ACTIONS
+  --action ACTION   One of: $(get_valid_actions_string)
 
 Options:
   --task-id ID      Task ID (for task-related actions)
@@ -64,9 +87,9 @@ Options:
   -h, --help        Show this help
 
 Examples:
-  $(basename "$0") --action session_start --session-id "session_20251205_..."
-  $(basename "$0") --action status_changed --task-id T001 --before '{"status":"pending"}' --after '{"status":"active"}'
-  $(basename "$0") --action task_created --task-id T005 --after '{"title":"New task"}'
+  claude-todo log --action session_start --session-id "session_20251205_..."
+  claude-todo log --action status_changed --task-id T001 --before '{"status":"pending"}' --after '{"status":"active"}'
+  claude-todo log --action task_created --task-id T005 --after '{"title":"New task"}'
 EOF
   exit 0
 }
@@ -102,9 +125,9 @@ if [[ -z "$ACTION" ]]; then
   exit 1
 fi
 
-if ! echo "$VALID_ACTIONS" | grep -qw "$ACTION"; then
+if ! validate_action "$ACTION"; then
   log_error "Invalid action: $ACTION"
-  echo "Valid actions: $VALID_ACTIONS"
+  echo "Valid actions: $(get_valid_actions_string)"
   exit 1
 fi
 

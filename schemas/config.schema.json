@@ -206,6 +206,59 @@
       }
     },
 
+    "output": {
+      "type": "object",
+      "description": "Output formatting and display preferences.",
+      "additionalProperties": false,
+      "properties": {
+        "defaultFormat": {
+          "type": "string",
+          "enum": ["text", "json", "jsonl", "csv", "tsv", "markdown", "table"],
+          "default": "text",
+          "description": "Default output format for list and export commands."
+        },
+        "showColor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable ANSI color output. Respects NO_COLOR env var."
+        },
+        "showUnicode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use Unicode symbols and box-drawing characters."
+        },
+        "showProgressBars": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show progress bars in dashboard and phase views."
+        },
+        "csvDelimiter": {
+          "type": "string",
+          "maxLength": 1,
+          "default": ",",
+          "description": "Delimiter for CSV export (comma, tab, semicolon)."
+        },
+        "dateFormat": {
+          "type": "string",
+          "enum": ["iso8601", "relative", "unix", "locale"],
+          "default": "iso8601",
+          "description": "Date/time display format: iso8601, relative (5min ago), unix, locale."
+        },
+        "showCompactTitles": {
+          "type": "boolean",
+          "default": false,
+          "description": "Truncate long task titles in list view."
+        },
+        "maxTitleLength": {
+          "type": "integer",
+          "minimum": 20,
+          "maximum": 200,
+          "default": 80,
+          "description": "Maximum title length when showCompactTitles is enabled."
+        }
+      }
+    },
+
     "cli": {
       "type": "object",
       "description": "CLI behavior, aliases, and plugin settings.",

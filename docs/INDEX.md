@@ -26,6 +26,7 @@
 |----------|---------|--------------|
 | **[installation.md](reference/installation.md)** | Installation guide | Setting up the system |
 | **[usage.md](usage.md)** | Usage guide and examples | Learning system operations |
+| **[PHASE-3-FEATURES.md](PHASE-3-FEATURES.md)** | Phase 3 features overview (v0.8.2) | Understanding new workflow commands |
 | **[TODO_Task_Management.md](TODO_Task_Management.md)** | CLI reference (installed to ~/.claude-todo/docs/) | Quick CLI command reference |
 | **[cli-output-formats.md](reference/cli-output-formats.md)** | Output formats reference | Understanding JSON, CSV, JSONL output |
 | **[configuration.md](reference/configuration.md)** | Configuration reference | Customizing system behavior |
@@ -33,6 +34,16 @@
 | **[troubleshooting.md](reference/troubleshooting.md)** | Troubleshooting guide | Resolving issues |
 | **[integration/CLAUDE-CODE.md](integration/CLAUDE-CODE.md)** | Claude Code integration & session workflows | Understanding process flows |
 | **[migration-guide.md](reference/migration-guide.md)** | Migration and upgrade guide | Upgrading between versions |
+
+### 🎯 Command Reference
+
+| Document | Purpose | When to Read |
+|----------|---------|--------------|
+| **[commands/dash.md](commands/dash.md)** | Dashboard command documentation | Using project overview features |
+| **[commands/labels.md](commands/labels.md)** | Labels command documentation | Managing and analyzing task labels |
+| **[commands/next.md](commands/next.md)** | Next command documentation | Using intelligent task suggestions |
+| **[commands/deps.md](commands/deps.md)** | Dependency visualization documentation | Understanding task dependencies |
+| **[commands/blockers.md](commands/blockers.md)** | Blockers command documentation | Analyzing blocked tasks and chains |
 
 ### 🔬 Technical Reference
 

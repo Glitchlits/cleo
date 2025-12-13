@@ -30,6 +30,33 @@ Complete guide to using the claude-todo task management system.
 
 ## Quick Start
 
+### New in v0.8.2: Phase 3 Features
+
+**Dashboard Command**:
+```bash
+claude-todo dash              # Comprehensive project overview
+claude-todo dash --compact    # Single-line summary
+```
+
+**Label Analytics**:
+```bash
+claude-todo labels            # List all labels
+claude-todo labels show LABEL # Tasks with specific label
+claude-todo labels stats      # Detailed statistics
+```
+
+**Smart Task Suggestion**:
+```bash
+claude-todo next              # Get next task suggestion
+claude-todo next --explain    # Show reasoning
+claude-todo next --count 3    # Top 3 suggestions
+```
+
+See detailed documentation:
+- [dash command](commands/dash.md) - Dashboard and overview
+- [labels command](commands/labels.md) - Label analytics
+- [next command](commands/next.md) - Intelligent task suggestions
+
 ### Short Flags Reference
 
 All commands support short flags for faster workflows:
@@ -335,6 +362,77 @@ claude-todo archive --all
 }
 ```
 
+### Phase 3 Workflow Commands
+
+#### Dashboard Overview
+
+```bash
+# Full dashboard at session start
+claude-todo dash
+
+# Quick status check
+claude-todo dash --compact
+
+# Focus on specific sections
+claude-todo dash --sections focus,blocked,priority
+
+# Extended activity period
+claude-todo dash --period 14
+```
+
+#### Label-Based Organization
+
+```bash
+# List all labels
+claude-todo labels
+
+# See all backend tasks
+claude-todo labels show backend
+
+# Detailed label analytics
+claude-todo labels stats
+
+# Find tasks by label
+claude-todo list --label security --priority high
+```
+
+#### Intelligent Task Selection
+
+```bash
+# Get next task suggestion
+claude-todo next
+
+# Understand why task is suggested
+claude-todo next --explain
+
+# See top 3 options
+claude-todo next --count 3
+
+# Auto-start suggested task
+claude-todo next --format json | \
+  jq -r '.suggestions[0].id' | \
+  xargs -I {} claude-todo focus set {}
+```
+
+#### Combined Workflow
+
+```bash
+# Morning routine
+claude-todo dash                    # Review status
+claude-todo next --explain          # Get suggestion
+claude-todo focus set T015          # Start work
+claude-todo focus note "Starting"   # Add session note
+
+# During work
+claude-todo dash --compact          # Quick check
+claude-todo labels show backend     # Review related tasks
+
+# End of day
+claude-todo complete T015 --notes "Implemented feature"
+claude-todo next                    # What's next?
+claude-todo dash --sections activity  # Review progress
+```
+
 ---
 
 ## Detailed Guides
@@ -356,6 +454,13 @@ Detailed documentation for all commands including:
 - `stats` - Display statistics and reports
 - `backup` - Create backups
 - `restore` - Restore from backup
+
+### Phase 3 Commands (v0.8.2)
+**New intelligent workflow commands**:
+
+- **[dash](commands/dash.md)** - Comprehensive dashboard with focus, priority, blocked tasks, phase progress, and activity metrics
+- **[labels](commands/labels.md)** - Label analytics with distribution charts, task filtering by label, and detailed statistics
+- **[next](commands/next.md)** - Intelligent task suggestions based on priority, dependencies, and phase alignment
 
 ### Workflow Patterns & Best Practices
 **[integration/WORKFLOWS.md](integration/WORKFLOWS.md)**
@@ -556,6 +661,14 @@ stats                # View statistics
 backup               # Create backup
 restore DIR          # Restore backup
 export               # Export tasks
+
+# Phase 3 Commands (v0.8.2)
+dash                 # Dashboard overview
+dash --compact       # Single-line summary
+labels               # List all labels
+labels show LABEL    # Tasks with label
+next                 # Next task suggestion
+next --explain       # Show reasoning
 
 # Short Flags
 -s, --status         # Filter/set status

@@ -37,6 +37,8 @@ fi
 # -----------------------------------------------------------------------------
 FORMAT="todowrite"
 STATUS_FILTER="pending,active"
+PRIORITY_FILTER=""
+LABEL_FILTER=""
 MAX_TASKS=10
 TODO_FILE=".claude/todo.json"
 OUTPUT_FILE=""
@@ -51,8 +53,7 @@ show_help() {
     cat << 'EOF'
 export.sh - Export tasks to various formats
 
-USAGE
-    claude-todo export [OPTIONS]
+Usage: claude-todo export [OPTIONS]
 
 DESCRIPTION
     Exports claude-todo tasks to different formats for integration with
@@ -62,6 +63,8 @@ DESCRIPTION
 OPTIONS
     -f, --format FORMAT      Output format: todowrite, json, markdown, csv, tsv (default: todowrite)
     -s, --status STATUS      Comma-separated status filter (default: pending,active)
+    -p, --priority PRIORITY  Filter by priority (critical|high|medium|low)
+    -l, --label LABEL        Filter by label
     -m, --max N              Maximum tasks to export (default: 10)
     -o, --output FILE        Write to file instead of stdout
     -d, --delimiter CHAR     Custom delimiter for CSV (default: comma)
@@ -82,6 +85,15 @@ EXAMPLES
 
     # Export only active tasks
     claude-todo export --format todowrite --status active
+
+    # Export high priority tasks
+    claude-todo export --format todowrite --priority high
+
+    # Export tasks with specific label
+    claude-todo export --format todowrite --label bug
+
+    # Combine filters (status + priority)
+    claude-todo export --format todowrite --status pending,active --priority critical
 
     # Export all pending/active tasks as markdown
     claude-todo export --format markdown --status pending,active
@@ -171,6 +183,14 @@ parse_args() {
                 STATUS_FILTER="${2:-pending,active}"
                 shift 2
                 ;;
+            -p|--priority)
+                PRIORITY_FILTER="${2:-}"
+                shift 2
+                ;;
+            -l|--label)
+                LABEL_FILTER="${2:-}"
+                shift 2
+                ;;
             -m|--max)
                 MAX_TASKS="${2:-10}"
                 shift 2
@@ -205,27 +225,77 @@ parse_args() {
 }
 
 # -----------------------------------------------------------------------------
+# Build combined filter (status, priority, label)
+# -----------------------------------------------------------------------------
+build_task_filter() {
+    local status_filter="$1"
+    local priority_filter="$2"
+    local label_filter="$3"
+
+    local filters=()
+
+    # Status filter
+    if [[ -n "$status_filter" ]]; then
+        local status_parts=()
+        IFS=',' read -ra statuses <<< "$status_filter"
+        for s in "${statuses[@]}"; do
+            s=$(echo "$s" | xargs)
+            status_parts+=(".status == \"$s\"")
+        done
+        # Join status parts with ' or ' and wrap in parentheses
+        local status_expr=""
+        for i in "${!status_parts[@]}"; do
+            if [[ $i -eq 0 ]]; then
+                status_expr="${status_parts[i]}"
+            else
+                status_expr="${status_expr} or ${status_parts[i]}"
+            fi
+        done
+        filters+=("($status_expr)")
+    fi
+
+    # Priority filter
+    if [[ -n "$priority_filter" ]]; then
+        filters+=("(.priority == \"$priority_filter\")")
+    fi
+
+    # Label filter
+    if [[ -n "$label_filter" ]]; then
+        filters+=("(.labels != null and (.labels | contains([\"$label_filter\"])))")
+    fi
+
+    # Combine all filters with 'and'
+    if [[ ${#filters[@]} -eq 0 ]]; then
+        echo "true"
+    else
+        local combined=""
+        for i in "${!filters[@]}"; do
+            if [[ $i -eq 0 ]]; then
+                combined="${filters[i]}"
+            else
+                combined="${combined} and ${filters[i]}"
+            fi
+        done
+        echo "$combined"
+    fi
+}
+
+# -----------------------------------------------------------------------------
 # Export to TodoWrite format
 # -----------------------------------------------------------------------------
 export_todowrite() {
     local todo_file="$1"
     local status_filter="$2"
     local max_tasks="$3"
+    local priority_filter="${4:-}"
+    local label_filter="${5:-}"
 
-    # Build jq filter for status
-    local jq_status_filter=""
-    IFS=',' read -ra statuses <<< "$status_filter"
-    for s in "${statuses[@]}"; do
-        s=$(echo "$s" | xargs)  # trim whitespace
-        if [[ -n "$jq_status_filter" ]]; then
-            jq_status_filter="${jq_status_filter} or "
-        fi
-        jq_status_filter="${jq_status_filter}.status == \"$s\""
-    done
+    # Build combined filter
+    local jq_filter=$(build_task_filter "$status_filter" "$priority_filter" "$label_filter")
 
     # Extract matching tasks
     local tasks
-    tasks=$(jq -c "[.tasks[] | select($jq_status_filter)] | .[0:$max_tasks]" "$todo_file")
+    tasks=$(jq -c "[.tasks[] | select($jq_filter)] | .[0:$max_tasks]" "$todo_file")
 
     # Convert each task
     local todowrite_tasks="[]"
@@ -252,25 +322,50 @@ export_todowrite() {
 }
 
 # -----------------------------------------------------------------------------
-# Export to JSON format (raw tasks)
+# Export to JSON format (with _meta envelope)
 # -----------------------------------------------------------------------------
 export_json() {
     local todo_file="$1"
     local status_filter="$2"
     local max_tasks="$3"
+    local priority_filter="${4:-}"
+    local label_filter="${5:-}"
 
-    # Build jq filter for status
-    local jq_status_filter=""
-    IFS=',' read -ra statuses <<< "$status_filter"
-    for s in "${statuses[@]}"; do
-        s=$(echo "$s" | xargs)
-        if [[ -n "$jq_status_filter" ]]; then
-            jq_status_filter="${jq_status_filter} or "
-        fi
-        jq_status_filter="${jq_status_filter}.status == \"$s\""
-    done
+    # Build combined filter
+    local jq_filter=$(build_task_filter "$status_filter" "$priority_filter" "$label_filter")
 
-    jq "[.tasks[] | select($jq_status_filter)] | .[0:$max_tasks]" "$todo_file"
+    # Extract tasks
+    local tasks
+    tasks=$(jq "[.tasks[] | select($jq_filter)] | .[0:$max_tasks]" "$todo_file")
+
+    # Get version
+    local version
+    version=$(cat "${SCRIPT_DIR}/../VERSION" 2>/dev/null || echo "0.8.3")
+
+    # Wrap in _meta envelope for programmatic detection
+    jq -n \
+      --argjson tasks "$tasks" \
+      --arg version "$version" \
+      --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+      --arg status "$status_filter" \
+      --argjson max "$max_tasks" \
+      '{
+        "$schema": "https://claude-todo.dev/schemas/output-v2.json",
+        "_meta": {
+          "format": "json",
+          "version": $version,
+          "command": "export",
+          "timestamp": $timestamp
+        },
+        "filters": {
+          "status": ($status | split(",")),
+          "maxTasks": $max
+        },
+        "summary": {
+          "exported": ($tasks | length)
+        },
+        "tasks": $tasks
+      }'
 }
 
 # -----------------------------------------------------------------------------
@@ -280,21 +375,15 @@ export_markdown() {
     local todo_file="$1"
     local status_filter="$2"
     local max_tasks="$3"
+    local priority_filter="${4:-}"
+    local label_filter="${5:-}"
 
-    # Build jq filter for status
-    local jq_status_filter=""
-    IFS=',' read -ra statuses <<< "$status_filter"
-    for s in "${statuses[@]}"; do
-        s=$(echo "$s" | xargs)
-        if [[ -n "$jq_status_filter" ]]; then
-            jq_status_filter="${jq_status_filter} or "
-        fi
-        jq_status_filter="${jq_status_filter}.status == \"$s\""
-    done
+    # Build combined filter
+    local jq_filter=$(build_task_filter "$status_filter" "$priority_filter" "$label_filter")
 
     # Extract matching tasks
     local tasks
-    tasks=$(jq -c "[.tasks[] | select($jq_status_filter)] | .[0:$max_tasks]" "$todo_file")
+    tasks=$(jq -c "[.tasks[] | select($jq_filter)] | .[0:$max_tasks]" "$todo_file")
 
     echo "## Tasks"
     echo ""
@@ -357,21 +446,15 @@ export_csv() {
     local max_tasks="$3"
     local delimiter="${4:-,}"
     local include_header="${5:-true}"
+    local priority_filter="${6:-}"
+    local label_filter="${7:-}"
 
-    # Build jq filter for status
-    local jq_status_filter=""
-    IFS=',' read -ra statuses <<< "$status_filter"
-    for s in "${statuses[@]}"; do
-        s=$(echo "$s" | xargs)
-        if [[ -n "$jq_status_filter" ]]; then
-            jq_status_filter="${jq_status_filter} or "
-        fi
-        jq_status_filter="${jq_status_filter}.status == \"$s\""
-    done
+    # Build combined filter
+    local jq_filter=$(build_task_filter "$status_filter" "$priority_filter" "$label_filter")
 
     # Extract matching tasks
     local tasks
-    tasks=$(jq -c "[.tasks[] | select($jq_status_filter)] | .[0:$max_tasks]" "$todo_file")
+    tasks=$(jq -c "[.tasks[] | select($jq_filter)] | .[0:$max_tasks]" "$todo_file")
 
     # Header row
     if [[ "$include_header" == "true" ]]; then
@@ -415,21 +498,15 @@ export_tsv() {
     local status_filter="$2"
     local max_tasks="$3"
     local include_header="${4:-true}"
+    local priority_filter="${5:-}"
+    local label_filter="${6:-}"
 
-    # Build jq filter for status
-    local jq_status_filter=""
-    IFS=',' read -ra statuses <<< "$status_filter"
-    for s in "${statuses[@]}"; do
-        s=$(echo "$s" | xargs)
-        if [[ -n "$jq_status_filter" ]]; then
-            jq_status_filter="${jq_status_filter} or "
-        fi
-        jq_status_filter="${jq_status_filter}.status == \"$s\""
-    done
+    # Build combined filter
+    local jq_filter=$(build_task_filter "$status_filter" "$priority_filter" "$label_filter")
 
     # Extract matching tasks
     local tasks
-    tasks=$(jq -c "[.tasks[] | select($jq_status_filter)] | .[0:$max_tasks]" "$todo_file")
+    tasks=$(jq -c "[.tasks[] | select($jq_filter)] | .[0:$max_tasks]" "$todo_file")
 
     # Header row
     if [[ "$include_header" == "true" ]]; then
@@ -479,40 +556,35 @@ main() {
             ;;
     esac
 
-    # Count matching tasks
+    # Count matching tasks using combined filter
     local task_count
-    local jq_status_filter=""
-    IFS=',' read -ra statuses <<< "$STATUS_FILTER"
-    for s in "${statuses[@]}"; do
-        s=$(echo "$s" | xargs)
-        if [[ -n "$jq_status_filter" ]]; then
-            jq_status_filter="${jq_status_filter} or "
-        fi
-        jq_status_filter="${jq_status_filter}.status == \"$s\""
-    done
-    task_count=$(jq "[.tasks[] | select($jq_status_filter)] | length" "$TODO_FILE")
+    local jq_filter=$(build_task_filter "$STATUS_FILTER" "$PRIORITY_FILTER" "$LABEL_FILTER")
+    task_count=$(jq "[.tasks[] | select($jq_filter)] | length" "$TODO_FILE")
 
     if [[ "$QUIET" != "true" ]]; then
-        echo -e "${BLUE}[EXPORT]${NC} Format: $FORMAT, Status: $STATUS_FILTER, Found: $task_count tasks" >&2
+        local filter_desc="Status: $STATUS_FILTER"
+        [[ -n "$PRIORITY_FILTER" ]] && filter_desc="$filter_desc, Priority: $PRIORITY_FILTER"
+        [[ -n "$LABEL_FILTER" ]] && filter_desc="$filter_desc, Label: $LABEL_FILTER"
+        echo -e "${BLUE}[EXPORT]${NC} Format: $FORMAT, $filter_desc, Found: $task_count tasks" >&2
     fi
 
     # Generate output
     local output=""
     case "$FORMAT" in
         todowrite)
-            output=$(export_todowrite "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS")
+            output=$(export_todowrite "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS" "$PRIORITY_FILTER" "$LABEL_FILTER")
             ;;
         json)
-            output=$(export_json "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS")
+            output=$(export_json "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS" "$PRIORITY_FILTER" "$LABEL_FILTER")
             ;;
         markdown)
-            output=$(export_markdown "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS")
+            output=$(export_markdown "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS" "$PRIORITY_FILTER" "$LABEL_FILTER")
             ;;
         csv)
-            output=$(export_csv "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS" "$DELIMITER" "$INCLUDE_HEADER")
+            output=$(export_csv "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS" "$DELIMITER" "$INCLUDE_HEADER" "$PRIORITY_FILTER" "$LABEL_FILTER")
             ;;
         tsv)
-            output=$(export_tsv "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS" "$INCLUDE_HEADER")
+            output=$(export_tsv "$TODO_FILE" "$STATUS_FILTER" "$MAX_TASKS" "$INCLUDE_HEADER" "$PRIORITY_FILTER" "$LABEL_FILTER")
             ;;
     esac
 

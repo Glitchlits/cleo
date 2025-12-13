@@ -54,21 +54,24 @@ load_output_config() {
   if [[ -f "$OUTPUT_CONFIG_FILE" ]] && command -v jq &>/dev/null; then
     local config_color config_unicode config_progress config_date config_csv config_compact config_max
 
-    config_color=$(jq -r '.output.colorEnabled // empty' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
-    config_unicode=$(jq -r '.output.unicodeEnabled // empty' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
-    config_progress=$(jq -r '.output.progressBars // empty' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
-    config_date=$(jq -r '.output.dateFormat // empty' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
-    config_csv=$(jq -r '.output.csvDelimiter // empty' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
-    config_compact=$(jq -r '.output.compactTitles // empty' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
-    config_max=$(jq -r '.output.maxTitleLength // empty' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
+    # Check if keys exist and read them (use 'if .key then .key else "undefined" end' to handle false/null)
+    # Support both new (showColor) and old (colorEnabled) field names for backward compatibility
+    config_color=$(jq -r 'if .output.showColor != null then .output.showColor elif .output.colorEnabled != null then .output.colorEnabled else "undefined" end' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
+    config_unicode=$(jq -r 'if .output.showUnicode != null then .output.showUnicode elif .output.unicodeEnabled != null then .output.unicodeEnabled else "undefined" end' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
+    config_progress=$(jq -r 'if .output.showProgressBars != null then .output.showProgressBars elif .output.progressBars != null then .output.progressBars else "undefined" end' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
+    config_date=$(jq -r 'if .output.dateFormat != null then .output.dateFormat else "undefined" end' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
+    config_csv=$(jq -r 'if .output.csvDelimiter != null then .output.csvDelimiter else "undefined" end' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
+    config_compact=$(jq -r 'if .output.showCompactTitles != null then .output.showCompactTitles elif .output.compactTitles != null then .output.compactTitles else "undefined" end' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
+    config_max=$(jq -r 'if .output.maxTitleLength != null then .output.maxTitleLength else "undefined" end' "$OUTPUT_CONFIG_FILE" 2>/dev/null)
 
-    [[ -n "$config_color" ]] && _OUTPUT_CONFIG_COLOR="$config_color"
-    [[ -n "$config_unicode" ]] && _OUTPUT_CONFIG_UNICODE="$config_unicode"
-    [[ -n "$config_progress" ]] && _OUTPUT_CONFIG_PROGRESS_BARS="$config_progress"
-    [[ -n "$config_date" ]] && _OUTPUT_CONFIG_DATE_FORMAT="$config_date"
-    [[ -n "$config_csv" ]] && _OUTPUT_CONFIG_CSV_DELIMITER="$config_csv"
-    [[ -n "$config_compact" ]] && _OUTPUT_CONFIG_COMPACT_TITLES="$config_compact"
-    [[ -n "$config_max" ]] && _OUTPUT_CONFIG_MAX_TITLE_LENGTH="$config_max"
+    # Update cached values if defined (allows boolean false to be set)
+    [[ "$config_color" != "undefined" ]] && _OUTPUT_CONFIG_COLOR="$config_color"
+    [[ "$config_unicode" != "undefined" ]] && _OUTPUT_CONFIG_UNICODE="$config_unicode"
+    [[ "$config_progress" != "undefined" ]] && _OUTPUT_CONFIG_PROGRESS_BARS="$config_progress"
+    [[ "$config_date" != "undefined" ]] && _OUTPUT_CONFIG_DATE_FORMAT="$config_date"
+    [[ "$config_csv" != "undefined" ]] && _OUTPUT_CONFIG_CSV_DELIMITER="$config_csv"
+    [[ "$config_compact" != "undefined" ]] && _OUTPUT_CONFIG_COMPACT_TITLES="$config_compact"
+    [[ "$config_max" != "undefined" ]] && _OUTPUT_CONFIG_MAX_TITLE_LENGTH="$config_max"
   fi
 
   return 0
@@ -78,6 +81,8 @@ load_output_config() {
 #
 # Args:
 #   $1 - Configuration key (color, unicode, progressBars, dateFormat, csvDelimiter, compactTitles, maxTitleLength)
+#        Supports both new (showColor, showUnicode, showProgressBars, showCompactTitles)
+#        and old (colorEnabled, unicodeEnabled, progressBars, compactTitles) field names
 #
 # Returns: Configuration value
 get_output_config() {
@@ -87,14 +92,14 @@ get_output_config() {
   load_output_config
 
   case "$key" in
-    color|colorEnabled)       echo "$_OUTPUT_CONFIG_COLOR" ;;
-    unicode|unicodeEnabled)   echo "$_OUTPUT_CONFIG_UNICODE" ;;
-    progressBars)             echo "$_OUTPUT_CONFIG_PROGRESS_BARS" ;;
-    dateFormat)               echo "$_OUTPUT_CONFIG_DATE_FORMAT" ;;
-    csvDelimiter)             echo "$_OUTPUT_CONFIG_CSV_DELIMITER" ;;
-    compactTitles)            echo "$_OUTPUT_CONFIG_COMPACT_TITLES" ;;
-    maxTitleLength)           echo "$_OUTPUT_CONFIG_MAX_TITLE_LENGTH" ;;
-    *)                        echo "" ;;
+    color|colorEnabled|showColor)                echo "$_OUTPUT_CONFIG_COLOR" ;;
+    unicode|unicodeEnabled|showUnicode)          echo "$_OUTPUT_CONFIG_UNICODE" ;;
+    progressBars|showProgressBars)               echo "$_OUTPUT_CONFIG_PROGRESS_BARS" ;;
+    dateFormat)                                  echo "$_OUTPUT_CONFIG_DATE_FORMAT" ;;
+    csvDelimiter)                                echo "$_OUTPUT_CONFIG_CSV_DELIMITER" ;;
+    compactTitles|showCompactTitles)             echo "$_OUTPUT_CONFIG_COMPACT_TITLES" ;;
+    maxTitleLength)                              echo "$_OUTPUT_CONFIG_MAX_TITLE_LENGTH" ;;
+    *)                                           echo "" ;;
   esac
 }
 
@@ -107,7 +112,7 @@ get_output_config() {
 # Priority order:
 # 1. NO_COLOR env var -> disable colors (respects standard)
 # 2. FORCE_COLOR env var -> enable colors
-# 3. Config output.colorEnabled -> respect setting
+# 3. Config output.showColor (or old output.colorEnabled) -> respect setting
 # 4. TTY check + tput colors >= 8 -> enable colors
 #
 # Returns: 0 if colors supported, 1 if not
@@ -136,19 +141,24 @@ detect_color_support() {
 # detect_unicode_support - Check if Unicode/UTF-8 is supported
 #
 # Priority order:
-# 1. NO_COLOR env var -> disables Unicode (accessibility/plain text mode)
-# 2. LANG=C or LC_ALL=C -> disables Unicode (POSIX locale)
-# 3. Config output.unicodeEnabled -> respect setting if false
+# 1. LC_ALL takes precedence over LANG (if LC_ALL has UTF-8, use it)
+# 2. LC_ALL=C or LANG=C -> disables Unicode (POSIX locale)
+# 3. Config output.showUnicode (or old output.unicodeEnabled) -> respect setting if false
 # 4. LANG/LC_ALL environment variables for UTF-8 encoding
+#
+# Note: NO_COLOR is about colors, not Unicode. We don't disable Unicode for NO_COLOR.
 #
 # Returns: 0 if Unicode supported, 1 if not
 detect_unicode_support() {
-  # NO_COLOR implies plain text mode - disable Unicode for accessibility
-  [[ -n "${NO_COLOR:-}" ]] && return 1
+  # LC_ALL takes precedence over LANG (per POSIX locale hierarchy)
+  # If LC_ALL has UTF-8, return success even if LANG=C
+  if [[ -n "${LC_ALL:-}" ]]; then
+    [[ "${LC_ALL}" =~ UTF-8 ]] && return 0
+    [[ "${LC_ALL}" == "C" || "${LC_ALL}" == "POSIX" ]] && return 1
+  fi
 
-  # LANG=C or LC_ALL=C means POSIX locale - no Unicode
-  [[ "${LANG:-}" == "C" ]] && return 1
-  [[ "${LC_ALL:-}" == "C" ]] && return 1
+  # Check LANG for C/POSIX locale (only if LC_ALL didn't match)
+  [[ "${LANG:-}" == "C" || "${LANG:-}" == "POSIX" ]] && return 1
 
   # Check configuration setting
   local config_unicode
@@ -415,6 +425,9 @@ progress_bar() {
   local total="$2"
   local width="${3:-20}"
   local unicode="${4:-true}"
+
+  # Handle negative current value
+  [[ "$current" -lt 0 ]] && current=0
 
   # Avoid division by zero
   if [[ "$total" -eq 0 ]]; then
@@ -704,7 +717,7 @@ format_date() {
 
 # truncate_title - Truncate a title according to configuration
 #
-# Respects output.compactTitles and output.maxTitleLength configuration.
+# Respects output.showCompactTitles (or old output.compactTitles) and output.maxTitleLength configuration.
 #
 # Args:
 #   $1 - Title string

@@ -684,6 +684,7 @@ output_json_format() {
     --arg session "$session_id" \
     '{
       "_meta": {
+        "format": "json",
         "version": "0.8.0",
         "command": "dash",
         "timestamp": $timestamp,

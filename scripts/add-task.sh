@@ -16,6 +16,18 @@ if [[ -f "$LIB_DIR/logging.sh" ]]; then
   source "$LIB_DIR/logging.sh"
 fi
 
+# Source validation library for circular dependency check
+if [[ -f "$LIB_DIR/validation.sh" ]]; then
+  # shellcheck source=../lib/validation.sh
+  source "$LIB_DIR/validation.sh"
+fi
+
+# Source file operations library for atomic writes with locking
+if [[ -f "$LIB_DIR/file-ops.sh" ]]; then
+  # shellcheck source=../lib/file-ops.sh
+  source "$LIB_DIR/file-ops.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -40,7 +52,7 @@ QUIET=false
 
 usage() {
   cat << 'EOF'
-Usage: add-task.sh "Task Title" [OPTIONS]
+Usage: claude-todo add "Task Title" [OPTIONS]
 
 Add a new task to todo.json with validation.
 
@@ -63,11 +75,11 @@ Options:
   -h, --help                Show this help
 
 Examples:
-  add-task.sh "Implement authentication"
-  add-task.sh "Fix login bug" -p high -l bug,security
-  add-task.sh "Add tests" -D T001,T002 -P testing
-  add-task.sh "Implement auth" --acceptance "User can login,Session persists"
-  add-task.sh "Quick task" -q  # Outputs only: T042
+  claude-todo add "Implement authentication"
+  claude-todo add "Fix login bug" -p high -l bug,security
+  claude-todo add "Add tests" -D T001,T002 -P testing
+  claude-todo add "Implement auth" --acceptance "User can login,Session persists"
+  claude-todo add "Quick task" -q  # Outputs only: T042
 
 Exit Codes:
   0 = Success
@@ -118,17 +130,12 @@ generate_task_id() {
   printf "T%03d" "$next_id"
 }
 
-# Validate task title
-validate_title() {
+# Validate task title (local wrapper - calls lib/validation.sh function)
+validate_title_local() {
   local title="$1"
 
-  if [[ -z "$title" ]]; then
-    log_error "Task title cannot be empty"
-    return 1
-  fi
-
-  if [[ ${#title} -gt 120 ]]; then
-    log_error "Task title too long (max 120 chars, got ${#title})"
+  # Call the shared validation function from lib/validation.sh
+  if ! validate_title "$title"; then
     return 1
   fi
 
@@ -254,61 +261,7 @@ validate_depends() {
   return 0
 }
 
-# Atomic file write with backup
-atomic_write() {
-  local file="$1"
-  local content="$2"
-  local backup_dir=".claude/.backups"
-
-  # Create backup directory if needed
-  if [[ ! -d "$backup_dir" ]]; then
-    mkdir -p "$backup_dir" || {
-      log_error "Failed to create backup directory: $backup_dir"
-      return 1
-    }
-  fi
-
-  # Backup existing file
-  if [[ -f "$file" ]]; then
-    local backup_file="${backup_dir}/$(basename "$file").$(date +%s).bak"
-    cp "$file" "$backup_file" || {
-      log_error "Failed to create backup: $backup_file"
-      return 1
-    }
-
-    # Keep only last 10 backups
-    local backup_count
-    backup_count=$(find "$backup_dir" -name "$(basename "$file").*.bak" | wc -l)
-    if [[ "$backup_count" -gt 10 ]]; then
-      find "$backup_dir" -name "$(basename "$file").*.bak" -type f | sort | head -n -10 | xargs rm -f
-    fi
-  fi
-
-  # Write to temp file
-  local temp_file="${file}.tmp"
-  echo "$content" > "$temp_file" || {
-    log_error "Failed to write temp file: $temp_file"
-    return 1
-  }
-
-  # Validate JSON
-  if ! jq empty "$temp_file" 2>/dev/null; then
-    log_error "Generated invalid JSON"
-    rm -f "$temp_file"
-    return 1
-  fi
-
-  # Atomic move
-  mv "$temp_file" "$file" || {
-    log_error "Failed to move temp file to $file"
-    rm -f "$temp_file"
-    return 1
-  }
-
-  return 0
-}
-
-# Update checksum
+# Update checksum using library's save_json with file locking
 update_checksum() {
   local file="$1"
   local checksum
@@ -317,7 +270,7 @@ update_checksum() {
   local updated_content
   updated_content=$(jq --arg cs "$checksum" '._meta.checksum = $cs' "$file")
 
-  atomic_write "$file" "$updated_content"
+  save_json "$file" "$updated_content"
 }
 
 # Log operation to todo-log.json
@@ -430,18 +383,33 @@ check_deps
 # Validate required arguments
 if [[ -z "$TITLE" ]]; then
   log_error "Task title is required"
-  echo "Usage: add-task.sh \"Task Title\" [OPTIONS]" >&2
+  echo "Usage: claude-todo add \"Task Title\" [OPTIONS]" >&2
   echo "Use --help for more information" >&2
   exit 1
 fi
 
+# Normalize labels to remove duplicates
+if [[ -n "$LABELS" ]]; then
+  LABELS=$(normalize_labels "$LABELS")
+fi
+
 # Validate inputs
-validate_title "$TITLE" || exit 1
+validate_title_local "$TITLE" || exit 1
 validate_status "$STATUS" || exit 1
 validate_priority "$PRIORITY" || exit 1
 validate_phase "$PHASE" || exit 1
 validate_labels "$LABELS" || exit 1
 validate_depends "$DEPENDS" || exit 1
+
+# Check for circular dependencies if dependencies are specified
+if [[ -n "$DEPENDS" ]]; then
+  # Generate a temporary task ID for validation
+  TEMP_TASK_ID=$(generate_task_id)
+  if ! check_circular_dependencies "$TODO_FILE" "$TEMP_TASK_ID" "$DEPENDS"; then
+    log_error "Cannot add task: would create circular dependency"
+    exit 1
+  fi
+fi
 
 # Check if blocked status has blocker reason
 if [[ "$STATUS" == "blocked" ]] && [[ -z "$DESCRIPTION" ]]; then
@@ -452,7 +420,7 @@ fi
 # Check if todo.json exists
 if [[ ! -f "$TODO_FILE" ]]; then
   log_error "Todo file not found: $TODO_FILE"
-  echo "Run init.sh first to initialize the todo system" >&2
+  echo "Run claude-todo init first to initialize the todo system" >&2
   exit 1
 fi
 
@@ -537,8 +505,8 @@ fi
 # Add task to todo.json
 UPDATED_TODO=$(jq --argjson task "$TASK_JSON" '.tasks += [$task] | .lastUpdated = (now | strftime("%Y-%m-%dT%H:%M:%SZ"))' "$TODO_FILE")
 
-# Write atomically
-if ! atomic_write "$TODO_FILE" "$UPDATED_TODO"; then
+# Write atomically using library's save_json with file locking
+if ! save_json "$TODO_FILE" "$UPDATED_TODO"; then
   log_error "Failed to write todo file"
   exit 2
 fi
