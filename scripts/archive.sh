@@ -45,7 +45,7 @@ MAX_OVERRIDE=""
 
 usage() {
   cat << EOF
-Usage: $(basename "$0") [OPTIONS]
+Usage: claude-todo archive [OPTIONS]
 
 Archive completed tasks from todo.json to todo-archive.json.
 
@@ -74,10 +74,10 @@ Config (from todo-config.json):
   - preserveRecentCount: Recent completions to keep (default: 3)
 
 Examples:
-  $(basename "$0")               # Archive based on config rules
-  $(basename "$0") --dry-run     # Preview what would be archived
-  $(basename "$0") --force       # Archive all, keep 3 most recent
-  $(basename "$0") --all         # Archive everything (nuclear option)
+  claude-todo archive               # Archive based on config rules
+  claude-todo archive --dry-run     # Preview what would be archived
+  claude-todo archive --force       # Archive all, keep 3 most recent
+  claude-todo archive --all         # Archive everything (nuclear option)
 EOF
   exit 0
 }
@@ -219,32 +219,60 @@ TASKS_WITH_METADATA=$(echo "$TASKS_TO_ARCHIVE" | jq --arg ts "$TIMESTAMP" --arg 
   })
 ')
 
-# Update archive file
-jq --argjson tasks "$TASKS_WITH_METADATA" --arg ts "$TIMESTAMP" '
+# ATOMIC TRANSACTION: Generate all temp files, validate, then commit
+# This prevents partial writes that corrupt JSON files
+
+ARCHIVE_TMP="${ARCHIVE_FILE}.tmp"
+TODO_TMP="${TODO_FILE}.tmp"
+LOG_TMP="${LOG_FILE}.tmp"
+
+# Cleanup function for rollback on failure
+cleanup_temp_files() {
+  rm -f "$ARCHIVE_TMP" "$TODO_TMP" "$LOG_TMP"
+}
+
+# Trap to ensure cleanup on error
+trap cleanup_temp_files EXIT
+
+# Step 1: Generate archive file update
+if ! jq --argjson tasks "$TASKS_WITH_METADATA" --arg ts "$TIMESTAMP" '
   .archivedTasks += $tasks |
   ._meta.totalArchived += ($tasks | length) |
   ._meta.lastArchived = $ts |
   ._meta.newestTask = ($tasks | max_by(.completedAt) | .completedAt) |
   ._meta.oldestTask = (if ._meta.oldestTask then ._meta.oldestTask else ($tasks | min_by(.completedAt) | .completedAt) end)
-' "$ARCHIVE_FILE" > "${ARCHIVE_FILE}.tmp" && mv "${ARCHIVE_FILE}.tmp" "$ARCHIVE_FILE"
+' "$ARCHIVE_FILE" > "$ARCHIVE_TMP"; then
+  log_error "Failed to generate archive update"
+  exit 1
+fi
 
-# Remove archived tasks from todo.json and update checksum
+# Step 2: Remove archived tasks from todo.json and clean up orphaned dependencies
 REMAINING_TASKS=$(jq --argjson ids "$(echo "$ARCHIVE_IDS" | jq -R . | jq -s .)" '
-  .tasks | map(select(.id as $id | $ids | index($id) | not))
+  .tasks |
+  map(select(.id as $id | $ids | index($id) | not)) |
+  map(
+    if .depends then
+      .depends = (.depends | map(select(. as $d | $ids | index($d) | not)))
+    else . end
+  ) |
+  map(if .depends and (.depends | length == 0) then del(.depends) else . end)
 ' "$TODO_FILE")
 
 NEW_CHECKSUM=$(echo "$REMAINING_TASKS" | jq -c '.' | sha256sum | cut -c1-16)
 
-jq --argjson tasks "$REMAINING_TASKS" --arg checksum "$NEW_CHECKSUM" --arg ts "$TIMESTAMP" '
+if ! jq --argjson tasks "$REMAINING_TASKS" --arg checksum "$NEW_CHECKSUM" --arg ts "$TIMESTAMP" '
   .tasks = $tasks |
   ._meta.checksum = $checksum |
   .lastUpdated = $ts
-' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+' "$TODO_FILE" > "$TODO_TMP"; then
+  log_error "Failed to generate todo update"
+  exit 1
+fi
 
-# Log the operation
+# Step 3: Generate log entry
 if [[ -f "$LOG_FILE" ]]; then
   LOG_ID="log_$(head -c 6 /dev/urandom | od -An -tx1 | tr -d ' \n' | head -c 12)"
-  jq --arg id "$LOG_ID" --arg ts "$TIMESTAMP" --arg sid "$SESSION_ID" --argjson count "$ARCHIVE_COUNT" --argjson ids "$(echo "$ARCHIVE_IDS" | jq -R . | jq -s .)" '
+  if ! jq --arg id "$LOG_ID" --arg ts "$TIMESTAMP" --arg sid "$SESSION_ID" --argjson count "$ARCHIVE_COUNT" --argjson ids "$(echo "$ARCHIVE_IDS" | jq -R . | jq -s .)" '
     .entries += [{
       "id": $id,
       "timestamp": $ts,
@@ -258,8 +286,38 @@ if [[ -f "$LOG_FILE" ]]; then
     }] |
     ._meta.totalEntries += 1 |
     ._meta.lastEntry = $ts
-  ' "$LOG_FILE" > "${LOG_FILE}.tmp" && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+  ' "$LOG_FILE" > "$LOG_TMP"; then
+    log_error "Failed to generate log update"
+    exit 1
+  fi
 fi
+
+# Step 4: Validate ALL generated JSON files before committing
+for temp_file in "$ARCHIVE_TMP" "$TODO_TMP" ${LOG_TMP:+"$LOG_TMP"}; do
+  if [[ ! -f "$temp_file" ]]; then
+    continue
+  fi
+
+  if ! jq empty "$temp_file" 2>/dev/null; then
+    log_error "Generated invalid JSON: $temp_file"
+    cat "$temp_file" >&2
+    exit 1
+  fi
+done
+
+# Step 5: Create backups before committing changes
+BACKUP_SUFFIX=".backup.$(date +%s)"
+cp "$ARCHIVE_FILE" "${ARCHIVE_FILE}${BACKUP_SUFFIX}"
+cp "$TODO_FILE" "${TODO_FILE}${BACKUP_SUFFIX}"
+[[ -f "$LOG_FILE" ]] && cp "$LOG_FILE" "${LOG_FILE}${BACKUP_SUFFIX}"
+
+# Step 6: Atomic commit - move all temp files to final locations
+mv "$ARCHIVE_TMP" "$ARCHIVE_FILE"
+mv "$TODO_TMP" "$TODO_FILE"
+[[ -f "$LOG_TMP" ]] && mv "$LOG_TMP" "$LOG_FILE"
+
+# Remove trap since we succeeded
+trap - EXIT
 
 log_info "Archived $ARCHIVE_COUNT tasks"
 echo ""
