@@ -140,14 +140,55 @@ list_backups() {
   # Find all backup directories and tarballs
   local found_backups=0
 
-  # List directories
+  # List backups from new unified taxonomy structure first
+  for backup_type in snapshot safety incremental archive migration; do
+    local type_dir="$backup_dir/$backup_type"
+    if [[ -d "$type_dir" ]]; then
+      while IFS= read -r -d '' backup; do
+        if [[ -d "$backup" ]]; then
+          found_backups=1
+          local backup_name
+          backup_name=$(basename "$backup")
+
+          # Get metadata (new format: metadata.json)
+          local metadata_file="${backup}/metadata.json"
+          if [[ -f "$metadata_file" ]]; then
+            local timestamp
+            timestamp=$(jq -r '.timestamp // "unknown"' "$metadata_file" 2>/dev/null || echo "unknown")
+            local file_count
+            file_count=$(jq -r '.files | length' "$metadata_file" 2>/dev/null || echo "0")
+            local total_size
+            total_size=$(jq -r '.totalSize' "$metadata_file" 2>/dev/null || echo "0")
+            local backup_type_label
+            backup_type_label=$(jq -r '.backupType // "unknown"' "$metadata_file" 2>/dev/null || echo "unknown")
+
+            # Convert size to human readable
+            local size_human
+            if command -v numfmt &> /dev/null; then
+              size_human=$(numfmt --to=iec-i --suffix=B "$total_size" 2>/dev/null || echo "${total_size}B")
+            else
+              size_human="${total_size}B"
+            fi
+
+            echo -e "  ${GREEN}▸${NC} ${BLUE}$backup_name${NC} [$backup_type_label]"
+            echo -e "    Timestamp: $timestamp"
+            echo -e "    Files: $file_count | Size: $size_human"
+            echo -e "    Path: $backup"
+            echo ""
+          fi
+        fi
+      done < <(find "$type_dir" -maxdepth 1 -mindepth 1 -type d -print0 2>/dev/null | sort -z)
+    fi
+  done
+
+  # Also check for legacy backup_* directories (backward compatibility)
   while IFS= read -r -d '' backup; do
     if [[ -d "$backup" ]]; then
       found_backups=1
       local backup_name
       backup_name=$(basename "$backup")
 
-      # Get metadata if available
+      # Get metadata if available (old format: backup-metadata.json)
       local metadata_file="${backup}/backup-metadata.json"
       if [[ -f "$metadata_file" ]]; then
         local timestamp
