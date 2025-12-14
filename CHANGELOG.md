@@ -5,6 +5,12 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.1] - 2025-12-13
+
+### Fixed
+- **Backup listing**: `claude-todo backup --list` now correctly displays backups from the new unified taxonomy structure (snapshot, safety, incremental, archive, migration directories)
+- **Function collision**: Renamed `file-ops.sh` `rotate_backups()` to `_rotate_numbered_backups()` to avoid collision with `lib/backup.sh` `rotate_backups()`, fixing cosmetic "ERROR: Unknown backup type" messages during complete/archive operations
+
 ## [0.10.0] - 2025-12-13
 
 ### Added
