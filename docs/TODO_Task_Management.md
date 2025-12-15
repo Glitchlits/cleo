@@ -56,6 +56,9 @@ claude-todo blockers analyze               # Critical path analysis
 ```bash
 claude-todo validate                       # Check file integrity
 claude-todo validate --fix                 # Fix checksum issues
+claude-todo exists <id>                    # Check if task ID exists (exit code 0/1)
+claude-todo exists <id> --quiet            # Silent check for scripting
+claude-todo exists <id> --include-archive  # Search archive too
 claude-todo archive                        # Archive completed tasks
 claude-todo stats                          # Show statistics
 claude-todo backup                         # Create backup
@@ -180,6 +183,61 @@ claude-todo add "Implement endpoints" --phase core --depends T050,T051
 |---------|---------|---------|
 | `focus note "text"` | Session-level progress | `.focus.sessionNote` (replaces) |
 | `update T001 --notes "text"` | Task-specific notes | `.tasks[].notes[]` (appends with timestamp) |
+
+## Task Validation & Scripting
+
+### Check Task Existence
+Use `exists` command for validation in scripts and automation:
+
+```bash
+# Basic check (exit code 0 = exists, 1 = not found)
+claude-todo exists T001
+
+# Silent check for scripting (no output)
+if claude-todo exists T001 --quiet; then
+  echo "Task exists"
+fi
+
+# Check archive too
+claude-todo exists T001 --include-archive
+
+# Get detailed info with verbose mode
+claude-todo exists T001 --verbose
+```
+
+### Script Examples
+```bash
+# Validate before update
+if claude-todo exists T042 --quiet; then
+  claude-todo update T042 --priority high
+else
+  echo "ERROR: Task T042 not found"
+  exit 1
+fi
+
+# Validate dependencies exist
+DEPS=("T001" "T002" "T005")
+for dep in "${DEPS[@]}"; do
+  if ! claude-todo exists "$dep" --quiet; then
+    echo "ERROR: Dependency $dep not found"
+    exit 1
+  fi
+done
+
+# JSON output for complex logic
+EXISTS=$(claude-todo exists T001 --format json | jq -r '.exists')
+if [[ "$EXISTS" == "true" ]]; then
+  # Process task
+fi
+```
+
+### Exit Codes
+| Code | Meaning | Use Case |
+|------|---------|----------|
+| `0` | Task exists | Success condition |
+| `1` | Task not found | Expected failure |
+| `2` | Invalid task ID format | Input validation error |
+| `3` | File read error | System error |
 
 ## Error Recovery
 

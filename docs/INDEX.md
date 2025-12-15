@@ -48,6 +48,7 @@
 | **[commands/export.md](commands/export.md)** | Export command documentation | Exporting tasks in CSV, TSV, JSON, markdown formats |
 | **[commands/backup.md](commands/backup.md)** | Backup command documentation | Creating and listing backups |
 | **[commands/restore.md](commands/restore.md)** | Restore command documentation | Restoring from backups |
+| **[commands/exists.md](commands/exists.md)** | Task existence validation documentation | Validating task IDs in scripts and CI/CD pipelines |
 
 ### 🔬 Technical Reference
 
