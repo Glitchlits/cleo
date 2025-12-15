@@ -2,13 +2,13 @@
   "$schema": "./schemas/todo.schema.json",
   "version": "2.1.0",
   "project": "claude-todo",
-  "lastUpdated": "2025-12-15T22:29:08Z",
+  "lastUpdated": "2025-12-15T22:35:53Z",
   "_meta": {
-    "checksum": "5877642a440e00cb",
+    "checksum": "5fbc066b66daf3e3",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null,
-    "lastModified": "2025-12-15T22:24:06Z",
+    "lastModified": "2025-12-15T22:29:34Z",
     "version": "2.0.0"
   },
   "focus": {
@@ -2744,7 +2744,7 @@
     {
       "id": "T238",
       "title": "Investigate and fix pre-existing migrate/log test failures",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-15T22:23:54Z",
       "phase": "core",
@@ -2752,6 +2752,10 @@
       "labels": [
         "bug",
         "testing"
+      ],
+      "completedAt": "2025-12-15T22:35:53Z",
+      "notes": [
+        "[COMPLETED 2025-12-15T22:35:53Z] Fixed all 17 pre-existing failures: (1) migrate.sh readonly variable error - added source guard, (2) add-task.sh log field names - changed operation→action, user→actor, task_id→taskId, (3) add-task.sh action value - changed 'create' to 'task_created'. All 850 tests now pass."
       ]
     }
   ],

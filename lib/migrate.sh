@@ -2,6 +2,10 @@
 # migrate.sh - Schema version migration system for claude-todo
 # Handles schema version changes gracefully with automatic data migration
 
+# Source guard - prevent multiple sourcing
+[[ -n "${_MIGRATE_SH_LOADED:-}" ]] && return 0
+_MIGRATE_SH_LOADED=1
+
 set -euo pipefail
 
 # Source dependencies
@@ -16,13 +20,13 @@ source "$SCRIPT_DIR/logging.sh"
 # ============================================================================
 
 # Current schema versions (single source of truth)
-readonly SCHEMA_VERSION_TODO="2.1.0"
-readonly SCHEMA_VERSION_CONFIG="2.1.0"
-readonly SCHEMA_VERSION_ARCHIVE="2.1.0"
-readonly SCHEMA_VERSION_LOG="2.1.0"
+SCHEMA_VERSION_TODO="2.1.0"
+SCHEMA_VERSION_CONFIG="2.1.0"
+SCHEMA_VERSION_ARCHIVE="2.1.0"
+SCHEMA_VERSION_LOG="2.1.0"
 
 # Migration scripts directory
-readonly MIGRATIONS_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}/migrations"
+MIGRATIONS_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}/migrations"
 
 # ============================================================================
 # VERSION PARSING

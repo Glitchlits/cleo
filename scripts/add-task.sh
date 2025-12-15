@@ -358,15 +358,15 @@ log_operation() {
   log_entry=$(jq -n \
     --arg id "$log_id" \
     --arg ts "$timestamp" \
-    --arg op "$operation" \
+    --arg action "$operation" \
     --arg task_id "$task_id" \
     --argjson details "$details" \
     '{
       id: $id,
       timestamp: $ts,
-      operation: $op,
-      task_id: $task_id,
-      user: "system",
+      action: $action,
+      taskId: $task_id,
+      actor: "system",
       details: $details,
       before: null,
       after: $details
@@ -657,7 +657,7 @@ task_details=$(jq -n \
   --arg status "$STATUS" \
   --arg priority "$PRIORITY" \
   '{title: $title, status: $status, priority: $priority}')
-log_operation "create" "$TASK_ID" "$task_details"
+log_operation "task_created" "$TASK_ID" "$task_details"
 
 # Success output
 if [[ "$QUIET" == "true" ]]; then
