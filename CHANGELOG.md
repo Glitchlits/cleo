@@ -5,6 +5,28 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2025-12-15
+
+### Added
+- **Log rotation integration** (T214): Orphaned rotation functions now integrated
+  - `check_and_rotate_log()` called automatically on `session end`
+  - `claude-todo log rotate` - manual rotation check
+  - `claude-todo log rotate --force` - force rotation regardless of size
+  - Uses `logging.retentionDays` from todo-config.json (default: 30 days)
+
+### Changed
+- **CLAUDE.md injection refactored**: Template-based instead of hardcoded
+  - Reduced from ~80 lines to ~20 lines in injected content
+  - Focus on `ct` alias commands for LLM agent use
+  - Template stored at `~/.claude-todo/templates/CLAUDE-INJECTION.md`
+  - Upgradable without modifying init.sh
+
+### Documentation
+- Comprehensive `exists` command documentation (661 lines)
+  - `docs/commands/exists.md` with CI/CD patterns, script templates
+  - Updated `docs/INDEX.md` command reference table
+  - New "Task Validation & Scripting" section in TODO_Task_Management.md
+
 ## [0.11.0] - 2025-12-15
 
 ### Added
