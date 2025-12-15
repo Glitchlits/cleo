@@ -279,12 +279,14 @@ else
 fi
 
 # 7.5. Check schema version compatibility
-SCHEMA_VERSION=$(jq -r '._meta.version // ""' "$TODO_FILE")
+# Check _meta.version first, fall back to root .version
+SCHEMA_VERSION=$(jq -r '._meta.version // .version // ""' "$TODO_FILE")
+EXPECTED_MAJOR=2
+DEFAULT_VERSION="2.0.0"
+
 if [[ -n "$SCHEMA_VERSION" ]]; then
   # Extract major version (first number before dot)
   MAJOR_VERSION=$(echo "$SCHEMA_VERSION" | cut -d. -f1)
-  # Current supported major version is 2
-  EXPECTED_MAJOR=2
 
   if [[ "$MAJOR_VERSION" != "$EXPECTED_MAJOR" ]]; then
     log_error "Incompatible schema version: $SCHEMA_VERSION (expected major version $EXPECTED_MAJOR)"
@@ -292,7 +294,13 @@ if [[ -n "$SCHEMA_VERSION" ]]; then
     log_info "Schema version compatible ($SCHEMA_VERSION)"
   fi
 else
-  log_warn "No schema version found in _meta.version"
+  if [[ "$FIX" == true ]]; then
+    jq --arg ver "$DEFAULT_VERSION" '._meta.version = $ver' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+    echo "  Fixed: Added _meta.version = $DEFAULT_VERSION"
+    log_info "Schema version compatible ($DEFAULT_VERSION) (after fix)"
+  else
+    log_warn "No schema version found. Run with --fix to add _meta.version"
+  fi
 fi
 
 # 7.6. Check required task fields
