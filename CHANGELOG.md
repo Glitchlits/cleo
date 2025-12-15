@@ -5,6 +5,18 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.6] - 2025-12-15
+
+### Added
+- **`bump-version.sh`**: Single command to update version everywhere
+  - Updates VERSION file, README badge, and CLAUDE-INJECTION.md template
+  - Supports `patch`, `minor`, `major`, or explicit version
+  - Usage: `./scripts/bump-version.sh patch`
+
+### Changed
+- Version management now uses single source of truth (VERSION file)
+- README badge synced automatically via bump-version.sh
+
 ## [0.12.5] - 2025-12-15
 
 ### Fixed
