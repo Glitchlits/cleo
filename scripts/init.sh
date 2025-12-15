@@ -51,6 +51,7 @@ fi
 # Defaults
 FORCE=false
 NO_CLAUDE_MD=false
+UPDATE_CLAUDE_MD=false
 PROJECT_NAME=""
 
 usage() {
@@ -60,9 +61,10 @@ Usage: claude-todo init [PROJECT_NAME] [OPTIONS]
 Initialize CLAUDE-TODO in the current directory.
 
 Options:
-  --force         Overwrite existing files
-  --no-claude-md  Skip CLAUDE.md integration
-  -h, --help      Show this help
+  --force             Overwrite existing files
+  --no-claude-md      Skip CLAUDE.md integration
+  --update-claude-md  Update existing CLAUDE.md injection (idempotent)
+  -h, --help          Show this help
 
 Creates:
   .claude/todo.json         Active tasks
@@ -90,11 +92,51 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     --force) FORCE=true; shift ;;
     --no-claude-md) NO_CLAUDE_MD=true; shift ;;
+    --update-claude-md) UPDATE_CLAUDE_MD=true; shift ;;
     -h|--help) usage ;;
     -*) log_error "Unknown option: $1"; exit 1 ;;
     *) PROJECT_NAME="$1"; shift ;;
   esac
 done
+
+# Handle --update-claude-md as standalone operation
+if [[ "$UPDATE_CLAUDE_MD" == true ]]; then
+  if [[ ! -f "CLAUDE.md" ]]; then
+    log_error "CLAUDE.md not found in current directory"
+    exit 1
+  fi
+
+  injection_template="$CLAUDE_TODO_HOME/templates/CLAUDE-INJECTION.md"
+  if [[ ! -f "$injection_template" ]]; then
+    log_error "Injection template not found: $injection_template"
+    exit 1
+  fi
+
+  if grep -q "CLAUDE-TODO:START" CLAUDE.md 2>/dev/null; then
+    # Replace existing block using sed
+    # Create temp file with new content
+    temp_file=$(mktemp)
+
+    # Extract content before START tag
+    sed -n '1,/<!-- CLAUDE-TODO:START -->/p' CLAUDE.md | head -n -1 > "$temp_file"
+
+    # Append new injection template
+    cat "$injection_template" >> "$temp_file"
+
+    # Append content after END tag (if any)
+    sed -n '/<!-- CLAUDE-TODO:END -->/,${/<!-- CLAUDE-TODO:END -->/d; p}' CLAUDE.md >> "$temp_file"
+
+    # Replace original file
+    mv "$temp_file" CLAUDE.md
+    log_success "CLAUDE.md injection updated"
+  else
+    # No existing block, append new one
+    echo "" >> CLAUDE.md
+    cat "$injection_template" >> CLAUDE.md
+    log_success "CLAUDE.md injection added"
+  fi
+  exit 0
+fi
 
 # Determine project name
 [[ -z "$PROJECT_NAME" ]] && PROJECT_NAME=$(basename "$PWD")
