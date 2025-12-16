@@ -47,9 +47,9 @@
       }
     }
   },
-  "lastUpdated": "2025-12-16T21:34:39Z",
+  "lastUpdated": "2025-12-16T22:04:08Z",
   "_meta": {
-    "checksum": "736d54d3655fc61b",
+    "checksum": "d178ff5863f1d27a",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null,
@@ -4166,7 +4166,7 @@
     {
       "id": "T306",
       "title": "T302.5: Document migrate repair command",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-12-16T20:16:20Z",
       "phase": "polish",
@@ -4178,12 +4178,16 @@
       ],
       "depends": [
         "T302"
+      ],
+      "completedAt": "2025-12-16T22:04:08Z",
+      "notes": [
+        "[COMPLETED 2025-12-16T22:04:08Z] Documented migrate repair command in CHANGELOG v0.14.0 with full usage and implementation details"
       ]
     },
     {
       "id": "T307",
       "title": "T302.4: Add comprehensive tests for migrate repair",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "createdAt": "2025-12-16T20:16:34Z",
       "phase": "core",
@@ -4195,6 +4199,10 @@
       ],
       "depends": [
         "T302"
+      ],
+      "completedAt": "2025-12-16T22:04:08Z",
+      "notes": [
+        "[COMPLETED 2025-12-16T22:04:08Z] All 1124 tests passing. Added phase validation tests in phase-edge-cases.bats and updated migration tests in test-2.2.0-migration.bats"
       ]
     },
     {
