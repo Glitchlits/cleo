@@ -28,6 +28,27 @@ SCHEMA_VERSION_LOG="2.1.0"
 # Migration scripts directory
 MIGRATIONS_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}/migrations"
 
+# Templates directory (source of truth for default structures)
+TEMPLATES_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}/templates"
+
+# ============================================================================
+# DEFAULT STRUCTURE HELPERS
+# ============================================================================
+
+# Get default phases from template (single source of truth)
+# Returns JSON object with default phase definitions
+get_default_phases() {
+    local template_file="${TEMPLATES_DIR}/todo.template.json"
+
+    if [[ -f "$template_file" ]]; then
+        # Read phases from template, strip template placeholders
+        jq '.project.phases | walk(if type == "string" and test("\\{\\{") then null else . end)' "$template_file" 2>/dev/null
+    else
+        # Fallback if template not found (shouldn't happen in normal install)
+        echo '{"setup":{"order":1,"name":"Setup","status":"pending"},"core":{"order":2,"name":"Core","status":"pending"},"testing":{"order":3,"name":"Testing","status":"pending"},"polish":{"order":4,"name":"Polish","status":"pending"},"maintenance":{"order":5,"name":"Maintenance","status":"pending"}}'
+    fi
+}
+
 # ============================================================================
 # VERSION PARSING
 # ============================================================================
@@ -449,55 +470,17 @@ migrate_todo_to_2_2_0() {
         }
     else
         # Migrate from string to object
-        # Canonical 5-phase structure: setup → core → testing → polish → maintenance
-        jq '
-            # Convert project string to object with phases
+        # Get default phases from template (single source of truth)
+        local default_phases
+        default_phases=$(get_default_phases)
+
+        jq --argjson phases "$default_phases" '
+            # Convert project string to object with phases from template
             if (.project | type) == "string" then
                 .project = {
                     "name": .project,
                     "currentPhase": null,
-                    "phases": {
-                        "setup": {
-                            "order": 1,
-                            "name": "Setup & Foundation",
-                            "description": "Initial project setup, dependencies, and configuration",
-                            "status": "pending",
-                            "startedAt": null,
-                            "completedAt": null
-                        },
-                        "core": {
-                            "order": 2,
-                            "name": "Core Development",
-                            "description": "Build core functionality and features",
-                            "status": "pending",
-                            "startedAt": null,
-                            "completedAt": null
-                        },
-                        "testing": {
-                            "order": 3,
-                            "name": "Testing & Validation",
-                            "description": "Comprehensive testing, validation, and quality assurance",
-                            "status": "pending",
-                            "startedAt": null,
-                            "completedAt": null
-                        },
-                        "polish": {
-                            "order": 4,
-                            "name": "Polish & Refinement",
-                            "description": "UX improvements, optimization, and documentation",
-                            "status": "pending",
-                            "startedAt": null,
-                            "completedAt": null
-                        },
-                        "maintenance": {
-                            "order": 5,
-                            "name": "Maintenance & Support",
-                            "description": "Ongoing maintenance, bug fixes, and support",
-                            "status": "pending",
-                            "startedAt": null,
-                            "completedAt": null
-                        }
-                    }
+                    "phases": $phases
                 }
             else . end
         ' "$file" > "$temp_file" || {
