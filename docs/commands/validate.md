@@ -50,7 +50,7 @@ Output:
 [OK] All tasks have required fields
 [OK] Focus matches active task
 [OK] Checksum valid
-[OK] CLAUDE.md injection current (v0.12.6)
+[OK] CLAUDE.md injection current (v1.0.0)
 
 Validation passed (0 warnings)
 ```
@@ -67,9 +67,9 @@ Output:
   Fixed: Updated checksum (was: abc123, now: def456)
 [OK] Checksum valid (after fix)
 
-[WARN] CLAUDE.md injection outdated (0.12.5 -> 0.12.6)
-  Fixed: Updated CLAUDE.md injection (0.12.5 -> 0.12.6)
-[OK] CLAUDE.md injection current (v0.12.6)
+[WARN] CLAUDE.md injection outdated (0.9.0 → 1.0.0)
+  Fixed: Updated CLAUDE.md injection (0.9.0 → 1.0.0)
+[OK] CLAUDE.md injection current (v1.0.0)
 
 Validation passed (0 warnings)
 ```

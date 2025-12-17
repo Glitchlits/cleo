@@ -147,6 +147,17 @@ When releasing new versions:
 git commit && git push
 ```
 
+### Version Strings in Documentation
+
+| Context | Format | Example |
+|---------|--------|---------|
+| **Automated** (README badge, injection tags) | Current version | `v0.16.0` |
+| **Command output examples** | Realistic example versions | `v1.0.0`, `0.9.0 → 1.0.0` |
+| **Historical context** (when feature added) | Actual version | `Added in v0.8.2` |
+| **Version history sections** | Actual version | `- **v0.15.0**: Initial implementation` |
+
+**Rule**: Only files handled by `bump-version.sh` use current versions. Command output examples use realistic but generic versions (like `v1.0.0`) that look like real output but don't require updates. Historical references preserve the actual version when features were added.
+
 See [VERSION-MANAGEMENT.md](reference/VERSION-MANAGEMENT.md) for full details.
 
 ---

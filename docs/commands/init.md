@@ -76,7 +76,7 @@ claude-todo init --update-claude-md
 
 Output:
 ```
-[INFO] Updating CLAUDE.md injection (v0.12.5 -> v0.12.6)
+[INFO] Updating CLAUDE.md injection (v0.9.0 → v1.0.0)
 [INFO] CLAUDE.md updated successfully
 
 Note: Only the task management section was updated.
@@ -117,7 +117,7 @@ project/
 The init command adds a task management section to CLAUDE.md:
 
 ```markdown
-<!-- CLAUDE-TODO:START v0.12.6 -->
+<!-- CLAUDE-TODO:START v1.0.0 -->
 ## Task Management (claude-todo)
 
 Use `ct` (alias for `claude-todo`) for all task operations.

@@ -23,7 +23,7 @@
 └─────────────────────────────────────────────────────┘
 ```
 
-## Essential Commands (v0.15.0)
+## Essential Commands
 
 ```bash
 # SETUP
