@@ -5,6 +5,37 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2025-12-16
+
+### Added
+- **`analyze` command for intelligent task triage** (T327)
+  - New command: `claude-todo analyze [--full|--json|--auto-focus]`
+  - **Leverage scoring**: Calculates downstream impact of each task
+    - Score = base priority + (cascade count × 10)
+    - Identifies high-leverage tasks that unblock the most work
+  - **Bottleneck detection**: Finds tasks blocking 2+ other tasks
+    - Shows blocked task chains
+    - Highlights critical bottlenecks
+  - **Tier assignment**: Auto-groups tasks into action tiers
+    - Tier 1: Critical bottlenecks and high-leverage tasks
+    - Tier 2: High priority with dependencies
+    - Tier 3: Medium priority and progress tasks
+    - Tier 4: Low priority backlog
+  - **Output formats**:
+    - Brief mode (default): Token-efficient summary for LLM agents
+    - Full mode (`--full`): Comprehensive report with all tiers
+    - JSON mode (`--json`): Machine-readable for scripting
+  - **Auto-focus** (`--auto-focus`): Automatically sets focus to top recommendation
+  - `lib/analysis.sh`: Core algorithms for leverage, bottleneck, and tier calculations
+  - `scripts/analyze.sh`: CLI command implementation
+  - `docs/commands/analyze.md`: Comprehensive documentation
+
+### Changed
+- **Documentation updated for analyze command**
+  - `CLAUDE.md`: Added analyze to Analysis Commands section
+  - `docs/QUICK-REFERENCE.md`: Added analyze command examples
+  - `templates/CLAUDE-INJECTION.md`: Added analyze to essential commands
+
 ## [0.14.0] - 2025-12-16
 
 ### Added

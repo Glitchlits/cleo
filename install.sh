@@ -412,6 +412,7 @@ declare -A CMD_MAP=(
   [history]="history.sh"
   [show]="show.sh"
   [sync]="sync-todowrite.sh"
+  [analyze]="analyze.sh"
 )
 
 # Brief descriptions for main help
@@ -443,6 +444,7 @@ declare -A CMD_DESC=(
   [history]="Show completion history and timeline analytics"
   [show]="Show detailed view of a single task"
   [sync]="Sync tasks with TodoWrite (inject/extract/status)"
+  [analyze]="Task triage with leverage scoring and bottleneck detection"
 )
 
 # ============================================
@@ -595,7 +597,7 @@ show_main_help() {
   echo "       claude-todo help <command>    Show detailed command help"
   echo ""
   echo "Commands:"
-  for cmd in init add update complete list focus session archive validate stats backup restore export migrate migrate-backups log dash next labels deps blockers phases phase exists history show; do
+  for cmd in init add update complete list focus session archive validate stats backup restore export migrate migrate-backups log dash next labels deps blockers phases phase exists history show analyze; do
     printf "  %-14s %s\n" "$cmd" "${CMD_DESC[$cmd]}"
   done
   echo "  version        Show version"

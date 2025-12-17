@@ -64,6 +64,9 @@ claude-todo phases show <phase>       # Show all tasks in phase
 claude-todo phases stats              # Detailed phase statistics
 
 # DASHBOARD & ANALYTICS
+claude-todo analyze                   # Task triage with leverage scoring
+claude-todo analyze --json            # Machine-readable triage output
+claude-todo analyze --auto-focus      # Auto-set focus to top task
 claude-todo dash                      # Full dashboard overview
 claude-todo dash --compact            # Single-line summary
 claude-todo labels                    # List all labels with counts
