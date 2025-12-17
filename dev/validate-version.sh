@@ -2,8 +2,8 @@
 # validate-version.sh - Validate version consistency across project files
 #
 # Usage:
-#   ./scripts/validate-version.sh          # Check for version drift
-#   ./scripts/validate-version.sh --fix    # Auto-fix version drift
+#   ./dev/validate-version.sh          # Check for version drift
+#   ./dev/validate-version.sh --fix    # Auto-fix version drift
 
 set -euo pipefail
 

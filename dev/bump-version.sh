@@ -2,12 +2,12 @@
 # bump-version.sh - Single command to bump version everywhere with validation
 #
 # Usage:
-#   ./scripts/bump-version.sh 0.12.6
-#   ./scripts/bump-version.sh patch   # 0.12.5 -> 0.12.6
-#   ./scripts/bump-version.sh minor   # 0.12.5 -> 0.13.0
-#   ./scripts/bump-version.sh major   # 0.12.5 -> 1.0.0
-#   ./scripts/bump-version.sh --dry-run patch
-#   ./scripts/bump-version.sh --no-validate minor
+#   ./dev/bump-version.sh 0.12.6
+#   ./dev/bump-version.sh patch   # 0.12.5 -> 0.12.6
+#   ./dev/bump-version.sh minor   # 0.12.5 -> 0.13.0
+#   ./dev/bump-version.sh major   # 0.12.5 -> 1.0.0
+#   ./dev/bump-version.sh --dry-run patch
+#   ./dev/bump-version.sh --no-validate minor
 
 set -euo pipefail
 

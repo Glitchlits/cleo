@@ -141,8 +141,8 @@ When releasing new versions:
 
 **Workflow**:
 ```bash
-./scripts/validate-version.sh           # Check for drift
-./scripts/bump-version.sh <version>     # Bump and sync
+./dev/validate-version.sh           # Check for drift
+./dev/bump-version.sh <version>     # Bump and sync
 # Update CHANGELOG.md manually
 git commit && git push
 ```

@@ -7,7 +7,7 @@
 [![Bash](https://img.shields.io/badge/bash-4.0%2B-green.svg)](https://www.gnu.org/software/bash/)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/)
 
-<!-- VERSION_SYNC: This badge version should match VERSION file. Run ./scripts/bump-version.sh to update. -->
+<!-- VERSION_SYNC: This badge version should match VERSION file. Run ./dev/bump-version.sh to update. -->
 
 ---
 

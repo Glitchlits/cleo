@@ -36,7 +36,7 @@ claude-todo uses a **dual-track versioning system** to independently manage appl
 0.15.0
 ```
 
-**Modified By**: `scripts/bump-version.sh` (automated)
+**Modified By**: `dev/bump-version.sh` (automated)
 
 **Consumed By**:
 - `lib/version.sh` - Provides `get_version()` and `$CLAUDE_TODO_VERSION`
@@ -123,13 +123,13 @@ Validate version consistency across all project files.
 **Usage**:
 ```bash
 # Check for version drift
-./scripts/validate-version.sh
+./dev/validate-version.sh
 
 # Auto-fix version drift
-./scripts/validate-version.sh --fix
+./dev/validate-version.sh --fix
 
 # Show help
-./scripts/validate-version.sh --help
+./dev/validate-version.sh --help
 ```
 
 **What It Checks**:
@@ -177,7 +177,7 @@ Run with --fix to automatically synchronize versions
 
 **Auto-Fix Mode**:
 ```bash
-./scripts/validate-version.sh --fix
+./dev/validate-version.sh --fix
 ```
 
 Automatically syncs all files to match the VERSION file (source of truth).
@@ -189,17 +189,17 @@ Single command to update app version everywhere with validation.
 **Usage**:
 ```bash
 # Explicit version
-./scripts/bump-version.sh 0.12.6
+./dev/bump-version.sh 0.12.6
 
 # Semver bump types
-./scripts/bump-version.sh patch   # 0.12.5 → 0.12.6
-./scripts/bump-version.sh minor   # 0.12.5 → 0.13.0
-./scripts/bump-version.sh major   # 0.12.5 → 1.0.0
+./dev/bump-version.sh patch   # 0.12.5 → 0.12.6
+./dev/bump-version.sh minor   # 0.12.5 → 0.13.0
+./dev/bump-version.sh major   # 0.12.5 → 1.0.0
 
 # Options
-./scripts/bump-version.sh --dry-run patch    # Preview changes
-./scripts/bump-version.sh --verbose minor    # Detailed output
-./scripts/bump-version.sh --no-validate major  # Skip validation
+./dev/bump-version.sh --dry-run patch    # Preview changes
+./dev/bump-version.sh --verbose minor    # Detailed output
+./dev/bump-version.sh --no-validate major  # Skip validation
 ```
 
 **What It Updates** (automatically):
@@ -252,7 +252,7 @@ Next steps:
 **Error Handling**:
 ```bash
 # Invalid format
-./scripts/bump-version.sh 1.2
+./dev/bump-version.sh 1.2
 # ERROR: Invalid version format: 1.2 (expected X.Y.Z)
 
 # Post-validation failure
@@ -265,7 +265,7 @@ Next steps:
 
 **Dry-Run Example**:
 ```bash
-./scripts/bump-version.sh --dry-run --verbose minor
+./dev/bump-version.sh --dry-run --verbose minor
 ```
 
 Output:
@@ -399,7 +399,7 @@ Use this checklist for every release:
 
 ```bash
 # Determine bump type (major/minor/patch)
-./scripts/bump-version.sh <type>
+./dev/bump-version.sh <type>
 
 # Verify changes
 git diff VERSION README.md templates/CLAUDE-INJECTION.md
@@ -487,7 +487,7 @@ echo "0.15.0" > VERSION  # Manual edit
 
 **Correct**:
 ```bash
-./scripts/bump-version.sh 0.15.0  # Updates everywhere
+./dev/bump-version.sh 0.15.0  # Updates everywhere
 ```
 
 ### DON'T: Couple Schema and App Versions
@@ -510,13 +510,13 @@ Schema versions are independent. Only bump when data structure changes.
 
 **Wrong**:
 ```bash
-./scripts/bump-version.sh minor
+./dev/bump-version.sh minor
 git commit -m "Bump version"  # No CHANGELOG entry
 ```
 
 **Correct**:
 ```bash
-./scripts/bump-version.sh minor
+./dev/bump-version.sh minor
 # Edit CHANGELOG.md with changes
 git add CHANGELOG.md VERSION README.md templates/CLAUDE-INJECTION.md
 git commit -m "chore: Bump to v0.16.0"
@@ -533,7 +533,7 @@ sed -i 's/version-0.14.0-/version-0.15.0-/' README.md
 **Correct**:
 ```bash
 # bump-version.sh handles it automatically
-./scripts/bump-version.sh 0.15.0
+./dev/bump-version.sh 0.15.0
 ```
 
 ## Troubleshooting
@@ -547,19 +547,19 @@ sed -i 's/version-0.14.0-/version-0.15.0-/' README.md
 **Diagnosis**:
 ```bash
 # Check for version drift
-./scripts/validate-version.sh
+./dev/validate-version.sh
 ```
 
 **Fix (Option 1 - Auto-fix)**:
 ```bash
 # Automatically sync all files to VERSION file
-./scripts/validate-version.sh --fix
+./dev/validate-version.sh --fix
 ```
 
 **Fix (Option 2 - Re-bump)**:
 ```bash
 # Re-run bump-version to sync everything
-./scripts/bump-version.sh $(cat VERSION)
+./dev/bump-version.sh $(cat VERSION)
 ```
 
 ### Issue: "unknown" Version Reported

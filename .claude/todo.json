@@ -47,9 +47,9 @@
       }
     }
   },
-  "lastUpdated": "2025-12-17T19:47:26Z",
+  "lastUpdated": "2025-12-17T20:29:38Z",
   "_meta": {
-    "checksum": "0e9c9ff36a448d67",
+    "checksum": "215281c9b97a7ee1",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": "session_20251216_213731_392dd7",
@@ -4980,6 +4980,20 @@
         "T342",
         "T343",
         "T344"
+      ]
+    },
+    {
+      "id": "T350",
+      "title": "Implement file locking for concurrent phase operations",
+      "status": "pending",
+      "priority": "low",
+      "createdAt": "2025-12-17T20:29:38Z",
+      "phase": "core",
+      "description": "The test 'phase-edge: file lock prevents concurrent phase operations' in tests/edge-cases/phase-edge-cases.bats:481 is skipped pending implementation. Need to add file locking to phase.sh operations to prevent race conditions when multiple processes modify phases simultaneously.",
+      "labels": [
+        "enhancement",
+        "feature-phase",
+        "testing"
       ]
     }
   ],

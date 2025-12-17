@@ -47,12 +47,13 @@ claude-todo help                    # Show all commands
 
 ## Structure
 ```
-schemas/          # JSON Schema definitions
-templates/        # Starter templates for new projects
-scripts/          # User-facing operational scripts
-lib/              # Shared functions (validation, logging, file-ops)
-tests/            # Test suite with fixtures
-docs/             # Documentation
+schemas/          # JSON Schema definitions              [SHIPPED]
+templates/        # Starter templates for new projects   [SHIPPED]
+scripts/          # User-facing operational scripts      [SHIPPED]
+lib/              # Shared functions                     [SHIPPED]
+docs/             # Documentation (user-facing subset)   [SHIPPED]
+dev/              # Development scripts (bump-version, benchmark)  [REPO ONLY]
+tests/            # Test suite with fixtures             [REPO ONLY]
 ```
 
 ## Key Files
@@ -60,6 +61,7 @@ docs/             # Documentation
 - Library core: `lib/validation.sh`, `lib/file-ops.sh`, `lib/logging.sh`, `lib/phase-tracking.sh`
 - Main scripts: `scripts/add-task.sh`, `scripts/update-task.sh`, `scripts/complete-task.sh`
 - Phase commands: `scripts/phase.sh`, `scripts/phases.sh`
+- Dev tools: `dev/bump-version.sh`, `dev/validate-version.sh`, `dev/benchmark-performance.sh`
 
 ## Rules
 - **CRITICAL**: All write operations MUST use atomic pattern (temp file → validate → backup → rename)
