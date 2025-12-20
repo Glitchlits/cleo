@@ -64,6 +64,12 @@ if [[ -f "$LIB_DIR/hierarchy.sh" ]]; then
   source "$LIB_DIR/hierarchy.sh"
 fi
 
+# Source config library for validation settings
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "$LIB_DIR/config.sh"
+fi
+
 # Fallback exit codes if libraries not loaded (for robustness)
 : "${EXIT_SUCCESS:=0}"
 : "${EXIT_INVALID_INPUT:=2}"
@@ -741,7 +747,6 @@ if [[ -n "$NEW_PARENT_ID" ]]; then
 
     # Validate max siblings
     if ! validate_max_siblings "$NEW_PARENT_ID" "$TODO_FILE"; then
-      local max_sibs
       max_sibs=$(get_max_siblings)
       if [[ "$FORMAT" == "json" ]]; then
         output_error "$E_SIBLING_LIMIT" "Cannot set parent to $NEW_PARENT_ID: max siblings ($max_sibs) exceeded" "$EXIT_SIBLING_LIMIT" false "Complete tasks, set hierarchy.maxSiblings=0 for unlimited, or group under new epic"
@@ -795,31 +800,47 @@ if [[ "$ADD_PHASE" == "true" ]] && [[ -n "$NEW_PHASE" ]]; then
   add_new_phase "$NEW_PHASE"
 fi
 
-# Check for circular dependencies when updating dependencies
+# Check for circular dependencies when updating dependencies (configurable)
 if [[ -n "$DEPENDS_TO_ADD" || -n "$DEPENDS_TO_SET" ]]; then
-  # Get current dependencies
-  CURRENT_DEPS=$(echo "$TASK" | jq -r '.depends // [] | join(",")')
-
-  # Determine final dependencies after update
-  FINAL_DEPS=""
-  if [[ -n "$DEPENDS_TO_SET" ]]; then
-    FINAL_DEPS="$DEPENDS_TO_SET"
-  elif [[ -n "$DEPENDS_TO_ADD" ]]; then
-    if [[ -n "$CURRENT_DEPS" ]]; then
-      FINAL_DEPS="$CURRENT_DEPS,$DEPENDS_TO_ADD"
-    else
-      FINAL_DEPS="$DEPENDS_TO_ADD"
-    fi
+  # Check if dependency validation is enabled
+  VALIDATE_DEPS=true
+  if declare -f is_dependency_validation_enabled >/dev/null 2>&1; then
+    VALIDATE_DEPS=$(is_dependency_validation_enabled)
   fi
 
-  if [[ -n "$FINAL_DEPS" ]]; then
-    if ! check_circular_dependencies "$TODO_FILE" "$TASK_ID" "$FINAL_DEPS"; then
-      if [[ "$FORMAT" == "json" ]]; then
-        output_error "$E_VALIDATION_SCHEMA" "Cannot update task: would create circular dependency" "$EXIT_VALIDATION_ERROR" true "Review dependency chain and remove circular references"
+  if [[ "$VALIDATE_DEPS" == "true" ]]; then
+    # Get current dependencies
+    CURRENT_DEPS=$(echo "$TASK" | jq -r '.depends // [] | join(",")')
+
+    # Determine final dependencies after update
+    FINAL_DEPS=""
+    if [[ -n "$DEPENDS_TO_SET" ]]; then
+      FINAL_DEPS="$DEPENDS_TO_SET"
+    elif [[ -n "$DEPENDS_TO_ADD" ]]; then
+      if [[ -n "$CURRENT_DEPS" ]]; then
+        FINAL_DEPS="$CURRENT_DEPS,$DEPENDS_TO_ADD"
       else
-        log_error "Cannot update task: would create circular dependency"
+        FINAL_DEPS="$DEPENDS_TO_ADD"
       fi
-      exit "${EXIT_VALIDATION_ERROR:-6}"
+    fi
+
+    if [[ -n "$FINAL_DEPS" ]]; then
+      # Check if circular dependency detection is enabled
+      DETECT_CIRCULAR=true
+      if declare -f is_circular_dep_detection_enabled >/dev/null 2>&1; then
+        DETECT_CIRCULAR=$(is_circular_dep_detection_enabled)
+      fi
+
+      if [[ "$DETECT_CIRCULAR" == "true" ]]; then
+        if ! check_circular_dependencies "$TODO_FILE" "$TASK_ID" "$FINAL_DEPS"; then
+          if [[ "$FORMAT" == "json" ]]; then
+            output_error "$E_VALIDATION_SCHEMA" "Cannot update task: would create circular dependency" "$EXIT_VALIDATION_ERROR" true "Review dependency chain and remove circular references"
+          else
+            log_error "Cannot update task: would create circular dependency"
+          fi
+          exit "${EXIT_VALIDATION_ERROR:-6}"
+        fi
+      fi
     fi
   fi
 fi

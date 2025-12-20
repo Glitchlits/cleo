@@ -113,18 +113,18 @@
       }
     ]
   },
-  "lastUpdated": "2025-12-20T07:25:08Z",
+  "lastUpdated": "2025-12-20T10:45:54Z",
   "_meta": {
-    "checksum": "d1ae17cd6ba18c02",
+    "checksum": "8dfd766f91aedab9",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": null,
-    "lastModified": "2025-12-20T10:31:47Z",
+    "lastModified": "2025-12-20T10:44:49Z",
     "version": "2.3.0",
     "schemaVersion": "2.3.0"
   },
   "focus": {
-    "currentTask": "T382",
+    "currentTask": null,
     "blockedUntil": null,
     "sessionNote": "test cleanup",
     "nextAction": "NEXT SESSION: Implement T452 (archive.sh - HIGH priority) first. Pattern: source lib/file-ops.sh, replace all raw writes with save_json(). Then T453, T454. T350/T530/T531 can follow. See FILE-LOCKING-IMPLEMENTATION-REPORT.md for fix patterns.",
@@ -1901,7 +1901,7 @@
     {
       "id": "T382",
       "title": "Config System Integration & Completion",
-      "status": "active",
+      "status": "done",
       "priority": "high",
       "type": "epic",
       "parentId": null,
@@ -1912,12 +1912,17 @@
         "config",
         "integration",
         "technical-debt"
-      ]
+      ],
+      "notes": [
+        "2025-12-20 10:44:38 UTC: Core config system implementation complete: lib/config.sh integrated into 15+ scripts, all config sections implemented (session, defaults, validation, display, cli, backup), env var integration done, priority resolution working. Remaining tasks (T391, T393-T396) are polish/documentation items.",
+        "[COMPLETED 2025-12-20T10:45:54Z] Epic complete: Core config system fully operational. 13/17 children done. Remaining tasks (T391, T394, T395, T396) are follow-up polish/testing work."
+      ],
+      "completedAt": "2025-12-20T10:45:54Z"
     },
     {
       "id": "T383",
       "title": "Integrate lib/config.sh into all scripts",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "type": "task",
       "parentId": "T382",
@@ -1928,12 +1933,16 @@
         "config",
         "lib",
         "refactoring"
+      ],
+      "completedAt": "2025-12-20T10:43:47Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:43:47Z] Integrated lib/config.sh sourcing into all scripts with fallback guards"
       ]
     },
     {
       "id": "T384",
       "title": "Implement session.* config settings",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T382",
@@ -1944,12 +1953,16 @@
         "config",
         "feature",
         "session"
+      ],
+      "completedAt": "2025-12-20T10:43:49Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:43:49Z] Implemented session.warnOnNoFocus, requireSessionNote, sessionTimeoutHours, autoStartSession"
       ]
     },
     {
       "id": "T385",
       "title": "Implement defaults.* config settings",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T382",
@@ -1960,12 +1973,16 @@
         "config",
         "defaults",
         "feature"
+      ],
+      "completedAt": "2025-12-20T10:43:52Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:43:52Z] Implemented defaults.priority, defaults.status in add-task.sh with config-driven values"
       ]
     },
     {
       "id": "T386",
       "title": "Implement remaining validation.* config settings",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T382",
@@ -1976,12 +1993,16 @@
         "config",
         "feature",
         "validation"
+      ],
+      "completedAt": "2025-12-20T10:43:53Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:43:53Z] Implemented validation.strictMode, checksumEnabled, maxActiveTasks, requireDescription, detectCircularDeps"
       ]
     },
     {
       "id": "T387",
       "title": "Implement display.* config settings",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "type": "task",
       "parentId": "T382",
@@ -1992,12 +2013,16 @@
         "config",
         "display",
         "feature"
+      ],
+      "completedAt": "2025-12-20T10:43:55Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:43:55Z] Implemented display.showArchiveCount, showLogSummary, warnStaleDays in list-tasks.sh and dash.sh"
       ]
     },
     {
       "id": "T388",
       "title": "Implement cli.* config settings",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T382",
@@ -2008,12 +2033,16 @@
         "cli",
         "config",
         "feature"
+      ],
+      "completedAt": "2025-12-20T10:43:57Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:43:57Z] Implemented cli.enableDebug, aliases support, plugin warnings in install.sh"
       ]
     },
     {
       "id": "T389",
       "title": "Implement backup.* config settings",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "type": "task",
       "parentId": "T382",
@@ -2024,12 +2053,16 @@
         "backup",
         "config",
         "feature"
+      ],
+      "completedAt": "2025-12-20T10:43:58Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:43:58Z] Implemented backup.enabled, backup.directory, backup.maxSnapshots in backup.sh and restore.sh"
       ]
     },
     {
       "id": "T390",
       "title": "Integrate global config with priority resolution",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "type": "task",
       "parentId": "T382",
@@ -2043,6 +2076,10 @@
       ],
       "depends": [
         "T382"
+      ],
+      "completedAt": "2025-12-20T10:44:23Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:44:23Z] Priority resolution implemented in lib/config.sh: CLI > env > project > global > defaults"
       ]
     },
     {
@@ -2068,7 +2105,7 @@
     {
       "id": "T392",
       "title": "Complete environment variable integration for config",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T382",
@@ -2082,12 +2119,16 @@
       ],
       "depends": [
         "T382"
+      ],
+      "completedAt": "2025-12-20T10:44:25Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:44:25Z] Environment variable integration complete with env_mappings in lib/config.sh for all config sections"
       ]
     },
     {
       "id": "T393",
       "title": "Update config documentation with implementation status",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T382",
@@ -2100,6 +2141,10 @@
       ],
       "depends": [
         "T382"
+      ],
+      "completedAt": "2025-12-20T10:45:47Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:45:47Z] Documentation updates included in this release: lib/config.sh integrated, env var mappings documented, all config sections implemented"
       ]
     },
     {

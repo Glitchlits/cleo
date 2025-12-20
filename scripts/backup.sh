@@ -32,6 +32,12 @@ if [[ -f "$LIB_DIR/error-json.sh" ]]; then
   source "$LIB_DIR/error-json.sh"
 fi
 
+# Source config library for unified config access (v0.24.0)
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "$LIB_DIR/config.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -488,11 +494,48 @@ else
   FORMAT="${FORMAT:-text}"
 fi
 
+# Check if backups are enabled via config (v0.24.0+)
+# Skip this check for --list mode as listing should always work
+if [[ "$LIST_MODE" != true ]]; then
+  BACKUP_ENABLED="true"
+  if declare -f get_config_value >/dev/null 2>&1; then
+    BACKUP_ENABLED=$(get_config_value "backup.enabled" "true")
+  elif [[ -f "$CONFIG_FILE" ]]; then
+    BACKUP_ENABLED=$(jq -r '.backup.enabled // true' "$CONFIG_FILE" 2>/dev/null || echo "true")
+  fi
+
+  if [[ "$BACKUP_ENABLED" != "true" ]]; then
+    if [[ "$FORMAT" == "json" ]]; then
+      jq -n \
+        --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+        '{
+          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "_meta": {
+            "command": "backup",
+            "timestamp": $timestamp,
+            "format": "json"
+          },
+          "success": true,
+          "skipped": true,
+          "reason": "Backups disabled by config (backup.enabled=false)"
+        }'
+    else
+      log_info "Backups disabled by config (backup.enabled=false)"
+    fi
+    exit 0
+  fi
+fi
+
 check_deps
 
-# Set backup directory
+# Set backup directory from config or CLI override (v0.24.0+)
+# Priority: CLI --destination > config backup.directory > default
 if [[ -n "$DESTINATION" ]]; then
   BACKUP_DIR="$DESTINATION"
+elif declare -f get_config_value >/dev/null 2>&1; then
+  BACKUP_DIR=$(get_config_value "backup.directory" ".claude/backups")
+elif [[ -f "$CONFIG_FILE" ]]; then
+  BACKUP_DIR=$(jq -r '.backup.directory // ".claude/backups"' "$CONFIG_FILE" 2>/dev/null || echo ".claude/backups")
 fi
 
 # Handle --list mode
@@ -717,30 +760,36 @@ else
   fi
 fi
 
-# Clean old backups if configured
-if [[ -f "$CONFIG_FILE" ]]; then
-  MAX_BACKUPS=$(jq -r '.backups.maxBackups // 10' "$CONFIG_FILE" 2>/dev/null || echo 10)
+# Clean old backups if configured using config.sh library for priority resolution
+# Uses backup.maxSnapshots config setting (v0.24.0+)
+if declare -f get_config_value >/dev/null 2>&1; then
+  MAX_BACKUPS=$(get_config_value "backup.maxSnapshots" "10")
+elif [[ -f "$CONFIG_FILE" ]]; then
+  # Fallback to direct jq if config.sh not available
+  MAX_BACKUPS=$(jq -r '.backup.maxSnapshots // 10' "$CONFIG_FILE" 2>/dev/null || echo 10)
+else
+  MAX_BACKUPS=10
+fi
 
-  if [[ "$MAX_BACKUPS" -gt 0 ]]; then
-    log_debug "Checking backup retention (max: $MAX_BACKUPS)"
+if [[ "$MAX_BACKUPS" -gt 0 ]]; then
+  log_debug "Checking backup retention (max: $MAX_BACKUPS)"
 
-    # Count backups (both directories and tarballs)
-    BACKUP_COUNT=$(find "$BACKUP_DIR" -maxdepth 1 \( -type d -name "backup_*" -o -type f -name "backup_*.tar.gz" \) | wc -l)
+  # Count backups (both directories and tarballs)
+  BACKUP_COUNT=$(find "$BACKUP_DIR" -maxdepth 1 \( -type d -name "backup_*" -o -type f -name "backup_*.tar.gz" \) | wc -l)
 
-    if [[ $BACKUP_COUNT -gt $MAX_BACKUPS ]]; then
-      REMOVE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
-      log_info "Removing $REMOVE_COUNT old backup(s) (retention: $MAX_BACKUPS)"
+  if [[ $BACKUP_COUNT -gt $MAX_BACKUPS ]]; then
+    REMOVE_COUNT=$((BACKUP_COUNT - MAX_BACKUPS))
+    log_info "Removing $REMOVE_COUNT old backup(s) (retention: $MAX_BACKUPS)"
 
-      # Remove oldest backups
-      find "$BACKUP_DIR" -maxdepth 1 \( -type d -name "backup_*" -o -type f -name "backup_*.tar.gz" \) -printf '%T+ %p\n' | \
-        sort | \
-        head -n "$REMOVE_COUNT" | \
-        cut -d' ' -f2- | \
-        while read -r old_backup; do
-          rm -rf "$old_backup"
-          log_debug "Removed old backup: $(basename "$old_backup")"
-        done
-    fi
+    # Remove oldest backups
+    find "$BACKUP_DIR" -maxdepth 1 \( -type d -name "backup_*" -o -type f -name "backup_*.tar.gz" \) -printf '%T+ %p\n' | \
+      sort | \
+      head -n "$REMOVE_COUNT" | \
+      cut -d' ' -f2- | \
+      while read -r old_backup; do
+        rm -rf "$old_backup"
+        log_debug "Removed old backup: $(basename "$old_backup")"
+      done
   fi
 fi
 

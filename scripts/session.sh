@@ -42,6 +42,13 @@ elif [[ -f "$LIB_DIR/error-json.sh" ]]; then
   source "$LIB_DIR/error-json.sh"
 fi
 
+# Source config library for session settings
+if [[ -f "$CLAUDE_TODO_HOME/lib/config.sh" ]]; then
+  source "$CLAUDE_TODO_HOME/lib/config.sh"
+elif [[ -f "$LIB_DIR/config.sh" ]]; then
+  source "$LIB_DIR/config.sh"
+fi
+
 TODO_FILE="${TODO_FILE:-.claude/todo.json}"
 CONFIG_FILE="${CONFIG_FILE:-.claude/todo-config.json}"
 # Note: LOG_FILE is set by lib/logging.sh (readonly) - don't reassign here
@@ -114,6 +121,12 @@ Format Auto-Detection:
   - Interactive terminal (TTY): human-readable text format
   - Pipe/redirect/agent context: machine-readable JSON format
 
+Config Settings (in .claude/todo-config.json):
+  session.requireSessionNote   If true, require --note when ending session (default: false)
+  session.warnOnNoFocus        If true, warn when starting without focus (default: true)
+  session.sessionTimeoutHours  Warn if session exceeds this duration (default: 8)
+  session.autoStartSession     If true, auto-start session on first command (default: false)
+
 Examples:
   claude-todo session start                    # Start new session
   claude-todo session end --note "Completed auth implementation"
@@ -147,6 +160,58 @@ generate_session_id() {
   echo "session_${date_part}_${random_hex}"
 }
 
+# Auto-start session if configured and no active session exists
+# This function can be called from other scripts or the main wrapper
+# Returns: 0 if session started or already exists, 1 on error
+maybe_auto_start_session() {
+  local todo_file="${1:-$TODO_FILE}"
+
+  if [[ ! -f "$todo_file" ]]; then
+    return 1
+  fi
+
+  # Check if auto-start is enabled
+  local auto_start
+  auto_start=$(get_config_value "session.autoStartSession" "false")
+
+  if [[ "$auto_start" != "true" ]]; then
+    return 0  # Not configured, nothing to do
+  fi
+
+  # Check if session already active
+  local current_session
+  current_session=$(jq -r '._meta.activeSession // ""' "$todo_file")
+
+  if [[ -n "$current_session" ]]; then
+    return 0  # Session already active
+  fi
+
+  # Auto-start a new session
+  local session_id
+  session_id=$(generate_session_id)
+  local timestamp
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  # Update todo.json with new session
+  local updated_todo
+  updated_todo=$(jq --arg sid "$session_id" --arg ts "$timestamp" '
+    ._meta.activeSession = $sid |
+    ._meta.lastModified = $ts
+  ' "$todo_file")
+
+  if save_json "$todo_file" "$updated_todo" 2>/dev/null; then
+    if [[ "${QUIET:-false}" != "true" ]]; then
+      log_info "Session auto-started: $session_id"
+    fi
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Export for use by other scripts
+export -f maybe_auto_start_session 2>/dev/null || true
+
 # Get current session info
 get_current_session() {
   jq -r '._meta.activeSession // ""' "$TODO_FILE"
@@ -162,6 +227,18 @@ cmd_start() {
   if [[ -n "$current_session" ]]; then
     log_error "Session already active: $current_session" "E_SESSION_ACTIVE" 1 "Use 'claude-todo session end' first, or continue with current session"
     exit 1
+  fi
+
+  # Check session.warnOnNoFocus config setting
+  local warn_no_focus
+  warn_no_focus=$(get_config_value "session.warnOnNoFocus" "true")
+  if [[ "$warn_no_focus" == "true" ]]; then
+    local focus_task_check
+    focus_task_check=$(jq -r '.focus.currentTask // ""' "$TODO_FILE")
+    if [[ -z "$focus_task_check" ]]; then
+      log_warn "Starting session without a focused task"
+      log_warn "Consider setting focus: claude-todo focus set <task-id>"
+    fi
   fi
 
   local session_id
@@ -261,6 +338,53 @@ cmd_end() {
   if [[ -z "$current_session" ]]; then
     log_warn "No active session to end"
     exit 0
+  fi
+
+  # Check session.requireSessionNote config setting
+  local require_note
+  require_note=$(get_config_value "session.requireSessionNote" "false")
+  if [[ "$require_note" == "true" ]] && [[ -z "$note" ]]; then
+    log_error "Session note required by configuration" "E_SESSION_NOTE_REQUIRED" 1 "Use --note 'Your session summary' to end the session"
+    exit 1
+  fi
+
+  # Check session.sessionTimeoutHours for warning
+  local timeout_hours
+  timeout_hours=$(get_config_value "session.sessionTimeoutHours" "8")
+  if [[ "$timeout_hours" =~ ^[0-9]+$ ]] && [[ "$timeout_hours" -gt 0 ]]; then
+    # Extract session start time from session ID (format: session_YYYYMMDD_HHMMSS_hex)
+    local session_date_part
+    session_date_part=$(echo "$current_session" | sed -n 's/session_\([0-9]\{8\}\)_\([0-9]\{6\}\)_.*/\1\2/p')
+    if [[ -n "$session_date_part" ]]; then
+      # Parse session start time
+      local session_year="${session_date_part:0:4}"
+      local session_month="${session_date_part:4:2}"
+      local session_day="${session_date_part:6:2}"
+      local session_hour="${session_date_part:8:2}"
+      local session_min="${session_date_part:10:2}"
+      local session_sec="${session_date_part:12:2}"
+
+      # Calculate session start timestamp (platform-compatible)
+      local session_start_ts
+      if date --version >/dev/null 2>&1; then
+        # GNU date
+        session_start_ts=$(date -d "${session_year}-${session_month}-${session_day} ${session_hour}:${session_min}:${session_sec}" +%s 2>/dev/null || echo "0")
+      else
+        # BSD date (macOS)
+        session_start_ts=$(date -j -f "%Y%m%d%H%M%S" "$session_date_part" +%s 2>/dev/null || echo "0")
+      fi
+
+      if [[ "$session_start_ts" -gt 0 ]]; then
+        local current_ts
+        current_ts=$(date +%s)
+        local elapsed_hours=$(( (current_ts - session_start_ts) / 3600 ))
+
+        if [[ "$elapsed_hours" -ge "$timeout_hours" ]]; then
+          log_warn "Session exceeded timeout: ${elapsed_hours}h (limit: ${timeout_hours}h)"
+          log_warn "Consider taking breaks for sustained productivity"
+        fi
+      fi
+    fi
   fi
 
   local timestamp

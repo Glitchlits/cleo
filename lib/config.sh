@@ -13,6 +13,10 @@
 #   value=$(get_config_value "output.defaultFormat")
 #   set_config_value "output.defaultFormat" "json"
 
+# Include guard to prevent multiple sourcing
+[[ -n "${_CONFIG_SH_LOADED:-}" ]] && return 0
+_CONFIG_SH_LOADED=1
+
 set -euo pipefail
 
 # ============================================================================
@@ -35,17 +39,27 @@ fi
 # CONSTANTS
 # ============================================================================
 
-# Config file locations
-readonly GLOBAL_CONFIG_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
-readonly GLOBAL_CONFIG_FILE="${GLOBAL_CONFIG_DIR}/config.json"
-readonly PROJECT_CONFIG_FILE="${CLAUDE_TODO_DIR:-.claude}/todo-config.json"
+# Config file locations - use functions for dynamic path resolution
+# This allows scripts to change cwd and have paths resolve correctly
+GLOBAL_CONFIG_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
+GLOBAL_CONFIG_FILE="${GLOBAL_CONFIG_DIR}/config.json"
+
+# PROJECT_CONFIG_FILE can be set before sourcing, or defaults to .claude/todo-config.json
+# This supports test environments that set CONFIG_FILE before sourcing
+if [[ -z "${PROJECT_CONFIG_FILE:-}" ]]; then
+    if [[ -n "${CONFIG_FILE:-}" ]]; then
+        PROJECT_CONFIG_FILE="$CONFIG_FILE"
+    else
+        PROJECT_CONFIG_FILE="${CLAUDE_TODO_DIR:-.claude}/todo-config.json"
+    fi
+fi
 
 # Schema locations
-readonly GLOBAL_CONFIG_SCHEMA="${GLOBAL_CONFIG_DIR}/schemas/global-config.schema.json"
-readonly PROJECT_CONFIG_SCHEMA="${CLAUDE_TODO_DIR:-.claude}/../schemas/config.schema.json"
+GLOBAL_CONFIG_SCHEMA="${GLOBAL_CONFIG_DIR}/schemas/global-config.schema.json"
+PROJECT_CONFIG_SCHEMA="${CLAUDE_TODO_DIR:-.claude}/../schemas/config.schema.json"
 
 # Environment variable prefix
-readonly ENV_PREFIX="CLAUDE_TODO"
+ENV_PREFIX="CLAUDE_TODO"
 
 # ============================================================================
 # ENVIRONMENT VARIABLE MAPPING
@@ -86,6 +100,8 @@ declare -A ENV_TO_CONFIG=(
     ["CLAUDE_TODO_SESSION_TIMEOUT_HOURS"]="session.sessionTimeoutHours"
 
     # Display settings
+    ["CLAUDE_TODO_DISPLAY_SHOW_ARCHIVE_COUNT"]="display.showArchiveCount"
+    ["CLAUDE_TODO_DISPLAY_SHOW_LOG_SUMMARY"]="display.showLogSummary"
     ["CLAUDE_TODO_DISPLAY_WARN_STALE_DAYS"]="display.warnStaleDays"
 
     # Debug settings
@@ -178,6 +194,7 @@ config_file_exists() {
 # Read a value from a config file
 # Args: $1 = config file path, $2 = config path (e.g., "output.defaultFormat")
 # Returns: value or empty if not found
+# Note: Correctly handles boolean 'false' values (returns "false" not empty)
 read_config_file() {
     local config_file="$1"
     local config_path="$2"
@@ -189,7 +206,8 @@ read_config_file() {
     local jq_filter
     jq_filter=$(config_path_to_jq "$config_path")
 
-    jq -r "${jq_filter} // empty" "$config_file" 2>/dev/null
+    # Use 'if . != null' instead of '// empty' to preserve boolean false values
+    jq -r "${jq_filter} | if . != null then . else empty end" "$config_file" 2>/dev/null
 }
 
 # Write a value to a config file
@@ -247,6 +265,9 @@ get_config_value() {
     local default_value="${2:-}"
     local value=""
 
+    # Determine which config file to use (allows runtime override via CONFIG_FILE env var)
+    local project_config="${CONFIG_FILE:-$PROJECT_CONFIG_FILE}"
+
     # 1. Check environment variables (highest priority)
     for env_var in "${!ENV_TO_CONFIG[@]}"; do
         if [[ "${ENV_TO_CONFIG[$env_var]}" == "$config_path" ]]; then
@@ -266,9 +287,9 @@ get_config_value() {
         return 0
     fi
 
-    # 2. Check project config
-    if config_file_exists "$PROJECT_CONFIG_FILE"; then
-        value=$(read_config_file "$PROJECT_CONFIG_FILE" "$config_path")
+    # 2. Check project config (respects CONFIG_FILE override for tests)
+    if config_file_exists "$project_config"; then
+        value=$(read_config_file "$project_config" "$config_path")
         if [[ -n "$value" ]]; then
             echo "$value"
             return 0

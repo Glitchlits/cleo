@@ -56,6 +56,15 @@ else
     HIERARCHY_AVAILABLE=false
 fi
 
+# Source config library for validation config settings (optional)
+if [[ -f "$_LIB_DIR/config.sh" ]]; then
+    # shellcheck source=lib/config.sh
+    source "$_LIB_DIR/config.sh"
+    CONFIG_AVAILABLE=true
+else
+    CONFIG_AVAILABLE=false
+fi
+
 # ============================================================================
 # CONSTANTS
 # ============================================================================
@@ -69,6 +78,104 @@ readonly VAL_SUCCESS=0
 readonly VAL_SCHEMA_ERROR=1
 readonly VAL_SEMANTIC_ERROR=2
 readonly VAL_BOTH_ERRORS=3
+
+# ============================================================================
+# CONFIG-DRIVEN VALIDATION SETTINGS
+# ============================================================================
+
+# Get validation config setting with default fallback
+# Args: $1 = config key (e.g., "strictMode"), $2 = default value
+# Returns: config value or default
+get_validation_config() {
+    local key="$1"
+    local default="$2"
+
+    if [[ "$CONFIG_AVAILABLE" == "true" ]] && declare -f get_config_value >/dev/null 2>&1; then
+        get_config_value "validation.$key" "$default"
+    else
+        echo "$default"
+    fi
+}
+
+# Check if strict mode is enabled
+# Returns: "true" or "false"
+is_strict_mode() {
+    get_validation_config "strictMode" "false"
+}
+
+# Check if checksum validation is enabled
+# Returns: "true" or "false"
+is_checksum_enabled() {
+    get_validation_config "checksumEnabled" "true"
+}
+
+# Get max active tasks limit
+# Returns: number (default 3, 0 means unlimited)
+get_max_active_tasks() {
+    get_validation_config "maxActiveTasks" "3"
+}
+
+# Check if description is required for task creation
+# Returns: "true" or "false"
+is_description_required() {
+    get_validation_config "requireDescription" "true"
+}
+
+# Check if dependency validation is enabled
+# Returns: "true" or "false"
+is_dependency_validation_enabled() {
+    get_validation_config "validateDependencies" "true"
+}
+
+# Check if circular dependency detection is enabled
+# Returns: "true" or "false"
+is_circular_dep_detection_enabled() {
+    get_validation_config "detectCircularDeps" "true"
+}
+
+# Get phase validation config setting
+# Args: $1 = config key (e.g., "enabled"), $2 = default value
+# Returns: config value or default
+get_phase_validation_config() {
+    local key="$1"
+    local default="$2"
+
+    if [[ "$CONFIG_AVAILABLE" == "true" ]] && declare -f get_config_value >/dev/null 2>&1; then
+        get_config_value "validation.phaseValidation.$key" "$default"
+    else
+        echo "$default"
+    fi
+}
+
+# Check if phase validation is enabled
+# Returns: "true" or "false"
+is_phase_validation_enabled() {
+    get_phase_validation_config "enabled" "false"
+}
+
+# Check if blocking on critical tasks is enabled
+# Returns: "true" or "false"
+should_block_on_critical_tasks() {
+    get_phase_validation_config "blockOnCriticalTasks" "false"
+}
+
+# Check if warning on phase skip is enabled
+# Returns: "true" or "false"
+should_warn_on_phase_skip() {
+    get_phase_validation_config "warnOnPhaseSkip" "true"
+}
+
+export -f get_validation_config
+export -f is_strict_mode
+export -f is_checksum_enabled
+export -f get_max_active_tasks
+export -f is_description_required
+export -f is_dependency_validation_enabled
+export -f is_circular_dep_detection_enabled
+export -f get_phase_validation_config
+export -f is_phase_validation_enabled
+export -f should_block_on_critical_tasks
+export -f should_warn_on_phase_skip
 
 # ============================================================================
 # PATH SECURITY FUNCTIONS

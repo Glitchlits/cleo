@@ -50,6 +50,12 @@ if [[ -f "$LIB_DIR/hierarchy.sh" ]]; then
   source "$LIB_DIR/hierarchy.sh"
 fi
 
+# Source config library for defaults resolution (v0.24.0)
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "$LIB_DIR/config.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -60,9 +66,10 @@ else
   RED='' GREEN='' YELLOW='' NC=''
 fi
 
-# Defaults
-STATUS="pending"
-PRIORITY="medium"
+# Defaults - empty values will be resolved from config after argument parsing
+# This ensures CLI arguments override config defaults
+STATUS=""
+PRIORITY=""
 DESCRIPTION=""
 LABELS=""
 PHASE=""
@@ -606,7 +613,30 @@ if [[ -n "$LABELS" ]]; then
   LABELS=$(normalize_labels "$LABELS")
 fi
 
-# Phase inheritance: If no --phase specified, inherit from project.currentPhase
+# ============================================================================
+# RESOLVE DEFAULTS FROM CONFIG (v0.24.0)
+# Priority: CLI arguments > config defaults > hardcoded defaults
+# ============================================================================
+
+# Resolve priority default if not provided via CLI
+if [[ -z "$PRIORITY" ]]; then
+  if declare -f get_config_value >/dev/null 2>&1; then
+    PRIORITY=$(get_config_value "defaults.priority" "medium")
+  else
+    PRIORITY="medium"
+  fi
+fi
+
+# Resolve status default if not provided via CLI
+if [[ -z "$STATUS" ]]; then
+  if declare -f get_config_value >/dev/null 2>&1; then
+    STATUS=$(get_config_value "defaults.status" "pending")
+  else
+    STATUS="pending"
+  fi
+fi
+
+# Phase inheritance: If no --phase specified, inherit from project.currentPhase or config
 PHASE_SOURCE=""
 if [[ -z "$PHASE" ]]; then
   # Try project.currentPhase first (v2.2.0+ feature)
@@ -620,7 +650,11 @@ if [[ -z "$PHASE" ]]; then
 
   # Fallback to config default if project phase not set
   if [[ -z "$PHASE" || "$PHASE" == "null" ]]; then
-    PHASE=$(jq -r '.defaults.phase // empty' "$CONFIG_FILE" 2>/dev/null)
+    if declare -f get_config_value >/dev/null 2>&1; then
+      PHASE=$(get_config_value "defaults.phase" "")
+    else
+      PHASE=$(jq -r '.defaults.phase // empty' "$CONFIG_FILE" 2>/dev/null)
+    fi
     if [[ -n "$PHASE" && "$PHASE" != "null" ]]; then
       PHASE_SOURCE="config"
     else
@@ -643,6 +677,16 @@ if [[ -n "$DESCRIPTION" ]]; then
 fi
 if [[ -n "$NOTES" ]]; then
   validate_note "$NOTES" || exit "${EXIT_VALIDATION_ERROR:-6}"
+fi
+
+# Check if description is required (configurable via validation.requireDescription)
+REQUIRE_DESCRIPTION=true
+if declare -f is_description_required >/dev/null 2>&1; then
+  REQUIRE_DESCRIPTION=$(is_description_required)
+fi
+if [[ "$REQUIRE_DESCRIPTION" == "true" && -z "$DESCRIPTION" ]]; then
+  output_error "$E_INPUT_MISSING" "Description is required (config: validation.requireDescription=true)" "${EXIT_VALIDATION_ERROR:-6}" "false" "Use --description to add task description, or set validation.requireDescription=false in config"
+  exit "${EXIT_VALIDATION_ERROR:-6}"
 fi
 
 # Validate hierarchy fields (v0.17.0)
@@ -693,7 +737,6 @@ if [[ -n "$PARENT_ID" ]]; then
     fi
 
     if ! validate_max_siblings "$PARENT_ID" "$TODO_FILE"; then
-      local max_sibs
       max_sibs=$(get_max_siblings)
       output_error "$E_SIBLING_LIMIT" "Cannot add child to $PARENT_ID: max siblings ($max_sibs) exceeded" "${EXIT_SIBLING_LIMIT:-12}" "false" "Complete tasks, set hierarchy.maxSiblings=0 for unlimited, or group under new epic"
       exit "${EXIT_SIBLING_LIMIT:-12}"
@@ -726,13 +769,29 @@ if [[ "$ADD_PHASE" == "true" ]] && [[ -n "$PHASE" ]]; then
   add_new_phase "$PHASE"
 fi
 
-# Check for circular dependencies if dependencies are specified
+# Check for circular dependencies if dependencies are specified (configurable)
 if [[ -n "$DEPENDS" ]]; then
-  # Generate a temporary task ID for validation
-  TEMP_TASK_ID=$(generate_task_id)
-  if ! check_circular_dependencies "$TODO_FILE" "$TEMP_TASK_ID" "$DEPENDS"; then
-    log_error "Cannot add task: would create circular dependency"
-    exit "${EXIT_VALIDATION_ERROR:-6}"
+  # Check if dependency validation is enabled
+  VALIDATE_DEPS=true
+  if declare -f is_dependency_validation_enabled >/dev/null 2>&1; then
+    VALIDATE_DEPS=$(is_dependency_validation_enabled)
+  fi
+
+  if [[ "$VALIDATE_DEPS" == "true" ]]; then
+    # Check if circular dependency detection is enabled
+    DETECT_CIRCULAR=true
+    if declare -f is_circular_dep_detection_enabled >/dev/null 2>&1; then
+      DETECT_CIRCULAR=$(is_circular_dep_detection_enabled)
+    fi
+
+    if [[ "$DETECT_CIRCULAR" == "true" ]]; then
+      # Generate a temporary task ID for validation
+      TEMP_TASK_ID=$(generate_task_id)
+      if ! check_circular_dependencies "$TODO_FILE" "$TEMP_TASK_ID" "$DEPENDS"; then
+        log_error "Cannot add task: would create circular dependency"
+        exit "${EXIT_VALIDATION_ERROR:-6}"
+      fi
+    fi
   fi
 fi
 

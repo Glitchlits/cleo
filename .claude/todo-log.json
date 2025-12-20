@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 1175,
+    "totalEntries": 1230,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-20T07:09:58Z",
+    "lastEntry": "2025-12-20T10:45:54Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -29942,6 +29942,485 @@
           "T060",
           "T059"
         ]
+      }
+    },
+    {
+      "id": "log-1766215508-748aea",
+      "timestamp": "2025-12-20T07:25:08Z",
+      "action": "task_created",
+      "taskId": "T558",
+      "actor": "system",
+      "details": {
+        "title": "ENHANCE: Add 'empty: true' field to JSON output when matches=0",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "ENHANCE: Add 'empty: true' field to JSON output when matches=0",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log_f1fad848bdd4",
+      "timestamp": "2025-12-20T10:10:04Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T382"
+      },
+      "details": null
+    },
+    {
+      "id": "log_7000f1db06ee",
+      "timestamp": "2025-12-20T10:16:29Z",
+      "sessionId": "session_20251220_021629_cf6ee6",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_0bf61fe76e44",
+      "timestamp": "2025-12-20T10:16:46Z",
+      "sessionId": "session_20251220_021629_cf6ee6",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Testing session config implementation"
+      }
+    },
+    {
+      "id": "log_2c3d280c832a",
+      "timestamp": "2025-12-20T10:21:20Z",
+      "sessionId": "session_20251220_022120_2dca64",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_2214fe7bf534",
+      "timestamp": "2025-12-20T10:21:21Z",
+      "sessionId": "session_20251220_022120_2dca64",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Config integration test complete"
+      }
+    },
+    {
+      "id": "log_b0c6b4b4349b",
+      "timestamp": "2025-12-20T10:21:29Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T382"
+      },
+      "after": null,
+      "details": null
+    },
+    {
+      "id": "log_f5ae26969bfd",
+      "timestamp": "2025-12-20T10:21:29Z",
+      "sessionId": "session_20251220_022129_238d39",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_45e75e67aca9",
+      "timestamp": "2025-12-20T10:21:29Z",
+      "sessionId": "session_20251220_022129_238d39",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Testing warnOnNoFocus"
+      }
+    },
+    {
+      "id": "log_4c16061282cb",
+      "timestamp": "2025-12-20T10:21:29Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T382"
+      },
+      "details": null
+    },
+    {
+      "id": "log_a8e4c825f837",
+      "timestamp": "2025-12-20T10:25:31Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T382"
+      },
+      "after": null,
+      "details": null
+    },
+    {
+      "id": "log_888d9205c82b",
+      "timestamp": "2025-12-20T10:25:31Z",
+      "sessionId": "session_20251220_022531_bf228b",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_7168802aeadf",
+      "timestamp": "2025-12-20T10:25:37Z",
+      "sessionId": "session_20251220_022531_bf228b",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "test"
+      }
+    },
+    {
+      "id": "log_c78ef15009c9",
+      "timestamp": "2025-12-20T10:25:39Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T382"
+      },
+      "details": null
+    },
+    {
+      "id": "log_e5bfbb54c356",
+      "timestamp": "2025-12-20T10:31:45Z",
+      "sessionId": "session_20251220_023145_fba211",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_924c6c3182da",
+      "timestamp": "2025-12-20T10:31:47Z",
+      "sessionId": "session_20251220_023145_fba211",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "test cleanup"
+      }
+    },
+    {
+      "id": "log_1699b1e04207",
+      "timestamp": "2025-12-20T10:43:48Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T383",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:43:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_e31325fbe774",
+      "timestamp": "2025-12-20T10:43:50Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T384",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:43:49Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_9dffce08e7ca",
+      "timestamp": "2025-12-20T10:43:52Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T385",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:43:52Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ff5865e0e53c",
+      "timestamp": "2025-12-20T10:43:54Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T386",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:43:53Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_8d498d1a24cd",
+      "timestamp": "2025-12-20T10:43:55Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T387",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:43:55Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_66b981e77bfb",
+      "timestamp": "2025-12-20T10:43:57Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T388",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:43:57Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_6b0e7a3672b4",
+      "timestamp": "2025-12-20T10:43:58Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T389",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:43:58Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_285efaa7a924",
+      "timestamp": "2025-12-20T10:44:23Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T390",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:44:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_4bd909bd43cc",
+      "timestamp": "2025-12-20T10:44:25Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T392",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:44:25Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_3ddc84e9af5f",
+      "timestamp": "2025-12-20T10:44:38Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T382",
+      "before": {
+        "title": "Config System Integration & Completion",
+        "status": "active",
+        "priority": "high",
+        "description": "Comprehensive integration of the config system. Currently ~40% of config settings are implemented. lib/config.sh exists but is only used by scripts/config.sh - not integrated into other scripts. Global config (~/.claude-todo/config.json) created but not used. Multiple config sections defined in schema but not implemented in code.",
+        "phase": "core",
+        "labels": [
+          "config",
+          "integration",
+          "technical-debt"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Config System Integration & Completion",
+        "status": "active",
+        "priority": "high",
+        "description": "Comprehensive integration of the config system. Currently ~40% of config settings are implemented. lib/config.sh exists but is only used by scripts/config.sh - not integrated into other scripts. Global config (~/.claude-todo/config.json) created but not used. Multiple config sections defined in schema but not implemented in code.",
+        "phase": "core",
+        "labels": [
+          "config",
+          "integration",
+          "technical-debt"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_9ec343a0d758",
+      "timestamp": "2025-12-20T10:44:49Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T382"
+      },
+      "after": null,
+      "details": null
+    },
+    {
+      "id": "log_273b29dd8aec",
+      "timestamp": "2025-12-20T10:45:47Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T393",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:45:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_60f2cb472195",
+      "timestamp": "2025-12-20T10:45:54Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T382",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:45:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
       }
     }
   ]

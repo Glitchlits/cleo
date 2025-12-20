@@ -56,6 +56,12 @@ elif [[ -f "$LIB_DIR/exit-codes.sh" ]]; then
   source "$LIB_DIR/exit-codes.sh"
 fi
 
+# Source config library for unified config access (v0.24.0)
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "$LIB_DIR/config.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -200,10 +206,17 @@ EOF
   [[ "$QUIET" != true && "$FORMAT" != "json" ]] && log_info "Created $ARCHIVE_FILE"
 fi
 
-# Read config
-DAYS_UNTIL_ARCHIVE=$(jq -r '.archive.daysUntilArchive // 7' "$CONFIG_FILE")
-MAX_COMPLETED=$(jq -r '.archive.maxCompletedTasks // 15' "$CONFIG_FILE")
-PRESERVE_COUNT=$(jq -r '.archive.preserveRecentCount // 3' "$CONFIG_FILE")
+# Read config using config.sh library for priority resolution (env > project > global > default)
+if declare -f get_config_value >/dev/null 2>&1; then
+  DAYS_UNTIL_ARCHIVE=$(get_config_value "archive.daysUntilArchive" "7")
+  MAX_COMPLETED=$(get_config_value "archive.maxCompletedTasks" "15")
+  PRESERVE_COUNT=$(get_config_value "archive.preserveRecentCount" "3")
+else
+  # Fallback to direct jq if config.sh not available
+  DAYS_UNTIL_ARCHIVE=$(jq -r '.archive.daysUntilArchive // 7' "$CONFIG_FILE")
+  MAX_COMPLETED=$(jq -r '.archive.maxCompletedTasks // 15' "$CONFIG_FILE")
+  PRESERVE_COUNT=$(jq -r '.archive.preserveRecentCount // 3' "$CONFIG_FILE")
+fi
 
 [[ -n "$MAX_OVERRIDE" ]] && MAX_COMPLETED="$MAX_OVERRIDE"
 

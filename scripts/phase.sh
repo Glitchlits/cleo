@@ -25,6 +25,12 @@ if [[ -f "$LIB_DIR/error-json.sh" ]]; then
     source "$LIB_DIR/error-json.sh"
 fi
 
+# Source config library for unified config access (v0.24.0)
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+    # shellcheck source=../lib/config.sh
+    source "$LIB_DIR/config.sh"
+fi
+
 # Globals
 TODO_FILE="${CLAUDE_TODO_DIR:-.claude}/todo.json"
 FORMAT=""
@@ -246,28 +252,60 @@ cmd_set() {
                 fi
             fi
         fi
+
+        # Check for phase skipping (warnOnPhaseSkip config)
+        local warn_on_skip=true
+        if declare -f should_warn_on_phase_skip >/dev/null 2>&1; then
+            warn_on_skip=$(should_warn_on_phase_skip)
+        elif declare -f get_config_value >/dev/null 2>&1; then
+            warn_on_skip=$(get_config_value "validation.phaseValidation.warnOnPhaseSkip" "true")
+        fi
+
+        if [[ "$warn_on_skip" == "true" && "$new_order" -gt "$((old_order + 1))" ]]; then
+            # Skipping phases forward
+            local skipped_count=$((new_order - old_order - 1))
+            if [[ "$FORMAT" == "json" ]]; then
+                # Just include warning in success response later
+                :
+            else
+                echo "WARNING: Skipping $skipped_count intermediate phase(s) from '$old_phase' (order $old_order) to '$slug' (order $new_order)." >&2
+            fi
+        fi
     fi
 
     if set_current_phase "$slug" "$TODO_FILE" 2>/dev/null; then
         # Determine if this was a rollback (comparing orders)
         local is_rollback=false
+        local is_skip=false
+        local skipped_phases=0
         if [[ -n "$old_phase" && "$old_phase" != "null" && "$old_phase" != "none" ]]; then
             local check_old_order check_new_order
             check_old_order=$(jq -r --arg slug "$old_phase" '.project.phases[$slug].order // 0' "$TODO_FILE")
             check_new_order=$(jq -r --arg slug "$slug" '.project.phases[$slug].order // 0' "$TODO_FILE")
             if [[ "$check_new_order" -lt "$check_old_order" ]]; then
                 is_rollback=true
+            elif [[ "$check_new_order" -gt "$((check_old_order + 1))" ]]; then
+                is_skip=true
+                skipped_phases=$((check_new_order - check_old_order - 1))
             fi
         fi
 
         if [[ "$FORMAT" == "json" ]]; then
             local timestamp
             timestamp=$(get_iso_timestamp)
+            # Build warning message if skipping phases
+            local skip_warning=""
+            if [[ "$is_skip" == "true" ]]; then
+                skip_warning="Skipped $skipped_phases intermediate phase(s)"
+            fi
             jq -n \
                 --arg ts "$timestamp" \
                 --arg prev "${old_phase:-null}" \
                 --arg curr "$slug" \
                 --argjson rollback "$is_rollback" \
+                --argjson skip "$is_skip" \
+                --argjson skippedCount "$skipped_phases" \
+                --arg skipWarning "$skip_warning" \
                 '{
                     "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
                     "_meta": {
@@ -277,11 +315,17 @@ cmd_set() {
                     "success": true,
                     "previousPhase": (if $prev == "null" or $prev == "" then null else $prev end),
                     "currentPhase": $curr,
-                    "isRollback": $rollback
-                }'
+                    "isRollback": $rollback,
+                    "isSkip": $skip
+                } + (if $skip then {
+                    "skippedPhases": $skippedCount,
+                    "warning": $skipWarning
+                } else {} end)'
         else
             if [[ "$is_rollback" == "true" ]]; then
                 echo "Phase rolled back to: $slug (from ${old_phase})"
+            elif [[ "$is_skip" == "true" ]]; then
+                echo "Phase set to: $slug (skipped $skipped_phases intermediate phase(s))"
             else
                 echo "Phase set to: $slug"
             fi
@@ -681,14 +725,20 @@ cmd_advance() {
     ' "$TODO_FILE")
 
     if [[ "$incomplete_count" -gt 0 ]]; then
-        # Read config for validation rules
-        local config_file="$TODO_FILE"
+        # Read config for validation rules using config.sh library for priority resolution
         local block_on_critical=true
         local phase_threshold=90
 
-        if [[ -f "$config_file" ]]; then
-            block_on_critical=$(jq -r '.validation.phaseValidation.blockOnCriticalTasks // true' "$config_file")
-            phase_threshold=$(jq -r '.validation.phaseValidation.phaseAdvanceThreshold // 90' "$config_file")
+        if declare -f get_config_value >/dev/null 2>&1; then
+            block_on_critical=$(get_config_value "validation.phaseValidation.blockOnCriticalTasks" "true")
+            phase_threshold=$(get_config_value "validation.phaseValidation.phaseAdvanceThreshold" "90")
+        else
+            # Fallback to direct jq if config.sh not available
+            local config_file="${CLAUDE_TODO_DIR:-.claude}/todo-config.json"
+            if [[ -f "$config_file" ]]; then
+                block_on_critical=$(jq -r '.validation.phaseValidation.blockOnCriticalTasks // true' "$config_file")
+                phase_threshold=$(jq -r '.validation.phaseValidation.phaseAdvanceThreshold // 90' "$config_file")
+            fi
         fi
 
         # Check for critical tasks

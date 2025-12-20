@@ -58,6 +58,12 @@ elif [[ -f "$LIB_DIR/exit-codes.sh" ]]; then
   source "$LIB_DIR/exit-codes.sh"
 fi
 
+# Source config library for unified config access (v0.24.0)
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "$LIB_DIR/config.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -539,10 +545,15 @@ if [[ "$CURRENT_FOCUS" == "$TASK_ID" ]]; then
   [[ "$FORMAT" != "json" ]] && log_info "Clearing focus from completed task"
 fi
 
-# Check auto-archive configuration
+# Check auto-archive configuration using config.sh library for priority resolution
 ARCHIVED=false
 if [[ "$SKIP_ARCHIVE" == false ]]; then
-  AUTO_ARCHIVE=$(jq -r '.archive.autoArchiveOnComplete // false' "$CONFIG_FILE")
+  if declare -f get_config_value >/dev/null 2>&1; then
+    AUTO_ARCHIVE=$(get_config_value "archive.autoArchiveOnComplete" "false")
+  else
+    # Fallback to direct jq if config.sh not available
+    AUTO_ARCHIVE=$(jq -r '.archive.autoArchiveOnComplete // false' "$CONFIG_FILE")
+  fi
 
   if [[ "$AUTO_ARCHIVE" == "true" ]]; then
     if [[ "$FORMAT" != "json" ]]; then

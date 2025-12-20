@@ -52,6 +52,12 @@ elif [[ -f "$LIB_DIR/exit-codes.sh" ]]; then
   source "$LIB_DIR/exit-codes.sh"
 fi
 
+# Source config library for validation settings
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "$LIB_DIR/config.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -69,7 +75,7 @@ if [[ -f "$LIB_DIR/version.sh" ]]; then
 fi
 
 # Defaults
-STRICT=false
+STRICT=""  # Empty means use config, explicit true/false overrides
 FIX=false
 JSON_OUTPUT=false
 QUIET=false
@@ -234,7 +240,8 @@ check_deps() {
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --strict) STRICT=true; shift ;;
+    --strict) STRICT="true"; shift ;;
+    --no-strict) STRICT="false"; shift ;;
     --fix) FIX=true; shift ;;
     --non-interactive) NON_INTERACTIVE=true; shift ;;
     --json) JSON_OUTPUT=true; FORMAT="json"; shift ;;
@@ -257,6 +264,16 @@ done
 FORMAT=$(resolve_format "${FORMAT:-}")
 if [[ "$FORMAT" == "json" ]]; then
   JSON_OUTPUT=true
+fi
+
+# Resolve strict mode (CLI > config > default)
+if [[ -z "$STRICT" ]]; then
+  # No CLI flag provided, check config
+  if declare -f is_strict_mode >/dev/null 2>&1; then
+    STRICT=$(is_strict_mode)
+  else
+    STRICT="false"
+  fi
 fi
 
 check_deps
@@ -329,7 +346,7 @@ if [[ -f "$ARCHIVE_FILE" ]]; then
       log_error "IDs exist in both todo.json and archive: $(echo "$CROSS_DUPLICATES" | tr '\n' ', ' | sed 's/,$//')"
       if [[ "$FIX" == true ]]; then
         # Remove from archive (keep in active todo.json) - atomic write with locking
-        local cross_fix_failed=false
+        cross_fix_failed=false
         for cross_id in $CROSS_DUPLICATES; do
           if ! safe_json_write "$ARCHIVE_FILE" '.archivedTasks |= map(select(.id != $id))' --arg id "$cross_id"; then
             cross_fix_failed=true
@@ -348,12 +365,21 @@ if [[ -f "$ARCHIVE_FILE" ]]; then
   fi
 fi
 
-# 3. Check only ONE active task
+# 3. Check active task limit (configurable via validation.maxActiveTasks)
 ACTIVE_COUNT=$(jq '[.tasks[] | select(.status == "active")] | length' "$TODO_FILE")
-if [[ "$ACTIVE_COUNT" -gt 1 ]]; then
-  log_error "Multiple active tasks found ($ACTIVE_COUNT). Only ONE allowed."
+MAX_ACTIVE_TASKS=1
+if declare -f get_max_active_tasks >/dev/null 2>&1; then
+  MAX_ACTIVE_TASKS=$(get_max_active_tasks)
+  # 0 means unlimited
+  if [[ "$MAX_ACTIVE_TASKS" -eq 0 ]]; then
+    MAX_ACTIVE_TASKS=999999
+  fi
+fi
+
+if [[ "$ACTIVE_COUNT" -gt "$MAX_ACTIVE_TASKS" ]]; then
+  log_error "Too many active tasks found ($ACTIVE_COUNT). Maximum allowed: $MAX_ACTIVE_TASKS"
   if [[ "$FIX" == true ]]; then
-    # Keep only the first active task (atomic write with locking)
+    # Keep only the first N active tasks (atomic write with locking)
     FIRST_ACTIVE=$(jq -r '[.tasks[] | select(.status == "active")][0].id' "$TODO_FILE")
     if safe_json_write "$TODO_FILE" \
       '.tasks |= map(if .status == "active" and .id != $keep then .status = "pending" else . end)' \
@@ -363,8 +389,12 @@ if [[ "$ACTIVE_COUNT" -gt 1 ]]; then
       log_error "Failed to fix multiple active tasks (could not acquire lock or write failed)"
     fi
   fi
-elif [[ "$ACTIVE_COUNT" -eq 1 ]]; then
-  log_info "Single active task" "active_task"
+elif [[ "$ACTIVE_COUNT" -ge 1 ]]; then
+  if [[ "$MAX_ACTIVE_TASKS" -eq 1 ]]; then
+    log_info "Single active task" "active_task"
+  else
+    log_info "$ACTIVE_COUNT active task(s) (max: $MAX_ACTIVE_TASKS)" "active_task"
+  fi
 else
   log_info "No active tasks" "active_task"
 fi
@@ -382,27 +412,36 @@ else
   log_info "All dependencies exist" "dependencies"
 fi
 
-# 5. Check for circular dependencies (full DFS)
-CIRCULAR_DETECTED=false
-while IFS=':' read -r task_id deps; do
-  if [[ -n "$task_id" && -n "$deps" ]]; then
-    if ! validate_no_circular_deps "$TODO_FILE" "$task_id" "$deps" 2>/dev/null; then
-      # Capture error message for display (disable pipefail to avoid grep exit code issues)
-      set +o pipefail
-      ERROR_MSG=$(validate_no_circular_deps "$TODO_FILE" "$task_id" "$deps" 2>&1 | grep "ERROR:" | sed 's/ERROR: //')
-      set -o pipefail
-      log_error "$ERROR_MSG"
-      CIRCULAR_DETECTED=true
-    fi
-  fi
-done < <(jq -r '
-  .tasks[] |
-  select(has("depends") and (.depends | length > 0)) |
-  "\(.id):\(.depends | join(","))"
-' "$TODO_FILE")
+# 5. Check for circular dependencies (full DFS) - configurable via validation.detectCircularDeps
+CIRCULAR_DEPS_ENABLED=true
+if declare -f is_circular_dep_detection_enabled >/dev/null 2>&1; then
+  CIRCULAR_DEPS_ENABLED=$(is_circular_dep_detection_enabled)
+fi
 
-if [[ "$CIRCULAR_DETECTED" != "true" ]]; then
-  log_info "No circular dependencies" "circular_deps"
+if [[ "$CIRCULAR_DEPS_ENABLED" == "true" ]]; then
+  CIRCULAR_DETECTED=false
+  while IFS=':' read -r task_id deps; do
+    if [[ -n "$task_id" && -n "$deps" ]]; then
+      if ! validate_no_circular_deps "$TODO_FILE" "$task_id" "$deps" 2>/dev/null; then
+        # Capture error message for display (disable pipefail to avoid grep exit code issues)
+        set +o pipefail
+        ERROR_MSG=$(validate_no_circular_deps "$TODO_FILE" "$task_id" "$deps" 2>&1 | grep "ERROR:" | sed 's/ERROR: //')
+        set -o pipefail
+        log_error "$ERROR_MSG"
+        CIRCULAR_DETECTED=true
+      fi
+    fi
+  done < <(jq -r '
+    .tasks[] |
+    select(has("depends") and (.depends | length > 0)) |
+    "\(.id):\(.depends | join(","))"
+  ' "$TODO_FILE")
+
+  if [[ "$CIRCULAR_DETECTED" != "true" ]]; then
+    log_info "No circular dependencies" "circular_deps"
+  fi
+else
+  log_info "Circular dependency check disabled (config: validation.detectCircularDeps=false)" "circular_deps"
 fi
 
 # 6. Check blocked tasks have blockedBy
@@ -718,27 +757,36 @@ if jq -e '.project.phases' "$TODO_FILE" >/dev/null 2>&1; then
   fi
 fi
 
-# 10. Verify checksum
-STORED_CHECKSUM=$(jq -r '._meta.checksum // ""' "$TODO_FILE")
-if [[ -n "$STORED_CHECKSUM" ]]; then
-  COMPUTED_CHECKSUM=$(jq -c '.tasks' "$TODO_FILE" | sha256sum | cut -c1-16)
-  if [[ "$STORED_CHECKSUM" != "$COMPUTED_CHECKSUM" ]]; then
-    if [[ "$FIX" == true ]]; then
-      # Don't log error yet - try to fix first (atomic write with locking)
-      if safe_json_write "$TODO_FILE" '._meta.checksum = $cs' --arg cs "$COMPUTED_CHECKSUM"; then
-        echo "  Fixed: Updated checksum (was: $STORED_CHECKSUM, now: $COMPUTED_CHECKSUM)"
-        log_info "Checksum valid (after fix)"
+# 10. Verify checksum (configurable via validation.checksumEnabled)
+CHECKSUM_ENABLED=true
+if declare -f is_checksum_enabled >/dev/null 2>&1; then
+  CHECKSUM_ENABLED=$(is_checksum_enabled)
+fi
+
+if [[ "$CHECKSUM_ENABLED" == "true" ]]; then
+  STORED_CHECKSUM=$(jq -r '._meta.checksum // ""' "$TODO_FILE")
+  if [[ -n "$STORED_CHECKSUM" ]]; then
+    COMPUTED_CHECKSUM=$(jq -c '.tasks' "$TODO_FILE" | sha256sum | cut -c1-16)
+    if [[ "$STORED_CHECKSUM" != "$COMPUTED_CHECKSUM" ]]; then
+      if [[ "$FIX" == true ]]; then
+        # Don't log error yet - try to fix first (atomic write with locking)
+        if safe_json_write "$TODO_FILE" '._meta.checksum = $cs' --arg cs "$COMPUTED_CHECKSUM"; then
+          echo "  Fixed: Updated checksum (was: $STORED_CHECKSUM, now: $COMPUTED_CHECKSUM)"
+          log_info "Checksum valid (after fix)"
+        else
+          log_error "Checksum mismatch: stored=$STORED_CHECKSUM, computed=$COMPUTED_CHECKSUM (fix failed)"
+        fi
       else
-        log_error "Checksum mismatch: stored=$STORED_CHECKSUM, computed=$COMPUTED_CHECKSUM (fix failed)"
+        log_error "Checksum mismatch: stored=$STORED_CHECKSUM, computed=$COMPUTED_CHECKSUM"
       fi
     else
-      log_error "Checksum mismatch: stored=$STORED_CHECKSUM, computed=$COMPUTED_CHECKSUM"
+      log_info "Checksum valid" "checksum"
     fi
   else
-    log_info "Checksum valid" "checksum"
+    log_warn "No checksum found"
   fi
 else
-  log_warn "No checksum found"
+  log_info "Checksum validation disabled (config: validation.checksumEnabled=false)" "checksum"
 fi
 
 # 10. WARNINGS: Stale tasks

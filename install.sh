@@ -370,16 +370,46 @@ log_step "Installing scripts..."
 # Create wrapper script for PATH
 cat > "$INSTALL_DIR/scripts/claude-todo" << 'WRAPPER_EOF'
 #!/usr/bin/env bash
-# CLAUDE-TODO CLI Wrapper v2 - Enhanced with aliases, plugins, and debug support
+# CLAUDE-TODO CLI Wrapper v3 - Enhanced with config-driven aliases, plugins, and debug support
 set -uo pipefail
 
 CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
 SCRIPT_DIR="$CLAUDE_TODO_HOME/scripts"
+LIB_DIR="$CLAUDE_TODO_HOME/lib"
 PLUGIN_DIR="$CLAUDE_TODO_HOME/plugins"
 GLOBAL_CONFIG="$CLAUDE_TODO_HOME/config.json"
 
-# Debug mode (set CLAUDE_TODO_DEBUG=1 to enable)
-DEBUG="${CLAUDE_TODO_DEBUG:-0}"
+# ============================================
+# CONFIG-DRIVEN DEBUG MODE
+# Priority: CLAUDE_TODO_DEBUG env var > cli.debug.enabled config > default (0)
+# ============================================
+load_debug_mode() {
+  # If env var is explicitly set, use it (highest priority)
+  if [[ -n "${CLAUDE_TODO_DEBUG:-}" ]]; then
+    DEBUG="$CLAUDE_TODO_DEBUG"
+    return
+  fi
+
+  # Try to read from config
+  if [[ -f "$GLOBAL_CONFIG" ]] && command -v jq &>/dev/null; then
+    local config_debug
+    config_debug=$(jq -r '.cli.debug.enabled // false' "$GLOBAL_CONFIG" 2>/dev/null)
+    if [[ "$config_debug" == "true" ]]; then
+      DEBUG=1
+    else
+      DEBUG=0
+    fi
+  else
+    DEBUG=0
+  fi
+
+  # Export for child scripts
+  export CLAUDE_TODO_DEBUG="$DEBUG"
+}
+
+# Initialize debug mode early
+DEBUG=0
+load_debug_mode
 
 # ============================================
 # COMMAND TO SCRIPT MAPPING (Core Commands)
@@ -477,12 +507,53 @@ declare -A CMD_ALIASES=(
 # ============================================
 load_config_aliases() {
   if [[ -f "$GLOBAL_CONFIG" ]] && command -v jq &>/dev/null; then
-    # Load custom aliases from config
+    # Load custom aliases from config (merge with defaults)
     local config_aliases
     config_aliases=$(jq -r '.cli.aliases // {} | to_entries[] | "\(.key)=\(.value)"' "$GLOBAL_CONFIG" 2>/dev/null)
     while IFS='=' read -r alias target; do
-      [[ -n "$alias" && -n "$target" ]] && CMD_ALIASES["$alias"]="$target"
+      if [[ -n "$alias" && -n "$target" ]]; then
+        CMD_ALIASES["$alias"]="$target"
+        [[ "$DEBUG" == "1" ]] && echo "[DEBUG] Config alias: $alias -> $target" >&2
+      fi
     done <<< "$config_aliases"
+  fi
+}
+
+# ============================================
+# CHECK CLI.PLUGINS CONFIG AND WARN IF ADVANCED FEATURES USED
+# ============================================
+check_plugin_config() {
+  if [[ ! -f "$GLOBAL_CONFIG" ]] || ! command -v jq &>/dev/null; then
+    return
+  fi
+
+  # Check if user has custom plugin directories configured
+  local custom_dirs
+  custom_dirs=$(jq -r '.cli.plugins.directories // [] | length' "$GLOBAL_CONFIG" 2>/dev/null)
+
+  # Check if plugin config differs from defaults
+  # Note: Use 'if .x == false then "false" else "true" end' because jq's // treats false as falsy
+  local plugins_enabled
+  plugins_enabled=$(jq -r 'if .cli.plugins.enabled == false then "false" else "true" end' "$GLOBAL_CONFIG" 2>/dev/null)
+
+  local auto_discover
+  auto_discover=$(jq -r 'if .cli.plugins.autoDiscover == false then "false" else "true" end' "$GLOBAL_CONFIG" 2>/dev/null)
+
+  # Warn if plugins are disabled (non-default) - user expectation mismatch
+  if [[ "$plugins_enabled" == "false" ]]; then
+    echo "[WARN] cli.plugins.enabled=false in config, but plugin system is always active." >&2
+    echo "       To disable plugins, remove them from plugin directories." >&2
+  fi
+
+  # Warn if autoDiscover is false (non-default)
+  if [[ "$auto_discover" == "false" ]]; then
+    echo "[WARN] cli.plugins.autoDiscover=false is not yet implemented." >&2
+    echo "       All plugins in plugin directories are auto-discovered." >&2
+  fi
+
+  # Debug: show plugin config
+  if [[ "$DEBUG" == "1" ]]; then
+    echo "[DEBUG] Plugin config: enabled=$plugins_enabled autoDiscover=$auto_discover dirs=$custom_dirs" >&2
   fi
 }
 
@@ -528,7 +599,28 @@ debug_validate() {
   echo "[DEBUG] Validating CLI configuration..."
   local errors=0
 
+  # Show debug mode source
+  echo "[DEBUG] Debug mode source:"
+  if [[ -n "${CLAUDE_TODO_DEBUG:-}" ]]; then
+    echo "  Source: CLAUDE_TODO_DEBUG environment variable"
+  elif [[ -f "$GLOBAL_CONFIG" ]] && command -v jq &>/dev/null; then
+    local config_debug
+    config_debug=$(jq -r '.cli.debug.enabled // false' "$GLOBAL_CONFIG" 2>/dev/null)
+    echo "  Source: config.json (cli.debug.enabled=$config_debug)"
+  else
+    echo "  Source: default (disabled)"
+  fi
+
+  # Show config file status
+  echo "[DEBUG] Config files:"
+  if [[ -f "$GLOBAL_CONFIG" ]]; then
+    echo "  Global: $GLOBAL_CONFIG (exists)"
+  else
+    echo "  Global: $GLOBAL_CONFIG (not found)"
+  fi
+
   # Check all mapped scripts exist
+  echo "[DEBUG] Checking command scripts..."
   for cmd in "${!CMD_MAP[@]}"; do
     local script="$SCRIPT_DIR/${CMD_MAP[$cmd]}"
     if [[ ! -f "$script" ]]; then
@@ -547,7 +639,7 @@ debug_validate() {
     echo "[DEBUG] Plugin directory not found: $PLUGIN_DIR"
   fi
 
-  # Show loaded aliases
+  # Show loaded aliases (distinguish built-in vs config)
   echo "[DEBUG] Loaded aliases:"
   for alias in "${!CMD_ALIASES[@]}"; do
     echo "  $alias -> ${CMD_ALIASES[$alias]}"
@@ -643,15 +735,23 @@ show_main_help() {
   echo "  claude-todo done T001                 # alias for complete"
   echo "  claude-todo focus set T001"
   echo ""
-  echo "Debug: CLAUDE_TODO_DEBUG=1 claude-todo --validate"
+  echo "Debug:"
+  echo "  CLAUDE_TODO_DEBUG=1 claude-todo <cmd>  # Enable debug via env var"
+  echo "  Set cli.debug.enabled=true in config   # Enable debug via config"
+  echo "  claude-todo --validate                 # Validate CLI configuration"
+  echo ""
+  echo "Custom Aliases:"
+  echo "  Add custom aliases in ~/.claude-todo/config.json under cli.aliases"
+  echo "  Example: {\"cli\": {\"aliases\": {\"t\": \"list\", \"a\": \"add\"}}}"
 }
 
 # ============================================
 # MAIN EXECUTION
 # ============================================
 
-# Load config and discover plugins
+# Load config, check plugin settings, and discover plugins
 load_config_aliases
+check_plugin_config
 discover_plugins
 
 # Handle special debug commands

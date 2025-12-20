@@ -32,6 +32,12 @@ if [[ -f "$LIB_DIR/error-json.sh" ]]; then
   source "$LIB_DIR/error-json.sh"
 fi
 
+# Source config library for unified config access (v0.24.0)
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "$LIB_DIR/config.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -442,6 +448,14 @@ if declare -f resolve_format &>/dev/null; then
   FORMAT=$(resolve_format "$FORMAT")
 else
   FORMAT="${FORMAT:-text}"
+fi
+
+# Set backup directory from config (v0.24.0+)
+# Used for safety backup location during restore
+if declare -f get_config_value >/dev/null 2>&1; then
+  BACKUP_DIR=$(get_config_value "backup.directory" ".claude/backups")
+elif [[ -f "$CONFIG_FILE" ]]; then
+  BACKUP_DIR=$(jq -r '.backup.directory // ".claude/backups"' "$CONFIG_FILE" 2>/dev/null || echo ".claude/backups")
 fi
 
 check_deps

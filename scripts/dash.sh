@@ -95,6 +95,14 @@ if [[ -f "$LIB_DIR/error-json.sh" ]]; then
   source "$LIB_DIR/error-json.sh"
 fi
 
+# Source config library for display settings
+if [[ -f "${LIB_DIR}/config.sh" ]]; then
+  # shellcheck source=../lib/config.sh
+  source "${LIB_DIR}/config.sh"
+elif [[ -f "$CLAUDE_TODO_HOME/lib/config.sh" ]]; then
+  source "$CLAUDE_TODO_HOME/lib/config.sh"
+fi
+
 # Local log_error wrapper for simple error messages
 # (Overrides logging.sh's structured version for user-facing output)
 log_error() {
@@ -576,13 +584,25 @@ output_compact() {
   local done=$(count_by_status "done")
   local total=$((pending + active + blocked + done))
 
-  local archived_count
-  archived_count=$(get_archived_count)
+  # Check config settings for display options
+  local show_archive_config="true"
+  local show_log_summary="true"
+  if declare -f get_config_value >/dev/null 2>&1; then
+    show_archive_config=$(get_config_value "display.showArchiveCount" "true")
+    show_log_summary=$(get_config_value "display.showLogSummary" "true")
+  fi
 
-  local completion_counts
-  completion_counts=$(get_completion_counts)
-  local today_completed
-  today_completed=$(echo "$completion_counts" | jq -r '.today')
+  local archived_count=0
+  if [[ "$show_archive_config" == "true" ]]; then
+    archived_count=$(get_archived_count)
+  fi
+
+  local today_completed=0
+  if [[ "$show_log_summary" == "true" ]]; then
+    local completion_counts
+    completion_counts=$(get_completion_counts)
+    today_completed=$(echo "$completion_counts" | jq -r '.today')
+  fi
 
   local focus_id
   focus_id=$(jq -r '.focus.currentTask // ""' "$TODO_FILE" 2>/dev/null)
@@ -623,8 +643,18 @@ output_compact() {
       printf " | ${BLUE}Phase: %s${NC}" "$current_phase_name"
     fi
 
-    printf " | ${CYAN}%s${NC}%d ${GREEN}%s${NC}%d (%d%%) | ${DIM}Archived: %d${NC} | ${GREEN}Today: %d completed${NC}" \
-      "$sym_active" "$active" "$sym_done" "$done" "$done_pct" "$archived_count" "$today_completed"
+    printf " | ${CYAN}%s${NC}%d ${GREEN}%s${NC}%d (%d%%)" \
+      "$sym_active" "$active" "$sym_done" "$done" "$done_pct"
+
+    # Conditionally show archive count
+    if [[ "$show_archive_config" == "true" && "$archived_count" -gt 0 ]]; then
+      printf " | ${DIM}Archived: %d${NC}" "$archived_count"
+    fi
+
+    # Conditionally show today's completions
+    if [[ "$show_log_summary" == "true" ]]; then
+      printf " | ${GREEN}Today: %d completed${NC}" "$today_completed"
+    fi
 
     if [[ -n "$focus_id" && "$focus_id" != "null" ]]; then
       printf " | Focus: ${CYAN}%s${NC}" "$focus_id"
@@ -645,8 +675,18 @@ output_compact() {
       printf " | Phase: %s" "$current_phase_name"
     fi
 
-    printf " | %s%d %s%d (%d%%) | Archived: %d | Today: %d completed" \
-      "$sym_active" "$active" "$sym_done" "$done" "$done_pct" "$archived_count" "$today_completed"
+    printf " | %s%d %s%d (%d%%)" \
+      "$sym_active" "$active" "$sym_done" "$done" "$done_pct"
+
+    # Conditionally show archive count
+    if [[ "$show_archive_config" == "true" && "$archived_count" -gt 0 ]]; then
+      printf " | Archived: %d" "$archived_count"
+    fi
+
+    # Conditionally show today's completions
+    if [[ "$show_log_summary" == "true" ]]; then
+      printf " | Today: %d completed" "$today_completed"
+    fi
 
     if [[ -n "$focus_id" && "$focus_id" != "null" ]]; then
       printf " | Focus: %s" "$focus_id"
@@ -806,6 +846,68 @@ output_text_format() {
     fi
   fi
 
+  # Stale Tasks Warning Section (controlled by display.warnStaleDays config)
+  local warn_stale_days=7
+  if declare -f get_config_value >/dev/null 2>&1; then
+    warn_stale_days=$(get_config_value "display.warnStaleDays" "7")
+  fi
+
+  # Only show stale tasks section if warnStaleDays > 0
+  if [[ "$warn_stale_days" -gt 0 ]]; then
+    local stale_cutoff
+    stale_cutoff=$(date -d "${warn_stale_days} days ago" -Iseconds 2>/dev/null || date -Iseconds)
+
+    local stale_tasks
+    stale_tasks=$(jq -r --arg cutoff "$stale_cutoff" \
+      '[.tasks[] | select(.status != "done" and .createdAt < $cutoff)] | sort_by(.createdAt) | .[0:5]' \
+      "$TODO_FILE" 2>/dev/null || echo "[]")
+
+    local stale_count
+    stale_count=$(echo "$stale_tasks" | jq -r 'length')
+
+    if [[ "$stale_count" -gt 0 ]]; then
+      print_box_separator "$width"
+      print_box_line "${YELLOW}  STALE TASKS (>${warn_stale_days} days old)${NC}" "$width"
+
+      echo "$stale_tasks" | jq -r '.[] | "\(.id) \(.title) |\(.createdAt)"' | head -5 | while read -r line; do
+        local task_id="${line%%|*}"
+        task_id="${task_id%% *}"
+        local rest="${line#* }"
+        local task_title="${rest%%|*}"
+        local created_at="${rest#*|}"
+
+        if [[ ${#task_title} -gt 35 ]]; then
+          task_title="${task_title:0:32}..."
+        fi
+
+        # Calculate days old
+        local created_date="${created_at%%T*}"
+        local days_old=""
+        if command -v date &>/dev/null; then
+          local created_epoch now_epoch
+          created_epoch=$(date -d "$created_date" +%s 2>/dev/null || echo "0")
+          now_epoch=$(date +%s)
+          if [[ "$created_epoch" -gt 0 ]]; then
+            days_old=$(( (now_epoch - created_epoch) / 86400 ))
+          fi
+        fi
+
+        local age_str=""
+        if [[ -n "$days_old" ]]; then
+          age_str=" ${DIM}(${days_old}d)${NC}"
+        fi
+
+        local sym_stale
+        if [[ "$unicode" == "true" ]]; then
+          sym_stale="⏰"
+        else
+          sym_stale="!"
+        fi
+        print_box_line "  ${sym_stale} $task_id $task_title$age_str" "$width"
+      done
+    fi
+  fi
+
   # Phases Section
   if should_show_section "phases" && [[ "$SHOW_CHARTS" == "true" ]]; then
     local phase_stats
@@ -898,70 +1000,86 @@ output_text_format() {
     print_box_line "  Created: $created   Completed: $completed   Rate: ${rate}%" "$width"
   fi
 
-  # Archive Section
+  # Archive Section (controlled by display.showArchiveCount config)
   if should_show_section "archive"; then
-    local archived_count
-    archived_count=$(get_archived_count)
+    # Check config setting for archive display
+    local show_archive_config="true"
+    if declare -f get_config_value >/dev/null 2>&1; then
+      show_archive_config=$(get_config_value "display.showArchiveCount" "true")
+    fi
 
-    if [[ "$archived_count" -gt 0 ]]; then
-      local date_range
-      date_range=$(get_archive_date_range)
-      local oldest newest
-      oldest=$(echo "$date_range" | jq -r '.oldest // "" | split("T")[0]')
-      newest=$(echo "$date_range" | jq -r '.newest // "" | split("T")[0]')
+    if [[ "$show_archive_config" == "true" ]]; then
+      local archived_count
+      archived_count=$(get_archived_count)
 
-      print_box_separator "$width"
-      print_box_line "${DIM}  ARCHIVE${NC}" "$width"
-      print_box_line "  Archived Tasks: $archived_count" "$width"
+      if [[ "$archived_count" -gt 0 ]]; then
+        local date_range
+        date_range=$(get_archive_date_range)
+        local oldest newest
+        oldest=$(echo "$date_range" | jq -r '.oldest // "" | split("T")[0]')
+        newest=$(echo "$date_range" | jq -r '.newest // "" | split("T")[0]')
 
-      if [[ -n "$oldest" && "$oldest" != "null" && "$oldest" != "" ]]; then
-        print_box_line "  Oldest: $oldest   |   Newest: $newest" "$width"
+        print_box_separator "$width"
+        print_box_line "${DIM}  ARCHIVE${NC}" "$width"
+        print_box_line "  Archived Tasks: $archived_count" "$width"
+
+        if [[ -n "$oldest" && "$oldest" != "null" && "$oldest" != "" ]]; then
+          print_box_line "  Oldest: $oldest   |   Newest: $newest" "$width"
+        fi
       fi
     fi
   fi
 
-  # Recent Completions Section
+  # Recent Completions Section (controlled by display.showLogSummary config)
   if should_show_section "completions"; then
-    local completion_counts
-    completion_counts=$(get_completion_counts)
-    local today week month
-    today=$(echo "$completion_counts" | jq -r '.today')
-    week=$(echo "$completion_counts" | jq -r '.thisWeek')
-    month=$(echo "$completion_counts" | jq -r '.thisMonth')
+    # Check config setting for log summary display
+    local show_log_summary="true"
+    if declare -f get_config_value >/dev/null 2>&1; then
+      show_log_summary=$(get_config_value "display.showLogSummary" "true")
+    fi
 
-    if [[ "$month" -gt 0 ]]; then
-      print_box_separator "$width"
-      print_box_line "${GREEN}  RECENT COMPLETIONS${NC}" "$width"
-      print_box_line "  Today: $today   This Week: $week   This Month: $month" "$width"
+    if [[ "$show_log_summary" == "true" ]]; then
+      local completion_counts
+      completion_counts=$(get_completion_counts)
+      local today week month
+      today=$(echo "$completion_counts" | jq -r '.today')
+      week=$(echo "$completion_counts" | jq -r '.thisWeek')
+      month=$(echo "$completion_counts" | jq -r '.thisMonth')
 
-      # Get recent completions with details
-      local recent_completions
-      recent_completions=$(get_recent_completions 5)
-      local completion_count
-      completion_count=$(echo "$recent_completions" | jq -r 'length')
+      if [[ "$month" -gt 0 ]]; then
+        print_box_separator "$width"
+        print_box_line "${GREEN}  RECENT COMPLETIONS${NC}" "$width"
+        print_box_line "  Today: $today   This Week: $week   This Month: $month" "$width"
 
-      if [[ "$completion_count" -gt 0 ]]; then
-        print_box_line "" "$width"
-        print_box_line "  ${DIM}Last $completion_count completed:${NC}" "$width"
+        # Get recent completions with details
+        local recent_completions
+        recent_completions=$(get_recent_completions 5)
+        local completion_count
+        completion_count=$(echo "$recent_completions" | jq -r 'length')
 
-        echo "$recent_completions" | jq -r '.[] | "\(.id) \(.title) \(.date)"' | while read -r line; do
-          local task_id="${line%% *}"
-          local rest="${line#* }"
-          local task_title="${rest% *}"
-          local task_date="${rest##* }"
+        if [[ "$completion_count" -gt 0 ]]; then
+          print_box_line "" "$width"
+          print_box_line "  ${DIM}Last $completion_count completed:${NC}" "$width"
 
-          # Truncate title if too long
-          if [[ ${#task_title} -gt 30 ]]; then
-            task_title="${task_title:0:27}..."
-          fi
+          echo "$recent_completions" | jq -r '.[] | "\(.id) \(.title) \(.date)"' | while read -r line; do
+            local task_id="${line%% *}"
+            local rest="${line#* }"
+            local task_title="${rest% *}"
+            local task_date="${rest##* }"
 
-          # Format date as MM/DD
-          local month_day
-          month_day=$(echo "$task_date" | awk -F- '{print $2"/"$3}')
+            # Truncate title if too long
+            if [[ ${#task_title} -gt 30 ]]; then
+              task_title="${task_title:0:27}..."
+            fi
 
-          local sym_done=$(status_symbol "done" "$unicode")
-          print_box_line "    ${sym_done} $task_id - $task_title ($month_day)" "$width"
-        done
+            # Format date as MM/DD
+            local month_day
+            month_day=$(echo "$task_date" | awk -F- '{print $2"/"$3}')
+
+            local sym_done=$(status_symbol "done" "$unicode")
+            print_box_line "    ${sym_done} $task_id - $task_title ($month_day)" "$width"
+          done
+        fi
       fi
     fi
   fi

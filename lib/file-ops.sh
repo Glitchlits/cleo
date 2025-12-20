@@ -48,11 +48,25 @@ else
     exit 1
 fi
 
+# Source config library for unified config access (v0.24.0+)
+# Optional - provides configurable backup retention
+if [[ -f "$_LIB_DIR/config.sh" ]]; then
+    # shellcheck source=lib/config.sh
+    source "$_LIB_DIR/config.sh"
+fi
+
 # Configuration
 BACKUP_DIR=".backups"
-MAX_BACKUPS=10
 TEMP_SUFFIX=".tmp"
 LOCK_SUFFIX=".lock"
+
+# MAX_BACKUPS: Read from config with fallback to default (v0.24.0+)
+# Uses backup.maxSafetyBackups since file-ops.sh creates safety backups during atomic writes
+if declare -f get_config_value >/dev/null 2>&1; then
+    MAX_BACKUPS=$(get_config_value "backup.maxSafetyBackups" "5")
+else
+    MAX_BACKUPS=5
+fi
 
 # Error codes (use FO_ prefix to avoid conflicts with error-json.sh constants)
 FO_SUCCESS=0

@@ -5,6 +5,74 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0] - 2025-12-20
+
+### Added
+- **Config System Integration (Epic T382)** - Complete config system now operational across all scripts
+  - Priority resolution: CLI flags > Environment vars > Project config > Global config > Defaults
+  - `lib/config.sh` integrated into 15+ scripts with fallback guards for safety
+
+- **Session Config Settings** (`session.*`)
+  - `warnOnNoFocus`: Warn if no task is focused at session start (default: true)
+  - `requireSessionNote`: Require note when ending session (default: false)
+  - `sessionTimeoutHours`: Hours before stale session warning (default: 8)
+  - `autoStartSession`: Auto-start session on first command (default: true)
+
+- **Default Values Config** (`defaults.*`)
+  - `priority`: Default priority for new tasks (default: medium)
+  - `status`: Default status for new tasks (default: pending)
+  - Read by `add-task.sh` when flags not specified
+
+- **Validation Config Settings** (`validation.*`)
+  - `strictMode`: Treat warnings as errors (default: false)
+  - `checksumEnabled`: Enable checksum verification (default: true)
+  - `maxActiveTasks`: Maximum concurrent active tasks (default: 3)
+  - `requireDescription`: Require description for all tasks (default: true)
+  - `detectCircularDeps`: Detect circular dependencies (default: true)
+
+- **Display Config Settings** (`display.*`)
+  - `showArchiveCount`: Show archived count in list/dash footer (default: true)
+  - `showLogSummary`: Show recent completions in dashboard (default: true)
+  - `warnStaleDays`: Warn about tasks older than N days, 0 to disable (default: 7)
+  - New "Stale Tasks" section in dashboard showing aging tasks
+
+- **CLI Config Settings** (`cli.*`)
+  - `enableDebug`: Enable debug mode via config (default: false)
+  - Aliases support loaded from config
+  - Plugin configuration warnings
+
+- **Backup Config Settings** (`backup.*`)
+  - `enabled`: Global toggle for backup system (default: true)
+  - `directory`: Backup storage location (default: .claude/backups)
+  - `maxSnapshots`: Maximum snapshot backups to retain (default: 10)
+
+- **Environment Variable Integration** - All config sections now support env var overrides
+  - `CLAUDE_TODO_SESSION_*` for session settings
+  - `CLAUDE_TODO_VALIDATION_*` for validation settings
+  - `CLAUDE_TODO_DISPLAY_*` for display settings
+  - `CLAUDE_TODO_BACKUP_*` for backup settings
+  - Full mapping in `lib/config.sh`
+
+### Changed
+- **lib/config.sh** - Enhanced with include guard, fixed boolean false handling in jq
+- **lib/validation.sh** - Added config-driven validation helper functions
+- **lib/file-ops.sh** - Integrated backup config settings
+- **scripts/session.sh** - Full session config integration
+- **scripts/add-task.sh** - Uses defaults.* config for new task creation
+- **scripts/validate.sh** - Respects validation.* config settings
+- **scripts/backup.sh** - Config-driven backup behavior
+- **scripts/restore.sh** - Config-aware restore operations
+- **scripts/list-tasks.sh** - Archive count display respects config
+- **scripts/dash.sh** - Archive, log summary, and stale tasks respect config
+- **install.sh** - Config-driven debug mode and alias loading
+
+### Fixed
+- **SC2168 errors** - Removed `local` keyword outside functions in:
+  - `scripts/add-task.sh:740`
+  - `scripts/update-task.sh:750`
+  - `scripts/validate.sh:349`
+- **Boolean false config values** - jq now correctly handles false vs null
+
 ## [0.23.2] - 2025-12-20
 
 ### Added
