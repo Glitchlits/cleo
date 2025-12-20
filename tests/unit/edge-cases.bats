@@ -211,9 +211,10 @@ teardown() {
 @test "log handles missing log file gracefully" {
     rm -f "$LOG_FILE"
 
-    run bash "$SCRIPTS_DIR/log.sh" --action task_completed --task-id T001
-    # Should either succeed or fail gracefully
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
+    # Use valid action (status_changed) - log.sh will create missing log file
+    run bash "$SCRIPTS_DIR/log.sh" --action status_changed --task-id T001
+    # Exit codes: 0=success (creates file), 1=general error, 3=E_FILE_NOT_FOUND
+    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 3 ]]
 }
 
 # =============================================================================

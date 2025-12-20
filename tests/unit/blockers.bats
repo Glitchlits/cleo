@@ -166,8 +166,8 @@ teardown() {
 @test "blockers handles missing todo.json gracefully" {
     rm -f "$TODO_FILE"
     run bash "$BLOCKERS_SCRIPT"
-    # Should either exit 0 with message or exit 1 with error
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
+    # Exit codes: 0=success, 1=general error, 3=E_FILE_NOT_FOUND (graceful)
+    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 3 ]]
 }
 
 @test "blockers handles invalid format gracefully" {
