@@ -1333,6 +1333,591 @@ A conforming implementation MAY:
 
 ---
 
+## Part 18: LLM Invocation Architecture (AUTHORITATIVE)
+
+This section addresses **Finding 5** (BLOCKING): LLM invocation pattern unclear.
+
+### 18.1 Token Budget Allocation
+
+| Phase | Max Input Tokens | Max Output Tokens | Model Tier |
+|-------|------------------|-------------------|------------|
+| Scope Analysis | 2,000 | 1,000 | Fast (Haiku) |
+| Goal Decomposition | 8,000 | 4,000 | Standard (Sonnet) |
+| Dependency Graph | 4,000 | 2,000 | Fast (Haiku) |
+| Task Specification | 4,000 | 3,000 | Fast (Haiku) |
+| Challenge (per phase) | 6,000 | 2,000 | Standard (Sonnet) |
+
+### 18.2 Invocation Decision Matrix
+
+```
+FUNCTION should_invoke_llm(phase: string, input: any) -> boolean:
+
+    # Local-only phases (no LLM needed)
+    IF phase == "scope" AND input.complexity.simple:
+        RETURN false  # Use heuristic classification
+
+    IF phase == "dag" AND input.explicit_dependencies_only:
+        RETURN false  # Parse explicit keywords only
+
+    # Always invoke LLM for
+    IF phase == "goals":
+        RETURN true  # Decomposition requires reasoning
+
+    IF phase == "challenge":
+        RETURN true  # Adversarial requires different model
+
+    # Hybrid decision
+    IF phase == "tasks":
+        RETURN input.requires_description_generation
+```
+
+### 18.3 Prompt Template Architecture
+
+```
+PROMPT_STRUCTURE = {
+    "system": {
+        "role": "Decomposition Agent | Challenge Agent",
+        "constraints": [atomicity_rules, depth_limits, sibling_limits],
+        "output_schema": phase_specific_schema
+    },
+    "user": {
+        "input": request_or_previous_phase_output,
+        "context": {
+            "existing_tasks": optional_dedup_context,
+            "project_phase": current_phase
+        }
+    }
+}
+```
+
+### 18.4 Model Selection Logic
+
+```bash
+# lib/llm-invoke.sh
+
+select_model() {
+    local phase="$1"
+    local complexity="${2:-medium}"
+
+    case "$phase" in
+        scope|dag|tasks)
+            echo "haiku"  # Fast, low-cost for structured extraction
+            ;;
+        goals)
+            if [[ "$complexity" == "high" ]]; then
+                echo "sonnet"  # Complex reasoning
+            else
+                echo "haiku"
+            fi
+            ;;
+        challenge)
+            echo "sonnet"  # Always use capable model for adversarial
+            ;;
+        *)
+            echo "haiku"
+            ;;
+    esac
+}
+```
+
+### 18.5 Fallback Strategy
+
+If LLM invocation fails:
+
+| Failure Type | Fallback Action |
+|--------------|-----------------|
+| Rate limit | Exponential backoff (1s, 2s, 4s, max 30s) |
+| Timeout | Return partial result with `incomplete: true` |
+| Invalid output | Retry once with stricter schema enforcement |
+| Model unavailable | Fall back to simpler model tier |
+
+---
+
+## Part 19: Dependency Detection Algorithms (AUTHORITATIVE)
+
+This section addresses **Finding 3** (BLOCKING): Dependency detection underspecified.
+
+### 19.1 Detection Functions
+
+```
+FUNCTION detect_explicit_dependency(task_a, task_b) -> Dependency | null:
+    # Keywords in task_a that reference task_b
+    keywords = ["after", "requires", "depends on", "following", "once"]
+
+    FOR keyword IN keywords:
+        IF task_a.description CONTAINS keyword + task_b.identifier:
+            RETURN Dependency {
+                type: "explicit",
+                evidence: f"Keyword '{keyword}' references {task_b.id}",
+                confidence: 1.0
+            }
+
+    RETURN null
+
+
+FUNCTION detect_data_flow_dependency(task_a, task_b) -> Dependency | null:
+    # Schema/type analysis
+    outputs_a = extract_outputs(task_a)  # Files created, APIs exposed
+    inputs_b = extract_inputs(task_b)    # Files read, APIs called
+
+    overlap = outputs_a INTERSECT inputs_b
+
+    IF overlap.length > 0:
+        RETURN Dependency {
+            type: "data_flow",
+            evidence: f"Output {overlap[0]} from {task_a.id} consumed by {task_b.id}",
+            confidence: 0.9,
+            artifacts: overlap
+        }
+
+    RETURN null
+
+
+FUNCTION detect_file_conflict_dependency(task_a, task_b) -> Dependency | null:
+    # Both tasks modify same file
+    files_a = task_a.files or []
+    files_b = task_b.files or []
+
+    conflicts = files_a INTERSECT files_b
+
+    IF conflicts.length > 0:
+        # Need ordering to avoid merge conflicts
+        RETURN Dependency {
+            type: "file_conflict",
+            evidence: f"Both modify {conflicts[0]}",
+            confidence: 0.85,
+            files: conflicts,
+            resolution: "serialize_execution"
+        }
+
+    RETURN null
+
+
+FUNCTION detect_semantic_dependency(task_a, task_b) -> Dependency | null:
+    # Domain knowledge patterns
+    semantic_rules = [
+        ("schema", "query"),      # Schema before queries
+        ("model", "migration"),   # Model before migration
+        ("interface", "impl"),    # Interface before implementation
+        ("test", "implement"),    # Implementation before tests (inverted)
+    ]
+
+    FOR (before_pattern, after_pattern) IN semantic_rules:
+        IF task_a.title MATCHES before_pattern AND task_b.title MATCHES after_pattern:
+            RETURN Dependency {
+                type: "semantic",
+                evidence: f"Domain rule: {before_pattern} → {after_pattern}",
+                confidence: 0.75,
+                rule: f"{before_pattern}_before_{after_pattern}"
+            }
+
+    RETURN null
+```
+
+### 19.2 Confidence Thresholds
+
+| Confidence | Action |
+|------------|--------|
+| ≥0.9 | Auto-include dependency |
+| 0.7-0.89 | Include, flag for challenge review |
+| 0.5-0.69 | Require HITL confirmation |
+| <0.5 | Reject, log as "considered but excluded" |
+
+### 19.3 Transitive Dependency Resolution
+
+```
+FUNCTION compute_transitive_closure(dag: DAG) -> DAG:
+    # Floyd-Warshall for reachability
+    reachable = initialize_matrix(dag.nodes.length)
+
+    FOR edge IN dag.edges:
+        reachable[edge.from][edge.to] = true
+
+    FOR k IN dag.nodes:
+        FOR i IN dag.nodes:
+            FOR j IN dag.nodes:
+                IF reachable[i][k] AND reachable[k][j]:
+                    reachable[i][j] = true
+
+    # Remove redundant edges (A→B when A→C→B exists)
+    optimized_edges = []
+    FOR edge IN dag.edges:
+        is_redundant = false
+        FOR intermediate IN dag.nodes:
+            IF intermediate != edge.from AND intermediate != edge.to:
+                IF reachable[edge.from][intermediate] AND reachable[intermediate][edge.to]:
+                    is_redundant = true
+                    BREAK
+
+        IF NOT is_redundant:
+            optimized_edges.append(edge)
+
+    dag.edges = optimized_edges
+    RETURN dag
+```
+
+### 19.4 Anti-Hallucination Validation
+
+Every dependency MUST have:
+1. **Type** from defined set: `explicit | data_flow | file_conflict | api_contract | semantic`
+2. **Evidence** string explaining the relationship
+3. **Confidence** score 0.0-1.0
+
+Dependencies with `evidence: null` or `evidence: "assumed"` MUST be rejected.
+
+---
+
+## Part 20: Generic Decomposition Fallback (AUTHORITATIVE)
+
+This section addresses **Finding 2**: Generic decomposition method undefined.
+
+### 20.1 Fallback Method
+
+When no pattern-specific method matches:
+
+```yaml
+method: generic_decomposition
+pattern: ".*"  # Fallback, lowest priority
+phases:
+  1_understand:
+    template: "Understand requirements for {goal}"
+    type: subtask
+    atomicity_target: 100
+  2_plan:
+    template: "Plan approach for {goal}"
+    type: subtask
+    atomicity_target: 100
+  3_implement:
+    template: "Implement {goal}"
+    type: task
+    atomicity_target: 80  # May need further decomposition
+  4_validate:
+    template: "Validate {goal} meets requirements"
+    type: subtask
+    atomicity_target: 100
+```
+
+### 20.2 Recursive Application
+
+If `3_implement` fails atomicity (score < 100), recursively apply:
+
+```
+FUNCTION apply_generic_fallback(goal: Goal, depth: int) -> TaskTree:
+
+    IF depth >= 3:
+        WARN("Max depth reached, accepting non-atomic")
+        RETURN create_task(goal, atomic=false)
+
+    result = apply_method("generic_decomposition", goal)
+
+    FOR subtask IN result.children:
+        IF subtask.atomicity_score < 100:
+            subtask.children = apply_generic_fallback(subtask, depth + 1)
+
+    RETURN result
+```
+
+### 20.3 Method Priority Order
+
+1. Exact pattern match (e.g., `implement_feature`)
+2. Partial pattern match (regex similarity > 0.8)
+3. LLM-suggested method (if enabled)
+4. Generic fallback
+
+---
+
+## Part 21: Challenge Quality Metrics (AUTHORITATIVE)
+
+This section addresses **Finding 4**: Challenge agent quality metrics missing.
+
+### 21.1 Finding Severity Classification
+
+| Severity | Criteria | Required Action |
+|----------|----------|-----------------|
+| **blocking** | Decomposition fundamentally broken | REJECT, require restart |
+| **major** | Missing/incorrect tasks or dependencies | REVISE before proceeding |
+| **minor** | Style, naming, or optimization issues | LOG, optional fix |
+| **info** | Suggestions for improvement | DOCUMENT for future |
+
+### 21.2 Challenge Quality Scoring
+
+```
+challenge_quality_score = {
+    specificity: findings.all(f => f.reference != null),      # 0-1
+    evidence: findings.all(f => f.argument.length > 50),      # 0-1
+    actionable: findings.all(f => f.suggestion != null),      # 0-1
+    coverage: unique_tasks_challenged / total_tasks           # 0-1
+}
+
+overall_quality = average(challenge_quality_score.values())
+
+IF overall_quality < 0.6:
+    WARN("Challenge quality below threshold, may need re-challenge")
+```
+
+### 21.3 Rubber-Stamp Detection
+
+Challenge agent outputs are suspect if:
+- `verdict: "VALID"` with `findings.length == 0`
+- All findings are `severity: "info"`
+- Challenge completed in <2 seconds
+- No specific task/edge references
+
+```
+FUNCTION detect_rubber_stamp(challenge_result) -> boolean:
+    IF challenge_result.verdict == "VALID" AND challenge_result.findings.length == 0:
+        RETURN true
+
+    IF all(f.severity == "info" FOR f IN challenge_result.findings):
+        RETURN true
+
+    IF challenge_result.duration_ms < 2000:
+        RETURN true
+
+    RETURN false
+
+
+IF detect_rubber_stamp(challenge_result):
+    LOG_WARNING("Potential rubber-stamp detected, requesting re-challenge")
+    challenge_result = re_challenge_with_stricter_prompt()
+```
+
+### 21.4 Minimum Challenge Requirements
+
+Every challenge MUST produce at least:
+- 2 findings (even if `severity: info`)
+- 1 specific reference to task or edge
+- 1 actionable suggestion
+
+---
+
+## Part 22: Iteration and Retry Protocol (AUTHORITATIVE)
+
+This section addresses **Finding 6**: No iteration/retry protocol.
+
+### 22.1 Retry Configuration
+
+```yaml
+retry_config:
+  max_retries_per_phase: 3
+  max_total_retries: 10
+  backoff:
+    initial_delay_ms: 1000
+    max_delay_ms: 30000
+    multiplier: 2.0
+  circuit_breaker:
+    failure_threshold: 5
+    reset_timeout_ms: 60000
+```
+
+### 22.2 Phase Retry Logic
+
+```
+FUNCTION execute_phase_with_retry(phase, input) -> Result:
+    retries = 0
+
+    WHILE retries < config.max_retries_per_phase:
+        TRY:
+            result = execute_phase(phase, input)
+
+            IF result.success:
+                RETURN result
+
+            IF result.error.retryable == false:
+                RETURN result  # Permanent failure
+
+            retries += 1
+            delay = calculate_backoff(retries)
+            sleep(delay)
+
+        CATCH error:
+            IF is_transient(error):
+                retries += 1
+                continue
+            ELSE:
+                RETURN Error(error)
+
+    RETURN Error("Max retries exceeded for phase: {phase}")
+```
+
+### 22.3 Challenge-Revision Loop
+
+```
+FUNCTION decomposition_with_challenge_loop(request) -> Result:
+    max_iterations = 3
+    iteration = 0
+
+    scope = analyze_scope(request)
+    goals = decompose_goals(request, scope)
+
+    WHILE iteration < max_iterations:
+        challenge = challenge_decomposition(goals, "goals")
+
+        IF challenge.verdict == "VALID":
+            BREAK
+
+        IF challenge.verdict == "REJECTED":
+            # Fundamental flaw, restart with new approach
+            goals = decompose_goals(request, scope, approach="alternative")
+            iteration += 1
+            continue
+
+        IF challenge.verdict == "NEEDS_REVISION":
+            # Apply suggested fixes
+            FOR finding IN challenge.findings WHERE finding.severity IN ["blocking", "major"]:
+                goals = apply_fix(goals, finding)
+
+            iteration += 1
+
+    IF iteration >= max_iterations:
+        RETURN Error("Could not produce valid decomposition after {max_iterations} iterations")
+
+    RETURN goals
+```
+
+### 22.4 State Preservation
+
+Between retries, preserve:
+- Original request (immutable)
+- Phase outputs completed successfully
+- Challenge findings for learning
+- Retry count per phase
+
+```json
+{
+  "_retry_state": {
+    "request_hash": "sha256:abc...",
+    "completed_phases": ["scope"],
+    "current_phase": "goals",
+    "attempt": 2,
+    "previous_findings": [...]
+  }
+}
+```
+
+---
+
+## Part 23: Schema Extensions (AUTHORITATIVE)
+
+This section addresses **Finding**: Schema considerations for children and computed fields.
+
+### 23.1 Proposed Schema Additions
+
+The following fields SHOULD be added to `todo.schema.json` v2.4.0:
+
+```json
+{
+  "children": {
+    "type": "array",
+    "items": { "type": "string", "pattern": "^T\\d{3,}$" },
+    "description": "Computed: IDs of direct child tasks (inverse of parentId)",
+    "computed": true
+  },
+  "ancestors": {
+    "type": "array",
+    "items": { "type": "string", "pattern": "^T\\d{3,}$" },
+    "description": "Computed: IDs of all ancestor tasks (transitive parentId)",
+    "computed": true
+  },
+  "depth": {
+    "type": "integer",
+    "minimum": 0,
+    "maximum": 2,
+    "description": "Computed: Hierarchy depth (0=root, 1=child, 2=grandchild)",
+    "computed": true
+  },
+  "dependents": {
+    "type": "array",
+    "items": { "type": "string", "pattern": "^T\\d{3,}$" },
+    "description": "Computed: IDs of tasks that depend on this task (inverse of depends)",
+    "computed": true
+  },
+  "blockedBy": {
+    "type": "array",
+    "items": { "type": "string", "pattern": "^T\\d{3,}$" },
+    "description": "Computed: IDs of incomplete dependencies blocking this task",
+    "computed": true
+  },
+  "decompositionId": {
+    "type": "string",
+    "pattern": "^DEC-\\d{8}-\\d{3}$",
+    "description": "ID of decomposition session that created this task"
+  },
+  "atomicityScore": {
+    "type": "integer",
+    "minimum": 0,
+    "maximum": 100,
+    "description": "Atomicity score at creation (see Part 4)"
+  },
+  "acceptance": {
+    "type": "array",
+    "items": { "type": "string" },
+    "description": "Testable acceptance criteria"
+  }
+}
+```
+
+### 23.2 Computed Field Calculation
+
+Computed fields are NOT stored in todo.json but calculated on read:
+
+```bash
+# lib/computed-fields.sh
+
+compute_children() {
+    local task_id="$1"
+    local todo_file="$2"
+
+    jq -r --arg id "$task_id" \
+        '.tasks[] | select(.parentId == $id) | .id' \
+        "$todo_file" | jq -Rs 'split("\n") | map(select(. != ""))'
+}
+
+compute_depth() {
+    local task_id="$1"
+    local todo_file="$2"
+
+    local depth=0
+    local current="$task_id"
+
+    while true; do
+        parent=$(jq -r --arg id "$current" '.tasks[] | select(.id == $id) | .parentId // empty' "$todo_file")
+        [[ -z "$parent" ]] && break
+        ((depth++))
+        current="$parent"
+    done
+
+    echo "$depth"
+}
+
+compute_blocked_by() {
+    local task_id="$1"
+    local todo_file="$2"
+
+    jq -r --arg id "$task_id" '
+        (.tasks[] | select(.id == $id) | .depends // []) as $deps |
+        .tasks[] | select(.id as $tid | $deps | index($tid)) |
+        select(.status != "done") | .id
+    ' "$todo_file" | jq -Rs 'split("\n") | map(select(. != ""))'
+}
+```
+
+### 23.3 Materialization Strategy
+
+For performance, computed fields MAY be materialized:
+- **On write**: Update `children`/`dependents` when `parentId`/`depends` changes
+- **On read**: Always compute `blockedBy` (status-dependent)
+- **Cache**: Store in separate `.claude/computed-cache.json` with TTL
+
+### 23.4 Backward Compatibility
+
+New fields MUST be:
+- Optional in schema (not `required`)
+- Handled gracefully by older CLI versions
+- Migrated via `claude-todo migrate run`
+
+---
+
 ## Appendix A: Decomposition Method Library
 
 ### A.1 Feature Implementation
