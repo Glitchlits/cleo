@@ -3,7 +3,7 @@
   "version": "2.2.0",
   "archive": {
     "enabled": true,
-    "daysUntilArchive": 7,
+    "daysUntilArchive": 3,
     "maxCompletedTasks": 15,
     "preserveRecentCount": 3,
     "archiveOnSessionEnd": true

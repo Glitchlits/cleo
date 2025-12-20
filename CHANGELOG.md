@@ -5,6 +5,29 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.1] - 2025-12-20
+
+### Fixed
+- **`show --include-archive`** - Now correctly searches `.archivedTasks[]` field in archive file
+  - Previously only searched `.tasks[]`, causing "not found" errors for archived tasks
+
+- **`find` command regex escaping** - Queries with special characters (spaces, brackets, etc.) no longer crash
+  - Fixed malformed regex escape pattern causing jq parse errors
+  - Added try/catch fallback for edge cases
+
+### Changed
+- **Archive documentation** - Comprehensive update to `docs/commands/archive.md`
+  - Added missing flags: `--format`, `--json`, `--human`, `--quiet`
+  - Added missing config options: `enabled`, `archiveOnSessionEnd`
+  - Added JSON output structure and exit codes documentation
+
+### Added
+- **`docs/guides/archive-guide.md`** - New conceptual guide for archive system
+  - Retention model explanation with diagrams
+  - Integration points (session end, task completion)
+  - Configuration recommendations by use case
+  - Troubleshooting section
+
 ## [0.23.0] - 2025-12-20
 
 ### Added
