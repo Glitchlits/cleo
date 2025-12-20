@@ -113,20 +113,20 @@
       }
     ]
   },
-  "lastUpdated": "2025-12-20T10:45:54Z",
+  "lastUpdated": "2025-12-20T10:57:40Z",
   "_meta": {
-    "checksum": "8dfd766f91aedab9",
+    "checksum": "1da552b9eef40afa",
     "configVersion": "2.1.0",
     "lastSessionId": null,
-    "activeSession": null,
-    "lastModified": "2025-12-20T10:44:49Z",
+    "activeSession": "session_20251220_025346_0bb469",
+    "lastModified": "2025-12-20T10:53:46Z",
     "version": "2.3.0",
     "schemaVersion": "2.3.0"
   },
   "focus": {
     "currentTask": null,
     "blockedUntil": null,
-    "sessionNote": "test cleanup",
+    "sessionNote": "test complete",
     "nextAction": "NEXT SESSION: Implement T452 (archive.sh - HIGH priority) first. Pattern: source lib/file-ops.sh, replace all raw writes with save_json(). Then T453, T454. T350/T530/T531 can follow. See FILE-LOCKING-IMPLEMENTATION-REPORT.md for fix patterns.",
     "currentPhase": "core"
   },
@@ -5194,6 +5194,101 @@
         "enhancement",
         "find-command",
         "lllm-agent-first"
+      ]
+    },
+    {
+      "id": "T559",
+      "title": "Config test task - should be high priority",
+      "status": "done",
+      "priority": "high",
+      "type": "task",
+      "parentId": null,
+      "createdAt": "2025-12-20T10:51:21Z",
+      "phase": "core",
+      "description": "Testing defaults.priority config",
+      "completedAt": "2025-12-20T10:57:40Z",
+      "notes": [
+        "[COMPLETED 2025-12-20T10:57:40Z] Test task for config verification - cleaning up"
+      ]
+    },
+    {
+      "id": "T560",
+      "title": "FIX: TodoWrite sync - .injected.todos is null",
+      "status": "pending",
+      "priority": "high",
+      "type": "task",
+      "parentId": null,
+      "createdAt": "2025-12-20T10:57:24Z",
+      "phase": "core",
+      "description": "6 tests failing in todowrite-sync.bats. Root cause: sync inject command not generating .injected.todos array. Affects tests 3, 4, 17, 19, 20, 21. Error: 'Cannot iterate over null (null)'",
+      "labels": [
+        "bug",
+        "testing",
+        "todowrite-sync"
+      ]
+    },
+    {
+      "id": "T561",
+      "title": "FIX: Hierarchy tree JSON output format",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": null,
+      "createdAt": "2025-12-20T10:57:24Z",
+      "phase": "core",
+      "description": "Test 4 in hierarchy-workflow.bats failing. Error: 'Cannot index string with string id'. The list --tree JSON output is returning string instead of object structure.",
+      "labels": [
+        "bug",
+        "hierarchy",
+        "testing"
+      ]
+    },
+    {
+      "id": "T562",
+      "title": "FIX: Hierarchy dry-run missing dryRun JSON field",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": null,
+      "createdAt": "2025-12-20T10:57:24Z",
+      "phase": "core",
+      "description": "Test 28 in hierarchy-workflow.bats failing. Output missing '\"dryRun\": true' field in JSON response. Currently outputs text format with [INFO] prefix instead of JSON structure.",
+      "labels": [
+        "bug",
+        "hierarchy",
+        "testing"
+      ]
+    },
+    {
+      "id": "T563",
+      "title": "FIX: Schema ID version mismatch in tests",
+      "status": "pending",
+      "priority": "low",
+      "type": "task",
+      "parentId": null,
+      "createdAt": "2025-12-20T10:57:25Z",
+      "phase": "core",
+      "description": "Test 3 in schema-validation.bats failing. Expected 'claude-todo-schema-v2.2' but got different value. Schema ID needs to be updated or test expectation needs adjustment.",
+      "labels": [
+        "bug",
+        "schema",
+        "testing"
+      ]
+    },
+    {
+      "id": "T564",
+      "title": "FIX: migrate-backups cleanup confirmation test",
+      "status": "pending",
+      "priority": "low",
+      "type": "task",
+      "parentId": null,
+      "createdAt": "2025-12-20T10:57:25Z",
+      "phase": "core",
+      "description": "Test 11 in migrate-backups.bats failing. Error: 'New backup directory not found' instead of expected confirmation message. Test environment setup issue.",
+      "labels": [
+        "backup",
+        "bug",
+        "testing"
       ]
     }
   ],

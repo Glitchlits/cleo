@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 1230,
+    "totalEntries": 1242,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-20T10:45:54Z",
+    "lastEntry": "2025-12-20T10:57:41Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -30417,6 +30417,258 @@
       "after": {
         "status": "done",
         "completedAt": "2025-12-20T10:45:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_e5de97ba03d2",
+      "timestamp": "2025-12-20T10:50:20Z",
+      "sessionId": "session_20251220_025020_099b38",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_fb7c5db29aab",
+      "timestamp": "2025-12-20T10:51:08Z",
+      "sessionId": "session_20251220_025020_099b38",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Config system testing session"
+      }
+    },
+    {
+      "id": "log_391d05dd9d7d",
+      "timestamp": "2025-12-20T10:51:09Z",
+      "sessionId": "session_20251220_025109_32d4e1",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log-1766227881-19f18f",
+      "timestamp": "2025-12-20T10:51:21Z",
+      "action": "task_created",
+      "taskId": "T559",
+      "actor": "system",
+      "details": {
+        "title": "Config test task - should be high priority",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Config test task - should be high priority",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log_532c19302d4d",
+      "timestamp": "2025-12-20T10:52:43Z",
+      "sessionId": "session_20251220_025109_32d4e1",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T429"
+      },
+      "details": null
+    },
+    {
+      "id": "log_830718bf38d0",
+      "timestamp": "2025-12-20T10:52:44Z",
+      "sessionId": "session_20251220_025109_32d4e1",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T429"
+      },
+      "after": {
+        "currentTask": "T459"
+      },
+      "details": null
+    },
+    {
+      "id": "log_c95c0ce3f12f",
+      "timestamp": "2025-12-20T10:52:44Z",
+      "sessionId": "session_20251220_025109_32d4e1",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T459"
+      },
+      "after": null,
+      "details": null
+    },
+    {
+      "id": "log_37d590bccf90",
+      "timestamp": "2025-12-20T10:53:44Z",
+      "sessionId": "session_20251220_025109_32d4e1",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "env var test"
+      }
+    },
+    {
+      "id": "log_c61cd5f6cfa9",
+      "timestamp": "2025-12-20T10:53:45Z",
+      "sessionId": "session_20251220_025345_f9f302",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_354a0f662ea4",
+      "timestamp": "2025-12-20T10:53:45Z",
+      "sessionId": "session_20251220_025345_f9f302",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "test complete"
+      }
+    },
+    {
+      "id": "log_8533f14d0b39",
+      "timestamp": "2025-12-20T10:53:46Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log-1766228244-cdfa92",
+      "timestamp": "2025-12-20T10:57:24Z",
+      "action": "task_created",
+      "taskId": "T560",
+      "actor": "system",
+      "details": {
+        "title": "FIX: TodoWrite sync - .injected.todos is null",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "FIX: TodoWrite sync - .injected.todos is null",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766228244-6e4988",
+      "timestamp": "2025-12-20T10:57:24Z",
+      "action": "task_created",
+      "taskId": "T561",
+      "actor": "system",
+      "details": {
+        "title": "FIX: Hierarchy tree JSON output format",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "FIX: Hierarchy tree JSON output format",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766228244-ede1f8",
+      "timestamp": "2025-12-20T10:57:24Z",
+      "action": "task_created",
+      "taskId": "T562",
+      "actor": "system",
+      "details": {
+        "title": "FIX: Hierarchy dry-run missing dryRun JSON field",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "FIX: Hierarchy dry-run missing dryRun JSON field",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766228245-878d0b",
+      "timestamp": "2025-12-20T10:57:25Z",
+      "action": "task_created",
+      "taskId": "T563",
+      "actor": "system",
+      "details": {
+        "title": "FIX: Schema ID version mismatch in tests",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "FIX: Schema ID version mismatch in tests",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log-1766228245-e63367",
+      "timestamp": "2025-12-20T10:57:25Z",
+      "action": "task_created",
+      "taskId": "T564",
+      "actor": "system",
+      "details": {
+        "title": "FIX: migrate-backups cleanup confirmation test",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "FIX: migrate-backups cleanup confirmation test",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log_ba20d313edd3",
+      "timestamp": "2025-12-20T10:57:41Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T559",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-20T10:57:40Z"
       },
       "details": {
         "field": "status",

@@ -37,7 +37,7 @@
   "display": {
     "showArchiveCount": true,
     "showLogSummary": true,
-    "warnStaleDays": 30
+    "warnStaleDays": 7
   },
   "output": {
     "showColor": true,
@@ -77,5 +77,8 @@
     "maxDepth": 3,
     "countDoneInLimit": false,
     "maxActiveSiblings": 8
+  },
+  "backup": {
+    "enabled": true
   }
 }
