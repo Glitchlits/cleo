@@ -3,12 +3,12 @@
   "_meta": {
     "version": "1.0.0",
     "lastUpdated": "2025-12-19",
-    "totalCommands": 33,
+    "totalCommands": 34,
     "specCompliance": "LLM-AGENT-FIRST-SPEC v3.0"
   },
   "categories": {
     "write": ["add", "archive", "complete", "focus", "phase", "session", "update"],
-    "read": ["analyze", "blockers", "commands", "dash", "deps", "exists", "export", "find", "history", "labels", "list", "log", "next", "phases", "show", "stats"],
+    "read": ["analyze", "blockers", "commands", "dash", "deps", "exists", "export", "find", "history", "labels", "list", "log", "next", "phases", "research", "show", "stats"],
     "sync": ["extract", "inject", "sync"],
     "maintenance": ["backup", "config", "init", "migrate", "migrate-backups", "restore", "validate"]
   },
@@ -323,6 +323,18 @@
       "agentRelevance": "low"
     },
     {
+      "name": "research",
+      "script": "research.sh",
+      "category": "read",
+      "doc": "research.md",
+      "synopsis": "Multi-source web research aggregation with MCP servers (Tavily, Context7, Reddit)",
+      "flags": ["--format", "--depth", "--output", "--topic", "--subreddit", "--include-reddit", "--link-task", "--plan-only", "--json", "--url", "--reddit", "--library"],
+      "exitCodes": [0, 2, 3],
+      "jsonOutput": true,
+      "agentRelevance": "high",
+      "aliases": ["dig"]
+    },
+    {
       "name": "session",
       "script": "session.sh",
       "category": "write",
@@ -407,6 +419,7 @@
     "overview": "dash",
     "checkExists": "exists",
     "dependencies": "deps",
-    "blockedTasks": "blockers"
+    "blockedTasks": "blockers",
+    "webResearch": "research"
   }
 }
