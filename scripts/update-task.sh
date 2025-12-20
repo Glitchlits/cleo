@@ -171,6 +171,12 @@ Hierarchy Options (v0.20.0+):
                             Use --parent "" to remove parent (make root task)
       --size SIZE           Set scope-based size: small|medium|large (NOT time)
 
+Completed Task Updates:
+  Completed tasks allow metadata corrections only:
+    - Allowed: --type, --parent, --size, --labels (hierarchy/classification)
+    - Blocked: --title, --description, --status, --priority, --notes (work fields)
+  This enables hierarchy restructuring without losing completion history.
+
 Array Field Options (append by default):
   -l, --labels LABELS       Append comma-separated labels
       --set-labels LABELS   Replace all labels with these
@@ -614,15 +620,33 @@ fi
 # Get current status for transition validation
 CURRENT_STATUS=$(echo "$TASK" | jq -r '.status')
 
-# Check if task is already done
+# Check if task is already done - allow metadata-only updates
 if [[ "$CURRENT_STATUS" == "done" ]]; then
-  if [[ "$FORMAT" == "json" ]]; then
-    output_error "$E_TASK_INVALID_STATUS" "Cannot update completed task $TASK_ID" "$EXIT_VALIDATION_ERROR" false "Completed tasks are immutable. Create a new task if needed."
-  else
-    log_error "Cannot update completed task $TASK_ID"
-    log_info "Completed tasks are immutable. Create a new task if needed."
+  # Work fields are immutable for completed tasks
+  BLOCKED_FIELDS=()
+  [[ -n "$NEW_TITLE" ]] && BLOCKED_FIELDS+=("--title")
+  [[ -n "$NEW_DESCRIPTION" ]] && BLOCKED_FIELDS+=("--description")
+  [[ -n "$NEW_STATUS" ]] && BLOCKED_FIELDS+=("--status")
+  [[ -n "$NEW_PRIORITY" ]] && BLOCKED_FIELDS+=("--priority")
+  [[ -n "$NOTE_TO_ADD" ]] && BLOCKED_FIELDS+=("--notes")
+  [[ -n "$NEW_PHASE" ]] && BLOCKED_FIELDS+=("--phase")
+  [[ -n "$NEW_BLOCKED_BY" ]] && BLOCKED_FIELDS+=("--blocked-by")
+  [[ -n "$FILES_TO_ADD" || -n "$FILES_TO_SET" || "$CLEAR_FILES" == true ]] && BLOCKED_FIELDS+=("--files")
+  [[ -n "$ACCEPTANCE_TO_ADD" || -n "$ACCEPTANCE_TO_SET" || "$CLEAR_ACCEPTANCE" == true ]] && BLOCKED_FIELDS+=("--acceptance")
+  [[ -n "$DEPENDS_TO_ADD" || -n "$DEPENDS_TO_SET" || "$CLEAR_DEPENDS" == true ]] && BLOCKED_FIELDS+=("--depends")
+
+  if [[ ${#BLOCKED_FIELDS[@]} -gt 0 ]]; then
+    BLOCKED_LIST=$(IFS=', '; echo "${BLOCKED_FIELDS[*]}")
+    if [[ "$FORMAT" == "json" ]]; then
+      output_error "$E_TASK_INVALID_STATUS" "Cannot update work fields on completed task $TASK_ID: $BLOCKED_LIST" "$EXIT_VALIDATION_ERROR" false "Completed tasks allow metadata corrections only: --type, --parent, --size, --labels"
+    else
+      log_error "Cannot update work fields on completed task $TASK_ID"
+      log_info "Blocked fields: $BLOCKED_LIST"
+      log_info "Allowed for completed tasks: --type, --parent, --size, --labels (metadata corrections)"
+    fi
+    exit "${EXIT_VALIDATION_ERROR:-6}"
   fi
-  exit "${EXIT_VALIDATION_ERROR:-6}"
+  # Metadata-only updates allowed: type, parentId, size, labels
 fi
 
 # Normalize labels to remove duplicates

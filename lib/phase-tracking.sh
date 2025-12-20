@@ -10,10 +10,13 @@ source "$_LIB_DIR/platform-compat.sh"
 source "$_LIB_DIR/file-ops.sh"
 
 # ============================================================================
-# CONSTANTS
+# CONSTANTS (guarded to prevent readonly collision on re-source)
 # ============================================================================
 
-readonly VALID_PHASE_STATUSES=("pending" "active" "completed")
+# Valid phase statuses
+if [[ -z "${VALID_PHASE_STATUSES:-}" ]]; then
+    readonly VALID_PHASE_STATUSES=("pending" "active" "completed")
+fi
 
 # ============================================================================
 # PHASE QUERY FUNCTIONS

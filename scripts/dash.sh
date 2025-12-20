@@ -95,6 +95,13 @@ if [[ -f "$LIB_DIR/error-json.sh" ]]; then
   source "$LIB_DIR/error-json.sh"
 fi
 
+# Local log_error wrapper for simple error messages
+# (Overrides logging.sh's structured version for user-facing output)
+log_error() {
+  local error_code="${2:-$E_UNKNOWN}"
+  output_error "$error_code" "$1"
+}
+
 # Default configuration
 PERIOD_DAYS=7
 FORMAT=""

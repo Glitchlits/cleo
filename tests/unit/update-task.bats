@@ -441,7 +441,9 @@ teardown() {
     create_tasks_with_completed
     run bash "$UPDATE_SCRIPT" T001 --priority high
     assert_failure
-    assert_output --partial "Cannot update completed task"
+    # Work fields (priority, title, etc.) are blocked on completed tasks
+    # Only metadata fields (type, parentId, size, labels) are allowed
+    assert_output --partial "Cannot update work fields on completed task"
 }
 
 # =============================================================================

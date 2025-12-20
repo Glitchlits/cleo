@@ -792,6 +792,43 @@ check_timestamp_sanity() {
 }
 
 # ============================================================================
+# UPDATE FIELD CLASSIFICATION
+# ============================================================================
+
+# Check if update contains only metadata fields (allowed on done tasks)
+# Metadata fields can be modified on completed tasks without reopening them.
+# Work fields require the task to be non-done status.
+#
+# Arguments:
+#   $1... - Field names being updated
+# Returns:
+#   0 - Only metadata fields (safe for done tasks)
+#   1 - Contains work fields (blocked for done tasks)
+# Example:
+#   is_metadata_only_update "type" "parentId" && echo "safe"
+#   is_metadata_only_update "title" "type" && echo "blocked"
+is_metadata_only_update() {
+    # Metadata fields: organizational/structural, can change on done tasks
+    local METADATA_FIELDS=("type" "parentId" "labels" "size")
+
+    # Work fields: content/workflow-related, blocked on done tasks
+    local WORK_FIELDS=("title" "description" "status" "priority" "notes" "depends" "blockedBy" "phase" "files" "acceptance")
+
+    for field in "$@"; do
+        # Check if field is in work fields
+        for work_field in "${WORK_FIELDS[@]}"; do
+            if [[ "$field" == "$work_field" ]]; then
+                return 1  # Contains work field
+            fi
+        done
+    done
+
+    return 0  # Only metadata fields
+}
+
+export -f is_metadata_only_update
+
+# ============================================================================
 # STATUS TRANSITION VALIDATION
 # ============================================================================
 

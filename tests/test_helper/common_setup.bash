@@ -92,6 +92,9 @@ common_setup() {
     _setup_paths
     _setup_scripts
     _create_test_project
+
+    # Force text output format for tests (LLM-Agent-First defaults to JSON in non-TTY)
+    export CLAUDE_TODO_FORMAT="text"
 }
 
 # Optional: common teardown
