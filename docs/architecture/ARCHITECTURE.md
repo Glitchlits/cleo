@@ -181,8 +181,8 @@ your-project/.claude/               # Per-project instance (NOT in git)
 ├── todo-archive.json               # Completed tasks
 ├── todo-config.json                # Project configuration
 ├── todo-log.json                   # Change history
-└── .backups/                       # Automatic versioned backups
-    ├── todo.json.1
+└── .backups/                       # Tier 1: Operational backups (atomic writes)
+    ├── todo.json.1                 # Most recent
     ├── todo.json.2
     └── ...
 ```

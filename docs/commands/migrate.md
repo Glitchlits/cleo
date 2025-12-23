@@ -259,7 +259,7 @@ Repair Preview
 Apply these repairs? (y/N) y
 
 Applying repairs...
-✓ Backup created: .claude/backups/pre-repair-20251216-140000/todo.json
+✓ Backup created: .claude/backups/safety/safety_20251216_140000_pre_repair/todo.json
 ✓ Repair completed successfully
 ```
 
@@ -279,7 +279,7 @@ Project: /path/to/project
 File: /path/to/project/.claude/todo.json
 
 Applying repairs...
-✓ Backup created: .claude/backups/pre-repair-20251216-140000/todo.json
+✓ Backup created: .claude/backups/safety/safety_20251216_140000_pre_repair/todo.json
 ✓ Repair completed successfully
 ```
 
@@ -480,7 +480,7 @@ claude-todo migrate rollback --backup-id migration_v2.1.0_20251215_100000
 |------|----------|---------|
 | Migration backup | `.claude/backups/migration/` | Created before migrations |
 | Safety backup | `.claude/backups/safety/` | Created before rollback |
-| Manual backup | `.claude/backups/manual/` | Created by `backup` command |
+| Snapshot backup | `.claude/backups/snapshot/` | Created by `backup` command |
 
 ### Exit Codes
 

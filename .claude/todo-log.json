@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 1478,
+    "totalEntries": 1506,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-23T02:41:13Z",
+    "lastEntry": "2025-12-23T02:58:14Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -35631,6 +35631,343 @@
         "currentTask": "T661"
       },
       "details": null
+    },
+    {
+      "id": "log_26d9df541af7",
+      "timestamp": "2025-12-23T02:41:54Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T648",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:41:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_9ea9a63d464d",
+      "timestamp": "2025-12-23T02:41:54Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T643",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:41:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_7b262c03a31c",
+      "timestamp": "2025-12-23T02:42:06Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "v0.28.1 released: Tab Completion (T637 EPIC), exit code fixes, detect_orphans() JSON fix. 79 files, 20k+ lines. Tests: 1386 pass."
+      }
+    },
+    {
+      "id": "log_8cf620e04a63",
+      "timestamp": "2025-12-23T02:42:15Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T662",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:42:14Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_a6a8cf3ac4a6",
+      "timestamp": "2025-12-23T02:42:26Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T661",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:42:26Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_735d323470d1",
+      "timestamp": "2025-12-23T02:43:22Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T664",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:43:22Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_6efedb157b5b",
+      "timestamp": "2025-12-23T02:43:22Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T655",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:43:22Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_7ed9b1d3dbc3",
+      "timestamp": "2025-12-23T02:48:03Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T621",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:48:03Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_942b0437f5ce",
+      "timestamp": "2025-12-23T02:48:04Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T616",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:48:03Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_951f493ef863",
+      "timestamp": "2025-12-23T02:48:04Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T628",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:48:04Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_005bec1e0035",
+      "timestamp": "2025-12-23T02:48:05Z",
+      "sessionId": null,
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T629",
+      "before": {
+        "title": "P2-6: Update file-ops.sh to use consolidated path",
+        "status": "pending",
+        "priority": "high",
+        "description": "Modify backup_file() in lib/file-ops.sh to write to .claude/backups/operational/ instead of .claude/.backups/. Maintain numbered rotation pattern.",
+        "phase": "testing",
+        "labels": [
+          "backup",
+          "file-ops",
+          "refactoring"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T614"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "P2-6: Update file-ops.sh to use consolidated path",
+        "status": "pending",
+        "priority": "high",
+        "description": "Modify backup_file() in lib/file-ops.sh to write to .claude/backups/operational/ instead of .claude/.backups/. Maintain numbered rotation pattern.",
+        "phase": "testing",
+        "labels": [
+          "backup",
+          "file-ops",
+          "refactoring"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T614"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b4a2b867eb68",
+      "timestamp": "2025-12-23T02:48:57Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T629",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:48:57Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_086cee20c211",
+      "timestamp": "2025-12-23T02:48:57Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T623",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:48:57Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_d7a876d5f611",
+      "timestamp": "2025-12-23T02:53:59Z",
+      "sessionId": "session_20251222_185359_eb232f",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_297234ca0a3f",
+      "timestamp": "2025-12-23T02:54:06Z",
+      "sessionId": "session_20251222_185359_eb232f",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T634"
+      },
+      "details": null
+    },
+    {
+      "id": "log_248bc7e1c9c0",
+      "timestamp": "2025-12-23T02:58:00Z",
+      "sessionId": "session_20251222_185359_eb232f",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T634",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:58:00Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_b830310dc32a",
+      "timestamp": "2025-12-23T02:58:14Z",
+      "sessionId": "session_20251222_185359_eb232f",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "T634 completed: Created comprehensive disaster recovery documentation at docs/reference/disaster-recovery.md (810 lines, 20KB). Covers 5 scenarios with step-by-step CLI recovery procedures. Updated INDEX.md with links."
+      }
     }
   ]
 }

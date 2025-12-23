@@ -528,3 +528,144 @@ teardown() {
 # See note above about the jq // operator bug
 # @test "create_safety_backup silently skips when backups disabled" { ... }
 # @test "create_migration_backup succeeds even when backups disabled" { ... }
+
+# =============================================================================
+# find_backups Tests - Backup Search Functionality
+# =============================================================================
+
+@test "find_backups returns all backups when no filters" {
+    # Create some test backups
+    mkdir -p "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000"
+    echo '{"backupType": "snapshot", "timestamp": "2025-12-20T12:00:00Z", "files": [], "totalSize": 100}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000/metadata.json"
+
+    mkdir -p "$BACKUP_DIR_ABS/safety/safety_20251219_100000_update_todo.json"
+    echo '{"backupType": "safety", "timestamp": "2025-12-19T10:00:00Z", "files": [], "totalSize": 50}' > "$BACKUP_DIR_ABS/safety/safety_20251219_100000_update_todo.json/metadata.json"
+
+    run find_backups "" "" "all" "" "" 20
+
+    [[ $status -eq 0 ]]
+
+    # Should return JSON array
+    local count
+    count=$(echo "$output" | jq 'length')
+    [[ $count -ge 2 ]]
+}
+
+@test "find_backups filters by type" {
+    # Create backups of different types
+    mkdir -p "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000"
+    echo '{"backupType": "snapshot", "timestamp": "2025-12-20T12:00:00Z", "files": [], "totalSize": 100}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000/metadata.json"
+
+    mkdir -p "$BACKUP_DIR_ABS/safety/safety_20251219_100000_update_todo.json"
+    echo '{"backupType": "safety", "timestamp": "2025-12-19T10:00:00Z", "files": [], "totalSize": 50}' > "$BACKUP_DIR_ABS/safety/safety_20251219_100000_update_todo.json/metadata.json"
+
+    run find_backups "" "" "snapshot" "" "" 20
+
+    [[ $status -eq 0 ]]
+
+    # Should only return snapshot backups
+    local types
+    types=$(echo "$output" | jq -r '.[].type' | sort -u)
+    [[ "$types" == "snapshot" ]]
+}
+
+@test "find_backups filters by name pattern" {
+    mkdir -p "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000_session_start"
+    echo '{"backupType": "snapshot", "timestamp": "2025-12-20T12:00:00Z", "files": [], "totalSize": 100}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000_session_start/metadata.json"
+
+    mkdir -p "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_130000_before_refactor"
+    echo '{"backupType": "snapshot", "timestamp": "2025-12-20T13:00:00Z", "files": [], "totalSize": 100}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_130000_before_refactor/metadata.json"
+
+    run find_backups "" "" "all" "*session*" "" 20
+
+    [[ $status -eq 0 ]]
+
+    # Should only return backup with "session" in name
+    local count
+    count=$(echo "$output" | jq 'length')
+    [[ $count -eq 1 ]]
+
+    local name
+    name=$(echo "$output" | jq -r '.[0].name')
+    [[ "$name" == *"session"* ]]
+}
+
+@test "find_backups respects limit" {
+    # Create 5 backups
+    for i in {1..5}; do
+        local padded=$(printf "%02d" "$i")
+        mkdir -p "$BACKUP_DIR_ABS/snapshot/snapshot_202512${padded}_120000"
+        echo "{\"backupType\": \"snapshot\", \"timestamp\": \"2025-12-${padded}T12:00:00Z\", \"files\": [], \"totalSize\": 100}" > "$BACKUP_DIR_ABS/snapshot/snapshot_202512${padded}_120000/metadata.json"
+    done
+
+    run find_backups "" "" "all" "" "" 3
+
+    [[ $status -eq 0 ]]
+
+    local count
+    count=$(echo "$output" | jq 'length')
+    [[ $count -le 3 ]]
+}
+
+@test "find_backups searches content with grep pattern" {
+    # Create backup with specific task ID in content
+    mkdir -p "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000"
+    echo '{"backupType": "snapshot", "timestamp": "2025-12-20T12:00:00Z", "files": [], "totalSize": 100}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000/metadata.json"
+    echo '{"tasks": [{"id": "T001", "title": "Test task"}]}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_120000/todo.json"
+
+    mkdir -p "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_130000"
+    echo '{"backupType": "snapshot", "timestamp": "2025-12-20T13:00:00Z", "files": [], "totalSize": 100}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_130000/metadata.json"
+    echo '{"tasks": [{"id": "T999", "title": "Other task"}]}' > "$BACKUP_DIR_ABS/snapshot/snapshot_20251220_130000/todo.json"
+
+    run find_backups "" "" "all" "" "T001" 20
+
+    [[ $status -eq 0 ]]
+
+    # Should only return backup containing T001
+    local count
+    count=$(echo "$output" | jq 'length')
+    [[ $count -eq 1 ]]
+}
+
+@test "find_backups returns empty array when no matches" {
+    # No backups match the pattern
+    run find_backups "" "" "all" "*nonexistent*" "" 20
+
+    [[ $status -eq 0 ]]
+    [[ "$output" == "[]" ]]
+}
+
+@test "parse_relative_date handles day format" {
+    run parse_relative_date "7d"
+
+    [[ $status -eq 0 ]]
+    # Should return ISO timestamp
+    [[ "$output" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T ]]
+}
+
+@test "parse_relative_date handles week format" {
+    run parse_relative_date "2w"
+
+    [[ $status -eq 0 ]]
+    [[ "$output" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T ]]
+}
+
+@test "parse_relative_date handles ISO date format" {
+    run parse_relative_date "2025-12-15"
+
+    [[ $status -eq 0 ]]
+    [[ "$output" == "2025-12-15T00:00:00Z" ]]
+}
+
+@test "parse_relative_date returns empty for empty input" {
+    run parse_relative_date ""
+
+    [[ $status -eq 0 ]]
+    [[ -z "$output" ]]
+}
+
+@test "parse_relative_date fails on invalid format" {
+    run parse_relative_date "invalid_date"
+
+    [[ $status -ne 0 ]]
+}

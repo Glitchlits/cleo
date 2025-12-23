@@ -42,6 +42,7 @@
 | **[configuration.md](reference/configuration.md)** | Configuration reference | Customizing system behavior |
 | **[schema-reference.md](architecture/SCHEMAS.md)** | Data schema documentation | Understanding data structures |
 | **[troubleshooting.md](reference/troubleshooting.md)** | Troubleshooting guide | Resolving issues |
+| **[disaster-recovery.md](reference/disaster-recovery.md)** | Disaster recovery procedures | Recovering from data loss and failures |
 | **[integration/CLAUDE-CODE.md](integration/CLAUDE-CODE.md)** | Claude Code integration & session workflows | Understanding process flows |
 | **[migration-guide.md](reference/migration-guide.md)** | Migration and upgrade guide | Upgrading between versions |
 | **[migration/v2.2.0-migration-guide.md](migration/v2.2.0-migration-guide.md)** | v2.2.0 migration guide | Upgrading to project phases (v2.2.0) |
@@ -644,6 +645,7 @@ You understand the CLAUDE-TODO system when you can:
 - **Phase System**: [PHASE-SYSTEM-SPEC.md](specs/PHASE-SYSTEM-SPEC.md) → **AUTHORITATIVE** phase lifecycle bible
 - **Hierarchy**: [HIERARCHY-ENHANCEMENT-SPEC.md](specs/HIERARCHY-ENHANCEMENT-SPEC.md) → Epic/Task/Subtask specification
 - **Debugging**: [troubleshooting.md](reference/troubleshooting.md) → Issue resolution
+- **Disaster Recovery**: [disaster-recovery.md](reference/disaster-recovery.md) → Data recovery procedures
 - **Extending**: [ARCHITECTURE.md](architecture/ARCHITECTURE.md) → Extension points
 - **Reviewing**: [ARCHITECTURE.md](architecture/ARCHITECTURE.md) → Complete design
 - **Data Structure**: [schema-reference.md](architecture/SCHEMAS.md) → Schema reference

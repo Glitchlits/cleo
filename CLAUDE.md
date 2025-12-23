@@ -1,4 +1,4 @@
-<!-- CLAUDE-TODO:START v0.28.1 -->
+<!-- CLAUDE-TODO:START v0.29.0 -->
 ## Task Management (claude-todo)
 
 Use `ct` (alias for `claude-todo`) for all task operations. Full docs: `~/.claude-todo/docs/TODO_Task_Management.md`
@@ -228,10 +228,10 @@ The backup system implements a **two-tier design**:
 
 ### Tier 1: Operational Backups (Atomic Write Safety)
 - **Location**: `lib/file-ops.sh`
-- **Directory**: `.backups/` (relative to data files)
+- **Directory**: `.claude/.backups/` (numbered: `todo.json.1`, `todo.json.2`, etc.)
 - **Purpose**: Automatic rollback protection for every write operation
 - **Trigger**: Automatic on `atomic_write()` / `save_json()`
-- **Retention**: Last 5 backups per file (numbered: `.1`, `.2`, etc.)
+- **Retention**: Last 10 backups per file (configurable)
 
 ### Tier 2: Recovery Backups (Point-in-Time Snapshots)
 - **Location**: `lib/backup.sh`

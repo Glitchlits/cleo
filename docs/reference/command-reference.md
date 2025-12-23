@@ -669,7 +669,7 @@ claude-todo backup [OPTIONS]
 **Options:**
 | Option | Type | Description |
 |--------|------|-------------|
-| `--destination` | path | Backup destination (default: `.claude/.backups/`) |
+| `--destination` | path | Backup destination (default: `.claude/backups/snapshot/`) |
 | `--compress` | flag | Compress backup with gzip |
 | `--name` | string | Custom backup name |
 
@@ -722,17 +722,17 @@ claude-todo restore BACKUP_DIR [OPTIONS]
 
 **Examples:**
 ```bash
-# List available backups
-ls -la .claude/.backups/
+# List available Tier 2 backups
+ls -la .claude/backups/snapshot/
 
-# Restore from specific backup
-claude-todo restore .claude/.backups/backup-2025-12-05-100000/
+# Restore from Tier 2 snapshot backup
+claude-todo restore .claude/backups/snapshot/snapshot_20251205_100000/
 
 # Verify backup before restore
-claude-todo restore .claude/.backups/backup-2025-12-05-100000/ --verify
+claude-todo restore .claude/backups/snapshot/snapshot_20251205_100000/ --verify
 
 # Force restore without confirmation
-claude-todo restore .claude/.backups/backup-2025-12-05-100000/ --force
+claude-todo restore .claude/backups/snapshot/snapshot_20251205_100000/ --force
 ```
 
 **Workflow:**

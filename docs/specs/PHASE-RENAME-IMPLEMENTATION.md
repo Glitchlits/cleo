@@ -138,7 +138,7 @@ The implementation leverages existing file operations that automatically:
 - Create backups before modification
 - Validate JSON syntax after transformation
 - Use atomic file replacement (temp → validate → rename)
-- Maintain .backups/ directory with numbered backups
+- Maintain .claude/.backups/ directory with numbered backups (Tier 1)
 
 ## Integration
 

@@ -19,7 +19,7 @@
 │ ├── todo-archive.json (completed)                  │
 │ ├── todo-config.json (settings)                    │
 │ ├── todo-log.json (audit trail)                    │
-│ └── .backups/ (versioned backups)                  │
+│ └── .backups/ (Tier 1: operational backups)        │
 └─────────────────────────────────────────────────────┘
 ```
 

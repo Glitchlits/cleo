@@ -146,6 +146,435 @@ readonly DEFAULT_MAX_SAFETY_BACKUPS=5
 readonly DEFAULT_MAX_INCREMENTAL=10
 readonly DEFAULT_MAX_ARCHIVE_BACKUPS=3
 readonly DEFAULT_SAFETY_RETENTION_DAYS=7
+readonly DEFAULT_SCHEDULED_ON_SESSION_START=false
+readonly DEFAULT_SCHEDULED_ON_SESSION_END=false
+
+# Manifest file for O(1) backup lookups
+readonly MANIFEST_FILENAME="backup-manifest.json"
+readonly MANIFEST_VERSION="1.0.0"
+
+# ============================================================================
+# MANIFEST FUNCTIONS
+# ============================================================================
+
+# Initialize manifest file if it doesn't exist
+# Args: none
+# Returns: 0 on success, 1 on error
+_init_manifest() {
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    # Ensure backup directory exists
+    if [[ ! -d "$backup_dir" ]]; then
+        mkdir -p "$backup_dir" || {
+            echo "ERROR: Failed to create backup directory: $backup_dir" >&2
+            return 1
+        }
+    fi
+
+    # Create manifest if it doesn't exist
+    if [[ ! -f "$manifest_path" ]]; then
+        local timestamp
+        timestamp=$(get_iso_timestamp)
+        jq -n \
+            --arg schema "https://claude-todo.dev/schemas/v1/backup-manifest.schema.json" \
+            --arg version "$MANIFEST_VERSION" \
+            --arg created "$timestamp" \
+            --arg modified "$timestamp" \
+            '{
+                "$schema": $schema,
+                "_meta": {
+                    "version": $version,
+                    "created": $created,
+                    "lastModified": $modified
+                },
+                "backups": []
+            }' > "$manifest_path" || {
+            echo "ERROR: Failed to create manifest file: $manifest_path" >&2
+            return 1
+        }
+    fi
+
+    return 0
+}
+
+# Add a backup entry to the manifest
+# Args: $1 = backup_id, $2 = backup_type, $3 = backup_path, $4 = files_json, $5 = total_size, $6 = custom_name (optional)
+# Returns: 0 on success, 1 on error
+_add_to_manifest() {
+    local backup_id="$1"
+    local backup_type="$2"
+    local backup_path="$3"
+    local files_json="$4"
+    local total_size="$5"
+    local custom_name="${6:-}"
+
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    # Ensure manifest exists
+    _init_manifest || return 1
+
+    local timestamp
+    timestamp=$(get_iso_timestamp)
+
+    # Calculate checksum summary (sha256 of concatenated file checksums)
+    local checksum_summary=""
+    if [[ -n "$files_json" && "$files_json" != "[]" ]]; then
+        local checksums
+        checksums=$(echo "$files_json" | jq -r '.[].checksum // empty' | tr '\n' ' ' | xargs echo)
+        if [[ -n "$checksums" ]]; then
+            checksum_summary=$(echo -n "$checksums" | safe_checksum_stdin)
+        fi
+    fi
+
+    # Extract file names from files_json
+    local file_names
+    file_names=$(echo "$files_json" | jq -r '[.[].source // .[].backup] | unique')
+
+    # Determine neverDelete flag (migration backups are permanent)
+    local never_delete="false"
+    if [[ "$backup_type" == "$BACKUP_TYPE_MIGRATION" ]]; then
+        never_delete="true"
+    fi
+
+    # Create backup entry
+    local entry
+    if [[ -n "$custom_name" ]]; then
+        entry=$(jq -n \
+            --arg id "$backup_id" \
+            --arg type "$backup_type" \
+            --arg timestamp "$timestamp" \
+            --arg path "$backup_path" \
+            --argjson files "$file_names" \
+            --arg checksumSummary "$checksum_summary" \
+            --argjson sizeBytes "$total_size" \
+            --argjson neverDelete "$never_delete" \
+            --arg name "$custom_name" \
+            '{
+                id: $id,
+                type: $type,
+                timestamp: $timestamp,
+                path: $path,
+                files: $files,
+                checksumSummary: $checksumSummary,
+                sizeBytes: $sizeBytes,
+                neverDelete: $neverDelete,
+                name: $name
+            }')
+    else
+        entry=$(jq -n \
+            --arg id "$backup_id" \
+            --arg type "$backup_type" \
+            --arg timestamp "$timestamp" \
+            --arg path "$backup_path" \
+            --argjson files "$file_names" \
+            --arg checksumSummary "$checksum_summary" \
+            --argjson sizeBytes "$total_size" \
+            --argjson neverDelete "$never_delete" \
+            '{
+                id: $id,
+                type: $type,
+                timestamp: $timestamp,
+                path: $path,
+                files: $files,
+                checksumSummary: $checksumSummary,
+                sizeBytes: $sizeBytes,
+                neverDelete: $neverDelete
+            }')
+    fi
+
+    # Update manifest atomically
+    local temp_manifest
+    temp_manifest=$(mktemp)
+    local modified_timestamp
+    modified_timestamp=$(get_iso_timestamp)
+
+    if jq --argjson entry "$entry" --arg modified "$modified_timestamp" \
+        '.backups += [$entry] | ._meta.lastModified = $modified' \
+        "$manifest_path" > "$temp_manifest" 2>/dev/null; then
+        mv "$temp_manifest" "$manifest_path" || {
+            rm -f "$temp_manifest"
+            echo "ERROR: Failed to update manifest file" >&2
+            return 1
+        }
+    else
+        rm -f "$temp_manifest"
+        echo "ERROR: Failed to add entry to manifest" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+# Remove a backup entry from the manifest
+# Args: $1 = backup_id or backup_path
+# Returns: 0 on success, 1 on error
+_remove_from_manifest() {
+    local identifier="$1"
+
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    # If manifest doesn't exist, nothing to remove
+    if [[ ! -f "$manifest_path" ]]; then
+        return 0
+    fi
+
+    # Update manifest atomically
+    local temp_manifest
+    temp_manifest=$(mktemp)
+    local modified_timestamp
+    modified_timestamp=$(get_iso_timestamp)
+
+    # Remove by id or path match
+    if jq --arg id "$identifier" --arg path "$identifier" --arg modified "$modified_timestamp" \
+        '.backups = [.backups[] | select(.id != $id and .path != $path)] | ._meta.lastModified = $modified' \
+        "$manifest_path" > "$temp_manifest" 2>/dev/null; then
+        mv "$temp_manifest" "$manifest_path" || {
+            rm -f "$temp_manifest"
+            echo "ERROR: Failed to update manifest file" >&2
+            return 1
+        }
+    else
+        rm -f "$temp_manifest"
+        echo "ERROR: Failed to remove entry from manifest" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+# Get a backup entry from the manifest by ID
+# Args: $1 = backup_id
+# Output: JSON object of the backup entry or empty if not found
+# Returns: 0 on success (even if not found), 1 on error
+_get_from_manifest() {
+    local backup_id="$1"
+
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    # If manifest doesn't exist, return empty
+    if [[ ! -f "$manifest_path" ]]; then
+        echo ""
+        return 0
+    fi
+
+    # Look up by ID
+    local entry
+    entry=$(jq --arg id "$backup_id" '.backups[] | select(.id == $id)' "$manifest_path" 2>/dev/null)
+
+    if [[ -n "$entry" && "$entry" != "null" ]]; then
+        echo "$entry"
+    else
+        echo ""
+    fi
+
+    return 0
+}
+
+# Get backups from manifest filtered by type
+# Args: $1 = backup_type (or "all" for all types)
+# Output: JSON array of backup entries
+# Returns: 0 on success, 1 on error
+_get_backups_from_manifest() {
+    local filter_type="${1:-all}"
+
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    # If manifest doesn't exist, return empty array
+    if [[ ! -f "$manifest_path" ]]; then
+        echo "[]"
+        return 0
+    fi
+
+    if [[ "$filter_type" == "all" ]]; then
+        jq '.backups' "$manifest_path" 2>/dev/null || echo "[]"
+    else
+        jq --arg type "$filter_type" '[.backups[] | select(.type == $type)]' "$manifest_path" 2>/dev/null || echo "[]"
+    fi
+
+    return 0
+}
+
+# Update manifest lastModified timestamp
+# Args: none
+# Returns: 0 on success, 1 on error
+_update_manifest_meta() {
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    if [[ ! -f "$manifest_path" ]]; then
+        return 0
+    fi
+
+    local temp_manifest
+    temp_manifest=$(mktemp)
+    local modified_timestamp
+    modified_timestamp=$(get_iso_timestamp)
+
+    if jq --arg modified "$modified_timestamp" \
+        '._meta.lastModified = $modified' \
+        "$manifest_path" > "$temp_manifest" 2>/dev/null; then
+        mv "$temp_manifest" "$manifest_path" || {
+            rm -f "$temp_manifest"
+            return 1
+        }
+    else
+        rm -f "$temp_manifest"
+        return 1
+    fi
+
+    return 0
+}
+
+# Rebuild manifest from existing backup directories
+# Args: none
+# Output: Summary of rebuilt entries
+# Returns: 0 on success, 1 on error
+_rebuild_manifest() {
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    if [[ ! -d "$backup_dir" ]]; then
+        echo "ERROR: Backup directory not found: $backup_dir" >&2
+        return 1
+    fi
+
+    # Create fresh manifest
+    local timestamp
+    timestamp=$(get_iso_timestamp)
+    local temp_manifest
+    temp_manifest=$(mktemp)
+
+    jq -n \
+        --arg schema "https://claude-todo.dev/schemas/v1/backup-manifest.schema.json" \
+        --arg version "$MANIFEST_VERSION" \
+        --arg created "$timestamp" \
+        --arg modified "$timestamp" \
+        '{
+            "$schema": $schema,
+            "_meta": {
+                "version": $version,
+                "created": $created,
+                "lastModified": $modified
+            },
+            "backups": []
+        }' > "$temp_manifest"
+
+    local count=0
+    local type
+
+    # Iterate through all backup types
+    for type in "$BACKUP_TYPE_SNAPSHOT" "$BACKUP_TYPE_SAFETY" "$BACKUP_TYPE_INCREMENTAL" "$BACKUP_TYPE_ARCHIVE" "$BACKUP_TYPE_MIGRATION"; do
+        local type_dir="$backup_dir/$type"
+        if [[ ! -d "$type_dir" ]]; then
+            continue
+        fi
+
+        # Find all backup directories
+        while IFS= read -r backup_path; do
+            [[ -z "$backup_path" ]] && continue
+            [[ ! -d "$backup_path" ]] && continue
+
+            local backup_id
+            backup_id=$(basename "$backup_path")
+
+            # Read metadata if available
+            local metadata_file="$backup_path/metadata.json"
+            local backup_timestamp=""
+            local files_array="[]"
+            local total_size=0
+            local never_delete="false"
+
+            if [[ -f "$metadata_file" ]]; then
+                backup_timestamp=$(jq -r '.timestamp // empty' "$metadata_file" 2>/dev/null)
+                files_array=$(jq '[.files[].source // .files[].backup] // []' "$metadata_file" 2>/dev/null || echo "[]")
+                total_size=$(jq -r '.totalSize // 0' "$metadata_file" 2>/dev/null)
+                never_delete=$(jq -r '.neverDelete // false' "$metadata_file" 2>/dev/null)
+            fi
+
+            # Use directory mtime if no timestamp in metadata
+            if [[ -z "$backup_timestamp" ]]; then
+                backup_timestamp=$(get_iso_timestamp)
+            fi
+
+            # Calculate checksum summary from existing files
+            local checksum_summary=""
+            if [[ -f "$metadata_file" ]]; then
+                local checksums
+                checksums=$(jq -r '.files[].checksum // empty' "$metadata_file" 2>/dev/null | tr '\n' ' ' | xargs echo)
+                if [[ -n "$checksums" ]]; then
+                    checksum_summary=$(echo -n "$checksums" | safe_checksum_stdin)
+                fi
+            fi
+
+            # Calculate actual size if not in metadata
+            if [[ "$total_size" -eq 0 ]]; then
+                total_size=$(_calculate_backup_size "$backup_path")
+            fi
+
+            # Create entry
+            local entry
+            entry=$(jq -n \
+                --arg id "$backup_id" \
+                --arg type "$type" \
+                --arg timestamp "$backup_timestamp" \
+                --arg path "$backup_path" \
+                --argjson files "$files_array" \
+                --arg checksumSummary "$checksum_summary" \
+                --argjson sizeBytes "$total_size" \
+                --argjson neverDelete "$never_delete" \
+                '{
+                    id: $id,
+                    type: $type,
+                    timestamp: $timestamp,
+                    path: $path,
+                    files: $files,
+                    checksumSummary: $checksumSummary,
+                    sizeBytes: $sizeBytes,
+                    neverDelete: $neverDelete
+                }')
+
+            # Add to manifest
+            jq --argjson entry "$entry" '.backups += [$entry]' "$temp_manifest" > "${temp_manifest}.tmp" && \
+                mv "${temp_manifest}.tmp" "$temp_manifest"
+
+            count=$((count + 1))
+        done < <(find "$type_dir" -maxdepth 1 -name "${type}_*" -type d 2>/dev/null)
+    done
+
+    # Move temp manifest to final location
+    mv "$temp_manifest" "$manifest_path" || {
+        rm -f "$temp_manifest"
+        echo "ERROR: Failed to save rebuilt manifest" >&2
+        return 1
+    }
+
+    echo "Rebuilt manifest with $count backup entries"
+    return 0
+}
+
+# Check if manifest exists and is valid
+# Args: none
+# Returns: 0 if manifest is valid, 1 if missing or invalid
+_manifest_exists() {
+    local backup_dir="${BACKUP_DIR:-$DEFAULT_BACKUP_DIR}"
+    local manifest_path="$backup_dir/$MANIFEST_FILENAME"
+
+    if [[ ! -f "$manifest_path" ]]; then
+        return 1
+    fi
+
+    # Check if valid JSON
+    if ! jq empty "$manifest_path" 2>/dev/null; then
+        return 1
+    fi
+
+    return 0
+}
 
 # ============================================================================
 # INTERNAL FUNCTIONS
@@ -234,6 +663,8 @@ _load_backup_config() {
     MAX_INCREMENTAL="$DEFAULT_MAX_INCREMENTAL"
     MAX_ARCHIVE_BACKUPS="$DEFAULT_MAX_ARCHIVE_BACKUPS"
     SAFETY_RETENTION_DAYS="$DEFAULT_SAFETY_RETENTION_DAYS"
+    SCHEDULED_ON_SESSION_START="$DEFAULT_SCHEDULED_ON_SESSION_START"
+    SCHEDULED_ON_SESSION_END="$DEFAULT_SCHEDULED_ON_SESSION_END"
 
     # Override with config file values if available
     if [[ -f "$config_file" ]]; then
@@ -244,6 +675,8 @@ _load_backup_config() {
         MAX_INCREMENTAL=$(jq -r '.backup.maxIncremental // 10' "$config_file" 2>/dev/null || echo "$DEFAULT_MAX_INCREMENTAL")
         MAX_ARCHIVE_BACKUPS=$(jq -r '.backup.maxArchiveBackups // 3' "$config_file" 2>/dev/null || echo "$DEFAULT_MAX_ARCHIVE_BACKUPS")
         SAFETY_RETENTION_DAYS=$(jq -r '.backup.safetyRetentionDays // 7' "$config_file" 2>/dev/null || echo "$DEFAULT_SAFETY_RETENTION_DAYS")
+        SCHEDULED_ON_SESSION_START=$(jq -r '.backup.scheduled.onSessionStart // false' "$config_file" 2>/dev/null || echo "$DEFAULT_SCHEDULED_ON_SESSION_START")
+        SCHEDULED_ON_SESSION_END=$(jq -r '.backup.scheduled.onSessionEnd // false' "$config_file" 2>/dev/null || echo "$DEFAULT_SCHEDULED_ON_SESSION_END")
     fi
 
     return 0
@@ -440,6 +873,9 @@ create_snapshot_backup() {
         "$(jq -n --arg type "$BACKUP_TYPE_SNAPSHOT" --arg path "$backup_path" '{type: $type, path: $path}')" \
         "null" 2>/dev/null || true
 
+    # Add to manifest for O(1) lookups
+    _add_to_manifest "$backup_id" "$BACKUP_TYPE_SNAPSHOT" "$backup_path" "$files_json" "$total_size" "$custom_name" || true
+
     # Rotate old backups
     rotate_backups "$BACKUP_TYPE_SNAPSHOT"
 
@@ -520,6 +956,9 @@ create_safety_backup() {
         "$file_size")
 
     echo "$metadata" > "$backup_path/metadata.json"
+
+    # Add to manifest for O(1) lookups
+    _add_to_manifest "$backup_id" "$BACKUP_TYPE_SAFETY" "$backup_path" "$files_json" "$file_size" "" || true
 
     echo "$backup_path"
     return 0
@@ -1120,9 +1559,350 @@ prune_backups() {
 }
 
 # ============================================================================
+# SEARCH/FIND FUNCTIONS
+# ============================================================================
+
+# Parse relative date string to ISO timestamp
+# Args: $1 = relative date string (e.g., "7d", "2w", "1m", or ISO date)
+# Output: ISO timestamp string
+# Returns: 0 on success, 1 on parse error
+parse_relative_date() {
+    local date_str="$1"
+    local timestamp=""
+
+    # Empty string means no filter
+    if [[ -z "$date_str" ]]; then
+        echo ""
+        return 0
+    fi
+
+    # Already ISO format (YYYY-MM-DD or full ISO)
+    if [[ "$date_str" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
+        # Validate and normalize
+        if [[ "$date_str" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            # Just date, add time
+            echo "${date_str}T00:00:00Z"
+        else
+            echo "$date_str"
+        fi
+        return 0
+    fi
+
+    # Relative format: Nd (days), Nw (weeks), Nm (months)
+    if [[ "$date_str" =~ ^([0-9]+)([dwm])$ ]]; then
+        local count="${BASH_REMATCH[1]}"
+        local unit="${BASH_REMATCH[2]}"
+        local days=0
+
+        case "$unit" in
+            d) days="$count" ;;
+            w) days=$((count * 7)) ;;
+            m) days=$((count * 30)) ;;  # Approximate
+        esac
+
+        # Use platform-compat function
+        timestamp=$(date_days_ago "$days")
+        echo "$timestamp"
+        return 0
+    fi
+
+    # Try parsing as natural date via GNU date
+    if timestamp=$(date -u -d "$date_str" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null); then
+        echo "$timestamp"
+        return 0
+    fi
+
+    # Failed to parse
+    echo "ERROR: Cannot parse date: $date_str" >&2
+    return 1
+}
+
+# Find backups matching search criteria
+# Args (via options):
+#   $1 = since (date/relative)
+#   $2 = until (date/relative)
+#   $3 = type filter (snapshot|safety|archive|migration|incremental|all)
+#   $4 = name pattern (glob)
+#   $5 = grep pattern (content search)
+#   $6 = limit (number)
+# Output: JSON array of matching backups or text list
+# Returns: 0 on success
+find_backups() {
+    local since="${1:-}"
+    local until="${2:-}"
+    local type_filter="${3:-all}"
+    local name_pattern="${4:-}"
+    local grep_pattern="${5:-}"
+    local limit="${6:-20}"
+
+    # Load config
+    _load_backup_config
+
+    local results=()
+    local count=0
+
+    # Parse date filters
+    local since_epoch=0
+    local until_epoch=0
+
+    if [[ -n "$since" ]]; then
+        local since_iso
+        since_iso=$(parse_relative_date "$since") || return 1
+        if [[ -n "$since_iso" ]]; then
+            since_epoch=$(iso_to_epoch "$since_iso") || since_epoch=0
+        fi
+    fi
+
+    if [[ -n "$until" ]]; then
+        local until_iso
+        until_iso=$(parse_relative_date "$until") || return 1
+        if [[ -n "$until_iso" ]]; then
+            until_epoch=$(iso_to_epoch "$until_iso") || until_epoch=0
+        fi
+    fi
+
+    # Determine which types to search
+    local types_to_search=()
+    if [[ "$type_filter" == "all" ]]; then
+        types_to_search=("$BACKUP_TYPE_SNAPSHOT" "$BACKUP_TYPE_SAFETY" "$BACKUP_TYPE_INCREMENTAL" "$BACKUP_TYPE_ARCHIVE" "$BACKUP_TYPE_MIGRATION")
+    else
+        types_to_search=("$type_filter")
+    fi
+
+    # Search each backup type
+    for backup_type in "${types_to_search[@]}"; do
+        local type_dir="$BACKUP_DIR/$backup_type"
+
+        [[ ! -d "$type_dir" ]] && continue
+
+        # Find backup directories
+        while IFS= read -r backup_path; do
+            [[ -z "$backup_path" ]] && continue
+            [[ ! -d "$backup_path" ]] && continue
+
+            # Check limit
+            if [[ $count -ge $limit ]]; then
+                break 2
+            fi
+
+            local backup_name
+            backup_name=$(basename "$backup_path")
+
+            # Apply name pattern filter (glob matching)
+            if [[ -n "$name_pattern" ]]; then
+                # shellcheck disable=SC2053
+                if [[ ! "$backup_name" == $name_pattern ]]; then
+                    continue
+                fi
+            fi
+
+            # Get backup metadata
+            local metadata_file=""
+            if [[ -f "$backup_path/metadata.json" ]]; then
+                metadata_file="$backup_path/metadata.json"
+            elif [[ -f "$backup_path/backup-metadata.json" ]]; then
+                metadata_file="$backup_path/backup-metadata.json"
+            fi
+
+            # Extract timestamp from metadata or directory name
+            local backup_timestamp=""
+            local backup_epoch=0
+
+            if [[ -n "$metadata_file" && -f "$metadata_file" ]]; then
+                backup_timestamp=$(jq -r '.timestamp // empty' "$metadata_file" 2>/dev/null)
+            fi
+
+            # Fallback: extract from directory name
+            if [[ -z "$backup_timestamp" && "$backup_name" =~ ([0-9]{8})_([0-9]{6}) ]]; then
+                local date_part="${BASH_REMATCH[1]}"
+                local time_part="${BASH_REMATCH[2]}"
+                backup_timestamp="${date_part:0:4}-${date_part:4:2}-${date_part:6:2}T${time_part:0:2}:${time_part:2:2}:${time_part:4:2}Z"
+            fi
+
+            # Convert to epoch for comparison
+            if [[ -n "$backup_timestamp" ]]; then
+                backup_epoch=$(iso_to_epoch "$backup_timestamp") || backup_epoch=0
+            else
+                # Use file mtime as fallback
+                backup_epoch=$(get_file_mtime "$backup_path")
+            fi
+
+            # Apply date filters
+            if [[ $since_epoch -gt 0 && $backup_epoch -lt $since_epoch ]]; then
+                continue
+            fi
+            if [[ $until_epoch -gt 0 && $backup_epoch -gt $until_epoch ]]; then
+                continue
+            fi
+
+            # Apply content grep filter
+            if [[ -n "$grep_pattern" ]]; then
+                local found_match=false
+
+                # Search metadata for pattern
+                if [[ -n "$metadata_file" && -f "$metadata_file" ]]; then
+                    if grep -q "$grep_pattern" "$metadata_file" 2>/dev/null; then
+                        found_match=true
+                    fi
+                fi
+
+                # Search backup files for pattern
+                if [[ "$found_match" == false ]]; then
+                    for json_file in "$backup_path"/*.json; do
+                        [[ ! -f "$json_file" ]] && continue
+                        [[ "$(basename "$json_file")" == "metadata.json" ]] && continue
+                        [[ "$(basename "$json_file")" == "backup-metadata.json" ]] && continue
+
+                        if grep -q "$grep_pattern" "$json_file" 2>/dev/null; then
+                            found_match=true
+                            break
+                        fi
+                    done
+                fi
+
+                if [[ "$found_match" == false ]]; then
+                    continue
+                fi
+            fi
+
+            # Build result entry
+            local total_size=0
+            local file_count=0
+
+            if [[ -n "$metadata_file" && -f "$metadata_file" ]]; then
+                total_size=$(jq -r '.totalSize // 0' "$metadata_file" 2>/dev/null || echo 0)
+                file_count=$(jq -r '.files | length // 0' "$metadata_file" 2>/dev/null || echo 0)
+            else
+                # Calculate from directory
+                total_size=$(_calculate_backup_size "$backup_path")
+                file_count=$(find "$backup_path" -maxdepth 1 -type f -name "*.json" 2>/dev/null | wc -l)
+            fi
+
+            # Convert size to human readable
+            local size_human
+            if command -v numfmt &>/dev/null; then
+                size_human=$(numfmt --to=iec-i --suffix=B "$total_size" 2>/dev/null || echo "${total_size}B")
+            else
+                size_human="${total_size}B"
+            fi
+
+            # Add to results
+            local result_entry
+            result_entry=$(jq -n \
+                --arg name "$backup_name" \
+                --arg path "$backup_path" \
+                --arg type "$backup_type" \
+                --arg timestamp "$backup_timestamp" \
+                --argjson size "$total_size" \
+                --arg sizeHuman "$size_human" \
+                --argjson fileCount "$file_count" \
+                '{
+                    name: $name,
+                    path: $path,
+                    type: $type,
+                    timestamp: $timestamp,
+                    size: $size,
+                    sizeHuman: $sizeHuman,
+                    fileCount: $fileCount
+                }')
+
+            results+=("$result_entry")
+            ((count++))
+
+        done < <(find "$type_dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort -r)
+    done
+
+    # Output results as JSON array
+    if [[ ${#results[@]} -eq 0 ]]; then
+        echo "[]"
+    else
+        printf '%s\n' "${results[@]}" | jq -s '.'
+    fi
+
+    return 0
+}
+
+# ============================================================================
+# SCHEDULED BACKUP FUNCTIONS
+# ============================================================================
+
+# Check config and create snapshot backup on session start if enabled
+# Args: $1 = config file path (optional)
+# Output: Backup path if created, empty if skipped
+# Returns: 0 on success, 1 on error
+auto_backup_on_session_start() {
+    local config_file="${1:-${CLAUDE_TODO_DIR:-.claude}/todo-config.json}"
+
+    # Load config to check scheduled settings
+    _load_backup_config "$config_file"
+
+    # Check if backups are enabled globally
+    if [[ "$BACKUP_ENABLED" != "true" ]]; then
+        return 0  # Silently skip if disabled
+    fi
+
+    # Check if session start backup is enabled
+    if [[ "$SCHEDULED_ON_SESSION_START" != "true" ]]; then
+        return 0  # Silently skip if not enabled
+    fi
+
+    # Create snapshot backup with session_start suffix
+    local backup_path
+    backup_path=$(create_snapshot_backup "session_start")
+    local result=$?
+
+    if [[ $result -eq 0 && -n "$backup_path" ]]; then
+        echo "$backup_path"
+    fi
+
+    return $result
+}
+
+# Check config and create safety backup on session end if enabled
+# Args: $1 = config file path (optional)
+# Output: Backup path if created, empty if skipped
+# Returns: 0 on success, 1 on error
+auto_backup_on_session_end() {
+    local config_file="${1:-${CLAUDE_TODO_DIR:-.claude}/todo-config.json}"
+
+    # Load config to check scheduled settings
+    _load_backup_config "$config_file"
+
+    # Check if backups are enabled globally
+    if [[ "$BACKUP_ENABLED" != "true" ]]; then
+        return 0  # Silently skip if disabled
+    fi
+
+    # Check if session end backup is enabled
+    if [[ "$SCHEDULED_ON_SESSION_END" != "true" ]]; then
+        return 0  # Silently skip if not enabled
+    fi
+
+    # Create safety backup for the main todo file
+    local todo_file="${CLAUDE_TODO_DIR:-.claude}/todo.json"
+    if [[ ! -f "$todo_file" ]]; then
+        return 0  # No todo file to backup
+    fi
+
+    local backup_path
+    backup_path=$(create_safety_backup "$todo_file" "session_end")
+    local result=$?
+
+    if [[ $result -eq 0 && -n "$backup_path" ]]; then
+        echo "$backup_path"
+    fi
+
+    return $result
+}
+
+# ============================================================================
 # EXPORTS
 # ============================================================================
 
+export -f auto_backup_on_session_start
+export -f auto_backup_on_session_end
+export -f parse_relative_date
+export -f find_backups
 export -f create_snapshot_backup
 export -f create_safety_backup
 export -f create_incremental_backup

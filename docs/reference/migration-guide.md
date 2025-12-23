@@ -102,7 +102,7 @@ Arguments:
 
 ### What Happens During Migration
 
-1. **Pre-Migration Backup**: Complete backup created in `.claude/.backups/pre-migration-*`
+1. **Pre-Migration Backup**: Complete backup created in `.claude/backups/migration/`
 2. **Version Detection**: Current and target versions identified
 3. **Migration Path**: Intermediate versions calculated if needed
 4. **Data Transformation**: Fields added, removed, or renamed as needed
@@ -254,16 +254,16 @@ ERROR: Incompatible schema version
 
 ```
 ERROR: Migration failed
-Backups available in: .claude/.backups/
+Backups available in: .claude/backups/migration/
 ```
 
 **Recovery Steps**:
 ```bash
-# List available backups
-ls -la .claude/.backups/
+# List available migration backups
+ls -la .claude/backups/migration/
 
 # Restore from backup
-cp .claude/.backups/pre-migration-*/todo.json .claude/
+cp .claude/backups/migration/pre-migration-*/todo.json .claude/
 
 # Validate restoration
 claude-todo validate
@@ -331,10 +331,10 @@ After successful migration and validation:
 
 ```bash
 # Archive old backups
-tar -czf backups-$(date +%Y%m%d).tar.gz .claude/.backups/
+tar -czf backups-$(date +%Y%m%d).tar.gz .claude/backups/
 
 # Remove old backups (optional)
-find .claude/.backups -type d -mtime +30 -exec rm -rf {} \;
+find .claude/backups -type d -mtime +30 -exec rm -rf {} \;
 ```
 
 ## Best Practices

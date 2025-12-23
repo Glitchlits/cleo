@@ -5,6 +5,29 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29.0] - 2025-12-23
+
+### Added
+- **Backup Find Command**: New `backup find` subcommand for searching backups
+  - `--since DATE`: Filter backups after date (ISO or relative: "7d", "1w")
+  - `--until DATE`: Filter backups before date
+  - `--type TYPE`: Filter by backup type (snapshot, safety, archive, migration)
+  - `--name PATTERN`: Filter by name pattern (glob matching)
+  - `--grep PATTERN`: Search backup content for pattern
+  - `--limit N`: Limit results (default: 20)
+
+- **Enhanced Backup Library**: Complete two-tier backup architecture in `lib/backup.sh`
+  - Tier 1: Operational backups (atomic write safety) in `.backups/`
+  - Tier 2: Recovery backups (point-in-time snapshots) in `.claude/backups/{type}/`
+  - Backup types: `snapshot`, `safety`, `archive`, `migration`
+  - Functions: `create_snapshot_backup()`, `create_safety_backup()`, `rotate_backups()`
+  - Metadata tracking with checksums and retention policies
+
+### Documentation
+- New `docs/reference/disaster-recovery.md`: Comprehensive disaster recovery guide
+- Updated backup command documentation with find subcommand
+- Architecture documentation updated with two-tier backup design
+
 ## [0.28.1] - 2025-12-23
 
 ### Added

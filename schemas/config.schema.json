@@ -420,6 +420,23 @@
           "maximum": 365,
           "default": 7,
           "description": "Days to retain safety backups (time-based retention, works with maxSafetyBackups)."
+        },
+        "scheduled": {
+          "type": "object",
+          "description": "Scheduled/automatic backup settings for session events.",
+          "additionalProperties": false,
+          "properties": {
+            "onSessionStart": {
+              "type": "boolean",
+              "default": false,
+              "description": "Create snapshot backup when session starts."
+            },
+            "onSessionEnd": {
+              "type": "boolean",
+              "default": false,
+              "description": "Create safety backup when session ends."
+            }
+          }
         }
       }
     },

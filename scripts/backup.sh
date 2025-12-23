@@ -58,6 +58,13 @@ LIST_MODE=false
 VERIFY_MODE=false
 VERIFY_TARGET=""
 STATUS_MODE=false
+FIND_MODE=false
+FIND_SINCE=""
+FIND_UNTIL=""
+FIND_TYPE="all"
+FIND_NAME=""
+FIND_GREP=""
+FIND_LIMIT=20
 FORMAT=""
 QUIET=false
 COMMAND_NAME="backup"
@@ -74,6 +81,7 @@ Create timestamped backup of all todo system files.
 Subcommands:
   status              Show backup system health and status
   verify <ID|PATH>    Verify backup integrity by recalculating checksums
+  find [OPTIONS]      Search backups by date, type, name, or content
 
 Options:
   --destination DIR   Custom backup location (default: .claude/backups)
@@ -86,6 +94,14 @@ Options:
   --json              Force JSON output
   -q, --quiet         Suppress non-essential output
   -h, --help          Show this help
+
+Find Options (use with 'find' subcommand):
+  --since DATE        Show backups created after DATE (ISO or relative: "7d", "1w")
+  --until DATE        Show backups created before DATE
+  --type TYPE         Filter by backup type (snapshot, safety, archive, migration)
+  --name PATTERN      Filter by backup name pattern (glob: "*session*")
+  --grep PATTERN      Search backup content for pattern
+  --limit N           Limit results (default: 20)
 
 Backs up:
   - todo.json
@@ -116,6 +132,9 @@ Examples:
   $(basename "$0") status --json                # JSON status for monitoring
   $(basename "$0") verify snapshot_20251215     # Verify backup by ID
   $(basename "$0") verify .claude/backups/safety/safety_20251215_120000  # Verify by path
+  $(basename "$0") find --since 7d --type snapshot    # Find recent snapshots
+  $(basename "$0") find --name "*session*"            # Find by name pattern
+  $(basename "$0") find --grep "T001"                 # Search content for task ID
 EOF
   exit 0
 }
@@ -1309,6 +1328,69 @@ while [[ $# -gt 0 ]]; do
       STATUS_MODE=true
       shift
       ;;
+    find)
+      FIND_MODE=true
+      shift
+      # Parse find-specific options
+      while [[ $# -gt 0 ]]; do
+        case $1 in
+          --since)
+            FIND_SINCE="$2"
+            shift 2
+            ;;
+          --until)
+            FIND_UNTIL="$2"
+            shift 2
+            ;;
+          --type)
+            FIND_TYPE="$2"
+            shift 2
+            ;;
+          --name)
+            FIND_NAME="$2"
+            shift 2
+            ;;
+          --grep)
+            FIND_GREP="$2"
+            shift 2
+            ;;
+          --limit)
+            FIND_LIMIT="$2"
+            shift 2
+            ;;
+          -f|--format)
+            FORMAT="$2"
+            shift 2
+            ;;
+          --human)
+            FORMAT="text"
+            shift
+            ;;
+          --json)
+            FORMAT="json"
+            shift
+            ;;
+          -q|--quiet)
+            QUIET=true
+            shift
+            ;;
+          --verbose)
+            VERBOSE=true
+            shift
+            ;;
+          -h|--help)
+            usage
+            ;;
+          -*)
+            log_error "Unknown find option: $1"
+            exit "${EXIT_USAGE_ERROR:-64}"
+            ;;
+          *)
+            break
+            ;;
+        esac
+      done
+      ;;
     -*)
       if [[ "$FORMAT" == "json" ]] && declare -f output_error &>/dev/null; then
         output_error "$E_INPUT_INVALID" "Unknown option: $1" "${EXIT_USAGE_ERROR:-64}" false "Run 'claude-todo backup --help' for usage"
@@ -1423,6 +1505,122 @@ fi
 # Handle status subcommand
 if [[ "$STATUS_MODE" == true ]]; then
   show_status "$BACKUP_DIR"
+  exit 0
+fi
+
+# Handle find subcommand
+if [[ "$FIND_MODE" == true ]]; then
+  # Source the backup library for find_backups function
+  if [[ -f "$LIB_DIR/backup.sh" ]]; then
+    # shellcheck source=../lib/backup.sh
+    source "$LIB_DIR/backup.sh"
+  else
+    log_error "Cannot find backup library"
+    exit "${EXIT_FILE_ERROR:-4}"
+  fi
+
+  # Run the search
+  results_json=$(find_backups "$FIND_SINCE" "$FIND_UNTIL" "$FIND_TYPE" "$FIND_NAME" "$FIND_GREP" "$FIND_LIMIT")
+
+  result_count=$(echo "$results_json" | jq 'length')
+
+  if [[ "$FORMAT" == "json" ]]; then
+    # JSON output
+    jq -n \
+      --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+      --arg dir "$BACKUP_DIR" \
+      --argjson results "$results_json" \
+      --argjson count "$result_count" \
+      --argjson limit "$FIND_LIMIT" \
+      --arg since "${FIND_SINCE:-}" \
+      --arg until "${FIND_UNTIL:-}" \
+      --arg type "$FIND_TYPE" \
+      --arg namePattern "${FIND_NAME:-}" \
+      --arg grepPattern "${FIND_GREP:-}" \
+      '{
+        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "_meta": {
+          "command": "backup",
+          "subcommand": "find",
+          "timestamp": $timestamp,
+          "format": "json"
+        },
+        "success": true,
+        "count": $count,
+        "limit": $limit,
+        "filters": {
+          "since": (if $since == "" then null else $since end),
+          "until": (if $until == "" then null else $until end),
+          "type": $type,
+          "namePattern": (if $namePattern == "" then null else $namePattern end),
+          "grepPattern": (if $grepPattern == "" then null else $grepPattern end)
+        },
+        "backups": $results,
+        "directory": $dir
+      }'
+  else
+    # Text output
+    echo ""
+    if [[ $result_count -eq 0 ]]; then
+      echo "No backups found matching criteria."
+      echo ""
+      echo -e "${BLUE}Filters applied:${NC}"
+      [[ -n "$FIND_SINCE" ]] && echo "  Since: $FIND_SINCE"
+      [[ -n "$FIND_UNTIL" ]] && echo "  Until: $FIND_UNTIL"
+      [[ "$FIND_TYPE" != "all" ]] && echo "  Type: $FIND_TYPE"
+      [[ -n "$FIND_NAME" ]] && echo "  Name pattern: $FIND_NAME"
+      [[ -n "$FIND_GREP" ]] && echo "  Content grep: $FIND_GREP"
+      echo ""
+      echo "Try 'claude-todo backup --list' to see all backups."
+    else
+      truncated=""
+      if [[ $result_count -ge $FIND_LIMIT ]]; then
+        truncated=" (limit: $FIND_LIMIT)"
+      fi
+
+      echo -e "${BLUE}╔══════════════════════════════════════════════════════════════════════════════╗${NC}"
+      echo -e "${BLUE}║                           BACKUP SEARCH RESULTS                              ║${NC}"
+      echo -e "${BLUE}╚══════════════════════════════════════════════════════════════════════════════╝${NC}"
+      echo ""
+      echo -e "Found ${GREEN}$result_count${NC} backup(s)${truncated}"
+      echo ""
+
+      # Print filters if any active
+      if [[ -n "$FIND_SINCE" || -n "$FIND_UNTIL" || "$FIND_TYPE" != "all" || -n "$FIND_NAME" || -n "$FIND_GREP" ]]; then
+        echo -e "${BLUE}Filters:${NC}"
+        [[ -n "$FIND_SINCE" ]] && echo "  Since: $FIND_SINCE"
+        [[ -n "$FIND_UNTIL" ]] && echo "  Until: $FIND_UNTIL"
+        [[ "$FIND_TYPE" != "all" ]] && echo "  Type: $FIND_TYPE"
+        [[ -n "$FIND_NAME" ]] && echo "  Name pattern: $FIND_NAME"
+        [[ -n "$FIND_GREP" ]] && echo "  Content grep: $FIND_GREP"
+        echo ""
+      fi
+
+      # Table header
+      printf "  ${BLUE}%-12s${NC} ${BLUE}%-20s${NC} ${BLUE}%-35s${NC} ${BLUE}%10s${NC}\n" "TYPE" "TIMESTAMP" "NAME" "SIZE"
+      printf "  %-12s %-20s %-35s %10s\n" "------------" "--------------------" "-----------------------------------" "----------"
+
+      # Print each result
+      echo "$results_json" | jq -r '.[] | "\(.type)\t\(.timestamp)\t\(.name)\t\(.sizeHuman)"' | while IFS=$'\t' read -r btype btimestamp bname bsize; do
+        # Format timestamp for display (remove T and Z)
+        display_ts=$(echo "$btimestamp" | sed 's/T/ /; s/Z$//' | cut -c1-19)
+
+        # Truncate name if too long
+        display_name="$bname"
+        if [[ ${#display_name} -gt 35 ]]; then
+          display_name="${display_name:0:32}..."
+        fi
+
+        printf "  %-12s %-20s %-35s %10s\n" "$btype" "$display_ts" "$display_name" "$bsize"
+      done
+
+      echo ""
+      echo -e "Use '${GREEN}claude-todo backup verify <NAME>${NC}' to verify a backup."
+      echo -e "Use '${GREEN}claude-todo restore <NAME>${NC}' to restore from a backup."
+    fi
+    echo ""
+  fi
+
   exit 0
 fi
 

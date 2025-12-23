@@ -55,6 +55,13 @@ elif [[ -f "$LIB_DIR/phase-tracking.sh" ]]; then
   source "$LIB_DIR/phase-tracking.sh"
 fi
 
+# Source backup library for scheduled backup support (T632)
+if [[ -f "$CLAUDE_TODO_HOME/lib/backup.sh" ]]; then
+  source "$CLAUDE_TODO_HOME/lib/backup.sh"
+elif [[ -f "$LIB_DIR/backup.sh" ]]; then
+  source "$LIB_DIR/backup.sh"
+fi
+
 TODO_FILE="${TODO_FILE:-.claude/todo.json}"
 CONFIG_FILE="${CONFIG_FILE:-.claude/todo-config.json}"
 # Note: LOG_FILE is set by lib/logging.sh (readonly) - don't reassign here
@@ -288,6 +295,15 @@ cmd_start() {
 
   log_step "Session started: $session_id"
 
+  # Auto-backup on session start if enabled (T632)
+  if declare -f auto_backup_on_session_start >/dev/null 2>&1; then
+    local backup_path
+    backup_path=$(auto_backup_on_session_start "$CONFIG_FILE" 2>/dev/null || true)
+    if [[ -n "$backup_path" ]]; then
+      log_info "Auto-backup created: $(basename "$backup_path")"
+    fi
+  fi
+
   # Show current focus if any
   local focus_task
   focus_task=$(jq -r '.focus.currentTask // ""' "$TODO_FILE")
@@ -462,6 +478,15 @@ cmd_end() {
 
   log_step "Session ended: $current_session"
   [[ -n "$note" ]] && log_info "Note saved: $note" || true
+
+  # Auto-backup on session end if enabled (T632)
+  if declare -f auto_backup_on_session_end >/dev/null 2>&1; then
+    local backup_path
+    backup_path=$(auto_backup_on_session_end "$CONFIG_FILE" 2>/dev/null || true)
+    if [[ -n "$backup_path" ]]; then
+      log_info "Auto-backup created: $(basename "$backup_path")"
+    fi
+  fi
 
   # Display phase context in session end summary (passive capture)
   if declare -f get_current_phase >/dev/null 2>&1; then

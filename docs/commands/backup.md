@@ -6,6 +6,9 @@ Create timestamped backups of all todo system files with optional compression an
 
 ```bash
 claude-todo backup [OPTIONS]
+claude-todo backup status [OPTIONS]
+claude-todo backup verify <ID|PATH>
+claude-todo backup find [OPTIONS]
 ```
 
 ## Description
@@ -20,6 +23,47 @@ This command is essential for:
 - Testing experimental workflows safely
 
 All backups are validated during creation to ensure integrity, and automatic retention policies prevent unlimited storage consumption.
+
+## Subcommands
+
+### status
+Show backup system health and overall status.
+
+```bash
+claude-todo backup status [--json|--human]
+```
+
+### verify
+Verify backup integrity by recalculating and comparing checksums.
+
+```bash
+claude-todo backup verify <ID|PATH>
+```
+
+- `ID`: Backup ID (e.g., `snapshot_20251215`)
+- `PATH`: Full path to backup directory
+
+### find (v0.29.0+)
+Search backups by date, type, name, or content.
+
+```bash
+claude-todo backup find [OPTIONS]
+```
+
+| Option | Description | Example |
+|--------|-------------|---------|
+| `--since DATE` | Backups created after DATE | `--since 7d`, `--since 2025-12-01` |
+| `--until DATE` | Backups created before DATE | `--until 2025-12-15` |
+| `--type TYPE` | Filter by backup type | `--type snapshot` |
+| `--name PATTERN` | Filter by name pattern (glob) | `--name "*session*"` |
+| `--grep PATTERN` | Search backup content | `--grep "T001"` |
+| `--limit N` | Limit results (default: 20) | `--limit 10` |
+
+**Backup Types**: `snapshot`, `safety`, `archive`, `migration`
+
+**Date Formats**:
+- ISO 8601: `2025-12-01`, `2025-12-01T12:00:00Z`
+- Relative: `7d` (7 days), `1w` (1 week), `2m` (2 months)
 
 ## Options
 
@@ -47,8 +91,8 @@ Each backup includes:
 ### Standard Backup (Directory)
 
 ```
-.claude/.backups/
-├── backup_20251213_120000/
+.claude/backups/snapshot/
+├── snapshot_20251213_120000/
 │   ├── todo.json
 │   ├── todo-archive.json
 │   ├── todo-config.json
@@ -59,15 +103,15 @@ Each backup includes:
 ### Compressed Backup (Tarball)
 
 ```
-.claude/.backups/
-└── backup_20251213_120000.tar.gz
+.claude/backups/snapshot/
+└── snapshot_20251213_120000.tar.gz
 ```
 
 ### Named Backup
 
 ```
-.claude/.backups/
-└── backup_20251213_120000_before-refactor/
+.claude/backups/snapshot/
+└── snapshot_20251213_120000_before-refactor/
     ├── todo.json
     ├── ...
 ```
@@ -83,7 +127,7 @@ claude-todo backup
 
 Output:
 ```
-[INFO] Creating backup: backup_20251213_120000
+[INFO] Creating backup: snapshot_20251213_120000
 [INFO] Backing up files...
 [INFO] Validating backup integrity...
 [INFO] Backup validation successful
@@ -93,7 +137,7 @@ Output:
 ╚══════════════════════════════════════════════════════════╝
 
   Backup Location:
-    .claude/.backups/backup_20251213_120000
+    .claude/backups/snapshot/snapshot_20251213_120000
 
   Files Included:
     ✓ todo.json
@@ -111,7 +155,7 @@ Output:
 claude-todo backup --name "before-refactor"
 ```
 
-Creates: `.claude/.backups/backup_20251213_120000_before-refactor/`
+Creates: `.claude/backups/snapshot/snapshot_20251213_120000_before-refactor/`
 
 Use cases:
 - Before major refactoring
@@ -128,19 +172,19 @@ claude-todo backup --compress
 
 Output:
 ```
-[INFO] Creating backup: backup_20251213_120000
+[INFO] Creating backup: snapshot_20251213_120000
 [INFO] Backing up files...
 [INFO] Validating backup integrity...
 [INFO] Backup validation successful
 [INFO] Compressing backup...
-[INFO] Created compressed archive: .claude/.backups/backup_20251213_120000.tar.gz (3.2KiB)
+[INFO] Created compressed archive: .claude/backups/snapshot/snapshot_20251213_120000.tar.gz (3.2KiB)
 
 ╔══════════════════════════════════════════════════════════╗
 ║              BACKUP COMPLETED SUCCESSFULLY               ║
 ╚══════════════════════════════════════════════════════════╝
 
   Backup Location:
-    .claude/.backups/backup_20251213_120000.tar.gz
+    .claude/backups/snapshot/snapshot_20251213_120000.tar.gz
 
   Files Included:
     ✓ todo.json
@@ -166,20 +210,20 @@ Output:
 ║                           AVAILABLE BACKUPS                                  ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-  ▸ backup_20251213_120000
+  ▸ snapshot_20251213_120000
     Timestamp: 2025-12-13T12:00:00Z
     Files: 4 | Size: 12.4KiB
-    Path: .claude/.backups/backup_20251213_120000
+    Path: .claude/backups/snapshot/snapshot_20251213_120000
 
-  ▸ backup_20251213_093000_before-refactor
+  ▸ snapshot_20251213_093000_before-refactor
     Timestamp: 2025-12-13T09:30:00Z
     Files: 4 | Size: 11.8KiB
-    Path: .claude/.backups/backup_20251213_093000_before-refactor
+    Path: .claude/backups/snapshot/snapshot_20251213_093000_before-refactor
 
-  ▸ backup_20251212_180000.tar.gz (compressed)
+  ▸ snapshot_20251212_180000.tar.gz (compressed)
     Modified: 2025-12-12 18:00:00
     Size: 3.2KiB
-    Path: .claude/.backups/backup_20251212_180000.tar.gz
+    Path: .claude/backups/snapshot/snapshot_20251212_180000.tar.gz
 ```
 
 **Use cases**:
@@ -197,9 +241,9 @@ claude-todo backup --verbose
 
 Output:
 ```
-[INFO] Creating backup: backup_20251213_120000
-[DEBUG] Created backup directory: .claude/.backups
-[DEBUG] Created backup path: .claude/.backups/backup_20251213_120000
+[INFO] Creating backup: snapshot_20251213_120000
+[DEBUG] Created backup directory: .claude/backups
+[DEBUG] Created backup path: .claude/backups/snapshot/snapshot_20251213_120000
 [INFO] Backing up files...
 [DEBUG] todo.json validated successfully
 [DEBUG] Backed up todo.json (4.2KiB)
@@ -213,7 +257,7 @@ Output:
 [INFO] Validating backup integrity...
 [INFO] Backup validation successful
 [DEBUG] Checking backup retention (max: 10)
-[DEBUG] Removed old backup: backup_20251203_140000
+[DEBUG] Removed old backup: snapshot_20251203_140000
 
 ╔══════════════════════════════════════════════════════════╗
 ║              BACKUP COMPLETED SUCCESSFULLY               ║
@@ -237,6 +281,85 @@ claude-todo backup \
   --verbose
 ```
 
+### Check Backup System Status
+
+```bash
+# Show backup system health
+claude-todo backup status
+```
+
+Output:
+```
+╔══════════════════════════════════════════════════════════╗
+║              BACKUP SYSTEM STATUS                        ║
+╚══════════════════════════════════════════════════════════╝
+
+  Health: HEALTHY
+  Last Backup: 2025-12-23T12:00:00Z (2 hours ago)
+  Total Backups: 15
+  Storage Used: 45.2 MiB
+
+  By Type:
+    snapshot:  10 backups (32.1 MiB)
+    safety:     3 backups (8.4 MiB)
+    archive:    2 backups (4.7 MiB)
+```
+
+### Verify Backup Integrity
+
+```bash
+# Verify by backup ID
+claude-todo backup verify snapshot_20251215
+
+# Verify by full path
+claude-todo backup verify .claude/backups/safety/safety_20251215_120000
+```
+
+Output:
+```
+✓ Verifying backup: snapshot_20251215
+✓ todo.json: checksum valid
+✓ todo-archive.json: checksum valid
+✓ todo-config.json: checksum valid
+✓ todo-log.json: checksum valid
+
+Backup integrity: VERIFIED
+```
+
+### Search Backups (v0.29.0+)
+
+```bash
+# Find backups from last 7 days
+claude-todo backup find --since 7d
+
+# Find snapshots from last week
+claude-todo backup find --since 1w --type snapshot
+
+# Find backups by name pattern
+claude-todo backup find --name "*session*"
+
+# Search backup contents for a task ID
+claude-todo backup find --grep "T001"
+
+# Combined search with limit
+claude-todo backup find --since 30d --type safety --limit 5
+```
+
+Output:
+```
+Found 3 backups matching criteria:
+
+  ▸ snapshot_20251223_100000
+    Type: snapshot | Created: 2025-12-23T10:00:00Z
+    Size: 12.4 KiB | Files: 4
+    Path: .claude/backups/snapshot/snapshot_20251223_100000
+
+  ▸ safety_20251222_180000
+    Type: safety | Created: 2025-12-22T18:00:00Z
+    Size: 11.8 KiB | Files: 4
+    Path: .claude/backups/safety/safety_20251222_180000
+```
+
 ## Restore Procedures
 
 ### Restore from Directory Backup
@@ -246,7 +369,7 @@ claude-todo backup \
 claude-todo backup --list
 
 # 2. Copy files from backup to restore
-BACKUP_DIR=".claude/.backups/backup_20251213_120000"
+BACKUP_DIR=".claude/backups/snapshot/snapshot_20251213_120000"
 cp "$BACKUP_DIR/todo.json" .claude/
 cp "$BACKUP_DIR/todo-archive.json" .claude/
 cp "$BACKUP_DIR/todo-config.json" .claude/
@@ -260,11 +383,11 @@ claude-todo validate
 
 ```bash
 # 1. Extract tarball
-cd .claude/.backups
-tar -xzf backup_20251213_120000.tar.gz
+cd .claude/backups
+tar -xzf snapshot_20251213_120000.tar.gz
 
 # 2. Copy extracted files
-cp backup_20251213_120000/*.json ../
+cp snapshot_20251213_120000/*.json ../
 
 # 3. Validate
 claude-todo validate
@@ -274,7 +397,7 @@ claude-todo validate
 
 ```bash
 # Restore only specific files
-BACKUP_DIR=".claude/.backups/backup_20251213_120000"
+BACKUP_DIR=".claude/backups/snapshot/snapshot_20251213_120000"
 
 # Restore just active tasks
 cp "$BACKUP_DIR/todo.json" .claude/
@@ -290,7 +413,7 @@ claude-todo validate
 
 ```bash
 # If current files are corrupted, restore last good backup
-LATEST_BACKUP=$(ls -td .claude/.backups/backup_* | head -1)
+LATEST_BACKUP=$(ls -td .claude/backups/snapshot/snapshot_* | head -1)
 cp "$LATEST_BACKUP"/*.json .claude/
 claude-todo validate
 ```
@@ -369,7 +492,7 @@ Each backup includes `backup-metadata.json`:
 ```json
 {
   "timestamp": "2025-12-13T12:00:00Z",
-  "backupName": "backup_20251213_120000_before-refactor",
+  "backupName": "snapshot_20251213_120000_before-refactor",
   "customName": "before-refactor",
   "files": [
     "todo.json",
@@ -421,11 +544,11 @@ claude-todo backup --name "before-bulk-delete"
 claude-todo backup --compress --destination ~/export
 
 # Transfer tarball to new system
-scp ~/export/backup_*.tar.gz newhost:~/import/
+scp ~/export/snapshot_*.tar.gz newhost:~/import/
 
 # Import on new system
 cd ~/new-project
-tar -xzf ~/import/backup_*.tar.gz -C .claude/.backups/
+tar -xzf ~/import/snapshot_*.tar.gz -C .claude/backups/snapshot/
 # Restore as needed
 ```
 
@@ -434,7 +557,7 @@ tar -xzf ~/import/backup_*.tar.gz -C .claude/.backups/
 ```bash
 # Create restore point before experimental changes
 alias ct-save='claude-todo backup --name "checkpoint"'
-alias ct-restore='cp .claude/.backups/backup_*_checkpoint/*.json .claude/'
+alias ct-restore='cp .claude/backups/snapshot/snapshot_*_checkpoint/*.json .claude/'
 
 # Work session
 ct-save
@@ -450,7 +573,7 @@ ct-restore
 claude-todo backup --list
 
 # Check metadata for corruption indicators
-jq '.validationErrors' .claude/.backups/*/backup-metadata.json
+jq '.validationErrors' .claude/backups/snapshot/*/backup-metadata.json
 # Should output 0 for all backups
 ```
 
@@ -480,7 +603,7 @@ claude-todo backup
 
 ```bash
 # Check backup directory size
-du -sh .claude/.backups
+du -sh .claude/backups
 
 # Reduce retention or use compression
 claude-todo config set backups.maxBackups 5
@@ -491,10 +614,10 @@ claude-todo backup --compress
 
 ```bash
 # Verify backup integrity
-jq empty .claude/.backups/backup_20251213_120000/*.json
+jq empty .claude/backups/snapshot/snapshot_20251213_120000/*.json
 
 # Check metadata
-jq '.validationErrors' .claude/.backups/backup_20251213_120000/backup-metadata.json
+jq '.validationErrors' .claude/backups/snapshot/snapshot_20251213_120000/backup-metadata.json
 
 # If corrupted, try older backup
 claude-todo backup --list
@@ -504,10 +627,10 @@ claude-todo backup --list
 
 ```bash
 # Check backup directory exists
-ls -la .claude/.backups/
+ls -la .claude/backups/snapshot/
 
 # Verify correct directory
-echo "$BACKUP_DIR"  # Should be .claude/.backups
+echo "$BACKUP_DIR"  # Should be .claude/backups
 
 # List with absolute path
 claude-todo backup --list
@@ -558,7 +681,7 @@ claude-todo session end
 claude-todo backup --compress --name "daily-$(date +%A)"
 
 # Keep only last 7 days (one per weekday)
-find .claude/.backups -name "backup_*_daily-*" -mtime +7 -delete
+find .claude/backups -name "snapshot_*_daily-*" -mtime +7 -delete
 ```
 
 ## Color Output
@@ -621,7 +744,7 @@ backup --name "temp"
 
 ```bash
 # Monitor backup disk usage
-du -sh .claude/.backups
+du -sh .claude/backups
 
 # Aggressive retention for space-constrained systems
 claude-todo config set backups.maxBackups 3
@@ -635,18 +758,19 @@ claude-todo backup --compress --destination ~/Dropbox/claude-todo-backups
 - **v0.8.0**: Initial implementation with basic backup/restore
 - **v0.8.2**: Added `--list` and `--verbose` options, metadata tracking
 - **v0.9.0**: Enhanced list output with formatted display and size calculation
+- **v0.29.0**: Added `status`, `verify`, and `find` subcommands; two-tier backup architecture
 
 ## Security Considerations
 
 Backups contain all task data including potentially sensitive information:
 
 - **File Permissions**: Backups inherit source file permissions
-- **Storage Location**: Default `.claude/.backups` in project directory
+- **Storage Location**: Default `.claude/backups` in project directory
 - **Compression**: `.tar.gz` files are not encrypted
 - **Metadata**: Includes hostname and username
 
 **Recommendations**:
-- Set restrictive permissions: `chmod 700 .claude/.backups`
+- Set restrictive permissions: `chmod 700 .claude/backups`
 - Use encrypted external storage for sensitive projects
-- Exclude `.claude/.backups/` from version control (add to `.gitignore`)
+- Exclude `.claude/backups/snapshot/` from version control (add to `.gitignore`)
 - Consider encrypting compressed backups for archival storage
