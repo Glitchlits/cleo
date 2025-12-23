@@ -887,36 +887,47 @@ case "$FORMAT" in
       fi
 
       # Render tree using jq with proper connectors (T673, T674)
+      # Uses render_children to handle prefix accumulation correctly
       tree_output=""
       if [[ "$UNICODE_ENABLED" == true ]]; then
         tree_output=$(echo "$TREE_JSON" | jq -r --argjson width "$title_width" '
           def sicon: if . == "done" then "✓" elif . == "active" then "◉" elif . == "blocked" then "⊗" else "○" end;
           def picon: if . == "critical" then "🔴" elif . == "high" then "🟡" elif . == "medium" then "🔵" else "⚪" end;
           def truncate_title: if (.title | length) > $width then .title[0:($width - 1)] + "…" else .title end;
-          def render(prefix; is_last):
-            (if prefix == "" then "" else (if is_last then "└── " else "├── " end) end) as $connector |
-            (if prefix == "" then "" else (if is_last then "    " else "│   " end) end) as $cont |
-            "\(prefix)\($connector)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+          def render_children(prefix):
             (.children | length) as $n |
             if $n > 0 then
-              range($n) as $i | .children[$i] | render(prefix + $cont; $i == ($n - 1))
+              range($n) as $i |
+              (if $i == ($n - 1) then "└── " else "├── " end) as $conn |
+              (if $i == ($n - 1) then "    " else "│   " end) as $cont |
+              .children[$i] |
+              "\(prefix)\($conn)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+              render_children(prefix + $cont)
             else empty end;
-          length as $n | range($n) as $i | .[$i] | render(""; $i == ($n - 1))
+          def render_root:
+            "\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+            render_children("");
+          .[] | render_root
         ' 2>/dev/null)
       else
         tree_output=$(echo "$TREE_JSON" | jq -r --argjson width "$title_width" '
           def sicon: if . == "done" then "+" elif . == "active" then "*" elif . == "blocked" then "x" else "o" end;
           def picon: if . == "critical" then "!" elif . == "high" then "H" elif . == "medium" then "M" else "L" end;
           def truncate_title: if (.title | length) > $width then .title[0:($width - 3)] + "..." else .title end;
-          def render(prefix; is_last):
-            (if prefix == "" then "" else (if is_last then "`-- " else "+-- " end) end) as $connector |
-            (if prefix == "" then "" else (if is_last then "    " else "|   " end) end) as $cont |
-            "\(prefix)\($connector)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+          def render_children(prefix):
             (.children | length) as $n |
             if $n > 0 then
-              range($n) as $i | .children[$i] | render(prefix + $cont; $i == ($n - 1))
+              range($n) as $i |
+              (if $i == ($n - 1) then "`-- " else "+-- " end) as $conn |
+              (if $i == ($n - 1) then "    " else "|   " end) as $cont |
+              .children[$i] |
+              "\(prefix)\($conn)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+              render_children(prefix + $cont)
             else empty end;
-          length as $n | range($n) as $i | .[$i] | render(""; $i == ($n - 1))
+          def render_root:
+            "\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+            render_children("");
+          .[] | render_root
         ' 2>/dev/null)
       fi
 

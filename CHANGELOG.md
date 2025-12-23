@@ -5,6 +5,22 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.30.1] - 2025-12-23
+
+### Fixed
+- **Pre-Cleo Migration Test Fixes** (T666 EPIC): Resolved all test failures before Cleo migration
+  - Config version mismatch in `common_setup.bash`: 2.1.0 → 2.2.0 (matches SCHEMA_VERSION_CONFIG)
+  - Dry-run test missing `--format json` flag in `hierarchy-workflow.bats`
+  - Schema ID test updated to URL format: `https://claude-todo.dev/schemas/v1/todo.schema.json`
+  - `migrate-backups.sh` output_error calls now consistently pass suggestion argument
+
+### Tests
+- All 11 child tasks of T666 EPIC complete
+- migrate.bats: 24/24 passing
+- hierarchy-workflow.bats: 29/29 passing
+- migrate-backups.bats: 15/15 passing
+- schema-validation.bats: 44/44 passing
+
 ## [0.30.0] - 2025-12-22
 
 ### Added
