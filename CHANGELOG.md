@@ -5,6 +5,43 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.30.0] - 2025-12-22
+
+### Added
+- **Manifest Backup Tracking** (T631): Automatic tracking of all backup operations
+  - `_add_to_manifest()` records every backup creation with metadata
+  - `_remove_from_manifest()` cleans up manifest on rotation/prune
+  - Manifest stored in `.claude/backups/backup-manifest.json`
+  - Tracks: backup type, timestamp, file checksums, retention policy
+  - 19 new tests for manifest operations
+
+- **Scheduled Backup System** (T632): Configurable automatic backups
+  - `backup.scheduled.onArchive`: Auto-backup before archive operations (default: true)
+  - `backup.scheduled.intervalMinutes`: Minimum time between auto-backups (default: 60)
+  - `backup --auto`: Run scheduled backup if interval elapsed
+  - `auto_backup_on_archive()`: Called automatically from archive.sh
+  - `check_backup_interval()`: Respects configured interval
+  - 12 new tests for scheduled backup behavior
+
+- **Enhanced Backup Search** (T633): Advanced search capabilities
+  - `--on DATE`: Find backups from exact date (e.g., `--on 2025-12-20`, `--on today`)
+  - `--task-id ID`: Find backups containing specific task (e.g., `--task-id T045`)
+  - `--contains PATTERN`: Alias for `--grep` content search
+  - `--verbose`: Show matched content snippets in search results
+  - `backup search` subcommand as alias for `backup find`
+  - 6 new tests for search functionality
+
+### Documentation
+- Updated `docs/commands/backup.md` with Phase 3 features
+- Updated `TODO_Task_Management.md` with new backup commands
+- Added scheduled backup configuration examples
+- Added manifest tracking section to backup documentation
+
+### Tests
+- 37 new tests for Phase 3 backup features (T631: 19, T632: 12, T633: 6)
+- All 80 backup tests passing
+- Full test suite: 1452 passed
+
 ## [0.29.3] - 2025-12-23
 
 ### Fixed

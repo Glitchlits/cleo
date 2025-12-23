@@ -785,12 +785,60 @@ claude-todo config set backups.maxBackups 3
 claude-todo backup --compress --destination ~/Dropbox/claude-todo-backups
 ```
 
+## Scheduled Backups (v0.30.0+)
+
+Configure automatic backups via `todo-config.json`:
+
+```json
+{
+  "backup": {
+    "scheduled": {
+      "onArchive": true,
+      "onSessionStart": false,
+      "onSessionEnd": false,
+      "intervalMinutes": 0
+    }
+  }
+}
+```
+
+### Configuration Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `onArchive` | `true` | Create safety backup before archive operations |
+| `onSessionStart` | `false` | Create snapshot backup when session starts |
+| `onSessionEnd` | `false` | Create safety backup when session ends |
+| `intervalMinutes` | `0` | Minutes between auto-backups (0 = disabled) |
+
+### Using Scheduled Backups
+
+```bash
+# Run scheduled backup if due (based on intervalMinutes)
+claude-todo backup --auto
+
+# Check in CI/automation
+if result=$(claude-todo backup --auto --json); then
+  performed=$(echo "$result" | jq -r '.performed')
+  echo "Backup performed: $performed"
+fi
+```
+
+### Integration with Archive
+
+When `onArchive` is `true` (default), the archive command automatically creates a safety backup before archiving completed tasks. This ensures you can recover tasks that were archived accidentally.
+
+## Manifest Tracking (v0.30.0+)
+
+Backups are tracked in a manifest file (`.claude/backups/backup-manifest.json`) for O(1) lookups. The manifest is automatically maintained when backups are created, rotated, or pruned.
+
 ## Version History
 
 - **v0.8.0**: Initial implementation with basic backup/restore
 - **v0.8.2**: Added `--list` and `--verbose` options, metadata tracking
 - **v0.9.0**: Enhanced list output with formatted display and size calculation
 - **v0.29.0**: Added `status`, `verify`, and `find` subcommands; two-tier backup architecture
+- **v0.30.0**: Added `search` subcommand, `--auto` flag, scheduled backups, manifest tracking, `--on`/`--task-id`/`--contains`/`--verbose` search options
 
 ## Security Considerations
 
