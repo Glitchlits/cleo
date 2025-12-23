@@ -110,6 +110,11 @@ claude-todo add "Epic" --type epic --size large
 claude-todo add "Task" --parent T001 --size medium
 claude-todo add "Subtask" --parent T002 --type subtask --size small
 
+# Modify hierarchy
+claude-todo reparent T003 --to T001        # Move task to different parent
+claude-todo reparent T003 --to ""          # Remove parent (make root)
+claude-todo promote T003                   # Promote to root (same as reparent --to "")
+
 # List with hierarchy filters
 claude-todo list --type epic               # Filter by type (epic|task|subtask)
 claude-todo list --parent T001             # Tasks with specific parent
@@ -270,14 +275,90 @@ claude-todo labels                         # See all labels with counts
 claude-todo labels show feature-auth       # All tasks with label
 ```
 
-### Phases (Workflow Stages)
-Predefined project phases (setup → core → polish):
+### Phase Discipline
+Phases provide workflow organization and context-aware task management. This section establishes behavioral expectations for LLM agents working with multi-phase projects.
+
+**Session Protocol with Phase Awareness:**
 ```bash
-claude-todo add "Implement API" --phase core
-claude-todo list --phase core              # Filter by phase
-claude-todo phases                         # See phase progress
-claude-todo phases stats                   # Detailed breakdown
+# 1. Always check current phase before starting work
+claude-todo phase show                     # Verify project context
+claude-todo list --phase $(claude-todo phase show -q)  # Current phase tasks
+
+# 2. Start session with phase context
+claude-todo session start                  # Begin work session
+claude-todo phase show                     # Confirm phase alignment
 ```
+
+**Phase-Aware Task Creation:**
+```bash
+# Create tasks in appropriate phase
+claude-todo add "Design API endpoints" --phase core --priority high
+claude-todo add "Write unit tests" --phase testing --depends T001
+claude-todo add "Update documentation" --phase polish --size medium
+
+# Cross-phase dependencies (document rationale)
+claude-todo add "Integration testing" --phase testing --depends T001,T002 \
+  --notes "Cross-phase: validates core implementation before polish"
+```
+
+**Cross-Phase Work Guidelines:**
+- **Same phase preferred** - Work within current phase when possible for focus
+- **Intentional cross-phase** - Document rationale when crossing phase boundaries
+- **Phase completion awareness** - Understand what triggers phase advancement
+- **Context preservation** - Maintain phase relationships during task operations
+
+**Five-Phase Workflow Structure:**
+```bash
+# Setup phase: Foundation and planning
+claude-todo list --phase setup            # Foundation tasks
+
+# Core phase: Main development and implementation  
+claude-todo list --phase core             # Feature development
+
+# Testing phase: Validation and quality assurance
+claude-todo list --phase testing          # Testing and validation
+
+# Polish phase: Refinement and documentation
+claude-todo list --phase polish           # Documentation and refinement
+
+# Maintenance phase: Ongoing support and fixes
+claude-todo list --phase maintenance      # Bug fixes and support
+```
+
+**Phase Transition Patterns:**
+```bash
+# Review current phase completion
+claude-todo phases                        # Progress overview
+claude-todo analyze --phase $(claude-todo phase show -q)  # Current analysis
+
+# Phase advancement (when current phase complete)
+claude-todo phase complete                # Mark current phase done
+claude-todo phase advance                 # Move to next phase
+claude-todo phase set testing             # Explicit phase setting
+```
+
+**Anti-Hallucination Phase Validation:**
+```bash
+# Verify phase context before assumptions
+claude-todo phase show                    # Current phase confirmation
+claude-todo exists T001 --phase core      # Validate task-phase alignment
+claude-todo list --phase core --status done  # Phase completion status
+
+# Cross-reference project state
+claude-todo dash                          # Project overview
+claude-todo phases stats                  # Phase statistics
+```
+
+**Relationship Between project.currentPhase and task.phase:**
+- `project.currentPhase` - Global project context setting workflow stage
+- `task.phase` - Individual task assignment to specific workflow stage
+- Phase discipline ensures alignment between global context and task operations
+- Cross-phase work allowed but should be intentional and documented
+
+**Configuration Options (Advanced):**
+- `warnPhaseContext` - Warn when working outside current phase
+- `enforcePhaseOrder` - Restrict task creation to current/previous phases
+- Phase policies control behavior for different workflow patterns
 
 ### Dependencies (Task Ordering)
 Block tasks until prerequisites complete:
@@ -395,6 +476,29 @@ ct-list         # claude-todo list
 ct-done         # claude-todo complete
 ct-focus        # claude-todo focus
 ```
+
+## Tab Completion (v0.28.0+)
+
+Enable shell completion for faster command entry:
+
+**Bash** (add to `~/.bashrc`):
+```bash
+source ~/.claude-todo/completions/bash-completion.sh
+```
+
+**Zsh** (add to `~/.zshrc`):
+```bash
+fpath=(~/.claude-todo/completions $fpath)
+autoload -Uz compinit && compinit
+```
+
+**Features:**
+- Context-aware `--parent` completion (shows epic/task only, not subtasks)
+- All commands, subcommands, and flags
+- Task ID completion with status filtering
+- Phase, label, and priority value completion
+
+**Full documentation**: [docs/commands/tab-completion.md](commands/tab-completion.md)
 
 ## Debug & Validation
 ```bash

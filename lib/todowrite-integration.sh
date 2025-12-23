@@ -276,7 +276,7 @@ convert_to_active_form() {
             is_likely_verb=false ;;
         bug|feature|issue|task|story|epic|ticket|pr|review|release|version|v1|v2|patch)
             is_likely_verb=false ;;
-        new|old|main|primary|secondary|final|initial|temp|temporary|quick|fast|slow)
+        new|old|main|primary|secondary|final|initial|temp|temporary|quick|fast|slow|high|medium|low|blocked|pending|active|done|critical|urgent|important)
             is_likely_verb=false ;;
         # If word is very short and not in lookup, probably not a verb
         *)

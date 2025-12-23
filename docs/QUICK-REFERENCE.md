@@ -550,7 +550,7 @@ echo "Created: $formatted"
 ## Backup Rotation
 
 ```
-.backups/
+.claude/.backups/                    # Tier 1: Operational backups
 ├── todo.json.1  ← Most recent (current backup)
 ├── todo.json.2
 ├── ...

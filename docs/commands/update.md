@@ -181,8 +181,16 @@ View with: jq '.tasks[] | select(.id == "T001")' .claude/todo.json
 | Code | Meaning |
 |------|---------|
 | `0` | Success |
-| `1` | Invalid arguments or validation failure |
-| `2` | File operation failure |
+| `1` | General error (invalid arguments or unknown options) |
+| `2` | Invalid argument value |
+| `3` | File operation failure |
+| `4` | Task not found |
+| `6` | Validation failure (schema, circular dependency, etc.) |
+| `10` | Parent task not found |
+| `11` | Max hierarchy depth exceeded (max 3 levels) |
+| `12` | Max siblings exceeded (max 7 per parent) |
+| `13` | Invalid parent type (subtasks cannot have children) |
+| `102` | No changes (dry-run or no-op) |
 
 ## See Also
 

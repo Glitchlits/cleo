@@ -1,10 +1,10 @@
 {
   "$schema": "https://claude-todo.dev/schemas/v1/spec-index.schema.json",
   "_meta": {
-    "version": "1.0.3",
-    "lastUpdated": "2025-12-20",
-    "totalSpecs": 16,
-    "totalReports": 9
+    "version": "1.0.4",
+    "lastUpdated": "2025-12-22",
+    "totalSpecs": 17,
+    "totalReports": 10
   },
   "authorities": {
     "task-ids": "LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md",
@@ -17,7 +17,8 @@
     "file-operations": "FILE-LOCKING-SPEC.md",
     "versioning": "RELEASE-VERSION-MANAGEMENT-SPEC.md",
     "search": "FIND-COMMAND-SPEC.md",
-    "consensus-investigation": "CONSENSUS-FRAMEWORK-SPEC.md"
+    "consensus-investigation": "CONSENSUS-FRAMEWORK-SPEC.md",
+    "multi-agent-abstraction": "MULTI-AGENT-ABSTRACTION-SPEC.md"
   },
   "specs": [
     {
@@ -232,6 +233,20 @@
       "dependedOnBy": [],
       "implementationReport": "CONSENSUS-FRAMEWORK-IMPLEMENTATION-REPORT.md",
       "isAuthoritativeFor": ["consensus-investigation"]
+    },
+    {
+      "file": "MULTI-AGENT-ABSTRACTION-SPEC.md",
+      "version": "1.0.0",
+      "status": "DRAFT",
+      "type": "SPEC",
+      "domain": "multi-agent-abstraction",
+      "category": "architecture",
+      "synopsis": "Abstraction layer for multi-agent CLI support (Claude, Gemini, Codex, Kimi). Defines environment variables, path resolution, agent detection, sync protocol adapters. Brand: cleo.",
+      "lastUpdated": "2025-12-22",
+      "dependsOn": ["SPEC-BIBLE-GUIDELINES.md", "LLM-AGENT-FIRST-SPEC.md", "TODOWRITE-SYNC-SPEC.md", "CONFIG-SYSTEM-SPEC.md"],
+      "dependedOnBy": [],
+      "implementationReport": "../../claudedocs/rebrand/MULTI-AGENT-ABSTRACTION-IMPLEMENTATION-REPORT.md",
+      "isAuthoritativeFor": ["multi-agent-abstraction"]
     }
   ],
   "reports": [
@@ -306,9 +321,24 @@
       "phase": "phase-1",
       "lastUpdated": "2025-12-20",
       "notes": "Phase 1: 8/10 components. Schema+validation complete, tree view pending."
+    },
+    {
+      "file": "../../claudedocs/rebrand/MULTI-AGENT-ABSTRACTION-IMPLEMENTATION-REPORT.md",
+      "relatedSpec": "MULTI-AGENT-ABSTRACTION-SPEC.md",
+      "progress": "0%",
+      "phase": "planning",
+      "lastUpdated": "2025-12-22",
+      "notes": "Spec complete, implementation not started. 4 phases planned."
     }
   ],
   "recentChanges": [
+    {
+      "date": "2025-12-22",
+      "file": "MULTI-AGENT-ABSTRACTION-SPEC.md",
+      "changeType": "Created",
+      "version": "1.0.0",
+      "description": "Multi-agent abstraction spec for rebranding to cleo. Converted from PLAN.md to proper SPEC following SPEC-BIBLE-GUIDELINES. Defines env vars, paths, agent detection, sync adapters."
+    },
     {
       "date": "2025-12-20",
       "file": "TASK-HIERARCHY-SPEC.md",

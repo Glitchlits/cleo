@@ -2,12 +2,12 @@
   "$schema": "https://claude-todo.dev/schemas/v1/commands-index.schema.json",
   "_meta": {
     "version": "1.0.0",
-    "lastUpdated": "2025-12-19",
-    "totalCommands": 34,
+    "lastUpdated": "2025-12-22",
+    "totalCommands": 37,
     "specCompliance": "LLM-AGENT-FIRST-SPEC v3.0"
   },
   "categories": {
-    "write": ["add", "archive", "complete", "focus", "phase", "session", "update"],
+    "write": ["add", "archive", "complete", "focus", "phase", "populate-hierarchy", "promote", "reparent", "session", "update"],
     "read": ["analyze", "blockers", "commands", "dash", "deps", "exists", "export", "find", "history", "labels", "list", "log", "next", "phases", "research", "show", "stats"],
     "sync": ["extract", "inject", "sync"],
     "maintenance": ["backup", "config", "init", "migrate", "migrate-backups", "restore", "validate"]
@@ -20,7 +20,7 @@
       "doc": "add.md",
       "synopsis": "Create new task with metadata (title, priority, labels, phase, dependencies)",
       "flags": ["--format", "--quiet", "--json", "--human", "--dry-run"],
-      "exitCodes": [0, 2, 6, 10, 11, 12, 13],
+      "exitCodes": [0, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13],
       "jsonOutput": true,
       "agentRelevance": "high"
     },
@@ -312,6 +312,39 @@
       "agentRelevance": "medium"
     },
     {
+      "name": "populate-hierarchy",
+      "script": "populate-hierarchy.sh",
+      "category": "write",
+      "doc": "hierarchy.md#populating-hierarchy-v0232",
+      "synopsis": "Auto-populate parentId from naming conventions and depends→epic patterns",
+      "flags": ["--format", "--quiet", "--dry-run", "--json", "--human"],
+      "exitCodes": [0, 2, 3, 6],
+      "jsonOutput": true,
+      "agentRelevance": "low"
+    },
+    {
+      "name": "promote",
+      "script": "promote.sh",
+      "category": "write",
+      "doc": "promote.md",
+      "synopsis": "Remove parent from task, making it root-level",
+      "flags": ["--format", "--quiet", "--no-type-update"],
+      "exitCodes": [0, 1, 2, 3, 4],
+      "jsonOutput": true,
+      "agentRelevance": "medium"
+    },
+    {
+      "name": "reparent",
+      "script": "reparent.sh",
+      "category": "write",
+      "doc": "reparent.md",
+      "synopsis": "Move task to different parent in hierarchy",
+      "flags": ["--format", "--quiet", "--to"],
+      "exitCodes": [0, 1, 2, 3, 4, 10, 11, 12, 13, 14],
+      "jsonOutput": true,
+      "agentRelevance": "medium"
+    },
+    {
       "name": "restore",
       "script": "restore.sh",
       "category": "maintenance",
@@ -386,7 +419,7 @@
       "doc": "update.md",
       "synopsis": "Modify existing task fields (status, priority, labels, notes, etc.)",
       "flags": ["--format", "--quiet", "--dry-run", "--status", "--priority", "--labels", "--notes", "--description", "--phase", "--blocked-by", "--depends"],
-      "exitCodes": [0, 2, 4, 6, 10, 102],
+      "exitCodes": [0, 1, 2, 3, 4, 6, 10, 11, 12, 13, 102],
       "jsonOutput": true,
       "agentRelevance": "critical"
     },

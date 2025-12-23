@@ -591,3 +591,56 @@ teardown() {
     local acc=$(jq -r '.tasks[0].acceptance | join(",")' "$TODO_FILE")
     [[ "$acc" == "User can login,Session persists" ]]
 }
+
+# =============================================================================
+# Phase Context Validation Tests (T462)
+# =============================================================================
+
+@test "add-task warns on phase mismatch when warnPhaseContext enabled" {
+    create_empty_todo
+    # Setup: Enable warnings, disable description requirement
+    echo '{"validation":{"requireDescription":false,"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
+
+    # Set project phase to core
+    jq '.project.currentPhase = "core"' "$TODO_FILE" > "${TODO_FILE}.tmp"
+    mv "${TODO_FILE}.tmp" "$TODO_FILE"
+
+    run bash "$ADD_SCRIPT" "Test task" --phase setup --human
+    assert_success
+    assert_output --partial "WARN"  # Warning shown but creation succeeds
+}
+
+@test "add-task silent on phase mismatch when warnPhaseContext disabled" {
+    create_empty_todo
+    # Config with warnings disabled, disable description requirement
+    echo '{"validation":{"requireDescription":false,"phaseValidation":{"warnPhaseContext":false}}}' > "$CONFIG_FILE"
+
+    # Set project phase to core
+    jq '.project.currentPhase = "core"' "$TODO_FILE" > "${TODO_FILE}.tmp"
+    mv "${TODO_FILE}.tmp" "$TODO_FILE"
+
+    # Define setup phase so validation passes
+    jq '.project.phases.setup = {"order": 1, "name": "Setup"}' "$TODO_FILE" > "${TODO_FILE}.tmp"
+    mv "${TODO_FILE}.tmp" "$TODO_FILE"
+
+    run bash "$ADD_SCRIPT" "Test task" --phase setup --human
+    assert_success
+    refute_output --partial "differs from"
+}
+
+@test "add-task never blocks on phase mismatch" {
+    create_empty_todo
+    # Even with warnings enabled, creation should succeed
+    echo '{"validation":{"requireDescription":false,"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
+
+    jq '.project.currentPhase = "core"' "$TODO_FILE" > "${TODO_FILE}.tmp"
+    mv "${TODO_FILE}.tmp" "$TODO_FILE"
+
+    run bash "$ADD_SCRIPT" "Test task" --phase setup
+    assert_success
+
+    # Verify task was created
+    local count
+    count=$(jq '.tasks | length' "$TODO_FILE")
+    [ "$count" -eq 1 ]
+}

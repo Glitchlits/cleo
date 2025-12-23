@@ -430,11 +430,168 @@ claude-todo populate-hierarchy --json
 }
 ```
 
+## Hierarchy Management Commands (v0.26.0+)
+
+### Reparent
+
+Move a task to a different parent:
+
+```bash
+claude-todo reparent TASK_ID --to PARENT_ID
+```
+
+| Option | Description |
+|--------|-------------|
+| `--to PARENT_ID` | New parent task ID (required) |
+| `--to ""` | Remove parent (make root task) |
+| `--format` | Output format: `text`, `json` |
+| `-q, --quiet` | Minimal output |
+
+**Examples:**
+```bash
+# Move task under different epic
+claude-todo reparent T005 --to T001
+
+# Remove parent (make root)
+claude-todo reparent T005 --to ""
+```
+
+**Validation:**
+- Target parent must exist
+- Target parent cannot be a subtask
+- Move cannot exceed max depth (3)
+- Move cannot create circular references
+
+### Promote
+
+Remove parent from a task, making it root-level:
+
+```bash
+claude-todo promote TASK_ID [OPTIONS]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--no-type-update` | Don't auto-update type (keep as subtask if applicable) |
+| `--format` | Output format: `text`, `json` |
+| `-q, --quiet` | Minimal output |
+
+**Examples:**
+```bash
+# Make task root-level
+claude-todo promote T005
+
+# Promote but keep subtask type
+claude-todo promote T005 --no-type-update
+```
+
+**Behavior:**
+- Subtasks are auto-promoted to `task` type
+- Already root-level tasks return success with no changes
+
+### Comparison
+
+| Operation | promote | reparent |
+|-----------|---------|----------|
+| Make root | `promote T` | `reparent T --to ""` |
+| Change parent | Not available | `reparent T --to NEW_PARENT` |
+| Type handling | Auto-updates subtask→task | Preserves type |
+
+## Parent Auto-Complete (v0.24.0+)
+
+When all children of a parent task are completed, the parent can automatically complete.
+
+### Configuration
+
+```bash
+claude-todo config set hierarchy.autoCompleteParent true
+claude-todo config set hierarchy.autoCompleteMode auto
+```
+
+| Setting | Values | Description |
+|---------|--------|-------------|
+| `hierarchy.autoCompleteParent` | `true`, `false` | Enable/disable auto-complete |
+| `hierarchy.autoCompleteMode` | `auto`, `suggest`, `off` | Behavior mode |
+
+### Modes
+
+| Mode | Behavior |
+|------|----------|
+| `auto` | Silent completion when all children done |
+| `suggest` | Prompt user before completing (future) |
+| `off` | Disabled (default) |
+
+### Behavior
+
+- Triggered when completing the last pending child
+- Adds system note: `[AUTO-COMPLETED] All child tasks completed`
+- Works recursively (completing subtask can cascade to task then epic)
+- JSON output includes `autoCompletedParents` array
+
+### Example
+
+```bash
+# Enable auto-complete
+claude-todo config set hierarchy.autoCompleteParent true
+claude-todo config set hierarchy.autoCompleteMode auto
+
+# Create hierarchy
+claude-todo add "Feature Epic" --type epic
+claude-todo add "Task 1" --parent T001
+claude-todo add "Task 2" --parent T001
+
+# Complete children - parent auto-completes after last child
+claude-todo complete T002
+claude-todo complete T003  # T001 auto-completes
+
+# Verify
+claude-todo show T001 --format json | jq '.task.status'
+# "done"
+```
+
+## Orphan Detection and Repair (v0.24.0+)
+
+Detect and repair tasks with invalid parent references.
+
+### Detection
+
+```bash
+# Check for orphaned tasks
+claude-todo validate --check-orphans
+```
+
+Orphaned tasks have a `parentId` that references a non-existent task.
+
+### Repair Options
+
+```bash
+# Unlink orphans (remove invalid parentId, make root)
+claude-todo validate --fix-orphans unlink
+
+# Delete orphans (remove the orphaned tasks entirely)
+claude-todo validate --fix-orphans delete
+```
+
+| Mode | Effect |
+|------|--------|
+| `unlink` | Sets `parentId` to null, preserves tasks |
+| `delete` | Removes orphaned tasks entirely |
+
+### Library Functions
+
+| Function | Purpose |
+|----------|---------|
+| `detect_orphans` | Returns JSON array of orphan details |
+| `repair_orphan_unlink` | Remove invalid parent references |
+| `repair_orphan_delete` | Delete orphaned tasks |
+
 ## See Also
 
 - [add](add.md) - Task creation with hierarchy options
 - [list](list.md) - Task listing with hierarchy filters
 - [show](show.md) - Task details with hierarchy context
 - [update](update.md) - Modify task hierarchy (reparenting)
+- [promote](promote.md) - Remove parent from task
+- [reparent](reparent.md) - Move task to different parent
 - [HIERARCHY-ENHANCEMENT-SPEC.md](../specs/HIERARCHY-ENHANCEMENT-SPEC.md) - Full specification
 - [LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md](../specs/LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md) - ID system design

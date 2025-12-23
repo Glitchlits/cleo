@@ -5,6 +5,25 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.1] - 2025-12-23
+
+### Added
+- **Tab Completion Release (T637 EPIC)**: Complete tab completion feature
+  - `install.sh` now copies completion scripts to `~/.claude-todo/completions/`
+  - Setup instructions displayed after installation
+  - `docs/commands/tab-completion.md`: Comprehensive documentation (314 lines)
+  - `docs/TODO_Task_Management.md`: Added Tab Completion section
+  - `tests/unit/completion.bats`: 30 unit tests for completion scripts
+
+### Fixed
+- **Exit Code Documentation**: Updated COMMANDS-INDEX.json with missing exit codes
+  - `add-task.sh`: Added codes 3 (FILE_ERROR), 4 (NOT_FOUND), 5 (DEPENDENCY_ERROR), 7 (LOCK_TIMEOUT)
+  - `update-task.sh`: Added code 3 (FILE_ERROR)
+
+- **detect_orphans() Compatibility**: Fixed JSON parsing in `lib/validation.sh`
+  - `detect_orphans()` returns JSON array, validation.sh now properly parses it
+  - Previously used space-separated iteration which was incompatible with JSON output
+
 ## [0.28.0] - 2025-12-23
 
 ### Added

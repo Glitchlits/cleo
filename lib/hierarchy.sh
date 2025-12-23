@@ -600,36 +600,6 @@ validate_hierarchy() {
     return 0
 }
 
-# detect_orphans - Find tasks with invalid parentId references
-#
-# Args:
-#   $1 - Path to todo.json
-#
-# Returns: Space-separated list of orphan task IDs, or empty if none
-detect_orphans() {
-    local todo_file="$1"
-    local orphans=""
-
-    # Get all task IDs
-    local all_ids
-    all_ids=$(jq -r '.tasks[].id' "$todo_file" 2>/dev/null)
-
-    # Check each task's parentId
-    for task_id in $all_ids; do
-        local parent_id
-        parent_id=$(get_task_parent "$task_id" "$todo_file")
-
-        if [[ "$parent_id" != "null" && -n "$parent_id" ]]; then
-            # Check if parent exists
-            if ! echo "$all_ids" | grep -qw "$parent_id"; then
-                orphans="$orphans $task_id"
-            fi
-        fi
-    done
-
-    echo "${orphans# }"
-}
-
 # infer_task_type - Infer type based on hierarchy position
 #
 # Args:
@@ -726,7 +696,83 @@ export -f validate_max_active_siblings
 export -f validate_parent_type
 export -f validate_no_circular_reference
 export -f validate_hierarchy
+# ============================================================================
+# ORPHAN DETECTION AND REPAIR (T341)
+# ============================================================================
+
+# Detect orphaned tasks (parentId references non-existent or archived task)
+# Args: $1 = todo file path
+# Returns: JSON array of orphan task IDs with details
+detect_orphans() {
+    local todo_file="${1:-$TODO_FILE}"
+
+    # Get all valid parent IDs (tasks that exist)
+    local valid_parents
+    valid_parents=$(jq -r '[.tasks[].id] | @json' "$todo_file")
+
+    # Find tasks with parentId that doesn't exist
+    jq --argjson valid "$valid_parents" '
+        [.tasks[] |
+         select(.parentId != null and .parentId != "") |
+         select([.parentId] | inside($valid) | not) |
+         {id, title, parentId, status, reason: "parent_not_found"}
+        ]
+    ' "$todo_file"
+}
+
+# Repair orphans by unlinking (set parentId to null)
+# Args: $1 = todo file path, $2 = task ID or "all"
+repair_orphan_unlink() {
+    local todo_file="${1:-$TODO_FILE}"
+    local task_id="$2"
+
+    if [[ "$task_id" == "all" ]]; then
+        local orphan_ids
+        orphan_ids=$(detect_orphans "$todo_file" | jq -r '.[].id')
+        local count=0
+
+        for id in $orphan_ids; do
+            jq --arg id "$id" '
+                .tasks |= map(if .id == $id then .parentId = null else . end)
+            ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+            ((count++))
+        done
+        echo "$count"
+    else
+        jq --arg id "$task_id" '
+            .tasks |= map(if .id == $id then .parentId = null else . end)
+        ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+    fi
+}
+
+# Repair orphans by deletion (more destructive)
+# Args: $1 = todo file path, $2 = task ID or "all"
+repair_orphan_delete() {
+    local todo_file="${1:-$TODO_FILE}"
+    local task_id="$2"
+
+    if [[ "$task_id" == "all" ]]; then
+        local orphan_ids
+        orphan_ids=$(detect_orphans "$todo_file" | jq -r '.[].id')
+        local count=0
+
+        for id in $orphan_ids; do
+            jq --arg id "$id" '
+                .tasks |= map(select(.id != $id))
+            ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+            ((count++))
+        done
+        echo "$count"
+    else
+        jq --arg id "$task_id" '
+            .tasks |= map(select(.id != $id))
+        ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+    fi
+}
+
 export -f detect_orphans
+export -f repair_orphan_unlink
+export -f repair_orphan_delete
 export -f infer_task_type
 export -f validate_task_type
 export -f validate_task_size

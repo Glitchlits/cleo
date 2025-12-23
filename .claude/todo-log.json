@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 1242,
+    "totalEntries": 1478,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-20T10:57:41Z",
+    "lastEntry": "2025-12-23T02:41:13Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -30674,6 +30674,4963 @@
         "field": "status",
         "operation": "complete"
       }
+    },
+    {
+      "id": "log_53b46e100bac",
+      "timestamp": "2025-12-22T16:50:42Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T458",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:50:42Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_b21cf0fcdcbd",
+      "timestamp": "2025-12-22T16:50:44Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T459",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:50:44Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_84293ec4390f",
+      "timestamp": "2025-12-22T16:50:45Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T539",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:50:45Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_055331456930",
+      "timestamp": "2025-12-22T16:50:47Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T532",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:50:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_52927ccbaafa",
+      "timestamp": "2025-12-22T16:50:51Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T451",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:50:51Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766422371-c846b7",
+      "timestamp": "2025-12-22T16:52:51Z",
+      "action": "task_created",
+      "taskId": "T565",
+      "actor": "system",
+      "details": {
+        "title": "Parent Task for Testing",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Parent Task for Testing",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766422376-8cae21",
+      "timestamp": "2025-12-22T16:52:56Z",
+      "action": "task_created",
+      "taskId": "T566",
+      "actor": "system",
+      "details": {
+        "title": "Child Task 1",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Child Task 1",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766422381-a6c6c9",
+      "timestamp": "2025-12-22T16:53:01Z",
+      "action": "task_created",
+      "taskId": "T567",
+      "actor": "system",
+      "details": {
+        "title": "Child Task 2",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Child Task 2",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_d38f607fbf46",
+      "timestamp": "2025-12-22T16:53:10Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T566",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:53:10Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_38b81f5e90a3",
+      "timestamp": "2025-12-22T16:53:16Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T567",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:53:16Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766422441-8d3215",
+      "timestamp": "2025-12-22T16:54:01Z",
+      "action": "task_created",
+      "taskId": "T568",
+      "actor": "system",
+      "details": {
+        "title": "New Parent",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "New Parent",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766422446-de85da",
+      "timestamp": "2025-12-22T16:54:06Z",
+      "action": "task_created",
+      "taskId": "T569",
+      "actor": "system",
+      "details": {
+        "title": "New Child",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "New Child",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_846c0722f7da",
+      "timestamp": "2025-12-22T16:54:11Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T569",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:54:11Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766422596-cca17e",
+      "timestamp": "2025-12-22T16:56:36Z",
+      "action": "task_created",
+      "taskId": "T570",
+      "actor": "system",
+      "details": {
+        "title": "Another Child",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Another Child",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_b2a250944188",
+      "timestamp": "2025-12-22T16:56:41Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T570",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:56:41Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766422636-e6d793",
+      "timestamp": "2025-12-22T16:57:16Z",
+      "action": "task_created",
+      "taskId": "T571",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 3",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 3",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_4676e0a002ef",
+      "timestamp": "2025-12-22T16:57:21Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T571",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:57:21Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766422653-93ab2e",
+      "timestamp": "2025-12-22T16:57:33Z",
+      "action": "task_created",
+      "taskId": "T572",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 4",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 4",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_71df35faf39a",
+      "timestamp": "2025-12-22T16:57:38Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T572",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:57:38Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766422693-17f8bb",
+      "timestamp": "2025-12-22T16:58:13Z",
+      "action": "task_created",
+      "taskId": "T573",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 5",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 5",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_01d12105a0d8",
+      "timestamp": "2025-12-22T16:58:18Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T573",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:58:18Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_83291408afdf",
+      "timestamp": "2025-12-22T16:58:53Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T215"
+      },
+      "after": {
+        "currentTask": "T463"
+      },
+      "details": null
+    },
+    {
+      "id": "log-1766422776-24b64d",
+      "timestamp": "2025-12-22T16:59:36Z",
+      "action": "task_created",
+      "taskId": "T574",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 6",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 6",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_1f685e1c850b",
+      "timestamp": "2025-12-22T16:59:41Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T574",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T16:59:41Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766422801-35ac9e",
+      "timestamp": "2025-12-22T17:00:01Z",
+      "action": "task_created",
+      "taskId": "T575",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 7",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 7",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_7f4a0bb149de",
+      "timestamp": "2025-12-22T17:00:58Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T575",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:00:58Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_5c73b1c6cef2",
+      "timestamp": "2025-12-22T17:01:06Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T461"
+      },
+      "details": null
+    },
+    {
+      "id": "log_cc4dd1a5ac7c",
+      "timestamp": "2025-12-22T17:02:38Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T461",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:02:37Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_3f9faa540470",
+      "timestamp": "2025-12-22T17:02:46Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T462"
+      },
+      "details": null
+    },
+    {
+      "id": "log_8c121717619b",
+      "timestamp": "2025-12-22T17:04:28Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T462",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:04:28Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_8023c71ce28e",
+      "timestamp": "2025-12-22T17:04:35Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T464"
+      },
+      "details": null
+    },
+    {
+      "id": "log_1db8401b5e5e",
+      "timestamp": "2025-12-22T17:05:54Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T464",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:05:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ff4924310e8c",
+      "timestamp": "2025-12-22T17:07:29Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T463",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:07:29Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_73d0b98d1163",
+      "timestamp": "2025-12-22T17:07:44Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T457",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:07:44Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_694dc056e3db",
+      "timestamp": "2025-12-22T17:07:53Z",
+      "sessionId": "session_20251220_025346_0bb469",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Completed EPIC T457 - Phase Discipline. All 7 subtasks done, 70+ tests passing."
+      }
+    },
+    {
+      "id": "log_962e71666a78",
+      "timestamp": "2025-12-22T17:44:31Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T343",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:44:31Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_acd3da3cb85c",
+      "timestamp": "2025-12-22T17:47:08Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T344",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:47:08Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_bdabec841eec",
+      "timestamp": "2025-12-22T17:51:39Z",
+      "sessionId": null,
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T345",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:51:39Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766426166-99053c",
+      "timestamp": "2025-12-22T17:56:06Z",
+      "action": "task_created",
+      "taskId": "T576",
+      "actor": "system",
+      "details": {
+        "title": "Test Epic",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Epic",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766426170-994620",
+      "timestamp": "2025-12-22T17:56:10Z",
+      "action": "task_created",
+      "taskId": "T577",
+      "actor": "system",
+      "details": {
+        "title": "Test Task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_d39b1e268090",
+      "timestamp": "2025-12-22T17:56:14Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T576"
+      },
+      "details": null
+    },
+    {
+      "id": "log-1766426300-49d4b5",
+      "timestamp": "2025-12-22T17:58:20Z",
+      "action": "task_created",
+      "taskId": "T578",
+      "actor": "system",
+      "details": {
+        "title": "Epic 1",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Epic 1",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766426305-3017cf",
+      "timestamp": "2025-12-22T17:58:25Z",
+      "action": "task_created",
+      "taskId": "T579",
+      "actor": "system",
+      "details": {
+        "title": "Epic 2",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Epic 2",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766426310-ebba2c",
+      "timestamp": "2025-12-22T17:58:30Z",
+      "action": "task_created",
+      "taskId": "T580",
+      "actor": "system",
+      "details": {
+        "title": "Task in E1",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Task in E1",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766426315-dab7f5",
+      "timestamp": "2025-12-22T17:58:35Z",
+      "action": "task_created",
+      "taskId": "T581",
+      "actor": "system",
+      "details": {
+        "title": "Task in E2",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Task in E2",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_4103da63f1df",
+      "timestamp": "2025-12-22T17:58:39Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T576"
+      },
+      "after": {
+        "currentTask": "T578"
+      },
+      "details": null
+    },
+    {
+      "id": "log_8e110b28cf9a",
+      "timestamp": "2025-12-22T17:59:36Z",
+      "sessionId": null,
+      "action": "phase_rollback",
+      "actor": "human",
+      "taskId": null,
+      "before": {
+        "currentPhase": "polish"
+      },
+      "after": {
+        "currentPhase": "core"
+      },
+      "details": {
+        "transitionType": "rollback",
+        "fromPhase": "polish",
+        "toPhase": "core",
+        "reason": "Manual rollback via phase set --rollback"
+      }
+    },
+    {
+      "id": "log_754dc25ab71c",
+      "timestamp": "2025-12-22T17:59:42Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_a8c93c2080c6",
+      "timestamp": "2025-12-22T17:59:45Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T346",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T17:59:44Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_1681330e7fa4",
+      "timestamp": "2025-12-22T17:59:58Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T578"
+      },
+      "after": {
+        "currentTask": "T340"
+      },
+      "details": null
+    },
+    {
+      "id": "log_dd0cb552c08c",
+      "timestamp": "2025-12-22T18:00:23Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T339",
+      "before": {
+        "title": "EPIC: Hierarchy Enhancement Phase 2 - Automation (v0.16.0)",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Overview\nAdvanced automation and UX enhancements for hierarchy.\n\n## Scope\n- Auto-complete parent when all children done\n- Auto-unblock when dependencies complete\n- Orphan detection and repair commands\n- tree, reparent, promote commands\n- Tab completion for --parent\n- Focus integration with hierarchy context\n- next command hierarchy awareness\n\n## Success Criteria\n- All Phase 1 + Phase 2 tests pass\n- Auto-behaviors work correctly\n- Commands are intuitive and documented\n- Performance acceptable for 500+ tasks",
+        "phase": "core",
+        "labels": [
+          "epic-type",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": [
+          "docs/specs/HIERARCHY-ENHANCEMENT-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T328"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "EPIC: Hierarchy Enhancement Phase 2 - Automation (v0.16.0)",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Overview\nAdvanced automation and UX enhancements for hierarchy.\n\n## Scope\n- Auto-complete parent when all children done\n- Auto-unblock when dependencies complete\n- Orphan detection and repair commands\n- tree, reparent, promote commands\n- Tab completion for --parent\n- Focus integration with hierarchy context\n- next command hierarchy awareness\n\n## Success Criteria\n- All Phase 1 + Phase 2 tests pass\n- Auto-behaviors work correctly\n- Commands are intuitive and documented\n- Performance acceptable for 500+ tasks",
+        "phase": "core",
+        "labels": [
+          "epic-type",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": [
+          "docs/specs/HIERARCHY-ENHANCEMENT-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T328"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766426774-61fd5a",
+      "timestamp": "2025-12-22T18:06:14Z",
+      "action": "task_created",
+      "taskId": "T582",
+      "actor": "system",
+      "details": {
+        "title": "Test Parent for Auto-Complete",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Parent for Auto-Complete",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766426781-d73128",
+      "timestamp": "2025-12-22T18:06:21Z",
+      "action": "task_created",
+      "taskId": "T583",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 1",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 1",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766426787-99b2b4",
+      "timestamp": "2025-12-22T18:06:27Z",
+      "action": "task_created",
+      "taskId": "T584",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 2",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 2",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_4679c9da0aee",
+      "timestamp": "2025-12-22T18:06:38Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T583",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:06:38Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766427779-3abcfc",
+      "timestamp": "2025-12-22T18:22:59Z",
+      "action": "task_created",
+      "taskId": "T585",
+      "actor": "system",
+      "details": {
+        "title": "EPIC: Pre-Rebrand Parallel Execution (4 Workstreams)",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "EPIC: Pre-Rebrand Parallel Execution (4 Workstreams)",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766427793-0398b4",
+      "timestamp": "2025-12-22T18:23:13Z",
+      "action": "task_created",
+      "taskId": "T586",
+      "actor": "system",
+      "details": {
+        "title": "Workstream A: Phase Discipline Completion (T457)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Workstream A: Phase Discipline Completion (T457)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766427795-1073cd",
+      "timestamp": "2025-12-22T18:23:15Z",
+      "action": "task_created",
+      "taskId": "T587",
+      "actor": "system",
+      "details": {
+        "title": "Workstream B: Hierarchy Core Features (T339 Part 1)",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "Workstream B: Hierarchy Core Features (T339 Part 1)",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766427796-a93eca",
+      "timestamp": "2025-12-22T18:23:16Z",
+      "action": "task_created",
+      "taskId": "T588",
+      "actor": "system",
+      "details": {
+        "title": "Workstream C: Hierarchy Automation (T339 Part 2)",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Workstream C: Hierarchy Automation (T339 Part 2)",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766427798-f6f143",
+      "timestamp": "2025-12-22T18:23:18Z",
+      "action": "task_created",
+      "taskId": "T589",
+      "actor": "system",
+      "details": {
+        "title": "Workstream D: Multi-Agent Abstraction Audit",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Workstream D: Multi-Agent Abstraction Audit",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log_d9fbe410934f",
+      "timestamp": "2025-12-22T18:23:31Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T340",
+      "before": {
+        "title": "T339.1: Implement parent auto-complete in complete-task.sh",
+        "status": "active",
+        "priority": "high",
+        "description": "When completing a task:\n1. Check if task has parent\n2. Check if all siblings are done\n3. If yes: auto-complete parent (configurable mode)\n\nConfig options in todo-config.json:\n- hierarchy.autoCompleteParent: true|false\n- hierarchy.autoCompleteMode: auto|suggest|off\n\nModes:\n- auto: Complete parent silently\n- suggest: Prompt user (default)\n- off: No auto-complete",
+        "phase": "core",
+        "labels": [
+          "automation",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.1: Implement parent auto-complete in complete-task.sh",
+        "status": "active",
+        "priority": "high",
+        "description": "When completing a task:\n1. Check if task has parent\n2. Check if all siblings are done\n3. If yes: auto-complete parent (configurable mode)\n\nConfig options in todo-config.json:\n- hierarchy.autoCompleteParent: true|false\n- hierarchy.autoCompleteMode: auto|suggest|off\n\nModes:\n- auto: Complete parent silently\n- suggest: Prompt user (default)\n- off: No auto-complete",
+        "phase": "core",
+        "labels": [
+          "automation",
+          "hierarchy",
+          "rebrand",
+          "v0.16.0",
+          "v0.18.0",
+          "workstream-b"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_8f5af4e02e3f",
+      "timestamp": "2025-12-22T18:23:31Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T341",
+      "before": {
+        "title": "T339.2: Implement orphan detection and repair",
+        "status": "pending",
+        "priority": "high",
+        "description": "Enhance validate command:\n- Detect tasks with parentId referencing non-existent task\n- Detect tasks with parentId referencing archived task\n\nAdd --fix-orphans flag:\n- --unlink: Set parentId=null (promote to root)\n- --delete: Remove orphaned tasks\n- Default: show orphans, don't fix\n\nAdd to regular validation output as warning",
+        "phase": "core",
+        "labels": [
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.2: Implement orphan detection and repair",
+        "status": "pending",
+        "priority": "high",
+        "description": "Enhance validate command:\n- Detect tasks with parentId referencing non-existent task\n- Detect tasks with parentId referencing archived task\n\nAdd --fix-orphans flag:\n- --unlink: Set parentId=null (promote to root)\n- --delete: Remove orphaned tasks\n- Default: show orphans, don't fix\n\nAdd to regular validation output as warning",
+        "phase": "core",
+        "labels": [
+          "hierarchy",
+          "rebrand",
+          "v0.16.0",
+          "v0.18.0",
+          "validation",
+          "workstream-b"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_6527c58430d4",
+      "timestamp": "2025-12-22T18:23:32Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T342",
+      "before": {
+        "title": "T339.3: Create scripts/tree.sh command",
+        "status": "pending",
+        "priority": "medium",
+        "description": "New tree command (alias for list --tree):\n- claude-todo tree: Show full tree\n- claude-todo tree TXXX: Show subtree rooted at TXXX\n- Supports --depth, --status, --priority filters\n\nClean, focused command for hierarchy visualization",
+        "phase": "core",
+        "labels": [
+          "cli",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.3: Create scripts/tree.sh command",
+        "status": "pending",
+        "priority": "medium",
+        "description": "New tree command (alias for list --tree):\n- claude-todo tree: Show full tree\n- claude-todo tree TXXX: Show subtree rooted at TXXX\n- Supports --depth, --status, --priority filters\n\nClean, focused command for hierarchy visualization",
+        "phase": "core",
+        "labels": [
+          "cli",
+          "hierarchy",
+          "rebrand",
+          "v0.16.0",
+          "v0.18.0",
+          "workstream-b"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_f89324ca08ed",
+      "timestamp": "2025-12-22T18:23:32Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T349",
+      "before": {
+        "title": "T339.10: Create Phase 2 tests and documentation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Testing:\n- tests/unit/test-auto-complete.bats\n- tests/integration/hierarchy-automation.bats\n- tests/e2e/full-hierarchy-workflow.bats\n\nDocumentation:\n- Update docs/commands/hierarchy.md with Phase 2 features\n- Update docs/QUICK-REFERENCE.md\n- Update CLAUDE.md injection template\n\nTarget: 50+ additional test cases",
+        "phase": "testing",
+        "labels": [
+          "documentation",
+          "hierarchy",
+          "testing",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T340",
+          "T341",
+          "T342",
+          "T343",
+          "T344"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.10: Create Phase 2 tests and documentation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Testing:\n- tests/unit/test-auto-complete.bats\n- tests/integration/hierarchy-automation.bats\n- tests/e2e/full-hierarchy-workflow.bats\n\nDocumentation:\n- Update docs/commands/hierarchy.md with Phase 2 features\n- Update docs/QUICK-REFERENCE.md\n- Update CLAUDE.md injection template\n\nTarget: 50+ additional test cases",
+        "phase": "testing",
+        "labels": [
+          "docs",
+          "documentation",
+          "hierarchy",
+          "rebrand",
+          "testing",
+          "v0.16.0",
+          "v0.18.0",
+          "workstream-b"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T340",
+          "T341",
+          "T342",
+          "T343",
+          "T344"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_8fb8f5d60f04",
+      "timestamp": "2025-12-22T18:23:34Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T343",
+      "before": {
+        "title": "T339.4: Create scripts/reparent.sh command",
+        "status": "done",
+        "priority": "medium",
+        "description": "New reparent command:\n- claude-todo reparent TXXX --to TYYY\n\nValidates:\n- Source task exists\n- Target parent exists\n- Target has valid type (not subtask)\n- Move doesn't exceed depth limit\n- Move doesn't create circular reference\n- Target doesn't exceed sibling limit\n\nLogs operation to todo-log.json",
+        "phase": "core",
+        "labels": [
+          "cli",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.4: Create scripts/reparent.sh command",
+        "status": "done",
+        "priority": "medium",
+        "description": "New reparent command:\n- claude-todo reparent TXXX --to TYYY\n\nValidates:\n- Source task exists\n- Target parent exists\n- Target has valid type (not subtask)\n- Move doesn't exceed depth limit\n- Move doesn't create circular reference\n- Target doesn't exceed sibling limit\n\nLogs operation to todo-log.json",
+        "phase": "core",
+        "labels": [
+          "cli",
+          "hierarchy",
+          "rebrand",
+          "v0.16.0",
+          "v0.18.0",
+          "workstream-c"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_40edb6f94e8b",
+      "timestamp": "2025-12-22T18:23:34Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T344",
+      "before": {
+        "title": "T339.5: Create scripts/promote.sh command",
+        "status": "done",
+        "priority": "medium",
+        "description": "New promote command:\n- claude-todo promote TXXX\n\nRemoves parentId (makes task root-level).\nOptionally updates type if was subtask -> task.\n\nSimple command for removing parent relationship.",
+        "phase": "core",
+        "labels": [
+          "cli",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.5: Create scripts/promote.sh command",
+        "status": "done",
+        "priority": "medium",
+        "description": "New promote command:\n- claude-todo promote TXXX\n\nRemoves parentId (makes task root-level).\nOptionally updates type if was subtask -> task.\n\nSimple command for removing parent relationship.",
+        "phase": "core",
+        "labels": [
+          "cli",
+          "hierarchy",
+          "rebrand",
+          "v0.16.0",
+          "v0.18.0",
+          "workstream-c"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_6a95ad99171c",
+      "timestamp": "2025-12-22T18:23:35Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T345",
+      "before": {
+        "title": "T339.6: Add hierarchy awareness to focus.sh",
+        "status": "done",
+        "priority": "medium",
+        "description": "Enhance focus show output:\n- Show parent context: Parent: T001 (Title)\n- Show child status: Children: 2 done, 1 pending\n- Show ancestor breadcrumb\n\nWhen focusing on epic, show child summary.\nWhen focusing on task with parent, show parent context.",
+        "phase": "core",
+        "labels": [
+          "focus",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.6: Add hierarchy awareness to focus.sh",
+        "status": "done",
+        "priority": "medium",
+        "description": "Enhance focus show output:\n- Show parent context: Parent: T001 (Title)\n- Show child status: Children: 2 done, 1 pending\n- Show ancestor breadcrumb\n\nWhen focusing on epic, show child summary.\nWhen focusing on task with parent, show parent context.",
+        "phase": "core",
+        "labels": [
+          "focus",
+          "hierarchy",
+          "rebrand",
+          "v0.16.0",
+          "v0.18.0",
+          "workstream-c"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_dafe4b29eae6",
+      "timestamp": "2025-12-22T18:23:35Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T346",
+      "before": {
+        "title": "T339.7: Add hierarchy awareness to next.sh",
+        "status": "done",
+        "priority": "medium",
+        "description": "Enhance next task suggestion:\n- Prefer tasks in currently focused epic (+30 score)\n- Prefer leaf tasks (no children) (+10 score)\n- Consider sibling completion status\n- Show parent context in suggestion\n\nExample output:\nSuggested: T002 - JWT middleware\n  Parent: T001 - Authentication System\n  Score: 95 (priority:50, same-epic:30, leaf:10, unblocked:5)",
+        "phase": "core",
+        "labels": [
+          "hierarchy",
+          "suggestion",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.7: Add hierarchy awareness to next.sh",
+        "status": "done",
+        "priority": "medium",
+        "description": "Enhance next task suggestion:\n- Prefer tasks in currently focused epic (+30 score)\n- Prefer leaf tasks (no children) (+10 score)\n- Consider sibling completion status\n- Show parent context in suggestion\n\nExample output:\nSuggested: T002 - JWT middleware\n  Parent: T001 - Authentication System\n  Score: 95 (priority:50, same-epic:30, leaf:10, unblocked:5)",
+        "phase": "core",
+        "labels": [
+          "hierarchy",
+          "rebrand",
+          "suggestion",
+          "v0.16.0",
+          "v0.18.0",
+          "workstream-c"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_c4ac0ebafdf5",
+      "timestamp": "2025-12-22T18:24:00Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T586",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:24:00Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_34dc1026ce7b",
+      "timestamp": "2025-12-22T18:24:01Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T588",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:24:00Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766429077-12fa3e",
+      "timestamp": "2025-12-22T18:44:37Z",
+      "action": "task_created",
+      "taskId": "T590",
+      "actor": "system",
+      "details": {
+        "title": "Test Parent",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Parent",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766429082-9730c7",
+      "timestamp": "2025-12-22T18:44:42Z",
+      "action": "task_created",
+      "taskId": "T591",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 1",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 1",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766429087-76f27e",
+      "timestamp": "2025-12-22T18:44:47Z",
+      "action": "task_created",
+      "taskId": "T592",
+      "actor": "system",
+      "details": {
+        "title": "Test Child 2",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Child 2",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_70de72571ba3",
+      "timestamp": "2025-12-22T18:45:14Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T591",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:45:14Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_43a74ccb2b41",
+      "timestamp": "2025-12-22T18:45:23Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T592",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:45:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_5cf5ff8f28f1",
+      "timestamp": "2025-12-22T18:45:24Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T590",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:45:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log-1766429539-6abb59",
+      "timestamp": "2025-12-22T18:52:19Z",
+      "action": "task_created",
+      "taskId": "T593",
+      "actor": "system",
+      "details": {
+        "title": "Fresh Test Child",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Fresh Test Child",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_e1b43929427e",
+      "timestamp": "2025-12-22T18:52:26Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T593",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:52:26Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_1161ffd816bd",
+      "timestamp": "2025-12-22T18:52:40Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T584",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:52:39Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_4111da31da99",
+      "timestamp": "2025-12-22T18:52:40Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T582",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:52:39Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log-1766429657-b3837a",
+      "timestamp": "2025-12-22T18:54:17Z",
+      "action": "task_created",
+      "taskId": "T594",
+      "actor": "system",
+      "details": {
+        "title": "Test for skip-notes",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test for skip-notes",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_b0b916783d9a",
+      "timestamp": "2025-12-22T18:54:22Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T594",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:54:22Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766429919-0326e3",
+      "timestamp": "2025-12-22T18:58:39Z",
+      "action": "task_created",
+      "taskId": "T595",
+      "actor": "system",
+      "details": {
+        "title": "Fresh test task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Fresh test task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_9af4736513ac",
+      "timestamp": "2025-12-22T18:58:44Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T595",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T18:58:44Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766445494-d5cd44",
+      "timestamp": "2025-12-22T23:18:14Z",
+      "action": "task_created",
+      "taskId": "T596",
+      "actor": "system",
+      "details": {
+        "title": "Test Epic for Cascade",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Epic for Cascade",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766445499-df7691",
+      "timestamp": "2025-12-22T23:18:19Z",
+      "action": "task_created",
+      "taskId": "T597",
+      "actor": "system",
+      "details": {
+        "title": "Test Task for Cascade",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Task for Cascade",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766445506-93f343",
+      "timestamp": "2025-12-22T23:18:26Z",
+      "action": "task_created",
+      "taskId": "T598",
+      "actor": "system",
+      "details": {
+        "title": "Test Subtask for Cascade",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Subtask for Cascade",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_3ecf57f57656",
+      "timestamp": "2025-12-22T23:18:32Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T598",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T23:18:32Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_9fdb89156631",
+      "timestamp": "2025-12-22T23:18:33Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T597",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T23:18:32Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_fe7cdaffc324",
+      "timestamp": "2025-12-22T23:18:33Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T596",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-22T23:18:32Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log-1766445730-3f583f",
+      "timestamp": "2025-12-22T23:22:10Z",
+      "action": "task_created",
+      "taskId": "T599",
+      "actor": "system",
+      "details": {
+        "title": "Epic Task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Epic Task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766445733-21923a",
+      "timestamp": "2025-12-22T23:22:13Z",
+      "action": "task_created",
+      "taskId": "T600",
+      "actor": "system",
+      "details": {
+        "title": "Child Task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Child Task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766445736-9ed066",
+      "timestamp": "2025-12-22T23:22:16Z",
+      "action": "task_created",
+      "taskId": "T601",
+      "actor": "system",
+      "details": {
+        "title": "Subtask",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Subtask",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766445744-35edbc",
+      "timestamp": "2025-12-22T23:22:24Z",
+      "action": "task_created",
+      "taskId": "T602",
+      "actor": "system",
+      "details": {
+        "title": "Another Subtask",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Another Subtask",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766445749-648c5c",
+      "timestamp": "2025-12-22T23:22:29Z",
+      "action": "task_created",
+      "taskId": "T603",
+      "actor": "system",
+      "details": {
+        "title": "Test Task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_4bdbfd74d1c7",
+      "timestamp": "2025-12-22T23:24:04Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T002"
+      },
+      "details": null
+    },
+    {
+      "id": "log_5b6ddd95a9bf",
+      "timestamp": "2025-12-22T23:24:13Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T002"
+      },
+      "after": {
+        "currentTask": "T004"
+      },
+      "details": null
+    },
+    {
+      "id": "log_e0797b0dded6",
+      "timestamp": "2025-12-22T23:24:19Z",
+      "sessionId": null,
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T004"
+      },
+      "after": {
+        "currentTask": "T001"
+      },
+      "details": null
+    },
+    {
+      "id": "log_b284d78875db",
+      "timestamp": "2025-12-22T23:32:10Z",
+      "sessionId": "session_20251222_153210_8d2ad6",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log-1766449624-460935",
+      "timestamp": "2025-12-23T00:27:04Z",
+      "action": "task_created",
+      "taskId": "T599",
+      "actor": "system",
+      "details": {
+        "title": "Test version fix",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test version fix",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766449649-fdbb2a",
+      "timestamp": "2025-12-23T00:27:29Z",
+      "action": "task_created",
+      "taskId": "T600",
+      "actor": "system",
+      "details": {
+        "title": "Test version fix",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test version fix",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766450035-c43561",
+      "timestamp": "2025-12-23T00:33:55Z",
+      "action": "task_created",
+      "taskId": "T601",
+      "actor": "system",
+      "details": {
+        "title": "Test parent task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test parent task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766450038-a3d04e",
+      "timestamp": "2025-12-23T00:33:59Z",
+      "action": "task_created",
+      "taskId": "T602",
+      "actor": "system",
+      "details": {
+        "title": "Test child task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test child task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766450286-8cd3bd",
+      "timestamp": "2025-12-23T00:38:06Z",
+      "action": "task_created",
+      "taskId": "T603",
+      "actor": "system",
+      "details": {
+        "title": "Test subtask",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test subtask",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766450313-3d12c0",
+      "timestamp": "2025-12-23T00:38:33Z",
+      "action": "task_created",
+      "taskId": "T604",
+      "actor": "system",
+      "details": {
+        "title": "Test subtask 2",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test subtask 2",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_3a5d50ca5088",
+      "timestamp": "2025-12-23T00:39:36Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T604",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:39:36Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_e5ca449994d5",
+      "timestamp": "2025-12-23T00:39:41Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T601",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:39:41Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766450766-20f509",
+      "timestamp": "2025-12-23T00:46:06Z",
+      "action": "task_created",
+      "taskId": "T605",
+      "actor": "system",
+      "details": {
+        "title": "Test Epic",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Epic",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766450771-751f8b",
+      "timestamp": "2025-12-23T00:46:11Z",
+      "action": "task_created",
+      "taskId": "T606",
+      "actor": "system",
+      "details": {
+        "title": "Test Task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766450775-78b6bc",
+      "timestamp": "2025-12-23T00:46:15Z",
+      "action": "task_created",
+      "taskId": "T607",
+      "actor": "system",
+      "details": {
+        "title": "Test Subtask",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Test Subtask",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_4e7e740a2c2b",
+      "timestamp": "2025-12-23T00:46:54Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T607",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:46:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0b53787a6154",
+      "timestamp": "2025-12-23T00:46:54Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T606",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:46:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_9c604f16b6cc",
+      "timestamp": "2025-12-23T00:46:55Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T605",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:46:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log-1766451356-3773b7",
+      "timestamp": "2025-12-23T00:55:56Z",
+      "action": "task_created",
+      "taskId": "T608",
+      "actor": "system",
+      "details": {
+        "title": "Validation Epic",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Validation Epic",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451362-1e8b2d",
+      "timestamp": "2025-12-23T00:56:02Z",
+      "action": "task_created",
+      "taskId": "T609",
+      "actor": "system",
+      "details": {
+        "title": "Validation Task",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Validation Task",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451369-d7c2bd",
+      "timestamp": "2025-12-23T00:56:09Z",
+      "action": "task_created",
+      "taskId": "T610",
+      "actor": "system",
+      "details": {
+        "title": "Validation Subtask",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Validation Subtask",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_33e16d1f303d",
+      "timestamp": "2025-12-23T00:56:17Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T610",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:56:17Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_02c3e4f40d01",
+      "timestamp": "2025-12-23T00:56:17Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T609",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:56:17Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_e2fd34978699",
+      "timestamp": "2025-12-23T00:56:18Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T608",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T00:56:17Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log-1766451512-d57e30",
+      "timestamp": "2025-12-23T00:58:32Z",
+      "action": "task_created",
+      "taskId": "T611",
+      "actor": "system",
+      "details": {
+        "title": "Backup System Refactoring (BACKUP-SYSTEM-SPEC implementation)",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "Backup System Refactoring (BACKUP-SYSTEM-SPEC implementation)",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766451521-d67c71",
+      "timestamp": "2025-12-23T00:58:41Z",
+      "action": "task_created",
+      "taskId": "T612",
+      "actor": "system",
+      "details": {
+        "title": "Phase 0: Immediate Fixes - Stop disk growth",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 0: Immediate Fixes - Stop disk growth",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766451536-4d5c3d",
+      "timestamp": "2025-12-23T00:58:56Z",
+      "action": "task_created",
+      "taskId": "T613",
+      "actor": "system",
+      "details": {
+        "title": "P0-1: Remove silent failure pattern (|| true) from rotation",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "P0-1: Remove silent failure pattern (|| true) from rotation",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766451538-65d331",
+      "timestamp": "2025-12-23T00:58:58Z",
+      "action": "task_created",
+      "taskId": "T614",
+      "actor": "system",
+      "details": {
+        "title": "P0-2: Clean up 274 stale safety backup directories",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "P0-2: Clean up 274 stale safety backup directories",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766451540-a5c17e",
+      "timestamp": "2025-12-23T00:59:00Z",
+      "action": "task_created",
+      "taskId": "T615",
+      "actor": "system",
+      "details": {
+        "title": "P0-3: Add rotation error logging",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P0-3: Add rotation error logging",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451548-55ac36",
+      "timestamp": "2025-12-23T00:59:08Z",
+      "action": "task_created",
+      "taskId": "T616",
+      "actor": "system",
+      "details": {
+        "title": "Phase 1: Stabilization - Documentation & naming fixes",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 1: Stabilization - Documentation & naming fixes",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451549-8c5f26",
+      "timestamp": "2025-12-23T00:59:09Z",
+      "action": "task_created",
+      "taskId": "T617",
+      "actor": "system",
+      "details": {
+        "title": "Version test",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Version test",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451565-bc800b",
+      "timestamp": "2025-12-23T00:59:25Z",
+      "action": "task_created",
+      "taskId": "T618",
+      "actor": "system",
+      "details": {
+        "title": "P1-1: Document two-tier architecture in CLAUDE.md",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P1-1: Document two-tier architecture in CLAUDE.md",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451566-f4eb64",
+      "timestamp": "2025-12-23T00:59:26Z",
+      "action": "task_created",
+      "taskId": "T619",
+      "actor": "system",
+      "details": {
+        "title": "P1-2: Rename list_backups() to list_typed_backups()",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P1-2: Rename list_backups() to list_typed_backups()",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451568-3ec777",
+      "timestamp": "2025-12-23T00:59:28Z",
+      "action": "task_created",
+      "taskId": "T620",
+      "actor": "system",
+      "details": {
+        "title": "P1-3: Rename restore_backup() to restore_typed_backup()",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P1-3: Rename restore_backup() to restore_typed_backup()",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451569-b1d0fa",
+      "timestamp": "2025-12-23T00:59:29Z",
+      "action": "task_created",
+      "taskId": "T621",
+      "actor": "system",
+      "details": {
+        "title": "P1-4: Fix 60+ incorrect path references in documentation",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "P1-4: Fix 60+ incorrect path references in documentation",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451571-0fbec9",
+      "timestamp": "2025-12-23T00:59:31Z",
+      "action": "task_created",
+      "taskId": "T622",
+      "actor": "system",
+      "details": {
+        "title": "P1-5: Add backup operations section to AGENTS.md",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "P1-5: Add backup operations section to AGENTS.md",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451581-9e1186",
+      "timestamp": "2025-12-23T00:59:41Z",
+      "action": "task_created",
+      "taskId": "T623",
+      "actor": "system",
+      "details": {
+        "title": "Phase 2: Hardening - Verification & CI",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 2: Hardening - Verification & CI",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451599-03a152",
+      "timestamp": "2025-12-23T00:59:59Z",
+      "action": "task_created",
+      "taskId": "T624",
+      "actor": "system",
+      "details": {
+        "title": "P2-1: Add checksum verification on restore",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P2-1: Add checksum verification on restore",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451601-9871d6",
+      "timestamp": "2025-12-23T01:00:01Z",
+      "action": "task_created",
+      "taskId": "T625",
+      "actor": "system",
+      "details": {
+        "title": "P2-2: Add backup testing in CI (BATS)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P2-2: Add backup testing in CI (BATS)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451602-43d885",
+      "timestamp": "2025-12-23T01:00:02Z",
+      "action": "task_created",
+      "taskId": "T626",
+      "actor": "system",
+      "details": {
+        "title": "P2-3: Implement backup verify command",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "P2-3: Implement backup verify command",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451604-78e4ab",
+      "timestamp": "2025-12-23T01:00:04Z",
+      "action": "task_created",
+      "taskId": "T627",
+      "actor": "system",
+      "details": {
+        "title": "P2-4: Implement backup status health check command",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "P2-4: Implement backup status health check command",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451605-eef8be",
+      "timestamp": "2025-12-23T01:00:05Z",
+      "action": "task_created",
+      "taskId": "T628",
+      "actor": "system",
+      "details": {
+        "title": "P2-5: Consolidate to single .claude/backups/ directory",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P2-5: Consolidate to single .claude/backups/ directory",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451607-1754c7",
+      "timestamp": "2025-12-23T01:00:07Z",
+      "action": "task_created",
+      "taskId": "T629",
+      "actor": "system",
+      "details": {
+        "title": "P2-6: Update file-ops.sh to use consolidated path",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "P2-6: Update file-ops.sh to use consolidated path",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766451615-25a5c7",
+      "timestamp": "2025-12-23T01:00:15Z",
+      "action": "task_created",
+      "taskId": "T630",
+      "actor": "system",
+      "details": {
+        "title": "Phase 3: Enhancement - Long-term improvements",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 3: Enhancement - Long-term improvements",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451630-f03b30",
+      "timestamp": "2025-12-23T01:00:30Z",
+      "action": "task_created",
+      "taskId": "T631",
+      "actor": "system",
+      "details": {
+        "title": "P3-1: Implement manifest-based backup tracking",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "P3-1: Implement manifest-based backup tracking",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766451633-2613a6",
+      "timestamp": "2025-12-23T01:00:33Z",
+      "action": "task_created",
+      "taskId": "T632",
+      "actor": "system",
+      "details": {
+        "title": "P3-2: Add scheduled/automatic backup option",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "P3-2: Add scheduled/automatic backup option",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log-1766451634-9783b3",
+      "timestamp": "2025-12-23T01:00:34Z",
+      "action": "task_created",
+      "taskId": "T633",
+      "actor": "system",
+      "details": {
+        "title": "P3-3: Implement backup search by date/content",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "P3-3: Implement backup search by date/content",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log-1766451636-d145ed",
+      "timestamp": "2025-12-23T01:00:36Z",
+      "action": "task_created",
+      "taskId": "T634",
+      "actor": "system",
+      "details": {
+        "title": "P3-4: Create disaster recovery documentation",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "P3-4: Create disaster recovery documentation",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_ff5920e2cc10",
+      "timestamp": "2025-12-23T01:00:53Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T339",
+      "before": {
+        "title": "EPIC: Hierarchy Enhancement Phase 2 - Automation (v0.16.0)",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Overview\nAdvanced automation and UX enhancements for hierarchy.\n\n## Scope\n- Auto-complete parent when all children done\n- Auto-unblock when dependencies complete\n- Orphan detection and repair commands\n- tree, reparent, promote commands\n- Tab completion for --parent\n- Focus integration with hierarchy context\n- next command hierarchy awareness\n\n## Success Criteria\n- All Phase 1 + Phase 2 tests pass\n- Auto-behaviors work correctly\n- Commands are intuitive and documented\n- Performance acceptable for 500+ tasks",
+        "phase": "core",
+        "labels": [
+          "epic-type",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": [
+          "docs/specs/HIERARCHY-ENHANCEMENT-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T328"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "EPIC: Hierarchy Enhancement Phase 2 - Automation (v0.16.0)",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Overview\nAdvanced automation and UX enhancements for hierarchy.\n\n## Scope\n- Auto-complete parent when all children done\n- Auto-unblock when dependencies complete\n- Orphan detection and repair commands\n- tree, reparent, promote commands\n- Tab completion for --parent\n- Focus integration with hierarchy context\n- next command hierarchy awareness\n\n## Success Criteria\n- All Phase 1 + Phase 2 tests pass\n- Auto-behaviors work correctly\n- Commands are intuitive and documented\n- Performance acceptable for 500+ tasks",
+        "phase": "core",
+        "labels": [
+          "epic-type",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": [
+          "docs/specs/HIERARCHY-ENHANCEMENT-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T328"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766452219-7667ce",
+      "timestamp": "2025-12-23T01:10:19Z",
+      "action": "task_created",
+      "taskId": "T635",
+      "actor": "system",
+      "details": {
+        "title": "Version compliance test",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Version compliance test",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766452274-93c8bf",
+      "timestamp": "2025-12-23T01:11:14Z",
+      "action": "task_created",
+      "taskId": "T636",
+      "actor": "system",
+      "details": {
+        "title": "Final version test",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Final version test",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_4940b85cb711",
+      "timestamp": "2025-12-23T01:26:13Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T340"
+      },
+      "after": {
+        "currentTask": "T612"
+      },
+      "details": null
+    },
+    {
+      "id": "log_d2631ba93d73",
+      "timestamp": "2025-12-23T01:26:14Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T612",
+      "before": {
+        "title": "Phase 0: Immediate Fixes - Stop disk growth",
+        "status": "active",
+        "priority": "critical",
+        "description": "Parent task for Phase 0 critical bug fixes. Must complete before any architectural changes. Addresses: rotation silent failure, stale backup cleanup, error logging.",
+        "phase": "core",
+        "labels": [
+          "backup",
+          "critical-bug",
+          "phase-0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 0: Immediate Fixes - Stop disk growth",
+        "status": "active",
+        "priority": "critical",
+        "description": "Parent task for Phase 0 critical bug fixes. Must complete before any architectural changes. Addresses: rotation silent failure, stale backup cleanup, error logging.",
+        "phase": "core",
+        "labels": [
+          "backup",
+          "critical-bug",
+          "phase-0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_1261945579a4",
+      "timestamp": "2025-12-23T01:29:23Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T589",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:29:22Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_e91cb7faf389",
+      "timestamp": "2025-12-23T01:32:52Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T340",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:32:52Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_855931cf57b8",
+      "timestamp": "2025-12-23T01:32:54Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T341",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:32:53Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_826f79d2d84e",
+      "timestamp": "2025-12-23T01:32:55Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T342",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:32:55Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_bc96c2e3573b",
+      "timestamp": "2025-12-23T01:32:58Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T349",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:32:58Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_6bbabce5ffda",
+      "timestamp": "2025-12-23T01:33:35Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T587",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:33:35Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0b45fe7d567e",
+      "timestamp": "2025-12-23T01:33:36Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T585",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:33:35Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_1f70b73367de",
+      "timestamp": "2025-12-23T01:36:20Z",
+      "sessionId": null,
+      "action": "error_occurred",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "test_type",
+        "error": "Test error message"
+      }
+    },
+    {
+      "id": "log_37d1b88d7a22",
+      "timestamp": "2025-12-23T01:36:27Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "safety",
+        "deleted": 6,
+        "retained": 5,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_fba7ebf085dc",
+      "timestamp": "2025-12-23T01:36:34Z",
+      "sessionId": null,
+      "action": "error_occurred",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "test_type",
+        "error": "Test error message"
+      }
+    },
+    {
+      "id": "log_50833d210ffd",
+      "timestamp": "2025-12-23T01:36:36Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "test_type",
+        "deleted": 3,
+        "retained": 1,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_9dd038d47587",
+      "timestamp": "2025-12-23T01:44:56Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T613",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:44:56Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_fa5b4316abdb",
+      "timestamp": "2025-12-23T01:44:57Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T614",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:44:56Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_be28698aee7c",
+      "timestamp": "2025-12-23T01:44:57Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T615",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:44:57Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_25e455d6e410",
+      "timestamp": "2025-12-23T01:44:58Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T612",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:44:57Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_66379c4adb3b",
+      "timestamp": "2025-12-23T01:45:59Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T612"
+      },
+      "after": {
+        "currentTask": "T616"
+      },
+      "details": null
+    },
+    {
+      "id": "log_9bfc6ad1dfa9",
+      "timestamp": "2025-12-23T01:55:32Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T348",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:55:32Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_7f754a465f9c",
+      "timestamp": "2025-12-23T01:57:47Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T347",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:57:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_f000b068c588",
+      "timestamp": "2025-12-23T01:57:47Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T339",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:57:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_fb80995fdbb4",
+      "timestamp": "2025-12-23T01:59:03Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T618",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:59:03Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_686631097a2e",
+      "timestamp": "2025-12-23T01:59:04Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T619",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:59:03Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_36a7f390db63",
+      "timestamp": "2025-12-23T01:59:04Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T620",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:59:04Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_42752f529e87",
+      "timestamp": "2025-12-23T01:59:05Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T622",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T01:59:05Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c26b6d938f06",
+      "timestamp": "2025-12-23T01:59:07Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T621",
+      "before": {
+        "title": "P1-4: Fix 60+ incorrect path references in documentation",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Audit and fix all documentation path references. Use agent-docs-findings.md as source. Key fixes: .backups/ vs backups/, correct backup type directories, metadata.json locations.",
+        "phase": "core",
+        "labels": [
+          "backup",
+          "documentation",
+          "paths"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "P1-4: Fix 60+ incorrect path references in documentation",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Audit and fix all documentation path references. Use agent-docs-findings.md as source. Key fixes: .backups/ vs backups/, correct backup type directories, metadata.json locations.",
+        "phase": "core",
+        "labels": [
+          "backup",
+          "documentation",
+          "paths"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_177713b5f361",
+      "timestamp": "2025-12-23T01:59:25Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T616"
+      },
+      "after": {
+        "currentTask": "T623"
+      },
+      "details": null
+    },
+    {
+      "id": "log_9e54b6f39b61",
+      "timestamp": "2025-12-23T01:59:33Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T623"
+      },
+      "after": {
+        "currentTask": "T623"
+      },
+      "details": null
+    },
+    {
+      "id": "log_44ec9b91370d",
+      "timestamp": "2025-12-23T01:59:48Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T347",
+      "before": {
+        "title": "T339.8: Add bash/zsh tab completion for --parent",
+        "status": "pending",
+        "priority": "low",
+        "description": "Create completion scripts:\n- completions/bash-completion.sh\n- completions/zsh-completion.zsh\n\nContext-aware completion for --parent:\n- Only suggest tasks with type epic or task (not subtask)\n- Show task titles alongside IDs\n- Filter by current input prefix\n\nInstall instructions in docs.",
+        "phase": "polish",
+        "labels": [
+          "completion",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.8: Add bash/zsh tab completion for --parent",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Create completion scripts:\n- completions/bash-completion.sh\n- completions/zsh-completion.zsh\n\nContext-aware completion for --parent:\n- Only suggest tasks with type epic or task (not subtask)\n- Show task titles alongside IDs\n- Filter by current input prefix\n\nInstall instructions in docs.",
+        "phase": "polish",
+        "labels": [
+          "completion",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_53d80e00f9d0",
+      "timestamp": "2025-12-23T01:59:50Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T347",
+      "before": {
+        "title": "T339.8: Add bash/zsh tab completion for --parent",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Create completion scripts:\n- completions/bash-completion.sh\n- completions/zsh-completion.zsh\n\nContext-aware completion for --parent:\n- Only suggest tasks with type epic or task (not subtask)\n- Show task titles alongside IDs\n- Filter by current input prefix\n\nInstall instructions in docs.",
+        "phase": "polish",
+        "labels": [
+          "completion",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T339.8: Add bash/zsh tab completion for --parent",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Create completion scripts:\n- completions/bash-completion.sh\n- completions/zsh-completion.zsh\n\nContext-aware completion for --parent:\n- Only suggest tasks with type epic or task (not subtask)\n- Show task titles alongside IDs\n- Filter by current input prefix\n\nInstall instructions in docs.",
+        "phase": "polish",
+        "labels": [
+          "completion",
+          "hierarchy",
+          "v0.16.0",
+          "v0.18.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T339"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766455207-dc0e3f",
+      "timestamp": "2025-12-23T02:00:07Z",
+      "action": "task_created",
+      "taskId": "T637",
+      "actor": "system",
+      "details": {
+        "title": "EPIC: Tab Completion Release (T347 Finalization)",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "EPIC: Tab Completion Release (T347 Finalization)",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766455236-63969e",
+      "timestamp": "2025-12-23T02:00:36Z",
+      "action": "task_created",
+      "taskId": "T638",
+      "actor": "system",
+      "details": {
+        "title": "T637.1: Add completion install to install.sh",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T637.1: Add completion install to install.sh",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455237-74b1ea",
+      "timestamp": "2025-12-23T02:00:37Z",
+      "action": "task_created",
+      "taskId": "T639",
+      "actor": "system",
+      "details": {
+        "title": "T637.2: Document tab completion in README.md",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T637.2: Document tab completion in README.md",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766455238-e672e7",
+      "timestamp": "2025-12-23T02:00:38Z",
+      "action": "task_created",
+      "taskId": "T640",
+      "actor": "system",
+      "details": {
+        "title": "T637.3: Create docs/commands/tab-completion.md",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T637.3: Create docs/commands/tab-completion.md",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766455241-10685f",
+      "timestamp": "2025-12-23T02:00:41Z",
+      "action": "task_created",
+      "taskId": "T641",
+      "actor": "system",
+      "details": {
+        "title": "T637.4: Update docs/INDEX.md with completion link",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "T637.4: Update docs/INDEX.md with completion link",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log-1766455242-f7a050",
+      "timestamp": "2025-12-23T02:00:42Z",
+      "action": "task_created",
+      "taskId": "T642",
+      "actor": "system",
+      "details": {
+        "title": "T637.5: Create tests/unit/completion.bats",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T637.5: Create tests/unit/completion.bats",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_baf59c24fa71",
+      "timestamp": "2025-12-23T02:01:08Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T623"
+      },
+      "after": {
+        "currentTask": "T625"
+      },
+      "details": null
+    },
+    {
+      "id": "log-1766455436-472d7e",
+      "timestamp": "2025-12-23T02:03:56Z",
+      "action": "task_created",
+      "taskId": "T643",
+      "actor": "system",
+      "details": {
+        "title": "EPIC: Tree Functionality Review & LLM-Agent-First Compliance",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "EPIC: Tree Functionality Review & LLM-Agent-First Compliance",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455447-2a9deb",
+      "timestamp": "2025-12-23T02:04:07Z",
+      "action": "task_created",
+      "taskId": "T644",
+      "actor": "system",
+      "details": {
+        "title": "T643.1: Audit current tree implementation in list-tasks.sh",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T643.1: Audit current tree implementation in list-tasks.sh",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455468-3b52e9",
+      "timestamp": "2025-12-23T02:04:28Z",
+      "action": "task_created",
+      "taskId": "T645",
+      "actor": "system",
+      "details": {
+        "title": "T643.2: Research tree utility centralization for lib/tree.sh",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T643.2: Research tree utility centralization for lib/tree.sh",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455479-c1c035",
+      "timestamp": "2025-12-23T02:04:39Z",
+      "action": "task_created",
+      "taskId": "T646",
+      "actor": "system",
+      "details": {
+        "title": "T643.3: Audit LLM-Agent-First compliance for tree output",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T643.3: Audit LLM-Agent-First compliance for tree output",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455493-6ee461",
+      "timestamp": "2025-12-23T02:04:53Z",
+      "action": "task_created",
+      "taskId": "T647",
+      "actor": "system",
+      "details": {
+        "title": "T643.4: Evaluate standalone tree.sh vs --tree flag decision",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T643.4: Evaluate standalone tree.sh vs --tree flag decision",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766455504-880a65",
+      "timestamp": "2025-12-23T02:05:04Z",
+      "action": "task_created",
+      "taskId": "T648",
+      "actor": "system",
+      "details": {
+        "title": "T643.5: Create implementation plan based on decision",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T643.5: Create implementation plan based on decision",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_6603abeaf856",
+      "timestamp": "2025-12-23T02:05:35Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T625"
+      },
+      "after": {
+        "currentTask": "T638"
+      },
+      "details": null
+    },
+    {
+      "id": "log-1766455689-d5b3cd",
+      "timestamp": "2025-12-23T02:08:09Z",
+      "action": "task_created",
+      "taskId": "T649",
+      "actor": "system",
+      "details": {
+        "title": "Fix cache hierarchy test failures (11 tests)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix cache hierarchy test failures (11 tests)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455698-435891",
+      "timestamp": "2025-12-23T02:08:18Z",
+      "action": "task_created",
+      "taskId": "T650",
+      "actor": "system",
+      "details": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455714-bee39a",
+      "timestamp": "2025-12-23T02:08:34Z",
+      "action": "task_created",
+      "taskId": "T651",
+      "actor": "system",
+      "details": {
+        "title": "Phase 1: Create lib/agent-compat.sh core abstraction layer",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 1: Create lib/agent-compat.sh core abstraction layer",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766455716-73b70b",
+      "timestamp": "2025-12-23T02:08:36Z",
+      "action": "task_created",
+      "taskId": "T652",
+      "actor": "system",
+      "details": {
+        "title": "Phase 2: Path migration utilities",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 2: Path migration utilities",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766455717-9f4e28",
+      "timestamp": "2025-12-23T02:08:37Z",
+      "action": "task_created",
+      "taskId": "T653",
+      "actor": "system",
+      "details": {
+        "title": "Phase 3: Sync protocol adapter framework",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 3: Sync protocol adapter framework",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766455720-710d4f",
+      "timestamp": "2025-12-23T02:08:40Z",
+      "action": "task_created",
+      "taskId": "T654",
+      "actor": "system",
+      "details": {
+        "title": "Phase 4: Documentation and branding update",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 4: Documentation and branding update",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log_ee097a5e26ab",
+      "timestamp": "2025-12-23T02:13:57Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T638",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:13:57Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_f48cf184cf67",
+      "timestamp": "2025-12-23T02:13:59Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T639",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:13:58Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_09cf884c919e",
+      "timestamp": "2025-12-23T02:14:00Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T640",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:14:00Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ee3a88f5fbb4",
+      "timestamp": "2025-12-23T02:14:02Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T641",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:14:02Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_96f82f776463",
+      "timestamp": "2025-12-23T02:14:04Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T642",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:14:03Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_37cadb48d7ba",
+      "timestamp": "2025-12-23T02:14:15Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T347",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:14:14Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_1c918ddddc8d",
+      "timestamp": "2025-12-23T02:14:15Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T637",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:14:14Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_e699443d39fb",
+      "timestamp": "2025-12-23T02:14:37Z",
+      "sessionId": "session_20251222_095942_f27116",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Completed T637 EPIC: Tab Completion Release. All 6 child tasks done (T638-T642, T347). 30 tests passing. Parallel agent execution: 5 impl → 4 validation/test. Full documentation, install.sh integration, and comprehensive test coverage."
+      }
+    },
+    {
+      "id": "log_de7eb4d4d170",
+      "timestamp": "2025-12-23T02:19:12Z",
+      "sessionId": "session_20251222_181912_5592bb",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_47aebcb699df",
+      "timestamp": "2025-12-23T02:23:52Z",
+      "sessionId": "session_20251222_181912_5592bb",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Fixed exit code issues: add-task.sh (added 3,4,5,7 to COMMANDS-INDEX), update-task.sh (added 3). Fixed detect_orphans() JSON compatibility bug in lib/validation.sh. Verified TODO_Task_Management.md Tab Completion section already present. All 82 hierarchy tests pass."
+      }
+    },
+    {
+      "id": "log-1766456762-30ed7b",
+      "timestamp": "2025-12-23T02:26:02Z",
+      "action": "task_created",
+      "taskId": "T655",
+      "actor": "system",
+      "details": {
+        "title": "EPIC: Exit Codes & detect_orphans() Compatibility Audit",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "EPIC: Exit Codes & detect_orphans() Compatibility Audit",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log_97226be59d27",
+      "timestamp": "2025-12-23T02:26:10Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log-1766456782-452caa",
+      "timestamp": "2025-12-23T02:26:22Z",
+      "action": "task_created",
+      "taskId": "T656",
+      "actor": "system",
+      "details": {
+        "title": "T655.1: CRITICAL - Investigate detect_orphans() compatibility break",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.1: CRITICAL - Investigate detect_orphans() compatibility break",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log_822780903f49",
+      "timestamp": "2025-12-23T02:26:35Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T643"
+      },
+      "details": null
+    },
+    {
+      "id": "log-1766456796-b16976",
+      "timestamp": "2025-12-23T02:26:36Z",
+      "action": "task_created",
+      "taskId": "T657",
+      "actor": "system",
+      "details": {
+        "title": "T655.2: Research - Document all detect_orphans() callers and expected formats",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.2: Research - Document all detect_orphans() callers and expected formats",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766456806-fbb499",
+      "timestamp": "2025-12-23T02:26:46Z",
+      "action": "task_created",
+      "taskId": "T658",
+      "actor": "system",
+      "details": {
+        "title": "T655.3: Discussion - Evaluate fix options for detect_orphans() compatibility",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.3: Discussion - Evaluate fix options for detect_orphans() compatibility",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766456823-a27145",
+      "timestamp": "2025-12-23T02:27:03Z",
+      "action": "task_created",
+      "taskId": "T659",
+      "actor": "system",
+      "details": {
+        "title": "T655.4: Audit - add-task.sh exit codes vs COMMANDS-INDEX.json",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.4: Audit - add-task.sh exit codes vs COMMANDS-INDEX.json",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766456824-77ac57",
+      "timestamp": "2025-12-23T02:27:04Z",
+      "action": "task_created",
+      "taskId": "T660",
+      "actor": "system",
+      "details": {
+        "title": "T655.5: Audit - update-task.sh exit codes vs COMMANDS-INDEX.json",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.5: Audit - update-task.sh exit codes vs COMMANDS-INDEX.json",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766456825-d9c99d",
+      "timestamp": "2025-12-23T02:27:05Z",
+      "action": "task_created",
+      "taskId": "T661",
+      "actor": "system",
+      "details": {
+        "title": "T655.6: Audit - Full script exit code compliance check",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.6: Audit - Full script exit code compliance check",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log-1766456845-baccce",
+      "timestamp": "2025-12-23T02:27:25Z",
+      "action": "task_created",
+      "taskId": "T662",
+      "actor": "system",
+      "details": {
+        "title": "T655.9: Documentation - Update AGENT-2-PHASE.md with audit findings",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.9: Documentation - Update AGENT-2-PHASE.md with audit findings",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log_441470ed5c85",
+      "timestamp": "2025-12-23T02:27:30Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T643"
+      },
+      "after": {
+        "currentTask": "T649"
+      },
+      "details": null
+    },
+    {
+      "id": "log-1766456857-0a2d0f",
+      "timestamp": "2025-12-23T02:27:37Z",
+      "action": "task_created",
+      "taskId": "T663",
+      "actor": "system",
+      "details": {
+        "title": "T655.7: Implementation - Fix detect_orphans() compatibility",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.7: Implementation - Fix detect_orphans() compatibility",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766456859-cac219",
+      "timestamp": "2025-12-23T02:27:39Z",
+      "action": "task_created",
+      "taskId": "T664",
+      "actor": "system",
+      "details": {
+        "title": "T655.8: Implementation - Update COMMANDS-INDEX.json exit codes",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T655.8: Implementation - Update COMMANDS-INDEX.json exit codes",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_ea281017d2a4",
+      "timestamp": "2025-12-23T02:29:47Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T644",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:29:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_24dcc3234f53",
+      "timestamp": "2025-12-23T02:29:49Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T645",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:29:48Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_e67666a53147",
+      "timestamp": "2025-12-23T02:31:30Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T650",
+      "before": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement multi-agent abstraction per MULTI-AGENT-ABSTRACTION-SPEC.md. 4 phases: (1) Core abstraction layer lib/agent-compat.sh, (2) Path migration, (3) Protocol abstraction, (4) Documentation & branding. Target: support Claude Code, Gemini CLI, Codex CLI, Kimi CLI.",
+        "phase": "core",
+        "labels": [
+          "cleo",
+          "rebrand"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement multi-agent abstraction per MULTI-AGENT-ABSTRACTION-SPEC.md. 4 phases: (1) Core abstraction layer lib/agent-compat.sh, (2) Path migration, (3) Protocol abstraction, (4) Documentation & branding. Target: support Claude Code, Gemini CLI, Codex CLI, Kimi CLI.\n\n**IMPORTANT: All work MUST be done on feature branch 'cleo-migration' (or similar), NOT on main.**\n\nBranch strategy:\n- Create feature/cleo-migration from main\n- All T651-T654 work on this branch\n- Merge to main only after full test suite passes",
+        "phase": "core",
+        "labels": [
+          "cleo",
+          "rebrand"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_67c1eef95104",
+      "timestamp": "2025-12-23T02:31:36Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T650",
+      "before": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement multi-agent abstraction per MULTI-AGENT-ABSTRACTION-SPEC.md. 4 phases: (1) Core abstraction layer lib/agent-compat.sh, (2) Path migration, (3) Protocol abstraction, (4) Documentation & branding. Target: support Claude Code, Gemini CLI, Codex CLI, Kimi CLI.\n\n**IMPORTANT: All work MUST be done on feature branch 'cleo-migration' (or similar), NOT on main.**\n\nBranch strategy:\n- Create feature/cleo-migration from main\n- All T651-T654 work on this branch\n- Merge to main only after full test suite passes",
+        "phase": "core",
+        "labels": [
+          "cleo",
+          "rebrand"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement multi-agent abstraction per MULTI-AGENT-ABSTRACTION-SPEC.md. 4 phases: (1) Core abstraction layer lib/agent-compat.sh, (2) Path migration, (3) Protocol abstraction, (4) Documentation & branding. Target: support Claude Code, Gemini CLI, Codex CLI, Kimi CLI.\n\n**IMPORTANT: All work MUST be done on feature branch 'cleo-migration' (or similar), NOT on main.**\n\nBranch strategy:\n- Create feature/cleo-migration from main\n- All T651-T654 work on this branch\n- Merge to main only after full test suite passes",
+        "phase": "core",
+        "labels": [
+          "cleo",
+          "rebrand"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_672665e29dd1",
+      "timestamp": "2025-12-23T02:31:44Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T650",
+      "before": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement multi-agent abstraction per MULTI-AGENT-ABSTRACTION-SPEC.md. 4 phases: (1) Core abstraction layer lib/agent-compat.sh, (2) Path migration, (3) Protocol abstraction, (4) Documentation & branding. Target: support Claude Code, Gemini CLI, Codex CLI, Kimi CLI.\n\n**IMPORTANT: All work MUST be done on feature branch 'cleo-migration' (or similar), NOT on main.**\n\nBranch strategy:\n- Create feature/cleo-migration from main\n- All T651-T654 work on this branch\n- Merge to main only after full test suite passes",
+        "phase": "core",
+        "labels": [
+          "cleo",
+          "rebrand"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "EPIC: Rebrand Implementation (claude-todo → cleo)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement multi-agent abstraction per MULTI-AGENT-ABSTRACTION-SPEC.md. 4 phases: (1) Core abstraction layer lib/agent-compat.sh, (2) Path migration, (3) Protocol abstraction, (4) Documentation & branding. Target: support Claude Code, Gemini CLI, Codex CLI, Kimi CLI.\n\n**IMPORTANT: All work MUST be done on feature branch 'cleo-migration' (or similar), NOT on main.**\n\nBranch strategy:\n- Create feature/cleo-migration from main\n- All T651-T654 work on this branch\n- Merge to main only after full test suite passes",
+        "phase": "core",
+        "labels": [
+          "cleo",
+          "rebrand"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766457141-b65c08",
+      "timestamp": "2025-12-23T02:32:21Z",
+      "action": "task_created",
+      "taskId": "T665",
+      "actor": "system",
+      "details": {
+        "title": "BUG: update-task.sh line 1190 - VERSION unbound variable",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "BUG: update-task.sh line 1190 - VERSION unbound variable",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log_689c50f4942c",
+      "timestamp": "2025-12-23T02:32:34Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T646",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:32:34Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_07e46a0dc52b",
+      "timestamp": "2025-12-23T02:34:40Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T624",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:34:39Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0a748fec83ef",
+      "timestamp": "2025-12-23T02:34:40Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T625",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:34:40Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_a03b06ace239",
+      "timestamp": "2025-12-23T02:34:41Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T626",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:34:41Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_cd1ced32df86",
+      "timestamp": "2025-12-23T02:34:42Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T627",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:34:41Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_d2124fce160e",
+      "timestamp": "2025-12-23T02:35:30Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T663",
+      "before": {
+        "title": "T655.7: Implementation - Fix detect_orphans() compatibility",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement chosen fix from T658 discussion. Update affected callers, add/update tests, verify all orphan detection still works. DO NOT START until T658 discussion complete and approach agreed.",
+        "phase": "core",
+        "labels": [
+          "blocked",
+          "implementation",
+          "orphan-detection"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T658"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T655.7: Implementation - Fix detect_orphans() compatibility",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement chosen fix from T658 discussion. Update affected callers, add/update tests, verify all orphan detection still works. DO NOT START until T658 discussion complete and approach agreed.",
+        "phase": "core",
+        "labels": [
+          "blocked",
+          "implementation",
+          "orphan-detection"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T658"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_c533e7218617",
+      "timestamp": "2025-12-23T02:35:43Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T656",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:35:43Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_effa2cedff24",
+      "timestamp": "2025-12-23T02:35:45Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T657",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:35:45Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_2708e684704a",
+      "timestamp": "2025-12-23T02:35:47Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T658",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:35:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_143ff08e89e1",
+      "timestamp": "2025-12-23T02:35:50Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T659",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:35:49Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ce2c8295181a",
+      "timestamp": "2025-12-23T02:35:51Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T660",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:35:51Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_2b931e78be04",
+      "timestamp": "2025-12-23T02:36:01Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T663",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:36:01Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_4236bb05db39",
+      "timestamp": "2025-12-23T02:36:03Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T649"
+      },
+      "after": {
+        "currentTask": "T664"
+      },
+      "details": null
+    },
+    {
+      "id": "log_341732019d48",
+      "timestamp": "2025-12-23T02:37:11Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T649",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:37:11Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_cda75fcc736b",
+      "timestamp": "2025-12-23T02:37:18Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T647",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-23T02:37:18Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_504a9f3f11e6",
+      "timestamp": "2025-12-23T02:41:08Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T664"
+      },
+      "after": {
+        "currentTask": "T662"
+      },
+      "details": null
+    },
+    {
+      "id": "log_69e0f8026ba7",
+      "timestamp": "2025-12-23T02:41:13Z",
+      "sessionId": "session_20251222_182610_91b491",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T662"
+      },
+      "after": {
+        "currentTask": "T661"
+      },
+      "details": null
     }
   ]
 }

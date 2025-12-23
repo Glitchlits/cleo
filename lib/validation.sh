@@ -1296,15 +1296,14 @@ validate_hierarchy_integrity() {
     fi
 
     # 1. Detect orphan tasks (parentId references non-existent task)
-    local orphans
-    orphans=$(detect_orphans "$todo_file")
-    if [[ -n "$orphans" ]]; then
+    local orphans_json
+    orphans_json=$(detect_orphans "$todo_file")
+    local orphan_count
+    orphan_count=$(echo "$orphans_json" | jq '. | length' 2>/dev/null || echo 0)
+    if [[ "$orphan_count" -gt 0 ]]; then
         echo "ERROR: Orphan tasks detected (parentId references missing task):" >&2
-        for orphan_id in $orphans; do
-            local parent_id
-            parent_id=$(get_task_parent "$orphan_id" "$todo_file")
-            echo "  - $orphan_id (references non-existent parent: $parent_id)" >&2
-        done
+        # Parse JSON array to extract orphan IDs and their missing parents
+        echo "$orphans_json" | jq -r '.[] | "  - \(.id) (references non-existent parent: \(.parentId))"' >&2
         echo "Fix: Remove parentId or restore the parent task" >&2
         ((errors++))
     fi

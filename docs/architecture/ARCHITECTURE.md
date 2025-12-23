@@ -478,7 +478,7 @@ The system implements multiple layers of protection against AI-generated errors:
 User Input → Validate → Generate ID → Add to todo.json → Backup → Log
              │           │            │                  │        │
              │           │            │                  │        └─► todo-log.json
-             │           │            │                  └─────────► .backups/
+             │           │            │                  └─────────► .claude/.backups/
              │           │            └────────────────────────────► todo.json (atomic)
              │           └─────────────────────────────────────────► Timestamp + Random
              └─────────────────────────────────────────────────────► Schema + Anti-H
@@ -563,7 +563,7 @@ Trigger → Load Config → Filter Tasks → Validate → Update Both Files → 
 3. Validate temp file (schema + anti-hallucination)
 4. IF INVALID: Delete temp → Abort → Error
 5. IF VALID:
-   a. Backup current file → .backups/todo.json.N
+   a. Backup current file → .claude/.backups/todo.json.N
    b. Atomic rename: .tmp → .json (OS-level guarantee)
    c. IF RENAME FAILS: Restore backup → Error
    d. IF SUCCESS: Rotate old backups → Success
@@ -648,7 +648,7 @@ Configuration values are resolved in this order (later overrides earlier):
 ### Automatic Backup Rotation
 
 ```
-.backups/
+.claude/.backups/                    # Tier 1: Operational backups
 ├── todo.json.1  (most recent - current backup)
 ├── todo.json.2  (1 operation ago)
 ├── todo.json.3  (2 operations ago)
@@ -765,7 +765,7 @@ claude-todo init
 2. Copies templates → `.claude/`
 3. Renames `.template.json` → `.json`
 4. Initializes empty `todo-log.json`
-5. Creates `.backups/` directory
+5. Creates `.claude/.backups/` directory
 6. Adds `.claude/todo*.json` to `.gitignore`
 7. Validates all created files
 

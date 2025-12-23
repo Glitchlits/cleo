@@ -454,6 +454,17 @@
           "maximum": 100,
           "default": 8,
           "description": "Maximum active (non-done) children per parent. Aligns with TodoWrite sync limit for context management."
+        },
+        "autoCompleteParent": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically complete parent tasks when all children are done."
+        },
+        "autoCompleteMode": {
+          "type": "string",
+          "enum": ["auto", "suggest", "off"],
+          "default": "off",
+          "description": "Auto-complete behavior: auto=silent completion, suggest=prompt user, off=disabled."
         }
       }
     }

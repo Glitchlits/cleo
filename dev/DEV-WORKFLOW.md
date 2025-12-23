@@ -1,6 +1,136 @@
 # Development Workflow
 
-Guidelines for contributing to claude-todo development tooling.
+**Canonical guide for ALL claude-todo development** - both main application and dev tooling.
+
+---
+
+## Quick Reference: What To Do After Code Changes
+
+| Change Type | Documentation | Version | Tests |
+|-------------|---------------|---------|-------|
+| Bug fix (`scripts/`) | Update if behavior changed | `patch` bump | Required |
+| New feature (`scripts/`) | Full doc update (all layers) | `minor` bump | Required |
+| Dev tooling (`dev/`) | Update `dev/README.md` only | No bump | Recommended |
+| Breaking change | Full doc update + migration guide | `major` bump | Required |
+
+**Before committing ANY main application change, you MUST:**
+1. Update documentation per [DOCUMENTATION-MAINTENANCE.md](../docs/DOCUMENTATION-MAINTENANCE.md)
+2. Bump version per [VERSION-MANAGEMENT.md](../docs/reference/VERSION-MANAGEMENT.md)
+3. Run tests: `./tests/run-all-tests.sh`
+
+---
+
+## Part 1: Main Application Development
+
+### Workflow for `scripts/` and `lib/` Changes
+
+```
+1. Make code changes
+        ↓
+2. Write/update tests
+        ↓
+3. Run tests: ./tests/run-all-tests.sh
+        ↓
+4. Update documentation (see Section 2)
+        ↓
+5. Bump version (see Section 3)
+        ↓
+6. Commit with proper prefix
+        ↓
+7. Install and verify: ./install.sh --force
+```
+
+### Commit Prefixes (Main Application)
+
+| Prefix | Usage | Requires Version Bump |
+|--------|-------|----------------------|
+| `feat:` | New feature | Yes (minor) |
+| `fix:` | Bug fix | Yes (patch) |
+| `docs:` | Documentation only | No |
+| `refactor:` | Code restructure, no behavior change | Yes (patch) |
+| `test:` | Test additions/fixes | No |
+| `chore:` | Maintenance, version bumps | Depends |
+
+---
+
+## Part 2: Documentation Updates
+
+**CRITICAL**: All documentation follows a layered hierarchy. You MUST understand this before updating.
+
+### The Documentation Hierarchy
+
+```
+Layer 1: CLAUDE-INJECTION.md    → Minimal (≤10 essential commands)
+Layer 2: TODO_Task_Management.md → Concise (all commands, brief usage)
+Layer 3: docs/commands/*.md      → Comprehensive (source of truth)
+Layer 4: docs/INDEX.md           → Master index (links everything)
+```
+
+**Flow**: Users/LLMs start at Layer 1, drill down as needed.
+
+### When to Update Each Layer
+
+| Change | Layer 1 | Layer 2 | Layer 3 | Layer 4 |
+|--------|---------|---------|---------|---------|
+| New command | Only if essential | Yes | Yes (create) | Yes |
+| New flag on existing cmd | No | Yes | Yes | No |
+| Bug fix (no behavior change) | No | No | Maybe | No |
+| Behavior change | If essential | Yes | Yes | No |
+
+### Documentation Update Checklist
+
+Before committing code changes:
+
+- [ ] **Layer 3** (`docs/commands/<cmd>.md`): Create/update detailed docs
+- [ ] **Layer 4** (`docs/INDEX.md`): Add link if new command
+- [ ] **Layer 2** (`docs/TODO_Task_Management.md`): Add command syntax
+- [ ] **Layer 1** (`templates/CLAUDE-INJECTION.md`): Only if essential command
+
+**Full details**: [docs/DOCUMENTATION-MAINTENANCE.md](../docs/DOCUMENTATION-MAINTENANCE.md)
+
+---
+
+## Part 3: Version Management
+
+### When to Bump Versions
+
+| Change Type | Version Bump | Example |
+|-------------|--------------|---------|
+| Breaking change | `major` | Remove command, change behavior |
+| New feature/command | `minor` | Add `analyze` command |
+| Bug fix | `patch` | Fix output formatting |
+| Docs only | None | Update README |
+| Dev tooling | None | Add dev script |
+
+### How to Bump
+
+```bash
+# Preview changes first
+./dev/bump-version.sh --dry-run <type>
+
+# Execute bump
+./dev/bump-version.sh <type>   # major, minor, or patch
+
+# Verify
+./dev/validate-version.sh
+```
+
+### Version Bump Checklist
+
+- [ ] Determine bump type (major/minor/patch)
+- [ ] Run: `./dev/bump-version.sh <type>`
+- [ ] Update `CHANGELOG.md` with changes
+- [ ] Verify: `./dev/validate-version.sh`
+- [ ] Install: `./install.sh --force`
+- [ ] Test: `claude-todo version`
+
+**Full details**: [docs/reference/VERSION-MANAGEMENT.md](../docs/reference/VERSION-MANAGEMENT.md)
+
+---
+
+## Part 4: Dev Tooling Development
+
+Guidelines for contributing to dev tooling (`dev/` directory) specifically.
 
 ## Commit Strategy
 

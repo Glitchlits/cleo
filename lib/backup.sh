@@ -151,6 +151,57 @@ readonly DEFAULT_SAFETY_RETENTION_DAYS=7
 # INTERNAL FUNCTIONS
 # ============================================================================
 
+# Log rotation error to stderr and optionally to audit trail
+# Args: $1 = backup_type, $2 = error_message
+# Returns: 0 always (logging should not fail operations)
+_log_rotation_error() {
+    local backup_type="$1"
+    local message="$2"
+    local timestamp
+    timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    # Always log to stderr
+    echo "[$timestamp] ROTATION ERROR ($backup_type): $message" >&2
+
+    # Log to audit trail if logging function available
+    if declare -f log_operation >/dev/null 2>&1; then
+        local details
+        details=$(jq -n \
+            --arg type "$backup_type" \
+            --arg error "$message" \
+            '{operation: "backup_rotation", type: $type, error: $error}')
+        log_operation "error_occurred" "system" "null" "null" "null" "$details" "null" 2>/dev/null || true
+    fi
+}
+
+# Log rotation summary to audit trail
+# Args: $1 = backup_type, $2 = deleted_count, $3 = retained_count, $4 = error_count
+# Returns: 0 always (logging should not fail operations)
+_log_rotation_summary() {
+    local backup_type="$1"
+    local deleted_count="$2"
+    local retained_count="$3"
+    local error_count="${4:-0}"
+
+    # Only log to audit trail if there were actual deletions or errors
+    if [[ "$deleted_count" -eq 0 && "$error_count" -eq 0 ]]; then
+        return 0
+    fi
+
+    # Log to audit trail if logging function available
+    if declare -f log_operation >/dev/null 2>&1; then
+        local details
+        details=$(jq -n \
+            --arg type "$backup_type" \
+            --argjson deleted "$deleted_count" \
+            --argjson retained "$retained_count" \
+            --argjson errors "$error_count" \
+            '{operation: "backup_rotation", type: $type, deleted: $deleted, retained: $retained, errors: $errors}')
+        # Use config_changed as a general system operation action
+        log_operation "config_changed" "system" "null" "null" "null" "$details" "null" 2>/dev/null || true
+    fi
+}
+
 # Ensure backup type subdirectory exists
 # Args: $1 = backup type
 # Returns: 0 on success, 1 on error
@@ -726,10 +777,12 @@ create_migration_backup() {
 
 # Rotate backups by type
 # Args: $1 = backup type
-# Returns: 0 on success
+# Returns: 0 on success, 1 if any deletion failed
 rotate_backups() {
     local backup_type="$1"
     local max_backups
+    local deleted_count=0
+    local error_count=0
 
     # Load config
     _load_backup_config
@@ -753,7 +806,7 @@ rotate_backups() {
             return 0
             ;;
         *)
-            echo "ERROR: Unknown backup type: $backup_type" >&2
+            _log_rotation_error "$backup_type" "Unknown backup type: $backup_type"
             return 1
             ;;
     esac
@@ -778,30 +831,71 @@ rotate_backups() {
     fi
 
     # Calculate how many to delete
-    local delete_count=$((backup_count - max_backups))
+    local delete_target=$((backup_count - max_backups))
+
+    # Uses temp files to communicate state out of the pipeline subshell
+    local deleted_marker error_marker
+    deleted_marker=$(mktemp)
+    error_marker=$(mktemp)
+    echo "0" > "$deleted_marker"
+    echo "0" > "$error_marker"
+
+    _delete_old_backup() {
+        local old_backup="$1"
+        local error_output
+        local current_deleted current_errors
+        if error_output=$(rm -rf "$old_backup" 2>&1); then
+            # Successfully deleted
+            current_deleted=$(cat "$deleted_marker")
+            echo "$((current_deleted + 1))" > "$deleted_marker"
+        else
+            # Failed to delete - log the error
+            current_errors=$(cat "$error_marker")
+            echo "$((current_errors + 1))" > "$error_marker"
+            _log_rotation_error "$backup_type" "Failed to delete backup: $old_backup${error_output:+ - $error_output}"
+        fi
+    }
 
     # Delete oldest backups using mtime-based sorting (directories)
     # Use find directly since safe_find_sorted_by_mtime is for files
-    find "$backup_dir" -maxdepth 1 -name "${backup_type}_*" -type d -printf '%T@ %p\n' 2>/dev/null | sort -n | cut -d' ' -f2- | head -n "$delete_count" | while read -r old_backup; do
-        rm -rf "$old_backup" 2>/dev/null || true
+    find "$backup_dir" -maxdepth 1 -name "${backup_type}_*" -type d -printf '%T@ %p\n' 2>/dev/null | sort -n | cut -d' ' -f2- | head -n "$delete_target" | while read -r old_backup; do
+        _delete_old_backup "$old_backup"
     done || {
         # Fallback for BSD find (macOS)
         find "$backup_dir" -maxdepth 1 -name "${backup_type}_*" -type d 2>/dev/null | while read -r backup; do
             local mtime
             mtime=$(get_file_mtime "$backup")
             echo "$mtime $backup"
-        done | sort -n | cut -d' ' -f2- | head -n "$delete_count" | while read -r old_backup; do
-            rm -rf "$old_backup" 2>/dev/null || true
+        done | sort -n | cut -d' ' -f2- | head -n "$delete_target" | while read -r old_backup; do
+            _delete_old_backup "$old_backup"
         done
     }
+
+    # Read final counts from temp files
+    deleted_count=$(cat "$deleted_marker" 2>/dev/null || echo "0")
+    error_count=$(cat "$error_marker" 2>/dev/null || echo "0")
+    rm -f "$deleted_marker" "$error_marker"
+
+    # Calculate retained count (original count minus successfully deleted)
+    local retained_count=$((backup_count - deleted_count))
+
+    # Log rotation summary
+    _log_rotation_summary "$backup_type" "$deleted_count" "$retained_count" "$error_count"
+
+    # Return failure if any deletions failed
+    if [[ "$error_count" -gt 0 ]]; then
+        return 1
+    fi
 
     return 0
 }
 
-# List backups with optional type filter
+# List typed backups with optional type filter
+# This is the Tier 2 backup system - lists typed backup directories
+# For Tier 1 numbered backups, use list_backups() from file-ops.sh
 # Args: $1 = backup type (optional, defaults to all)
 # Output: backup directory paths, one per line
-list_backups() {
+list_typed_backups() {
     local filter_type="${1:-all}"
 
     # Load config
@@ -841,11 +935,14 @@ list_backups() {
     fi
 }
 
-# Restore from backup
-# Args: $1 = backup directory path or ID
+# Restore from typed backup (Tier 2)
+# Restores files from a typed backup directory created by create_*_backup functions.
+# For numbered backups (Tier 1), use restore_backup() from lib/file-ops.sh instead.
+# Args: $1 = backup directory path or ID (e.g., "snapshot_20251215_120000")
 # Returns: 0 on success, 1 on error
-restore_backup() {
+restore_typed_backup() {
     local backup_id="$1"
+    local skip_verify="${2:-false}"  # Optional: skip checksum verification
     local backup_path
 
     if [[ -z "$backup_id" ]]; then
@@ -861,7 +958,7 @@ restore_backup() {
         backup_path="$backup_id"
     else
         # Search for backup ID in all types
-        backup_path=$(list_backups | grep -F "$backup_id" | head -1)
+        backup_path=$(list_typed_backups | grep -F "$backup_id" | head -1)
 
         if [[ -z "$backup_path" ]]; then
             echo "ERROR: Backup not found: $backup_id" >&2
@@ -877,12 +974,63 @@ restore_backup() {
 
     # Read metadata
     local metadata_file="$backup_path/metadata.json"
-    local files
-    files=$(jq -r '.files[].backup' "$metadata_file")
+    local files_json
+    files_json=$(jq -r '.files' "$metadata_file")
+
+    # Verify checksums before restoring (unless skip_verify=true)
+    if [[ "$skip_verify" != "true" ]]; then
+        local verify_errors=0
+        local file_count
+        file_count=$(echo "$files_json" | jq -r 'length')
+
+        echo "Verifying checksums for $file_count files..." >&2
+
+        local i
+        for ((i=0; i<file_count; i++)); do
+            local backup_file stored_checksum actual_checksum
+            backup_file=$(echo "$files_json" | jq -r ".[$i].backup")
+            stored_checksum=$(echo "$files_json" | jq -r ".[$i].checksum")
+            
+            local source_file="$backup_path/$backup_file"
+
+            if [[ ! -f "$source_file" ]]; then
+                echo "ERROR: Backup file missing: $backup_file" >&2
+                ((verify_errors++))
+                continue
+            fi
+
+            # Calculate actual checksum
+            actual_checksum=$(safe_checksum "$source_file")
+
+            if [[ "$stored_checksum" != "$actual_checksum" ]]; then
+                echo "ERROR: Checksum mismatch for $backup_file" >&2
+                echo "  Expected: $stored_checksum" >&2
+                echo "  Got:      $actual_checksum" >&2
+                ((verify_errors++))
+            fi
+        done
+
+        if [[ $verify_errors -gt 0 ]]; then
+            echo "ERROR: Checksum verification failed ($verify_errors errors)" >&2
+            # Log verification failure
+            log_operation "backup_verify_failed" "system" "null" "null" "null" \
+                "$(jq -n --arg path "$backup_path" --argjson errors "$verify_errors" '{path: $path, verifyErrors: $errors}')" \
+                "null" 2>/dev/null || true
+            return "${EXIT_CHECKSUM_MISMATCH:-20}"
+        fi
+
+        echo "Checksum verification passed" >&2
+    else
+        echo "Skipping checksum verification (skip_verify=true)" >&2
+    fi
 
     # Restore each file
     local dest_dir="${CLAUDE_TODO_DIR:-.claude}"
     local file
+
+    # Extract just the backup filenames
+    local files
+    files=$(echo "$files_json" | jq -r '.[].backup')
 
     while IFS= read -r file; do
         local source_file="$backup_path/$file"
@@ -904,9 +1052,9 @@ restore_backup() {
         fi
     done <<< "$files"
 
-    # Log restore operation
+    # Log restore operation (include verification status)
     log_operation "backup_restored" "system" "null" "null" "null" \
-        "$(jq -n --arg path "$backup_path" '{path: $path}')" \
+        "$(jq -n --arg path "$backup_path" --argjson verified "$([[ "$skip_verify" != "true" ]] && echo true || echo false)" '{path: $path, checksumVerified: $verified}')" \
         "null" 2>/dev/null || true
 
     return 0
@@ -981,7 +1129,7 @@ export -f create_incremental_backup
 export -f create_archive_backup
 export -f create_migration_backup
 export -f rotate_backups
-export -f list_backups
-export -f restore_backup
+export -f list_typed_backups
+export -f restore_typed_backup
 export -f get_backup_metadata
 export -f prune_backups

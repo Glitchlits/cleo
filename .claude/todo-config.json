@@ -76,7 +76,9 @@
     "maxSiblings": 20,
     "maxDepth": 3,
     "countDoneInLimit": false,
-    "maxActiveSiblings": 8
+    "maxActiveSiblings": 8,
+    "autoCompleteParent": true,
+    "autoCompleteMode": "auto"
   },
   "backup": {
     "enabled": true

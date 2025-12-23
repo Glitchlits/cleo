@@ -53,7 +53,7 @@
 
 | Document | Purpose | When to Read |
 |----------|---------|--------------|
-| **[COMMANDS-INDEX.json](commands/COMMANDS-INDEX.json)** | **Authoritative** command catalog (JSON, 32 commands) | LLM agents: `jq '.commands[] | select(.agentRelevance=="critical")'` |
+| **[COMMANDS-INDEX.json](commands/COMMANDS-INDEX.json)** | **Authoritative** command catalog (JSON, 36 commands) | LLM agents: `jq '.commands[] | select(.agentRelevance=="critical")'` |
 | **[commands/add.md](commands/add.md)** | Add task command documentation | Creating new tasks with options |
 | **[commands/analyze.md](commands/analyze.md)** | Analyze command documentation | Task triage with leverage scoring and bottleneck detection |
 | **[commands/archive.md](commands/archive.md)** | Archive command documentation | Archiving completed tasks |
@@ -79,12 +79,15 @@
 | **[commands/next.md](commands/next.md)** | Next command documentation | Using intelligent task suggestions |
 | **[commands/phase.md](commands/phase.md)** | Phase lifecycle command documentation | Managing project-level phase transitions (pending → active → completed) |
 | **[commands/phases.md](commands/phases.md)** | Phase management command documentation | Managing project phases and phase-based workflows |
+| **[commands/promote.md](commands/promote.md)** | Promote command documentation | Remove parent from task, making it root-level (T339 Phase 2) |
+| **[commands/reparent.md](commands/reparent.md)** | Reparent command documentation | Move task to different parent in hierarchy (T339 Phase 2) |
 | **[commands/research.md](commands/research.md)** | Research aggregation command documentation | Multi-source web research with MCP servers (Tavily, Context7, Reddit) |
 | **[commands/restore.md](commands/restore.md)** | Restore command documentation | Restoring from backups |
 | **[commands/session.md](commands/session.md)** | Session command documentation | Managing work sessions |
 | **[commands/show.md](commands/show.md)** | Single task detail view documentation | Viewing full task details, dependencies, and history |
 | **[commands/sync.md](commands/sync.md)** | TodoWrite synchronization command | Bidirectional sync with Claude Code's TodoWrite |
 | **[commands/stats.md](commands/stats.md)** | Statistics command documentation | Generating project statistics |
+| **[commands/tab-completion.md](commands/tab-completion.md)** | Tab completion setup and configuration | Setting up bash/zsh shell completions |
 | **[commands/update.md](commands/update.md)** | Update task command documentation | Modifying existing tasks |
 | **[commands/validate.md](commands/validate.md)** | Validate command documentation | Checking project integrity |
 
@@ -480,6 +483,7 @@
 4. Review [commands/add.md](commands/add.md) for `--type`, `--parent`, `--size` flags
 5. Review [commands/list.md](commands/list.md) for `--type`, `--parent`, `--children`, `--tree` filters
 6. Run `claude-todo migrate run` to upgrade to schema v2.3.0
+7. **T339 Hierarchy Automation**: See [AGENT-3-PHASE.md](../claudedocs/rebrand/AGENT-3-PHASE.md) for reparent/promote implementation
 
 #### ...integrate with CI/CD
 1. Read [ci-cd-integration.md](ci-cd-integration.md) for complete integration guide

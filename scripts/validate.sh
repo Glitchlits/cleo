@@ -58,6 +58,12 @@ if [[ -f "$LIB_DIR/config.sh" ]]; then
   source "$LIB_DIR/config.sh"
 fi
 
+# Source hierarchy library for orphan detection (T341)
+if [[ -f "$LIB_DIR/hierarchy.sh" ]]; then
+  # shellcheck source=../lib/hierarchy.sh
+  source "$LIB_DIR/hierarchy.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -81,8 +87,10 @@ JSON_OUTPUT=false
 QUIET=false
 FORMAT=""
 NON_INTERACTIVE=false
-COMMAND_NAME="validate"
+CHECK_ORPHANS=""  # Empty means use config, explicit true/false overrides
+FIX_ORPHANS=""    # Empty means no fix, "unlink" or "delete" for repair mode
 
+# Track validation results
 ERRORS=0
 WARNINGS=0
 
@@ -244,6 +252,15 @@ while [[ $# -gt 0 ]]; do
     --no-strict) STRICT="false"; shift ;;
     --fix) FIX=true; shift ;;
     --non-interactive) NON_INTERACTIVE=true; shift ;;
+    --check-orphans) CHECK_ORPHANS=true; shift ;;
+    --no-check-orphans) CHECK_ORPHANS=false; shift ;;
+    --fix-orphans) 
+      FIX_ORPHANS="${2:-unlink}"
+      if [[ "$FIX_ORPHANS" != "unlink" && "$FIX_ORPHANS" != "delete" ]]; then
+        output_fatal "$E_INPUT_INVALID" "--fix-orphans must be 'unlink' or 'delete', got: $FIX_ORPHANS" 1
+      fi
+      shift 2
+      ;;
     --json) JSON_OUTPUT=true; FORMAT="json"; shift ;;
     --human) JSON_OUTPUT=false; FORMAT="text"; shift ;;
     --format|-f)
@@ -362,6 +379,57 @@ if [[ -f "$ARCHIVE_FILE" ]]; then
     else
       log_info "No cross-file duplicate IDs" "cross_duplicates"
     fi
+  fi
+fi
+
+# Resolve config values for orphan detection (if not explicitly set)
+if [[ -z "$CHECK_ORPHANS" ]] && declare -f get_config_value >/dev/null 2>&1; then
+  CHECK_ORPHANS=$(get_config_value "validation.checkOrphans" "")
+fi
+
+# ORPHAN DETECTION (T341)
+# Check for orphaned tasks (parentId references non-existent parents)
+if [[ "$CHECK_ORPHANS" != false ]]; then
+  ORPHANS=$(detect_orphans "$TODO_FILE")
+  ORPHAN_COUNT=$(echo "$ORPHANS" | jq '. | length')
+  
+  if [[ "$ORPHAN_COUNT" -gt 0 ]]; then
+    # If we're going to fix orphans, don't treat them as errors since they'll be resolved
+    if [[ -n "$FIX_ORPHANS" ]]; then
+      log_warn "Found $ORPHAN_COUNT orphaned tasks (parentId references missing parent)" "orphans"
+    else
+      log_error "Found $ORPHAN_COUNT orphaned tasks (parentId references missing parent)" "orphans"
+    fi
+    
+    # Show details of orphaned tasks
+    if [[ "$JSON_OUTPUT" != true ]]; then
+      echo "$ORPHANS" | jq -r '.[] | "  - \(.id): \(.title) (missing parent: \(.parentId))"'
+    fi
+    
+    if [[ -n "$FIX_ORPHANS" ]]; then
+      case "$FIX_ORPHANS" in
+        unlink)
+          FIXED=$(repair_orphan_unlink "$TODO_FILE" "all")
+          log_info "Unlinked $FIXED orphaned tasks (set parentId=null)" "orphans_fixed"
+          ;;
+        delete)
+          FIXED=$(repair_orphan_delete "$TODO_FILE" "all")
+          log_info "Deleted $FIXED orphaned tasks" "orphans_deleted"
+          ;;
+      esac
+      
+      # Update checksum after orphan repair (file was modified)
+      if [[ "$FIXED" -gt 0 ]]; then
+        new_checksum=$(jq -c '.tasks' "$TODO_FILE" | sha256sum | cut -c1-16)
+        if safe_json_write "$TODO_FILE" '._meta.checksum = $cs' --arg cs "$new_checksum"; then
+          log_info "Updated checksum after orphan repair" "checksum_updated"
+        else
+          log_warn "Failed to update checksum after orphan repair"
+        fi
+      fi
+    fi
+  else
+    log_info "No orphaned tasks found" "orphans"
   fi
 fi
 

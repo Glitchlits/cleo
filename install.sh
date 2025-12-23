@@ -447,6 +447,8 @@ declare -A CMD_MAP=(
   [find]="find.sh"
   [commands]="commands.sh"
   [research]="research.sh"
+  [reparent]="reparent.sh"
+  [promote]="promote.sh"
 )
 
 # Brief descriptions for main help
@@ -483,6 +485,8 @@ declare -A CMD_DESC=(
   [find]="Fuzzy search tasks by title, ID, or labels"
   [commands]="List and query available commands (JSON by default)"
   [research]="Multi-source web research aggregation (Tavily, Context7, Reddit)"
+  [reparent]="Move a task to a different parent task"
+  [promote]="Remove parent from a task (make it root-level)"
 )
 
 # ============================================
@@ -997,6 +1001,19 @@ else
 fi
 
 # ============================================
+# TAB COMPLETION SCRIPTS (T638)
+# ============================================
+log_step "Installing tab completion scripts..."
+
+if [[ -d "$SCRIPT_DIR/completions" ]]; then
+  mkdir -p "$INSTALL_DIR/completions"
+  cp -r "$SCRIPT_DIR/completions/"* "$INSTALL_DIR/completions/"
+  log_info "Tab completions installed: $INSTALL_DIR/completions"
+else
+  log_warn "Completions directory not found at $SCRIPT_DIR/completions"
+fi
+
+# ============================================
 # CREATE SYMLINKS IN STANDARD LOCATIONS
 # ============================================
 log_step "Creating symlinks for global access..."
@@ -1208,4 +1225,12 @@ echo ""
 echo "Verify installation:"
 echo "  claude-todo version"
 echo "  ct version          # shortcut"
+echo ""
+echo "Tab Completion (optional):"
+echo "  Bash: Add to ~/.bashrc:"
+echo "    source ~/.claude-todo/completions/bash-completion.sh"
+echo ""
+echo "  Zsh: Add to ~/.zshrc:"
+echo "    fpath=(~/.claude-todo/completions \$fpath)"
+echo "    autoload -Uz compinit && compinit"
 echo ""

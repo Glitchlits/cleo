@@ -188,7 +188,7 @@ EOF
 @test "inject: generates TodoWrite JSON from focused task" {
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json --json --json
     assert_success
 
     # Should output valid JSON
@@ -203,7 +203,7 @@ EOF
 @test "inject: adds [!] prefix for high/critical priority" {
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     # High priority task should have [!] marker
@@ -213,7 +213,7 @@ EOF
 @test "inject: maps blocked status to pending with [BLOCKED] prefix" {
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     # Blocked task should be pending with prefix
@@ -230,7 +230,7 @@ EOF
 @test "inject: generates activeForm from title" {
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     # Should have activeForm field
@@ -242,7 +242,7 @@ EOF
     # Create fixture with many tasks
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --max-tasks 8 --quiet
+    run bash "$INJECT_SCRIPT" --max-tasks 8 --quiet --json
     assert_success
 
     local count
@@ -263,7 +263,7 @@ EOF
 @test "inject: creates session state file for round-trip" {
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     # Should create session state file
@@ -277,7 +277,7 @@ EOF
 @test "inject: includes phase metadata in state file" {
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     # Should have task_metadata field
@@ -305,7 +305,7 @@ EOF
     create_todowrite_state_fixture
 
     # First inject to create session state
-    bash "$INJECT_SCRIPT" --quiet > /dev/null
+    bash "$INJECT_SCRIPT" --quiet --json > /dev/null
 
     run bash "$EXTRACT_SCRIPT" "${TEST_TEMP_DIR}/todowrite-state.json"
     assert_success
@@ -464,7 +464,7 @@ EOF
     create_sync_test_fixture
 
     # 1. Inject (use --quiet to get clean JSON)
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
     local injected="$output"
 
@@ -517,7 +517,7 @@ EOF
 
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     local pending_item
@@ -530,7 +530,7 @@ EOF
 
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     local active_item
@@ -543,7 +543,7 @@ EOF
 
     create_sync_test_fixture
 
-    run bash "$INJECT_SCRIPT" --quiet
+    run bash "$INJECT_SCRIPT" --quiet --json
     assert_success
 
     local blocked_item

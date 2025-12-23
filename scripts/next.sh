@@ -81,6 +81,13 @@ if [[ -f "$LIB_DIR/error-json.sh" ]]; then
   source "$LIB_DIR/error-json.sh"
 fi
 
+# Source hierarchy library for hierarchy awareness (T346)
+if [[ -f "$LIB_DIR/hierarchy.sh" ]]; then
+  source "$LIB_DIR/hierarchy.sh"
+elif [[ -f "$CLAUDE_TODO_HOME/lib/hierarchy.sh" ]]; then
+  source "$CLAUDE_TODO_HOME/lib/hierarchy.sh"
+fi
+
 # Default configuration
 SHOW_EXPLAIN=false
 SUGGESTION_COUNT=1
@@ -89,8 +96,8 @@ QUIET=false
 COMMAND_NAME="next"
 
 # File paths
-CLAUDE_DIR=".claude"
-TODO_FILE="${CLAUDE_DIR}/todo.json"
+CLAUDE_TODO_DIR="${CLAUDE_TODO_DIR:-$(pwd)/.claude}"
+TODO_FILE="${TODO_FILE:-$CLAUDE_TODO_DIR/todo.json}"
 
 #####################################################################
 # Usage
@@ -230,12 +237,50 @@ priority_score() {
   esac
 }
 
+# Get the root epic for a task (traverse up hierarchy)
+get_task_epic() {
+  local task_id="$1"
+  local todo_file="$2"
+  local current_id="$task_id"
+  local max_depth=5
+  local depth=0
+
+  while [[ $depth -lt $max_depth ]]; do
+    local task_data=$(jq --arg id "$current_id" '.tasks[] | select(.id == $id)' "$todo_file")
+    local task_type=$(echo "$task_data" | jq -r '.type // "task"')
+    local parent_id=$(echo "$task_data" | jq -r '.parentId // ""')
+
+    if [[ "$task_type" == "epic" ]]; then
+      echo "$current_id"
+      return
+    fi
+
+    if [[ -z "$parent_id" || "$parent_id" == "null" ]]; then
+      break
+    fi
+
+    current_id="$parent_id"
+    ((depth++))
+  done
+
+  echo ""  # No epic found
+}
+
 # Get all candidate tasks with scores
 get_scored_tasks() {
   local current_phase="$1"
+  
+  # Get current focus epic for hierarchy scoring
+  local focus_epic=""
+  if [[ -f "$TODO_FILE" ]]; then
+    local focus_task=$(jq -r '.focus.currentTask // ""' "$TODO_FILE")
+    if [[ -n "$focus_task" ]]; then
+      focus_epic=$(get_task_epic "$focus_task" "$TODO_FILE")
+    fi
+  fi
 
   # Get all pending tasks that aren't blocked
-  jq -r --arg phase "$current_phase" '
+  jq -r --arg phase "$current_phase" --arg focus_epic "$focus_epic" '
     [.tasks[] |
       select(.status == "pending") |
       {
@@ -245,7 +290,9 @@ get_scored_tasks() {
         phase: (.phase // ""),
         createdAt: .createdAt,
         depends: (.depends // []),
-        labels: (.labels // [])
+        labels: (.labels // []),
+        parentId: (.parentId // null),
+        type: (.type // "task")
       }
     ] |
     map(. + {
@@ -253,7 +300,9 @@ get_scored_tasks() {
                       elif .priority == "high" then 75
                       elif .priority == "medium" then 50
                       else 25 end),
-      phaseBonus: (if .phase == $phase and $phase != "" then 30 else 0 end)
+      phaseBonus: (if .phase == $phase and $phase != "" then 30 else 0 end),
+      focusEpic: (if $focus_epic != "" then $focus_epic else null end),
+      hierarchyScore: 0  # Will be calculated later
     })
   ' "$TODO_FILE" 2>/dev/null
 }
@@ -283,12 +332,48 @@ filter_ready_tasks() {
   echo "$result"
 }
 
-# Sort tasks by score (priority + phase bonus) and creation date
+# Calculate hierarchy scores for tasks
+apply_hierarchy_scoring() {
+  local tasks_json="$1"
+  
+  # Get current focus epic for hierarchy scoring
+  local focus_epic=""
+  if [[ -f "$TODO_FILE" ]]; then
+    local focus_task=$(jq -r '.focus.currentTask // ""' "$TODO_FILE")
+    if [[ -n "$focus_task" ]]; then
+      focus_epic=$(get_task_epic "$focus_task" "$TODO_FILE")
+    fi
+  fi
+  
+  # Get the current tasks data for leaf checking
+  local tasks_data=$(jq -c '.tasks' "$TODO_FILE")
+  
+  echo "$tasks_json" | jq --arg focus_epic "$focus_epic" --argjson tasks_data "$tasks_data" '
+    map(. as $task | 
+      . + {
+        hierarchyScore: (
+          # Same epic bonus (+30)
+          (if $focus_epic != "" and $focus_epic != null then
+            (if (.parentId // null) != null and (.type // "task") != "epic" then
+              30
+            else 0 end)
+          else 0 end) +
+          # Leaf task bonus (+10) - tasks with no children
+          (if ([$tasks_data[] | select(.parentId == $task.id)] | length) == 0 then
+            10
+          else 0 end)
+        )
+      }
+    )
+  '
+}
+
+# Sort tasks by score (priority + phase bonus + hierarchy) and creation date
 sort_tasks() {
   local tasks_json="$1"
 
   echo "$tasks_json" | jq '
-    sort_by(-(.priorityScore + .phaseBonus), .createdAt)
+    sort_by(-(.priorityScore + .phaseBonus + .hierarchyScore), .createdAt)
   '
 }
 
@@ -302,9 +387,13 @@ get_suggestions() {
   local scored_tasks
   scored_tasks=$(get_scored_tasks "$current_phase")
 
+  # Apply hierarchy scoring
+  local scored_with_hierarchy
+  scored_with_hierarchy=$(apply_hierarchy_scoring "$scored_tasks")
+
   # Filter to only tasks with satisfied dependencies
   local ready_tasks
-  ready_tasks=$(filter_ready_tasks "$scored_tasks")
+  ready_tasks=$(filter_ready_tasks "$scored_with_hierarchy")
 
   # Sort by score and get top N
   local sorted_tasks
@@ -377,12 +466,48 @@ output_text_format() {
 
   local rank=1
   echo "$suggestions" | jq -c '.[]' | while read -r task; do
-    local task_id title priority phase score
+    local task_id title priority phase score hierarchy_score parent_context
     task_id=$(echo "$task" | jq -r '.id')
     title=$(echo "$task" | jq -r '.title')
     priority=$(echo "$task" | jq -r '.priority')
     phase=$(echo "$task" | jq -r '.phase // "none"')
+    
+    # Calculate hierarchy score
+    hierarchy_score=0
+    parent_context=""
+    
+    # Check if task is in same epic as focused task
+    local focus_epic=$(echo "$task" | jq -r '.focusEpic // ""')
+    local task_epic=$(get_task_epic "$task_id" "$TODO_FILE")
+    if [[ "$task_epic" == "$focus_epic" && -n "$focus_epic" ]]; then
+      hierarchy_score=$((hierarchy_score + 30))
+    fi
+    
+    # Prefer leaf tasks (no children)
+    local child_count=$(jq --arg id "$task_id" '[.tasks[] | select(.parentId == $id)] | length' "$TODO_FILE")
+    if [[ "$child_count" -eq 0 ]]; then
+      hierarchy_score=$((hierarchy_score + 10))
+    fi
+    
+    # Bonus if siblings are mostly done (momentum)
+    local task_parent=$(jq -r --arg id "$task_id" '.tasks[] | select(.id == $id) | .parentId // ""' "$TODO_FILE")
+    if [[ -n "$task_parent" && "$task_parent" != "null" ]]; then
+      local sibling_total=$(jq --arg pid "$task_parent" '[.tasks[] | select(.parentId == $pid)] | length' "$TODO_FILE")
+      local sibling_done=$(jq --arg pid "$task_parent" '[.tasks[] | select(.parentId == $pid and .status == "done")] | length' "$TODO_FILE")
+      if [[ $sibling_total -gt 0 ]]; then
+        local completion_pct=$((sibling_done * 100 / sibling_total))
+        if [[ $completion_pct -ge 50 ]]; then
+          hierarchy_score=$((hierarchy_score + 5))  # Momentum bonus
+        fi
+      fi
+
+      # Build parent context for output
+      local parent_title=$(jq -r --arg id "$task_parent" '.tasks[] | select(.id == $id) | .title' "$TODO_FILE")
+      parent_context="Parent: $task_parent - $parent_title"
+    fi
+    
     score=$(echo "$task" | jq -r '.priorityScore + .phaseBonus')
+    score=$((score + hierarchy_score))
 
     local priority_sym
     priority_sym=$(priority_symbol "$priority" "$unicode")
@@ -393,13 +518,14 @@ output_text_format() {
       echo -e "   ${priority_sym} [$task_id] $title"
     fi
     echo -e "     Priority: ${priority}  Phase: ${phase}"
+    [[ -n "$parent_context" ]] && echo -e "     $parent_context"
 
     if [[ "$SHOW_EXPLAIN" == "true" ]]; then
       local phase_bonus
       phase_bonus=$(echo "$task" | jq -r '.phaseBonus')
 
       echo ""
-      echo -e "     ${DIM}Score: $score (priority: $(echo "$task" | jq -r '.priorityScore'), phase bonus: ${phase_bonus})${NC}"
+      echo -e "     ${DIM}Score: $score (priority:$(echo "$task" | jq -r '.priorityScore'), phase:$phase_bonus, hierarchy:$hierarchy_score)${NC}"
 
       local deps
       deps=$(echo "$task" | jq -r '.depends | if length > 0 then join(", ") else "none" end')
@@ -407,6 +533,10 @@ output_text_format() {
 
       if [[ "$phase_bonus" -gt 0 ]]; then
         echo -e "     ${GREEN}+ Same phase as current focus${NC}"
+      fi
+      
+      if [[ "$hierarchy_score" -gt 0 ]]; then
+        echo -e "     ${GREEN}+ Hierarchy bonus: $hierarchy_score${NC}"
       fi
     fi
 
@@ -536,10 +666,11 @@ output_json_format() {
         title: .title,
         priority: .priority,
         phase: .phase,
-        score: (.priorityScore + .phaseBonus),
+        score: (.priorityScore + .phaseBonus + .hierarchyScore),
         scoring: {
           priorityScore: .priorityScore,
           phaseBonus: .phaseBonus,
+          hierarchyScore: .hierarchyScore,
           depsReady: .depsReady
         },
         labels: .labels
