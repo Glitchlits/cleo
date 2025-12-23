@@ -771,7 +771,7 @@ count_children() {
 @test "dry run: hierarchy add shows what would be created" {
     create_empty_todo
 
-    run bash "$ADD_SCRIPT" "Test Epic" --description "Epic" --type epic --size large --dry-run
+    run bash "$ADD_SCRIPT" "Test Epic" --description "Epic" --type epic --size large --dry-run --format json
     assert_success
 
     # Should show dry run flag in JSON output

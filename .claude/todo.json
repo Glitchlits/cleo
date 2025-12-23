@@ -3,7 +3,7 @@
   "version": "2.3.0",
   "project": {
     "name": "claude-todo",
-    "currentPhase": "polish",
+    "currentPhase": "core",
     "phases": {
       "setup": {
         "name": "Setup & Foundation",
@@ -121,22 +121,22 @@
       }
     ]
   },
-  "lastUpdated": "2025-12-23T05:28:56Z",
+  "lastUpdated": "2025-12-23T05:52:45Z",
   "_meta": {
-    "checksum": "173cfdc3dfa1a577",
+    "checksum": "84f120169ce483c3",
     "configVersion": "2.1.0",
     "lastSessionId": null,
-    "activeSession": "session_20251222_210409_d4cc8a",
-    "lastModified": "2025-12-23T05:24:24Z",
+    "activeSession": "session_20251222_215002_fb641d",
+    "lastModified": "2025-12-23T05:50:02Z",
     "version": "2.3.0",
     "schemaVersion": "2.3.0"
   },
   "focus": {
-    "currentTask": "T631",
+    "currentTask": "T672",
     "blockedUntil": null,
-    "sessionNote": "T634 completed: Created comprehensive disaster recovery documentation at docs/reference/disaster-recovery.md (810 lines, 20KB). Covers 5 scenarios with step-by-step CLI recovery procedures. Updated INDEX.md with links.",
+    "sessionNote": "Completed T633: Implemented backup search by date/content with --on, --task-id, --contains, and --verbose options",
     "nextAction": "NEXT SESSION: Implement T452 (archive.sh - HIGH priority) first. Pattern: source lib/file-ops.sh, replace all raw writes with save_json(). Then T453, T454. T350/T530/T531 can follow. See FILE-LOCKING-IMPLEMENTATION-REPORT.md for fix patterns.",
-    "currentPhase": "polish"
+    "currentPhase": "core"
   },
   "tasks": [
     {
@@ -2900,6 +2900,9 @@
         "archive-enhancement",
         "epic-type",
         "feature"
+      ],
+      "notes": [
+        "2025-12-23 05:31:52 UTC: v0.29.2 verified"
       ]
     },
     {
@@ -5309,7 +5312,7 @@
       "status": "done",
       "priority": "high",
       "type": "task",
-      "parentId": null,
+      "parentId": "T666",
       "createdAt": "2025-12-20T10:57:24Z",
       "phase": "core",
       "description": "6 tests failing in todowrite-sync.bats. Root cause: sync inject command not generating .injected.todos array. Affects tests 3, 4, 17, 19, 20, 21. Error: 'Cannot iterate over null (null)'",
@@ -5326,65 +5329,86 @@
     {
       "id": "T561",
       "title": "FIX: Hierarchy tree JSON output format",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
-      "parentId": null,
+      "parentId": "T666",
       "createdAt": "2025-12-20T10:57:24Z",
       "phase": "core",
       "description": "Test 4 in hierarchy-workflow.bats failing. Error: 'Cannot index string with string id'. The list --tree JSON output is returning string instead of object structure.",
       "labels": [
         "bug",
         "hierarchy",
+        "issue",
         "testing"
+      ],
+      "completedAt": "2025-12-23T05:48:30Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:48:30Z] Tree view JSON tests passing (test 1, 2 in hierarchy-workflow.bats)"
       ]
     },
     {
       "id": "T562",
       "title": "FIX: Hierarchy dry-run missing dryRun JSON field",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
-      "parentId": null,
+      "parentId": "T666",
       "createdAt": "2025-12-20T10:57:24Z",
       "phase": "core",
       "description": "Test 28 in hierarchy-workflow.bats failing. Output missing '\"dryRun\": true' field in JSON response. Currently outputs text format with [INFO] prefix instead of JSON structure.",
       "labels": [
         "bug",
         "hierarchy",
+        "issue",
         "testing"
+      ],
+      "completedAt": "2025-12-23T05:49:20Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:49:20Z] Fixed test: added --format json to dry-run test in hierarchy-workflow.bats"
       ]
     },
     {
       "id": "T563",
       "title": "FIX: Schema ID version mismatch in tests",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "type": "task",
-      "parentId": null,
+      "parentId": "T666",
       "createdAt": "2025-12-20T10:57:25Z",
       "phase": "core",
       "description": "Test 3 in schema-validation.bats failing. Expected 'claude-todo-schema-v2.2' but got different value. Schema ID needs to be updated or test expectation needs adjustment.",
       "labels": [
         "bug",
+        "issue",
         "schema",
         "testing"
+      ],
+      "completedAt": "2025-12-23T05:52:45Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:52:45Z] Updated test to match new schema ID URL format: https://claude-todo.dev/schemas/v1/todo.schema.json"
       ]
     },
     {
       "id": "T564",
       "title": "FIX: migrate-backups cleanup confirmation test",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "type": "task",
-      "parentId": null,
+      "parentId": "T666",
       "createdAt": "2025-12-20T10:57:25Z",
       "phase": "core",
       "description": "Test 11 in migrate-backups.bats failing. Error: 'New backup directory not found' instead of expected confirmation message. Test environment setup issue.",
       "labels": [
         "backup",
         "bug",
+        "issue",
+        "migrate",
         "testing"
+      ],
+      "completedAt": "2025-12-23T05:51:49Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:51:49Z] Fixed: simplified output_error calls to always pass suggestion argument"
       ]
     },
     {
@@ -5989,7 +6013,7 @@
     {
       "id": "T611",
       "title": "Backup System Refactoring (BACKUP-SYSTEM-SPEC implementation)",
-      "status": "pending",
+      "status": "done",
       "priority": "critical",
       "type": "epic",
       "parentId": null,
@@ -6000,6 +6024,10 @@
         "backup",
         "refactoring",
         "spec-implementation"
+      ],
+      "completedAt": "2025-12-23T05:39:03Z",
+      "notes": [
+        "[AUTO-COMPLETED 2025-12-23T05:39:03Z] All child tasks completed"
       ]
     },
     {
@@ -6365,7 +6393,7 @@
     {
       "id": "T630",
       "title": "Phase 3: Enhancement - Long-term improvements",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T611",
@@ -6379,12 +6407,16 @@
       ],
       "depends": [
         "T623"
+      ],
+      "completedAt": "2025-12-23T05:39:03Z",
+      "notes": [
+        "[AUTO-COMPLETED 2025-12-23T05:39:03Z] All child tasks completed"
       ]
     },
     {
       "id": "T631",
       "title": "P3-1: Implement manifest-based backup tracking",
-      "status": "active",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T630",
@@ -6395,12 +6427,16 @@
         "backup",
         "manifest",
         "performance"
+      ],
+      "completedAt": "2025-12-23T05:39:03Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:39:03Z] Implemented manifest-based backup tracking. All 8 manifest functions verified working. Added _add_to_manifest calls to create_incremental_backup, create_archive_backup, and create_migration_backup. Updated rotate_backups and prune_backups to call _remove_from_manifest when deleting backups. Added 19 unit tests for manifest operations - all 80 tests passing."
       ]
     },
     {
       "id": "T632",
       "title": "P3-2: Add scheduled/automatic backup option",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "type": "subtask",
       "parentId": "T630",
@@ -6411,12 +6447,16 @@
         "automation",
         "backup",
         "feature"
+      ],
+      "completedAt": "2025-12-23T05:35:55Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:35:55Z] Implemented scheduled/automatic backup system: Added config options backup.scheduled.onArchive and backup.scheduled.intervalMinutes. Created functions: auto_backup_on_archive(), get_last_backup_time(), schedule_backup(), should_auto_backup(), perform_scheduled_backup(). Added --auto flag to backup command. Integrated with archive.sh for automatic pre-archive backups. Added 9 unit tests all passing."
       ]
     },
     {
       "id": "T633",
       "title": "P3-3: Implement backup search by date/content",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "type": "subtask",
       "parentId": "T630",
@@ -6427,6 +6467,10 @@
         "backup",
         "feature",
         "search"
+      ],
+      "completedAt": "2025-12-23T05:33:32Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:33:32Z] Implemented backup search by date/content. Added --on (exact date), --task-id, --contains, and --verbose options. All 17 tests passing."
       ]
     },
     {
@@ -7045,7 +7089,7 @@
       "status": "done",
       "priority": "high",
       "type": "task",
-      "parentId": null,
+      "parentId": "T666",
       "createdAt": "2025-12-23T02:32:21Z",
       "phase": "core",
       "description": "update-task.sh fails with 'VERSION: unbound variable' at line 1190. Discovered when trying to add notes to T650. Likely missing 'source lib/version.sh' or variable not exported.",
@@ -7058,6 +7102,203 @@
         "[COMPLETED 2025-12-23T05:28:56Z] Fixed: replaced $VERSION with ${CLAUDE_TODO_VERSION:-$(get_version)} at line 1191"
       ],
       "completedAt": "2025-12-23T05:28:56Z"
+    },
+    {
+      "id": "T666",
+      "title": "EPIC: Pre-Cleo Migration Test Fixes",
+      "status": "done",
+      "priority": "critical",
+      "type": "epic",
+      "parentId": null,
+      "createdAt": "2025-12-23T05:31:50Z",
+      "phase": "testing",
+      "description": "Fix all failing tests on main branch before starting cleo migration. 22 tests currently failing. Must be green before creating feature/cleo-migration branch.",
+      "labels": [
+        "issue",
+        "pre-cleo",
+        "testing"
+      ],
+      "completedAt": "2025-12-23T05:52:45Z",
+      "notes": [
+        "[AUTO-COMPLETED 2025-12-23T05:52:45Z] All child tasks completed"
+      ]
+    },
+    {
+      "id": "T667",
+      "title": "FIX: tree alias command tests (16 failing)",
+      "status": "done",
+      "priority": "high",
+      "type": "task",
+      "parentId": "T666",
+      "createdAt": "2025-12-23T05:32:05Z",
+      "phase": "testing",
+      "description": "16 tree alias tests failing:\n- tree alias invokes list --tree\n- tree alias with no arguments shows all tasks\n- tree alias passes through --status filter\n- tree alias passes through --priority filter\n- tree alias passes through --type filter\n- tree alias passes through --parent filter\n- tree alias --format json produces valid JSON\n- tree alias --human produces text output\n- tree alias --json shortcut works\n- tree alias JSON matches list --tree JSON structure\n- tree alias exit code matches list --tree on success\n- tree alias --type with invalid value returns error\n- tree alias --type validation accepts valid values\n- tree alias with empty todo.json handles gracefully\n- tree alias help shows list help\n- tree alias combined with --quiet suppresses output\n\nLikely issue: tree.sh script or alias not properly implemented.",
+      "labels": [
+        "cli",
+        "issue",
+        "testing",
+        "tree"
+      ],
+      "completedAt": "2025-12-23T05:38:21Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:38:21Z] All 16 tree alias tests passing - no fix needed"
+      ]
+    },
+    {
+      "id": "T668",
+      "title": "FIX: focus set marks task as active test",
+      "status": "done",
+      "priority": "high",
+      "type": "task",
+      "parentId": "T666",
+      "createdAt": "2025-12-23T05:32:24Z",
+      "phase": "testing",
+      "description": "Unit test 'focus set marks task as active' is failing. Core focus functionality may be broken. Investigate focus.sh set command.",
+      "labels": [
+        "focus",
+        "issue",
+        "testing"
+      ],
+      "completedAt": "2025-12-23T05:38:59Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:38:59Z] Focus set test passing - no fix needed"
+      ]
+    },
+    {
+      "id": "T669",
+      "title": "FIX: create_snapshot_backup test",
+      "status": "done",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T666",
+      "createdAt": "2025-12-23T05:32:25Z",
+      "phase": "testing",
+      "description": "Unit test 'create_snapshot_backup creates backup with metadata' is failing. Investigate lib/backup.sh snapshot functionality.",
+      "labels": [
+        "backup",
+        "issue",
+        "testing"
+      ],
+      "completedAt": "2025-12-23T05:47:44Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:47:44Z] All 4 create_snapshot_backup tests passing - no fix needed"
+      ]
+    },
+    {
+      "id": "T670",
+      "title": "FIX: migrate command tests (3 failing)",
+      "status": "done",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T666",
+      "createdAt": "2025-12-23T05:32:27Z",
+      "phase": "testing",
+      "description": "3 migrate tests failing:\n- migrate-backups: cleanup requires confirmation when backups remain\n- migrate check detects current version\n- migrate handles empty tasks array\n\nRelated to existing T564. May need to consolidate.",
+      "labels": [
+        "issue",
+        "migrate",
+        "testing"
+      ],
+      "completedAt": "2025-12-23T05:44:33Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:44:33Z] Fixed config version in common_setup.bash: 2.1.0 → 2.2.0 to match SCHEMA_VERSION_CONFIG"
+      ]
+    },
+    {
+      "id": "T671",
+      "title": "FIX: dry run hierarchy add test",
+      "status": "done",
+      "priority": "low",
+      "type": "task",
+      "parentId": "T666",
+      "createdAt": "2025-12-23T05:32:28Z",
+      "phase": "testing",
+      "description": "Integration test 'dry run: hierarchy add shows what would be created' is failing. Check add-task.sh --dry-run with hierarchy options.",
+      "labels": [
+        "hierarchy",
+        "issue",
+        "testing"
+      ],
+      "completedAt": "2025-12-23T05:49:21Z",
+      "notes": [
+        "[COMPLETED 2025-12-23T05:49:21Z] Same as T562 - dry-run test fixed"
+      ]
+    },
+    {
+      "id": "T672",
+      "title": "EPIC: Enhanced Tree Rendering with Proper Visualization",
+      "status": "active",
+      "priority": "high",
+      "type": "epic",
+      "parentId": null,
+      "createdAt": "2025-12-23T05:48:20Z",
+      "phase": "core",
+      "description": "Improve hierarchy tree output to show proper tree connectors (├── └── │), priority colors, terminal-width-aware truncation, and full parent-child visualization. Currently tree output truncates at 45 chars, uses wrong connectors, and lacks priority indicators.",
+      "labels": [
+        "display",
+        "tree",
+        "ux"
+      ]
+    },
+    {
+      "id": "T673",
+      "title": "T672.1: Add priority color/icon to tree rendering",
+      "status": "pending",
+      "priority": "high",
+      "type": "task",
+      "parentId": "T672",
+      "createdAt": "2025-12-23T05:48:37Z",
+      "phase": "testing",
+      "description": "Add priority indicators (🔴🟡🔵⚪ or colored text) after status icon in tree output. Map critical→red, high→yellow, medium→blue, low→gray. Must work in both Unicode and ASCII modes."
+    },
+    {
+      "id": "T674",
+      "title": "T672.2: Fix tree connectors for proper hierarchy visualization",
+      "status": "pending",
+      "priority": "high",
+      "type": "task",
+      "parentId": "T672",
+      "createdAt": "2025-12-23T05:48:38Z",
+      "phase": "testing",
+      "description": "Replace static ├── with proper tree connectors: ├── for middle children, └── for last child, │ for continuation lines. Requires tracking sibling position and depth in jq render function."
+    },
+    {
+      "id": "T675",
+      "title": "T672.3: Add terminal-width-aware title truncation",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T672",
+      "createdAt": "2025-12-23T05:48:40Z",
+      "phase": "testing",
+      "description": "Replace hardcoded .title[0:45] with dynamic truncation based on $COLUMNS. Calculate available width after ID, status, priority, and tree prefix. Add ellipsis (...) when truncated. Fallback to 80 cols if COLUMNS unavailable."
+    },
+    {
+      "id": "T676",
+      "title": "T672.4: Add --wide flag for full title display",
+      "status": "pending",
+      "priority": "low",
+      "type": "task",
+      "parentId": "T672",
+      "createdAt": "2025-12-23T05:48:41Z",
+      "phase": "testing",
+      "description": "Add --wide flag to tree/list commands to disable truncation and show full titles. Useful for piping to less or file output where terminal width doesn't apply."
+    },
+    {
+      "id": "T677",
+      "title": "T672.5: Update tree-alias.bats tests for new rendering",
+      "status": "pending",
+      "priority": "medium",
+      "type": "task",
+      "parentId": "T672",
+      "createdAt": "2025-12-23T05:48:44Z",
+      "phase": "testing",
+      "description": "Update existing tree tests and add new tests for: priority colors in output, proper └── vs ├── connectors, continuation lines │, truncation behavior, --wide flag.",
+      "depends": [
+        "T673",
+        "T674",
+        "T675"
+      ]
     }
   ],
   "phases": {

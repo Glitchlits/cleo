@@ -598,12 +598,7 @@ cleanup_legacy_backups() {
 
     # Safety check: ensure new backup directory exists and has backups
     if [[ ! -d "$NEW_BACKUP_DIR" ]]; then
-        if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then
-            output_error "$E_FILE_NOT_FOUND" "New backup directory not found: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
-        else
-            output_error "$E_FILE_NOT_FOUND" "New backup directory not found: $NEW_BACKUP_DIR"
-            echo "Run migration first before cleanup" >&2
-        fi
+        output_error "$E_FILE_NOT_FOUND" "New backup directory not found: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
         return 1
     fi
 
@@ -611,12 +606,7 @@ cleanup_legacy_backups() {
     new_backup_count=$(find "$NEW_BACKUP_DIR" -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
 
     if [[ "$new_backup_count" -eq 0 ]]; then
-        if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then
-            output_error "$E_FILE_NOT_FOUND" "No backups found in new location: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
-        else
-            output_error "$E_FILE_NOT_FOUND" "No backups found in new location: $NEW_BACKUP_DIR"
-            echo "Run migration first before cleanup" >&2
-        fi
+        output_error "$E_FILE_NOT_FOUND" "No backups found in new location: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
         return 1
     fi
 

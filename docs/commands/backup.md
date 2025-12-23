@@ -9,6 +9,8 @@ claude-todo backup [OPTIONS]
 claude-todo backup status [OPTIONS]
 claude-todo backup verify <ID|PATH>
 claude-todo backup find [OPTIONS]
+claude-todo backup search [OPTIONS]    # Alias for find with enhanced options
+claude-todo backup --auto              # Run scheduled backup if due
 ```
 
 ## Description
@@ -43,27 +45,44 @@ claude-todo backup verify <ID|PATH>
 - `ID`: Backup ID (e.g., `snapshot_20251215`)
 - `PATH`: Full path to backup directory
 
-### find (v0.29.0+)
-Search backups by date, type, name, or content.
+### find / search (v0.29.0+, enhanced v0.30.0+)
+Search backups by date, type, name, content, or task ID.
 
 ```bash
 claude-todo backup find [OPTIONS]
+claude-todo backup search [OPTIONS]   # Alias with enhanced options
 ```
 
 | Option | Description | Example |
 |--------|-------------|---------|
 | `--since DATE` | Backups created after DATE | `--since 7d`, `--since 2025-12-01` |
 | `--until DATE` | Backups created before DATE | `--until 2025-12-15` |
+| `--on DATE` | Backups from exact date (v0.30.0+) | `--on 2025-12-20`, `--on today` |
 | `--type TYPE` | Filter by backup type | `--type snapshot` |
 | `--name PATTERN` | Filter by name pattern (glob) | `--name "*session*"` |
-| `--grep PATTERN` | Search backup content | `--grep "T001"` |
-| `--limit N` | Limit results (default: 20) | `--limit 10` |
+| `--grep PATTERN` | Search backup content | `--grep "important"` |
+| `--contains PATTERN` | Alias for `--grep` (v0.30.0+) | `--contains "error"` |
+| `--task-id ID` | Find backups containing task (v0.30.0+) | `--task-id T045` |
+| `--verbose` | Show matched content snippets (v0.30.0+) | `--task-id T001 --verbose` |
+| `--limit N` | Limit results (default: 10) | `--limit 20` |
 
-**Backup Types**: `snapshot`, `safety`, `archive`, `migration`
+**Backup Types**: `snapshot`, `safety`, `archive`, `migration`, `incremental`
 
 **Date Formats**:
 - ISO 8601: `2025-12-01`, `2025-12-01T12:00:00Z`
 - Relative: `7d` (7 days), `1w` (1 week), `2m` (2 months)
+- Named: `today`, `yesterday`
+
+### --auto (v0.30.0+)
+Run scheduled backup if interval has elapsed.
+
+```bash
+claude-todo backup --auto [--json|--quiet]
+```
+
+Checks if a scheduled backup is due based on `backup.scheduled.intervalMinutes` configuration. If the interval has elapsed since the last backup, creates a snapshot backup.
+
+Returns JSON with `performed: true/false` indicating whether a backup was created.
 
 ## Options
 
@@ -73,6 +92,7 @@ claude-todo backup find [OPTIONS]
 | `--compress` | | Create compressed tarball (.tar.gz) | `false` |
 | `--name NAME` | `-n` | Custom name appended to timestamp | (none) |
 | `--list` | `-l` | **List all available backups** | `false` |
+| `--auto` | | **Run scheduled backup if due** (v0.30.0+) | `false` |
 | `--verbose` | | **Show detailed debug output** | `false` |
 | `--help` | `-h` | Show help message | |
 
@@ -326,7 +346,7 @@ Output:
 Backup integrity: VERIFIED
 ```
 
-### Search Backups (v0.29.0+)
+### Search Backups (v0.29.0+, enhanced v0.30.0+)
 
 ```bash
 # Find backups from last 7 days
@@ -338,8 +358,20 @@ claude-todo backup find --since 1w --type snapshot
 # Find backups by name pattern
 claude-todo backup find --name "*session*"
 
-# Search backup contents for a task ID
-claude-todo backup find --grep "T001"
+# Search backup contents for a pattern
+claude-todo backup search --contains "important"
+
+# Find backups from exact date (v0.30.0+)
+claude-todo backup search --on 2025-12-20
+
+# Find backups containing specific task (v0.30.0+)
+claude-todo backup search --task-id T045
+
+# Combined filters with task search
+claude-todo backup search --on today --task-id T001 --type snapshot
+
+# Show matched content snippets (v0.30.0+)
+claude-todo backup search --task-id T045 --verbose
 
 # Combined search with limit
 claude-todo backup find --since 30d --type safety --limit 5

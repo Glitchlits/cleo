@@ -40,10 +40,10 @@ _create_test_project() {
     export ARCHIVE_FILE="${base_dir}/.claude/todo-archive.json"
     export BACKUPS_DIR="${base_dir}/.claude/.backups"
 
-    # Create minimal config
+    # Create minimal config (version must match SCHEMA_VERSION_CONFIG in lib/migrate.sh)
     cat > "$CONFIG_FILE" << 'EOF'
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "validation": {
     "strictMode": false,
     "requireDescription": false

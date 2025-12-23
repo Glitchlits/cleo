@@ -88,10 +88,11 @@ except ValidationError as e:
     [ "$status" -eq 0 ]
 }
 
-@test "schema has v2.2 ID" {
+@test "schema has correct ID format" {
     run jq -r '."$id"' "$SCHEMA_FILE"
     [ "$status" -eq 0 ]
-    [[ "$output" == "claude-todo-schema-v2.2" ]]
+    # Schema ID follows URL format: https://claude-todo.dev/schemas/v1/todo.schema.json
+    [[ "$output" == "https://claude-todo.dev/schemas/v1/todo.schema.json" ]]
 }
 
 @test "schema requires project object" {

@@ -103,6 +103,14 @@ TASK_TYPE_FILTER=""   # Filter by type: epic|task|subtask
 PARENT_FILTER=""      # Filter by parentId
 CHILDREN_OF=""        # Show children of specific task
 SHOW_TREE=false       # Display hierarchical tree view
+WIDE_MODE=false       # Show full title without truncation (--wide flag)
+
+# Terminal width detection for tree title truncation (T675)
+# Reserve ~25 chars for: indent (depth*4) + connector (4) + ID (5) + icons (6) + padding (6)
+TERM_WIDTH="${COLUMNS:-80}"
+TREE_OVERHEAD=25
+TREE_TITLE_WIDTH=$((TERM_WIDTH - TREE_OVERHEAD))
+[[ "$TREE_TITLE_WIDTH" -lt 20 ]] && TREE_TITLE_WIDTH=20  # Minimum 20 chars
 
 # Valid format values
 VALID_FORMATS="text json jsonl markdown table"
@@ -130,6 +138,7 @@ Hierarchy Filters (v0.17.0):
       --parent ID           Filter by parent task ID
       --children ID         Show direct children of task ID
       --tree                Display tasks in hierarchical tree view
+      --wide                Show full titles in tree view (no truncation)
 
 Sorting:
   --sort FIELD              Sort by field: status|priority|createdAt|title (default: priority)
@@ -201,6 +210,7 @@ while [[ $# -gt 0 ]]; do
     --parent) PARENT_FILTER="$2"; shift 2 ;;
     --children) CHILDREN_OF="$2"; shift 2 ;;
     --tree) SHOW_TREE=true; shift ;;
+    --wide) WIDE_MODE=true; shift ;;
     --since) SINCE_DATE="$2"; shift 2 ;;
     --until) UNTIL_DATE="$2"; shift 2 ;;
     --sort) SORT_FIELD="$2"; GROUP_BY_PRIORITY=false; shift 2 ;;
@@ -869,27 +879,42 @@ case "$FORMAT" in
       fi
       echo ""
 
-      # Render tree using jq - simpler indented format
+      # Calculate title width for tree rendering (T675, T676)
+      if [[ "$WIDE_MODE" == true ]]; then
+        title_width=999  # Effectively unlimited
+      else
+        title_width=$TREE_TITLE_WIDTH
+      fi
+
+      # Render tree using jq with proper connectors (T673, T674)
       tree_output=""
       if [[ "$UNICODE_ENABLED" == true ]]; then
-        tree_output=$(echo "$TREE_JSON" | jq -r '
+        tree_output=$(echo "$TREE_JSON" | jq -r --argjson width "$title_width" '
           def sicon: if . == "done" then "✓" elif . == "active" then "◉" elif . == "blocked" then "⊗" else "○" end;
-          def render(depth):
-            ("    " * depth) as $indent |
-            (if depth > 0 then "├── " else "" end) as $prefix |
-            "\($indent)\($prefix)\(.id) \(.status | sicon) \(.title[0:45])",
-            if (.children | length) > 0 then (.children[] | render(depth + 1)) else empty end;
-          .[] | render(0)
+          def picon: if . == "critical" then "🔴" elif . == "high" then "🟡" elif . == "medium" then "🔵" else "⚪" end;
+          def render(prefix; is_last):
+            (if prefix == "" then "" else (if is_last then "└── " else "├── " end) end) as $connector |
+            (if prefix == "" then "" else (if is_last then "    " else "│   " end) end) as $cont |
+            "\(prefix)\($connector)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(.title[0:$width])",
+            (.children | length) as $n |
+            if $n > 0 then
+              range($n) as $i | .children[$i] | render(prefix + $cont; $i == ($n - 1))
+            else empty end;
+          length as $n | range($n) as $i | .[$i] | render(""; $i == ($n - 1))
         ' 2>/dev/null)
       else
-        tree_output=$(echo "$TREE_JSON" | jq -r '
+        tree_output=$(echo "$TREE_JSON" | jq -r --argjson width "$title_width" '
           def sicon: if . == "done" then "+" elif . == "active" then "*" elif . == "blocked" then "x" else "o" end;
-          def render(depth):
-            ("    " * depth) as $indent |
-            (if depth > 0 then "+-- " else "" end) as $prefix |
-            "\($indent)\($prefix)\(.id) \(.status | sicon) \(.title[0:45])",
-            if (.children | length) > 0 then (.children[] | render(depth + 1)) else empty end;
-          .[] | render(0)
+          def picon: if . == "critical" then "!" elif . == "high" then "H" elif . == "medium" then "M" else "L" end;
+          def render(prefix; is_last):
+            (if prefix == "" then "" else (if is_last then "`-- " else "+-- " end) end) as $connector |
+            (if prefix == "" then "" else (if is_last then "    " else "|   " end) end) as $cont |
+            "\(prefix)\($connector)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(.title[0:$width])",
+            (.children | length) as $n |
+            if $n > 0 then
+              range($n) as $i | .children[$i] | render(prefix + $cont; $i == ($n - 1))
+            else empty end;
+          length as $n | range($n) as $i | .[$i] | render(""; $i == ($n - 1))
         ' 2>/dev/null)
       fi
 
