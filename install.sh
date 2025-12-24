@@ -453,6 +453,7 @@ declare -A CMD_MAP=(
   [archive-stats]="archive-stats.sh"
   [delete]="delete.sh"
   [uncancel]="uncancel.sh"
+  [reopen]="reopen.sh"
 )
 
 # Brief descriptions for main help
@@ -495,6 +496,7 @@ declare -A CMD_DESC=(
   [archive-stats]="Generate analytics and reports from archived tasks"
   [delete]="Cancel/delete a task with child handling strategies"
   [uncancel]="Restore cancelled tasks back to pending status"
+  [reopen]="Restore completed tasks back to pending status"
 )
 
 # ============================================
@@ -515,6 +517,7 @@ declare -A CMD_ALIASES=(
   [tree]="list --tree"
   [cancel]="delete"
   [restore-cancelled]="uncancel"
+  [restore-done]="reopen"
 )
 
 # Aliases that include flags (need special handling in resolve_command)
@@ -733,7 +736,7 @@ show_main_help() {
   echo "       claude-todo help <command>    Show detailed command help"
   echo ""
   echo "Commands:"
-  for cmd in init add update complete delete uncancel list find focus session archive unarchive validate stats backup restore export migrate reorganize-backups log dash next labels deps blockers phases phase exists history show analyze config commands; do
+  for cmd in init add update complete delete uncancel reopen list find focus session archive unarchive validate stats backup restore export migrate reorganize-backups log dash next labels deps blockers phases phase exists history show analyze config commands; do
     printf "  %-14s %s\n" "$cmd" "${CMD_DESC[$cmd]}"
   done
   echo "  version        Show version"

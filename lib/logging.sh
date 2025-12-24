@@ -68,6 +68,7 @@ if [[ -z "${VALID_ACTIONS:-}" ]]; then
         "task_archived"
         "task_cancelled"
         "task_restored_from_cancelled"
+        "task_reopened"
         "dependency_removed"
         "focus_changed"
         "config_changed"

@@ -5,6 +5,19 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36.0] - 2025-12-24
+
+### Added
+- **`reopen` command** - Restore completed tasks back to pending status
+  - Primary use case: Reopening auto-completed epics when child tasks were marked done prematurely
+  - Requires `--reason` flag for audit trail
+  - Supports `--status` flag to set target status (pending/active/blocked)
+  - Detects and warns about potential re-auto-completion for epics with all children still done
+  - Includes `--dry-run` for previewing changes
+  - JSON output includes `wasAutoCompleted` and `previousCompletedAt` fields
+  - Alias: `restore-done` → `reopen`
+- **`task_reopened` log action** - New valid action for audit logging
+
 ## [0.35.1] - 2025-12-24
 
 ### Changed

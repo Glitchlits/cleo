@@ -144,6 +144,20 @@ claude-todo uncancel <id> --notes "reason"   # Add restoration note
 
 **Aliases**: `cancel` → `delete`, `restore-cancelled` → `uncancel`
 
+### Task Reopen (v0.36.0+)
+```bash
+# Reopen completed tasks (restore done → pending)
+claude-todo reopen <id> --reason "..."        # Reopen with required reason
+claude-todo reopen <id> --reason "..." --status active  # Reopen as active
+claude-todo reopen <id> --reason "..." --dry-run        # Preview changes
+```
+
+**Use Case**: Reopening auto-completed epics when child tasks were completed prematurely.
+
+**Warning**: When reopening an epic with all children still done, it may auto-complete again. Consider reopening a child task first or disabling auto-complete.
+
+**Aliases**: `restore-done` → `reopen`
+
 ### Maintenance
 ```bash
 claude-todo validate                       # Check file integrity

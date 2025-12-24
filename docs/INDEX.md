@@ -91,6 +91,7 @@
 | **[commands/stats.md](commands/stats.md)** | Statistics command documentation | Generating project statistics |
 | **[commands/tab-completion.md](commands/tab-completion.md)** | Tab completion setup and configuration | Setting up bash/zsh shell completions |
 | **[commands/uncancel.md](commands/uncancel.md)** | Restore cancelled tasks documentation | Restore cancelled tasks back to pending status |
+| **[commands/reopen.md](commands/reopen.md)** | Restore completed tasks documentation | Reopen done tasks (especially auto-completed epics) |
 | **[commands/update.md](commands/update.md)** | Update task command documentation | Modifying existing tasks |
 | **[commands/validate.md](commands/validate.md)** | Validate command documentation | Checking project integrity |
 
