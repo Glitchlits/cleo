@@ -5,6 +5,23 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.2] - 2025-12-24
+
+### Fixed
+- **CLAUDE.md Injection Duplication Bug**: Fixed critical bug in `init.sh --update-claude-md`
+  - Previous sed logic only removed first START/END block, leaving duplicates behind
+  - Each update would append content, growing CLAUDE.md exponentially (1603 lines → 557 lines after fix)
+  - Now uses awk to strip ALL injection blocks before prepending new template
+  - Injection correctly placed at TOP of file (was appending to bottom)
+
+- **JSON Escaping in Validate**: Fixed jq parse error in `validate.sh`
+  - `add_detail()` function now properly escapes control characters using `jq -nc --arg`
+  - Previously, unescaped newlines/tabs in messages caused "Invalid string: control characters" errors
+
+### Changed
+- `init.sh`: New injection always prepended (not appended) to CLAUDE.md
+- `init.sh`: Regular init flow also prepends injection for consistency
+
 ## [0.32.1] - 2025-12-24
 
 ### Fixed

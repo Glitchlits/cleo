@@ -98,11 +98,13 @@ WARNINGS=0
 declare -a DETAILS_JSON=()
 
 # Helper to add a check result to details
+# Uses jq for proper JSON escaping (handles newlines, quotes, control chars)
 add_detail() {
   local check="$1"
   local status="$2"  # ok, error, warning, fixed
   local message="$3"
-  DETAILS_JSON+=("{\"check\":\"$check\",\"status\":\"$status\",\"message\":\"$message\"}")
+  DETAILS_JSON+=("$(jq -nc --arg check "$check" --arg status "$status" --arg message "$message" \
+    '{check:$check,status:$status,message:$message}')")
 }
 
 usage() {

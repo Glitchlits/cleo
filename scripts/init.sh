@@ -204,26 +204,31 @@ if [[ "$UPDATE_CLAUDE_MD" == true ]]; then
 
   action_taken="updated"
   if grep -q "CLAUDE-TODO:START" CLAUDE.md 2>/dev/null; then
-    # Replace existing block using sed
-    # Create temp file with new content
+    # Remove ALL existing injection blocks (handles multiple/duplicates)
+    # and place new injection at TOP of file
     temp_file=$(mktemp)
 
-    # Extract content before START tag (handles versioned tags like v0.12.1)
-    sed -n '1,/<!-- CLAUDE-TODO:START/p' CLAUDE.md | head -n -1 > "$temp_file"
+    # First, add the new injection template at the top
+    cat "$injection_template" > "$temp_file"
 
-    # Append new injection template
-    cat "$injection_template" >> "$temp_file"
-
-    # Append content after END tag (if any)
-    sed -n '/<!-- CLAUDE-TODO:END -->/,${/<!-- CLAUDE-TODO:END -->/d; p}' CLAUDE.md >> "$temp_file"
+    # Strip ALL injection blocks using awk (handles multiple START/END pairs)
+    # Also removes any leading blank lines from the cleaned content
+    awk '
+      /<!-- CLAUDE-TODO:START/ { skip = 1; next }
+      /<!-- CLAUDE-TODO:END -->/ { skip = 0; next }
+      !skip { print }
+    ' CLAUDE.md | sed '/./,$!d' >> "$temp_file"
 
     # Replace original file
     mv "$temp_file" CLAUDE.md
     action_taken="updated"
   else
-    # No existing block, append new one
-    echo "" >> CLAUDE.md
-    cat "$injection_template" >> CLAUDE.md
+    # No existing block, prepend new injection at TOP
+    temp_file=$(mktemp)
+    cat "$injection_template" > "$temp_file"
+    echo "" >> "$temp_file"
+    cat CLAUDE.md >> "$temp_file"
+    mv "$temp_file" CLAUDE.md
     action_taken="added"
   fi
 
@@ -673,15 +678,21 @@ if [[ "$NO_CLAUDE_MD" != true ]]; then
       log_warn "CLAUDE.md already has task integration (skipped)"
     else
       # Inject CLI-based task management instructions from template
+      # PREPEND to top of file (injection should be first thing in CLAUDE.md)
       local injection_template="$CLAUDE_TODO_HOME/templates/CLAUDE-INJECTION.md"
       if [[ -f "$injection_template" ]]; then
-        echo "" >> CLAUDE.md
-        cat "$injection_template" >> CLAUDE.md
-        log_info "Updated CLAUDE.md (from template)"
+        local temp_file
+        temp_file=$(mktemp)
+        cat "$injection_template" > "$temp_file"
+        echo "" >> "$temp_file"
+        cat CLAUDE.md >> "$temp_file"
+        mv "$temp_file" CLAUDE.md
+        log_info "Updated CLAUDE.md (from template, prepended)"
       else
         # Fallback minimal injection if template missing
-        cat >> CLAUDE.md << 'CLAUDE_EOF'
-
+        local temp_file
+        temp_file=$(mktemp)
+        cat > "$temp_file" << 'CLAUDE_EOF'
 <!-- CLAUDE-TODO:START -->
 ## Task Management (claude-todo)
 
@@ -701,8 +712,11 @@ ct exists <id>             # Verify task exists
 - **CLI only** - Never edit `.claude/*.json` directly
 - **Verify state** - Use `ct list` before assuming
 <!-- CLAUDE-TODO:END -->
+
 CLAUDE_EOF
-        log_info "Updated CLAUDE.md (fallback)"
+        cat CLAUDE.md >> "$temp_file"
+        mv "$temp_file" CLAUDE.md
+        log_info "Updated CLAUDE.md (fallback, prepended)"
       fi
     fi
   else
