@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 1671,
+    "totalEntries": 1775,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-23T17:35:18Z",
+    "lastEntry": "2025-12-24T01:23:49Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -39762,6 +39762,3872 @@
         "title": "Investigate 7 skipped tests",
         "status": "pending",
         "priority": "low"
+      }
+    },
+    {
+      "id": "log_66570a7c63b4",
+      "timestamp": "2025-12-23T18:01:25Z",
+      "sessionId": "session_20251223_092105_7e08d7",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "EPIC T481 complete (23/23). v0.31.2 released with LLM-Agent-First Spec v3.0 compliance. Created T694 EPIC for 20 failed tests (archive/backup). Commit: 00a5059."
+      }
+    },
+    {
+      "id": "log_68101b6c2995",
+      "timestamp": "2025-12-23T23:00:42Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log-1766530871-8d4ef8",
+      "timestamp": "2025-12-23T23:01:11Z",
+      "action": "task_created",
+      "taskId": "T700",
+      "actor": "system",
+      "details": {
+        "title": "Task Deletion System with Cancelled Status (Soft-Delete)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Task Deletion System with Cancelled Status (Soft-Delete)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530892-0dea93",
+      "timestamp": "2025-12-23T23:01:32Z",
+      "action": "task_created",
+      "taskId": "T701",
+      "actor": "system",
+      "details": {
+        "title": "Schema: Add cancelled status and cancellation fields",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Schema: Add cancelled status and cancellation fields",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530910-ec8ebd",
+      "timestamp": "2025-12-23T23:01:50Z",
+      "action": "task_created",
+      "taskId": "T702",
+      "actor": "system",
+      "details": {
+        "title": "Create delete.sh command script",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create delete.sh command script",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530912-789b8e",
+      "timestamp": "2025-12-23T23:01:52Z",
+      "action": "task_created",
+      "taskId": "T703",
+      "actor": "system",
+      "details": {
+        "title": "Create lib/cancel-ops.sh core operations",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create lib/cancel-ops.sh core operations",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530918-b56b66",
+      "timestamp": "2025-12-23T23:01:58Z",
+      "action": "task_created",
+      "taskId": "T704",
+      "actor": "system",
+      "details": {
+        "title": "Create lib/child-handler.sh strategy pattern",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create lib/child-handler.sh strategy pattern",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530934-871bba",
+      "timestamp": "2025-12-23T23:02:14Z",
+      "action": "task_created",
+      "taskId": "T705",
+      "actor": "system",
+      "details": {
+        "title": "Focus system integration for delete",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Focus system integration for delete",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766530936-f84e32",
+      "timestamp": "2025-12-23T23:02:16Z",
+      "action": "task_created",
+      "taskId": "T706",
+      "actor": "system",
+      "details": {
+        "title": "Archive integration for cancelled tasks",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Archive integration for cancelled tasks",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766530939-4ed2d7",
+      "timestamp": "2025-12-23T23:02:19Z",
+      "action": "task_created",
+      "taskId": "T707",
+      "actor": "system",
+      "details": {
+        "title": "Dependency cleanup on delete",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Dependency cleanup on delete",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766530956-a8142f",
+      "timestamp": "2025-12-23T23:02:36Z",
+      "action": "task_created",
+      "taskId": "T708",
+      "actor": "system",
+      "details": {
+        "title": "Pre-flight checks and validation",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Pre-flight checks and validation",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530958-0fc664",
+      "timestamp": "2025-12-23T23:02:38Z",
+      "action": "task_created",
+      "taskId": "T709",
+      "actor": "system",
+      "details": {
+        "title": "Dry-run implementation for delete",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Dry-run implementation for delete",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530959-4ca684",
+      "timestamp": "2025-12-23T23:02:39Z",
+      "action": "task_created",
+      "taskId": "T710",
+      "actor": "system",
+      "details": {
+        "title": "Restore from cancelled support",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Restore from cancelled support",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766530974-b5b1eb",
+      "timestamp": "2025-12-23T23:02:54Z",
+      "action": "task_created",
+      "taskId": "T711",
+      "actor": "system",
+      "details": {
+        "title": "Command documentation: docs/commands/delete.md",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Command documentation: docs/commands/delete.md",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766530976-cb8927",
+      "timestamp": "2025-12-23T23:02:56Z",
+      "action": "task_created",
+      "taskId": "T712",
+      "actor": "system",
+      "details": {
+        "title": "Unit tests: tests/unit/delete.bats",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Unit tests: tests/unit/delete.bats",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530979-f7778d",
+      "timestamp": "2025-12-23T23:02:59Z",
+      "action": "task_created",
+      "taskId": "T713",
+      "actor": "system",
+      "details": {
+        "title": "Integration tests: tests/integration/delete-workflow.bats",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Integration tests: tests/integration/delete-workflow.bats",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766530992-c83b11",
+      "timestamp": "2025-12-23T23:03:12Z",
+      "action": "task_created",
+      "taskId": "T714",
+      "actor": "system",
+      "details": {
+        "title": "Audit logging for task_cancelled action",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Audit logging for task_cancelled action",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766530994-f60fe6",
+      "timestamp": "2025-12-23T23:03:14Z",
+      "action": "task_created",
+      "taskId": "T715",
+      "actor": "system",
+      "details": {
+        "title": "TodoWrite sync: exclude cancelled tasks",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "TodoWrite sync: exclude cancelled tasks",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_bd292c9f82dc",
+      "timestamp": "2025-12-23T23:03:51Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T700",
+      "before": {
+        "title": "Task Deletion System with Cancelled Status (Soft-Delete)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement guarded task deletion with new 'cancelled' status. Soft-delete pattern moves tasks to archive with full audit trail. Required --reason flag, child handling strategies (cascade/orphan/block), atomic operations, and restore capability. Follows LLM-Agent-First Spec v3.0 patterns.",
+        "phase": "core",
+        "labels": [
+          "cancelled-status",
+          "deletion",
+          "feature",
+          "soft-delete"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Task Deletion System with Cancelled Status (Soft-Delete)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement guarded task deletion with new 'cancelled' status. Soft-delete pattern moves tasks to archive with full audit trail. Required --reason flag, child handling strategies (cascade/orphan/block), atomic operations, and restore capability. Follows LLM-Agent-First Spec v3.0 patterns.",
+        "phase": "core",
+        "labels": [
+          "cancelled-status",
+          "deletion",
+          "feature",
+          "soft-delete"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766531058-70e34a",
+      "timestamp": "2025-12-23T23:04:18Z",
+      "action": "task_created",
+      "taskId": "T716",
+      "actor": "system",
+      "details": {
+        "title": "Exit codes and error codes for deletion",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Exit codes and error codes for deletion",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766531060-d15fbf",
+      "timestamp": "2025-12-23T23:04:20Z",
+      "action": "task_created",
+      "taskId": "T717",
+      "actor": "system",
+      "details": {
+        "title": "Validation library updates for cancelled status",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Validation library updates for cancelled status",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log_b934704bc0c0",
+      "timestamp": "2025-12-23T23:04:36Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T700"
+      },
+      "details": null
+    },
+    {
+      "id": "log_e90b34197bd3",
+      "timestamp": "2025-12-24T00:02:39Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T700"
+      },
+      "after": {
+        "currentTask": "T700"
+      },
+      "details": null
+    },
+    {
+      "id": "log_72f6885ea615",
+      "timestamp": "2025-12-24T00:10:09Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T215",
+      "before": {
+        "title": "T204.1: Configuration Schema Design",
+        "status": "pending",
+        "priority": "high",
+        "description": "Design YAML/JSON configuration schema for reusable consensus framework plugin.\n\n## DELIVERABLE\n`schemas/consensus-research-config.schema.json`\n\n## SCHEMA MUST DEFINE\n- claims: Array of claim definitions (id, title, description, category)\n- evidence_sources: Paths to evidence directories/files\n- agents: Agent configuration (count, types, subagent_type mappings)\n- thresholds: Consensus thresholds (proven, refuted, contested)\n- output: Output directory and file naming conventions\n- gates: HITL gate configuration (which gates, timeout, blocking)\n- phases: Phase definitions (which phases to run, order)\n\n## EXAMPLE CONFIG\n```yaml\nframework: consensus-research\nversion: 1.0\ninvestigation:\n  name: \"claude-todo-claims\"\n  claims_file: ./claims.yaml\n  evidence_dir: ./evidence\n  output_dir: ./consensus-output\nagents:\n  worker_count: 5\n  synthesis_type: project-supervisor-orchestrator\nthresholds:\n  proven: 0.8  # 4/5\n  refuted: 0.4  # 2/5\ngates:\n  - after_phase: 1\n    blocking: true\n    timeout: 24h\n```\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Execution Protocol section)\n- T204 parent task for context",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T204.1: Configuration Schema Design",
+        "status": "blocked",
+        "priority": "high",
+        "description": "Design YAML/JSON configuration schema for reusable consensus framework plugin.\n\n## DELIVERABLE\n`schemas/consensus-research-config.schema.json`\n\n## SCHEMA MUST DEFINE\n- claims: Array of claim definitions (id, title, description, category)\n- evidence_sources: Paths to evidence directories/files\n- agents: Agent configuration (count, types, subagent_type mappings)\n- thresholds: Consensus thresholds (proven, refuted, contested)\n- output: Output directory and file naming conventions\n- gates: HITL gate configuration (which gates, timeout, blocking)\n- phases: Phase definitions (which phases to run, order)\n\n## EXAMPLE CONFIG\n```yaml\nframework: consensus-research\nversion: 1.0\ninvestigation:\n  name: \"claude-todo-claims\"\n  claims_file: ./claims.yaml\n  evidence_dir: ./evidence\n  output_dir: ./consensus-output\nagents:\n  worker_count: 5\n  synthesis_type: project-supervisor-orchestrator\nthresholds:\n  proven: 0.8  # 4/5\n  refuted: 0.4  # 2/5\ngates:\n  - after_phase: 1\n    blocking: true\n    timeout: 24h\n```\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Execution Protocol section)\n- T204 parent task for context",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_2a97128ea758",
+      "timestamp": "2025-12-24T00:10:11Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T216",
+      "before": {
+        "title": "T204.2: Parameterized Prompt Templates",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create parameterized prompt templates for all 6 agent types.\n\n## DELIVERABLE\n`templates/consensus-research/` directory with:\n- agent-technical.prompt.md\n- agent-design.prompt.md\n- agent-docs.prompt.md\n- agent-impl.prompt.md\n- agent-challenge.prompt.md\n- agent-synthesis.prompt.md\n\n## TEMPLATE VARIABLES\nEach template must use placeholders:\n- `{INVESTIGATION_NAME}` - Name of the investigation\n- `{CLAIM_SET}` - List of claims assigned to this agent\n- `{EVIDENCE_PATH}` - Path to phase 1 evidence file\n- `{OUTPUT_PATH}` - Path where agent writes findings\n- `{EVIDENCE_STANDARDS}` - Standards for this claim type\n- `{CONSENSUS_THRESHOLD}` - Voting threshold\n- `{OTHER_AGENT_OUTPUTS}` - Paths to other agent files (for synthesis)\n\n## EXAMPLE TEMPLATE\n```markdown\n# {AGENT_ROLE} Agent\n\nYou are the {AGENT_ROLE} for the {INVESTIGATION_NAME} investigation.\n\n## Your Assigned Claims\n{CLAIM_SET}\n\n## Evidence Baseline\nRead evidence from: {EVIDENCE_PATH}\n\n## Your Task\nInvestigate your assigned claims using {EVIDENCE_STANDARDS}.\n\n## Output\nWrite findings to: {OUTPUT_PATH}\n\n## Output Format\n[structured template...]\n```\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Agent Roles, Evidence Passing Protocol)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T204.2: Parameterized Prompt Templates",
+        "status": "blocked",
+        "priority": "high",
+        "description": "Create parameterized prompt templates for all 6 agent types.\n\n## DELIVERABLE\n`templates/consensus-research/` directory with:\n- agent-technical.prompt.md\n- agent-design.prompt.md\n- agent-docs.prompt.md\n- agent-impl.prompt.md\n- agent-challenge.prompt.md\n- agent-synthesis.prompt.md\n\n## TEMPLATE VARIABLES\nEach template must use placeholders:\n- `{INVESTIGATION_NAME}` - Name of the investigation\n- `{CLAIM_SET}` - List of claims assigned to this agent\n- `{EVIDENCE_PATH}` - Path to phase 1 evidence file\n- `{OUTPUT_PATH}` - Path where agent writes findings\n- `{EVIDENCE_STANDARDS}` - Standards for this claim type\n- `{CONSENSUS_THRESHOLD}` - Voting threshold\n- `{OTHER_AGENT_OUTPUTS}` - Paths to other agent files (for synthesis)\n\n## EXAMPLE TEMPLATE\n```markdown\n# {AGENT_ROLE} Agent\n\nYou are the {AGENT_ROLE} for the {INVESTIGATION_NAME} investigation.\n\n## Your Assigned Claims\n{CLAIM_SET}\n\n## Evidence Baseline\nRead evidence from: {EVIDENCE_PATH}\n\n## Your Task\nInvestigate your assigned claims using {EVIDENCE_STANDARDS}.\n\n## Output\nWrite findings to: {OUTPUT_PATH}\n\n## Output Format\n[structured template...]\n```\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Agent Roles, Evidence Passing Protocol)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_0d0c8add7f1d",
+      "timestamp": "2025-12-24T00:10:13Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T217",
+      "before": {
+        "title": "T204.3: State Management Design",
+        "status": "pending",
+        "priority": "high",
+        "description": "Design state management system for tracking investigation progress.\n\n## DELIVERABLE\n`schemas/consensus-research-state.schema.json` + implementation spec\n\n## STATE FILE MUST TRACK\n- current_phase: Which phase is active (1-4)\n- phase_status: Per-phase completion status\n- claims: Per-claim status and verdicts\n- agents: Which agents have completed, their output paths\n- gates: Gate status (pending, approved, rejected)\n- questions: Collected questions with severity and status\n- suspicious_consensus: Flagged unanimous agreements\n- session: Current session ID, start time, last activity\n\n## STATE TRANSITIONS\n```\nPhase 1: pending → active → evidence_collected → gate_1_pending → gate_1_approved\nPhase 2: pending → agents_spawned → agents_complete → gate_2_pending → gate_2_approved\nPhase 3: pending → synthesis_active → voting_complete → gate_3_pending → gate_3_approved\nPhase 4: pending → artifacts_generating → complete → gate_4_approved\n```\n\n## PERSISTENCE\n- State file: `.consensus-research/state.json`\n- Atomic writes (temp file → validate → rename)\n- Checksum for integrity\n- Recovery from interrupted state\n\n## INTEGRATION WITH CLAUDE-TODO\n- Optionally create claude-todo tasks from state\n- Sync state ↔ task status\n- Export state to TodoWrite format\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Completion Criteria, Position Identification)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T204.3: State Management Design",
+        "status": "blocked",
+        "priority": "high",
+        "description": "Design state management system for tracking investigation progress.\n\n## DELIVERABLE\n`schemas/consensus-research-state.schema.json` + implementation spec\n\n## STATE FILE MUST TRACK\n- current_phase: Which phase is active (1-4)\n- phase_status: Per-phase completion status\n- claims: Per-claim status and verdicts\n- agents: Which agents have completed, their output paths\n- gates: Gate status (pending, approved, rejected)\n- questions: Collected questions with severity and status\n- suspicious_consensus: Flagged unanimous agreements\n- session: Current session ID, start time, last activity\n\n## STATE TRANSITIONS\n```\nPhase 1: pending → active → evidence_collected → gate_1_pending → gate_1_approved\nPhase 2: pending → agents_spawned → agents_complete → gate_2_pending → gate_2_approved\nPhase 3: pending → synthesis_active → voting_complete → gate_3_pending → gate_3_approved\nPhase 4: pending → artifacts_generating → complete → gate_4_approved\n```\n\n## PERSISTENCE\n- State file: `.consensus-research/state.json`\n- Atomic writes (temp file → validate → rename)\n- Checksum for integrity\n- Recovery from interrupted state\n\n## INTEGRATION WITH CLAUDE-TODO\n- Optionally create claude-todo tasks from state\n- Sync state ↔ task status\n- Export state to TodoWrite format\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Completion Criteria, Position Identification)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_d4d93fbf75e4",
+      "timestamp": "2025-12-24T00:10:15Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T218",
+      "before": {
+        "title": "T204.4: Output JSON Schemas",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Define formal JSON schemas for all framework outputs.\n\n## DELIVERABLES\n`schemas/consensus-research/` directory:\n- voting-matrix.schema.json\n- evidence-dossier.schema.json\n- agent-findings.schema.json\n- questions.schema.json\n- consensus-report.schema.json\n\n## VOTING MATRIX SCHEMA\n```json\n{\n  \"claims\": [\n    {\n      \"id\": \"T205\",\n      \"title\": \"jq arg limit\",\n      \"votes\": {\n        \"technical\": \"REFUTED\",\n        \"design\": \"REFUTED\",\n        \"docs\": \"REFUTED\",\n        \"impl\": \"REFUTED\",\n        \"challenge\": \"REFUTED\"\n      },\n      \"consensus\": 5,\n      \"verdict\": \"REFUTED\",\n      \"evidence\": [\"phase1-evidence.md:L45\"]\n    }\n  ]\n}\n```\n\n## EVIDENCE DOSSIER SCHEMA\nPer-claim with: claim statement, investigation method, test results, citations, verdict, recommendation\n\n## AGENT FINDINGS SCHEMA\nStructured output format for worker agents: claims addressed, evidence found, verdict per claim, confidence level, citations\n\n## DUAL FORMAT\nAll outputs should generate both:\n- .json (machine-readable, for state tracking)\n- .md (human-readable, for review)\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Output Artifacts section)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T204.4: Output JSON Schemas",
+        "status": "blocked",
+        "priority": "medium",
+        "description": "Define formal JSON schemas for all framework outputs.\n\n## DELIVERABLES\n`schemas/consensus-research/` directory:\n- voting-matrix.schema.json\n- evidence-dossier.schema.json\n- agent-findings.schema.json\n- questions.schema.json\n- consensus-report.schema.json\n\n## VOTING MATRIX SCHEMA\n```json\n{\n  \"claims\": [\n    {\n      \"id\": \"T205\",\n      \"title\": \"jq arg limit\",\n      \"votes\": {\n        \"technical\": \"REFUTED\",\n        \"design\": \"REFUTED\",\n        \"docs\": \"REFUTED\",\n        \"impl\": \"REFUTED\",\n        \"challenge\": \"REFUTED\"\n      },\n      \"consensus\": 5,\n      \"verdict\": \"REFUTED\",\n      \"evidence\": [\"phase1-evidence.md:L45\"]\n    }\n  ]\n}\n```\n\n## EVIDENCE DOSSIER SCHEMA\nPer-claim with: claim statement, investigation method, test results, citations, verdict, recommendation\n\n## AGENT FINDINGS SCHEMA\nStructured output format for worker agents: claims addressed, evidence found, verdict per claim, confidence level, citations\n\n## DUAL FORMAT\nAll outputs should generate both:\n- .json (machine-readable, for state tracking)\n- .md (human-readable, for review)\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Output Artifacts section)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_5957952d25aa",
+      "timestamp": "2025-12-24T00:10:17Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T219",
+      "before": {
+        "title": "T204.5: Integration Points Specification",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Define integration points with external systems.\n\n## DELIVERABLE\nDocumentation section in spec or separate integration-spec.md\n\n## TASK TOOL INTEGRATION\n- How to spawn worker agents via Task tool\n- Subagent_type selection based on config\n- Prompt construction from templates\n- Output collection from agent responses\n- Parallel vs sequential agent spawning\n\n## CLAUDE-TODO INTEGRATION\n- Auto-generate tasks for investigation phases\n- Sync state with task status\n- Use labels for filtering (consensus-framework-{investigation-name})\n- Link tasks to output artifacts via notes\n- Session start/end integration\n\n## SERENA MCP INTEGRATION\n- Code analysis during Phase 1\n- Symbol search for evidence collection\n- Memory persistence for cross-session context\n- Project activation requirements\n\n## FILE SYSTEM INTEGRATION\n- Directory structure creation\n- Atomic file writes\n- Output path resolution\n- Evidence file discovery (glob patterns)\n\n## HITL INTEGRATION\n- Gate request format\n- User notification mechanism\n- Response collection\n- Timeout handling\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Execution Protocol, Task Tracking Protocol)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T204.5: Integration Points Specification",
+        "status": "blocked",
+        "priority": "medium",
+        "description": "Define integration points with external systems.\n\n## DELIVERABLE\nDocumentation section in spec or separate integration-spec.md\n\n## TASK TOOL INTEGRATION\n- How to spawn worker agents via Task tool\n- Subagent_type selection based on config\n- Prompt construction from templates\n- Output collection from agent responses\n- Parallel vs sequential agent spawning\n\n## CLAUDE-TODO INTEGRATION\n- Auto-generate tasks for investigation phases\n- Sync state with task status\n- Use labels for filtering (consensus-framework-{investigation-name})\n- Link tasks to output artifacts via notes\n- Session start/end integration\n\n## SERENA MCP INTEGRATION\n- Code analysis during Phase 1\n- Symbol search for evidence collection\n- Memory persistence for cross-session context\n- Project activation requirements\n\n## FILE SYSTEM INTEGRATION\n- Directory structure creation\n- Atomic file writes\n- Output path resolution\n- Evidence file discovery (glob patterns)\n\n## HITL INTEGRATION\n- Gate request format\n- User notification mechanism\n- Response collection\n- Timeout handling\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Execution Protocol, Task Tracking Protocol)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_d8c12594f50c",
+      "timestamp": "2025-12-24T00:10:19Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T220",
+      "before": {
+        "title": "T204.6: Error Recovery Protocols",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Define error handling and recovery protocols for framework robustness.\n\n## DELIVERABLE\nError recovery section in spec + state recovery implementation\n\n## ERROR SCENARIOS\n\n### Agent Failure\n- Worker agent returns error or incomplete output\n- Mitigation: Retry with exponential backoff (max 3 attempts)\n- Fallback: Mark claim as INSUFFICIENT_EVIDENCE, flag for HITL\n\n### HITL Gate Timeout\n- User doesn't respond within timeout period\n- Mitigation: Reminder notification, extend timeout\n- Fallback: Auto-proceed with Synthesis Agent recommendation (if configured)\n- Alternative: Pause investigation, persist state for resume\n\n### Session Interruption\n- Context window exhausted mid-investigation\n- Mitigation: State file persists all progress\n- Recovery: New session reads state, resumes from last checkpoint\n- Phase checkpoints: After each phase completion\n\n### Conflicting Agent Outputs\n- Two agents give contradictory evidence for same claim\n- Mitigation: Challenge Agent reviews conflict\n- Escalation: SUSPICIOUS_CONSENSUS or HITL gate\n\n### Missing Evidence\n- Phase 1 cannot find sufficient evidence for claims\n- Mitigation: Flag claims as EVIDENCE_NEEDED\n- Options: Proceed with available evidence, request more sources, abort claim\n\n### State Corruption\n- State file corrupted or invalid\n- Mitigation: Checksum validation on read\n- Recovery: Reconstruct from output files + claude-todo tasks\n- Backup: Periodic state snapshots\n\n## RECOVERY COMMANDS\n```bash\nclaude-todo research --resume          # Resume from state file\nclaude-todo research --status          # Show current state\nclaude-todo research --recover         # Attempt state reconstruction\nclaude-todo research --abort           # Clean abort with state preservation\n```\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Risk Mitigation, Session Recovery)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T204.6: Error Recovery Protocols",
+        "status": "blocked",
+        "priority": "medium",
+        "description": "Define error handling and recovery protocols for framework robustness.\n\n## DELIVERABLE\nError recovery section in spec + state recovery implementation\n\n## ERROR SCENARIOS\n\n### Agent Failure\n- Worker agent returns error or incomplete output\n- Mitigation: Retry with exponential backoff (max 3 attempts)\n- Fallback: Mark claim as INSUFFICIENT_EVIDENCE, flag for HITL\n\n### HITL Gate Timeout\n- User doesn't respond within timeout period\n- Mitigation: Reminder notification, extend timeout\n- Fallback: Auto-proceed with Synthesis Agent recommendation (if configured)\n- Alternative: Pause investigation, persist state for resume\n\n### Session Interruption\n- Context window exhausted mid-investigation\n- Mitigation: State file persists all progress\n- Recovery: New session reads state, resumes from last checkpoint\n- Phase checkpoints: After each phase completion\n\n### Conflicting Agent Outputs\n- Two agents give contradictory evidence for same claim\n- Mitigation: Challenge Agent reviews conflict\n- Escalation: SUSPICIOUS_CONSENSUS or HITL gate\n\n### Missing Evidence\n- Phase 1 cannot find sufficient evidence for claims\n- Mitigation: Flag claims as EVIDENCE_NEEDED\n- Options: Proceed with available evidence, request more sources, abort claim\n\n### State Corruption\n- State file corrupted or invalid\n- Mitigation: Checksum validation on read\n- Recovery: Reconstruct from output files + claude-todo tasks\n- Backup: Periodic state snapshots\n\n## RECOVERY COMMANDS\n```bash\nclaude-todo research --resume          # Resume from state file\nclaude-todo research --status          # Show current state\nclaude-todo research --recover         # Attempt state reconstruction\nclaude-todo research --abort           # Clean abort with state preservation\n```\n\n## REFERENCES\n- claudedocs/CONSENSUS-FRAMEWORK-SPEC.md (Risk Mitigation, Session Recovery)",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_70a89743fa3b",
+      "timestamp": "2025-12-24T00:10:21Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T221",
+      "before": {
+        "title": "T204.7: Invocation Modes Specification",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Define different invocation modes for the framework.\n\n## DELIVERABLE\nCLI specification section with all modes documented\n\n## INVOCATION MODES\n\n### Interactive Mode (Default)\n```bash\nclaude-todo research --framework consensus --config ./research.yaml\n```\n- Pauses at each HITL gate for user input\n- Shows progress in real-time\n- Allows mid-investigation adjustments\n\n### Batch Mode\n```bash\nclaude-todo research --framework consensus --config ./research.yaml --batch\n```\n- Runs without HITL pauses (uses Synthesis Agent recommendations)\n- Collects all questions for end-of-run review\n- Suitable for overnight/unattended runs\n\n### Dry Run Mode\n```bash\nclaude-todo research --framework consensus --config ./research.yaml --dry-run\n```\n- Validates config, shows execution plan\n- Lists claims, agents, phases, gates\n- No actual agent spawning\n\n### Resume Mode\n```bash\nclaude-todo research --resume [state-file]\n```\n- Resumes from persisted state\n- Validates state integrity before resuming\n- Shows what was completed, what remains\n\n### Status Mode\n```bash\nclaude-todo research --status [state-file]\n```\n- Shows current investigation status\n- Phase progress, claim verdicts, pending gates\n- No modification\n\n### Single Phase Mode\n```bash\nclaude-todo research --phase 2 --config ./research.yaml\n```\n- Run only specific phase\n- Requires prior phase outputs to exist\n- Useful for re-running failed phases\n\n## CLI OPTIONS\n| Option | Description |\n|--------|-------------|\n| --config | Path to config YAML |\n| --framework | Framework type (consensus, adversarial, etc.) |\n| --batch | Run without HITL pauses |\n| --dry-run | Validate and show plan only |\n| --resume | Resume from state file |\n| --status | Show investigation status |\n| --phase N | Run specific phase only |\n| --verbose | Detailed output |\n| --output-dir | Override output directory |\n\n## REFERENCES\n- T204 parent task\n- claude-todo existing CLI patterns",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "T204.7: Invocation Modes Specification",
+        "status": "blocked",
+        "priority": "medium",
+        "description": "Define different invocation modes for the framework.\n\n## DELIVERABLE\nCLI specification section with all modes documented\n\n## INVOCATION MODES\n\n### Interactive Mode (Default)\n```bash\nclaude-todo research --framework consensus --config ./research.yaml\n```\n- Pauses at each HITL gate for user input\n- Shows progress in real-time\n- Allows mid-investigation adjustments\n\n### Batch Mode\n```bash\nclaude-todo research --framework consensus --config ./research.yaml --batch\n```\n- Runs without HITL pauses (uses Synthesis Agent recommendations)\n- Collects all questions for end-of-run review\n- Suitable for overnight/unattended runs\n\n### Dry Run Mode\n```bash\nclaude-todo research --framework consensus --config ./research.yaml --dry-run\n```\n- Validates config, shows execution plan\n- Lists claims, agents, phases, gates\n- No actual agent spawning\n\n### Resume Mode\n```bash\nclaude-todo research --resume [state-file]\n```\n- Resumes from persisted state\n- Validates state integrity before resuming\n- Shows what was completed, what remains\n\n### Status Mode\n```bash\nclaude-todo research --status [state-file]\n```\n- Shows current investigation status\n- Phase progress, claim verdicts, pending gates\n- No modification\n\n### Single Phase Mode\n```bash\nclaude-todo research --phase 2 --config ./research.yaml\n```\n- Run only specific phase\n- Requires prior phase outputs to exist\n- Useful for re-running failed phases\n\n## CLI OPTIONS\n| Option | Description |\n|--------|-------------|\n| --config | Path to config YAML |\n| --framework | Framework type (consensus, adversarial, etc.) |\n| --batch | Run without HITL pauses |\n| --dry-run | Validate and show plan only |\n| --resume | Resume from state file |\n| --status | Show investigation status |\n| --phase N | Run specific phase only |\n| --verbose | Detailed output |\n| --output-dir | Override output directory |\n\n## REFERENCES\n- T204 parent task\n- claude-todo existing CLI patterns",
+        "phase": "setup",
+        "labels": [
+          "consensus-framework",
+          "design",
+          "plugin"
+        ],
+        "files": [
+          "claudedocs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T204"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_f558eae44431",
+      "timestamp": "2025-12-24T00:10:48Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T700",
+      "before": {
+        "title": "Task Deletion System with Cancelled Status (Soft-Delete)",
+        "status": "active",
+        "priority": "high",
+        "description": "Implement guarded task deletion with new 'cancelled' status. Soft-delete pattern moves tasks to archive with full audit trail. Required --reason flag, child handling strategies (cascade/orphan/block), atomic operations, and restore capability. Follows LLM-Agent-First Spec v3.0 patterns.",
+        "phase": "core",
+        "labels": [
+          "cancelled-status",
+          "deletion",
+          "feature",
+          "soft-delete"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Task Deletion System with Cancelled Status (Soft-Delete)",
+        "status": "active",
+        "priority": "high",
+        "description": "Implement guarded task deletion with new 'cancelled' status. Soft-delete pattern moves tasks to archive with full audit trail. Required --reason flag, child handling strategies (cascade/orphan/block), atomic operations, and restore capability. Follows LLM-Agent-First Spec v3.0 patterns.",
+        "phase": "core",
+        "labels": [
+          "cancelled-status",
+          "deletion",
+          "feature",
+          "soft-delete"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b85eea4ed1c5",
+      "timestamp": "2025-12-24T00:10:50Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T702",
+      "before": {
+        "title": "Create delete.sh command script",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create scripts/delete.sh: command entry point with argument parsing (--reason required, --children cascade|orphan|block, --force, --dry-run), orchestration flow, help text. Add 'cancel' as alias. Follow LLM-Agent-First JSON output patterns. Include comprehensive help text with examples.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "implementation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create delete.sh command script",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create scripts/delete.sh: command entry point with argument parsing (--reason required, --children cascade|orphan|block, --force, --dry-run), orchestration flow, help text. Add 'cancel' as alias. Follow LLM-Agent-First JSON output patterns. Include comprehensive help text with examples.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "implementation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_5eb1e0533c01",
+      "timestamp": "2025-12-24T00:10:52Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T703",
+      "before": {
+        "title": "Create lib/cancel-ops.sh core operations",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create lib/cancel-ops.sh with Single Responsibility: validate_cancellable() checks status transitions, transition_to_cancelled() updates task fields, prepare_cancel_archive_entry() creates archive metadata. Does NOT handle children or archive writing (delegated to other modules).",
+        "phase": "core",
+        "labels": [
+          "implementation",
+          "library"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create lib/cancel-ops.sh core operations",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create lib/cancel-ops.sh with Single Responsibility: validate_cancellable() checks status transitions, transition_to_cancelled() updates task fields, prepare_cancel_archive_entry() creates archive metadata. Does NOT handle children or archive writing (delegated to other modules).",
+        "phase": "core",
+        "labels": [
+          "implementation",
+          "library"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_e309a97139cc",
+      "timestamp": "2025-12-24T00:10:53Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T704",
+      "before": {
+        "title": "Create lib/child-handler.sh strategy pattern",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create lib/child-handler.sh implementing Strategy Pattern: handle_children() dispatcher, handle_children_block() (fail if has children), handle_children_cascade() (cancel all descendants atomically), handle_children_orphan() (set children parentId=null). Open/Closed principle - new strategies addable without modifying existing.",
+        "phase": "core",
+        "labels": [
+          "implementation",
+          "library"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create lib/child-handler.sh strategy pattern",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create lib/child-handler.sh implementing Strategy Pattern: handle_children() dispatcher, handle_children_block() (fail if has children), handle_children_cascade() (cancel all descendants atomically), handle_children_orphan() (set children parentId=null). Open/Closed principle - new strategies addable without modifying existing.",
+        "phase": "core",
+        "labels": [
+          "implementation",
+          "library"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_d4f5423c183a",
+      "timestamp": "2025-12-24T00:10:56Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T708",
+      "before": {
+        "title": "Pre-flight checks and validation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement fail-fast validation order: 1) task ID format, 2) task exists, 3) status not done, 4) --reason present (5-300 chars), 5) reason content validation (no shell metacharacters), 6) child handling mode if has children, 7) cascade limit check (<10 or --force). Create safety backup before operation.",
+        "phase": "core",
+        "labels": [
+          "safety",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Pre-flight checks and validation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement fail-fast validation order: 1) task ID format, 2) task exists, 3) status not done, 4) --reason present (5-300 chars), 5) reason content validation (no shell metacharacters), 6) child handling mode if has children, 7) cascade limit check (<10 or --force). Create safety backup before operation.",
+        "phase": "core",
+        "labels": [
+          "safety",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_e6f238012f60",
+      "timestamp": "2025-12-24T00:10:58Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T706",
+      "before": {
+        "title": "Archive integration for cancelled tasks",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Update archive handling: add 'cancelled' to archive reason enum, store cancellationDetails object (cancelledAt, cancellationReason, cancelledBy, originalStatus), add statistics.cancelled tracking, configure cancelledDaysUntilArchive (default 3), preserveCancelledCount (default 1). Auto-archive on delete.",
+        "phase": "core",
+        "labels": [
+          "archive",
+          "integration"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Archive integration for cancelled tasks",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Update archive handling: add 'cancelled' to archive reason enum, store cancellationDetails object (cancelledAt, cancellationReason, cancelledBy, originalStatus), add statistics.cancelled tracking, configure cancelledDaysUntilArchive (default 3), preserveCancelledCount (default 1). Auto-archive on delete.",
+        "phase": "core",
+        "labels": [
+          "archive",
+          "integration"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766535073-a8e6e3",
+      "timestamp": "2025-12-24T00:11:13Z",
+      "action": "task_created",
+      "taskId": "T718",
+      "actor": "system",
+      "details": {
+        "title": "Configuration: cancellation.* settings",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Configuration: cancellation.* settings",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_8ae2e39539da",
+      "timestamp": "2025-12-24T00:11:15Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T716",
+      "before": {
+        "title": "Exit codes and error codes for deletion",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add to lib/exit-codes.sh: EXIT_HAS_CHILDREN (16), EXIT_TASK_COMPLETED (17), EXIT_CANCEL_CASCADE_FAILED (18). Add to lib/error-json.sh: E_HAS_CHILDREN, E_TASK_COMPLETED, E_CANCEL_CASCADE_FAILED, E_CANCEL_REASON_REQUIRED. Update error.schema.json enum.",
+        "phase": "core",
+        "labels": [
+          "exit-codes",
+          "foundation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Exit codes and error codes for deletion",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add to lib/exit-codes.sh: EXIT_HAS_CHILDREN (16), EXIT_TASK_COMPLETED (17), EXIT_CANCEL_CASCADE_FAILED (18). Add to lib/error-json.sh: E_HAS_CHILDREN, E_TASK_COMPLETED, E_CANCEL_CASCADE_FAILED, E_CANCEL_REASON_REQUIRED. Update error.schema.json enum.",
+        "phase": "core",
+        "labels": [
+          "exit-codes",
+          "foundation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_cd9a6aa7f741",
+      "timestamp": "2025-12-24T00:11:17Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T712",
+      "before": {
+        "title": "Unit tests: tests/unit/delete.bats",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create comprehensive delete.bats: test --reason required, test status validations, test child handling modes (block/cascade/orphan), test idempotency (EXIT_NO_CHANGE for already-cancelled), test focus clearing, test JSON output format, test edge cases (special chars in reason, long text). Target: 25+ tests.",
+        "phase": "testing",
+        "labels": [
+          "testing",
+          "unit"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Unit tests: tests/unit/delete.bats",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create comprehensive delete.bats: test --reason required, test status validations, test child handling modes (block/cascade/orphan), test idempotency (EXIT_NO_CHANGE for already-cancelled), test focus clearing, test JSON output format, test edge cases (special chars in reason, long text). Target: 25+ tests.",
+        "phase": "testing",
+        "labels": [
+          "testing",
+          "unit"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_a3988bf83164",
+      "timestamp": "2025-12-24T00:11:42Z",
+      "sessionId": "session_20251223_150042_0e1a9e",
+      "action": "session_end",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "note": "Completed 7-agent consensus framework review of EPIC T700. Final design: delete as primary cmd, exit codes 16-18, transactional delete pattern, 18 subtasks validated."
+      }
+    },
+    {
+      "id": "log_1ea9e3c5bdc9",
+      "timestamp": "2025-12-24T00:14:03Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log_3ea8fd037dfd",
+      "timestamp": "2025-12-24T00:15:31Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T700"
+      },
+      "after": {
+        "currentTask": "T718"
+      },
+      "details": null
+    },
+    {
+      "id": "log_3bb499a7f801",
+      "timestamp": "2025-12-24T00:18:42Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T718",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T00:18:42Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766535664-47e277",
+      "timestamp": "2025-12-24T00:21:04Z",
+      "action": "task_created",
+      "taskId": "T719",
+      "actor": "system",
+      "details": {
+        "title": "EPIC: RCSD Pipeline Implementation (Research→Consensus→Spec→Decompose)",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "EPIC: RCSD Pipeline Implementation (Research→Consensus→Spec→Decompose)",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766535732-1c20ae",
+      "timestamp": "2025-12-24T00:22:12Z",
+      "action": "task_created",
+      "taskId": "T720",
+      "actor": "system",
+      "details": {
+        "title": "Phase 1: RCSD Foundation - Directory Structure & Index Management",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 1: RCSD Foundation - Directory Structure & Index Management",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535734-fbfb38",
+      "timestamp": "2025-12-24T00:22:14Z",
+      "action": "task_created",
+      "taskId": "T721",
+      "actor": "system",
+      "details": {
+        "title": "Phase 2: RCSD Research Integration - Task-Aware Research Command",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 2: RCSD Research Integration - Task-Aware Research Command",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535736-58c3bc",
+      "timestamp": "2025-12-24T00:22:16Z",
+      "action": "task_created",
+      "taskId": "T722",
+      "actor": "system",
+      "details": {
+        "title": "Phase 3: RCSD Consensus Command - Multi-Agent Validation",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 3: RCSD Consensus Command - Multi-Agent Validation",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535738-34421b",
+      "timestamp": "2025-12-24T00:22:18Z",
+      "action": "task_created",
+      "taskId": "T723",
+      "actor": "system",
+      "details": {
+        "title": "Phase 4: RCSD Spec Generation Command",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 4: RCSD Spec Generation Command",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535739-18cfd6",
+      "timestamp": "2025-12-24T00:22:19Z",
+      "action": "task_created",
+      "taskId": "T724",
+      "actor": "system",
+      "details": {
+        "title": "Phase 5: RCSD Decompose Integration - Spec-to-Tasks Pipeline",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 5: RCSD Decompose Integration - Spec-to-Tasks Pipeline",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535741-388c91",
+      "timestamp": "2025-12-24T00:22:21Z",
+      "action": "task_created",
+      "taskId": "T725",
+      "actor": "system",
+      "details": {
+        "title": "RCSD Task Schema Extensions (shortName, workflow, associations)",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "RCSD Task Schema Extensions (shortName, workflow, associations)",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766535766-89a032",
+      "timestamp": "2025-12-24T00:22:46Z",
+      "action": "task_created",
+      "taskId": "T726",
+      "actor": "system",
+      "details": {
+        "title": "Create lib/rcsd-pipeline.sh with core functions",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create lib/rcsd-pipeline.sh with core functions",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535768-8f549c",
+      "timestamp": "2025-12-24T00:22:48Z",
+      "action": "task_created",
+      "taskId": "T727",
+      "actor": "system",
+      "details": {
+        "title": "Implement shortName derivation algorithm",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement shortName derivation algorithm",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535770-16f796",
+      "timestamp": "2025-12-24T00:22:50Z",
+      "action": "task_created",
+      "taskId": "T728",
+      "actor": "system",
+      "details": {
+        "title": "Implement _manifest.json read/write functions",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement _manifest.json read/write functions",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535772-dc6167",
+      "timestamp": "2025-12-24T00:22:52Z",
+      "action": "task_created",
+      "taskId": "T729",
+      "actor": "system",
+      "details": {
+        "title": "Add RCSD schema validation to lib/validation.sh",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Add RCSD schema validation to lib/validation.sh",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766535774-d1a4f4",
+      "timestamp": "2025-12-24T00:22:54Z",
+      "action": "task_created",
+      "taskId": "T730",
+      "actor": "system",
+      "details": {
+        "title": "Create task-anchored directory on research init",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create task-anchored directory on research init",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535799-3c4617",
+      "timestamp": "2025-12-24T00:23:19Z",
+      "action": "task_created",
+      "taskId": "T731",
+      "actor": "system",
+      "details": {
+        "title": "Add task-aware mode to research command (ct research T###)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Add task-aware mode to research command (ct research T###)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535800-fbb2b4",
+      "timestamp": "2025-12-24T00:23:20Z",
+      "action": "task_created",
+      "taskId": "T732",
+      "actor": "system",
+      "details": {
+        "title": "Generate structured research JSON output",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Generate structured research JSON output",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535802-9318db",
+      "timestamp": "2025-12-24T00:23:22Z",
+      "action": "task_created",
+      "taskId": "T733",
+      "actor": "system",
+      "details": {
+        "title": "Generate human-readable research markdown report",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Generate human-readable research markdown report",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766535804-0f407d",
+      "timestamp": "2025-12-24T00:23:24Z",
+      "action": "task_created",
+      "taskId": "T734",
+      "actor": "system",
+      "details": {
+        "title": "Update manifest and index after research completes",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Update manifest and index after research completes",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535826-0d2d99",
+      "timestamp": "2025-12-24T00:23:46Z",
+      "action": "task_created",
+      "taskId": "T735",
+      "actor": "system",
+      "details": {
+        "title": "Create scripts/consensus.sh command skeleton",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create scripts/consensus.sh command skeleton",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535828-7c8d9f",
+      "timestamp": "2025-12-24T00:23:48Z",
+      "action": "task_created",
+      "taskId": "T736",
+      "actor": "system",
+      "details": {
+        "title": "Implement 5 worker agent prompt templates",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement 5 worker agent prompt templates",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535835-df31b0",
+      "timestamp": "2025-12-24T00:23:55Z",
+      "action": "task_created",
+      "taskId": "T737",
+      "actor": "system",
+      "details": {
+        "title": "Implement synthesis agent prompt and voting matrix",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement synthesis agent prompt and voting matrix",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535837-c7d4df",
+      "timestamp": "2025-12-24T00:23:57Z",
+      "action": "task_created",
+      "taskId": "T738",
+      "actor": "system",
+      "details": {
+        "title": "Generate consensus report JSON and markdown",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Generate consensus report JSON and markdown",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535839-ba7ef3",
+      "timestamp": "2025-12-24T00:23:59Z",
+      "action": "task_created",
+      "taskId": "T739",
+      "actor": "system",
+      "details": {
+        "title": "Implement HITL gate handling for contested claims",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement HITL gate handling for contested claims",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766535868-95c48f",
+      "timestamp": "2025-12-24T00:24:28Z",
+      "action": "task_created",
+      "taskId": "T740",
+      "actor": "system",
+      "details": {
+        "title": "Create scripts/spec.sh command skeleton",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create scripts/spec.sh command skeleton",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535870-e6b13a",
+      "timestamp": "2025-12-24T00:24:30Z",
+      "action": "task_created",
+      "taskId": "T741",
+      "actor": "system",
+      "details": {
+        "title": "Implement spec generation agent prompt",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement spec generation agent prompt",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535872-df31f8",
+      "timestamp": "2025-12-24T00:24:32Z",
+      "action": "task_created",
+      "taskId": "T742",
+      "actor": "system",
+      "details": {
+        "title": "Generate spec with YAML frontmatter",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Generate spec with YAML frontmatter",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535874-5ea18d",
+      "timestamp": "2025-12-24T00:24:34Z",
+      "action": "task_created",
+      "taskId": "T743",
+      "actor": "system",
+      "details": {
+        "title": "Scaffold implementation report from spec",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Scaffold implementation report from spec",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766535877-b18245",
+      "timestamp": "2025-12-24T00:24:37Z",
+      "action": "task_created",
+      "taskId": "T744",
+      "actor": "system",
+      "details": {
+        "title": "Add --from-task flag to decompose command",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Add --from-task flag to decompose command",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535878-6115e4",
+      "timestamp": "2025-12-24T00:24:38Z",
+      "action": "task_created",
+      "taskId": "T745",
+      "actor": "system",
+      "details": {
+        "title": "Implement spec-to-task DAG conversion",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement spec-to-task DAG conversion",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535880-6e7720",
+      "timestamp": "2025-12-24T00:24:40Z",
+      "action": "task_created",
+      "taskId": "T746",
+      "actor": "system",
+      "details": {
+        "title": "Create parent-child task relationships from decomposition",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create parent-child task relationships from decomposition",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535882-63b799",
+      "timestamp": "2025-12-24T00:24:42Z",
+      "action": "task_created",
+      "taskId": "T747",
+      "actor": "system",
+      "details": {
+        "title": "Associate files and spec references to decomposed tasks",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Associate files and spec references to decomposed tasks",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766535901-5ec540",
+      "timestamp": "2025-12-24T00:25:01Z",
+      "action": "task_created",
+      "taskId": "T748",
+      "actor": "system",
+      "details": {
+        "title": "Add shortName field to task schema",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Add shortName field to task schema",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535903-f48568",
+      "timestamp": "2025-12-24T00:25:03Z",
+      "action": "task_created",
+      "taskId": "T749",
+      "actor": "system",
+      "details": {
+        "title": "Add workflow object to task schema",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Add workflow object to task schema",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766535905-4be19d",
+      "timestamp": "2025-12-24T00:25:05Z",
+      "action": "task_created",
+      "taskId": "T750",
+      "actor": "system",
+      "details": {
+        "title": "Add associations object to task schema",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Add associations object to task schema",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766535907-a8a777",
+      "timestamp": "2025-12-24T00:25:07Z",
+      "action": "task_created",
+      "taskId": "T751",
+      "actor": "system",
+      "details": {
+        "title": "Create schema migration v3.1.0",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Create schema migration v3.1.0",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_9cf93b59eb4d",
+      "timestamp": "2025-12-24T00:25:22Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T721",
+      "before": {
+        "title": "Phase 2: RCSD Research Integration - Task-Aware Research Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Update 'ct research' command for task-aware mode. Implements research output to .claude/rcsd/TXXX_[short-name]/ directory, research→task linking, structured JSON output with citations. See RCSD-PIPELINE-SPEC Part 4.2.",
+        "phase": "core",
+        "labels": [
+          "phase-2",
+          "rcsd",
+          "research"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 2: RCSD Research Integration - Task-Aware Research Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Update 'ct research' command for task-aware mode. Implements research output to .claude/rcsd/TXXX_[short-name]/ directory, research→task linking, structured JSON output with citations. See RCSD-PIPELINE-SPEC Part 4.2.",
+        "phase": "core",
+        "labels": [
+          "phase-2",
+          "rcsd",
+          "research"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T720"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_cfd99519c83c",
+      "timestamp": "2025-12-24T00:25:24Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T722",
+      "before": {
+        "title": "Phase 3: RCSD Consensus Command - Multi-Agent Validation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct consensus' command. Implements 5 worker agent prompts (Technical/Design/Docs/Impl/Challenge), synthesis agent prompt, consensus report output, HITL gate handling, voting matrix generation. See RCSD-PIPELINE-SPEC Part 4.3 and Part 5.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "phase-3",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 3: RCSD Consensus Command - Multi-Agent Validation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct consensus' command. Implements 5 worker agent prompts (Technical/Design/Docs/Impl/Challenge), synthesis agent prompt, consensus report output, HITL gate handling, voting matrix generation. See RCSD-PIPELINE-SPEC Part 4.3 and Part 5.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "phase-3",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T721"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_4b6c8d4967e8",
+      "timestamp": "2025-12-24T00:25:26Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T723",
+      "before": {
+        "title": "Phase 4: RCSD Spec Generation Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct spec' command. Implements spec generation from consensus findings, SPEC-BIBLE-GUIDELINES compliance validation, spec frontmatter handling, implementation report scaffolding. See RCSD-PIPELINE-SPEC Part 4.4 and Part 8.",
+        "phase": "core",
+        "labels": [
+          "phase-4",
+          "rcsd",
+          "spec-generation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 4: RCSD Spec Generation Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct spec' command. Implements spec generation from consensus findings, SPEC-BIBLE-GUIDELINES compliance validation, spec frontmatter handling, implementation report scaffolding. See RCSD-PIPELINE-SPEC Part 4.4 and Part 8.",
+        "phase": "core",
+        "labels": [
+          "phase-4",
+          "rcsd",
+          "spec-generation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T722"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b1ed0cf0309b",
+      "timestamp": "2025-12-24T00:25:27Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T724",
+      "before": {
+        "title": "Phase 5: RCSD Decompose Integration - Spec-to-Tasks Pipeline",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add '--from-task' flag to 'ct decompose'. Implements spec→task DAG conversion, atomicity validation (6-point test), parent-child task relationships, file associations. Integrates with TASK-DECOMPOSITION-SPEC. See RCSD-PIPELINE-SPEC Part 4.5.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "phase-5",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 5: RCSD Decompose Integration - Spec-to-Tasks Pipeline",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add '--from-task' flag to 'ct decompose'. Implements spec→task DAG conversion, atomicity validation (6-point test), parent-child task relationships, file associations. Integrates with TASK-DECOMPOSITION-SPEC. See RCSD-PIPELINE-SPEC Part 4.5.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "phase-5",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T723"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_8639a85f5860",
+      "timestamp": "2025-12-24T00:25:29Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T725",
+      "before": {
+        "title": "RCSD Task Schema Extensions (shortName, workflow, associations)",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Schema enhancements for RCSD pipeline. Add shortName, workflow object, and associations fields to task schema. Implement computed fields. Create schema migration v3.1.0. See RCSD-PIPELINE-SPEC Part 6.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "RCSD Task Schema Extensions (shortName, workflow, associations)",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Schema enhancements for RCSD pipeline. Add shortName, workflow object, and associations fields to task schema. Implement computed fields. Create schema migration v3.1.0. See RCSD-PIPELINE-SPEC Part 6.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T720"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_8ad62836cf74",
+      "timestamp": "2025-12-24T00:25:47Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T701",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T00:25:47Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_7962decc7d7a",
+      "timestamp": "2025-12-24T00:25:48Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T716",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T00:25:48Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c3abdfc527d5",
+      "timestamp": "2025-12-24T00:25:49Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T717",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T00:25:48Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_6ed3972a22c9",
+      "timestamp": "2025-12-24T00:36:53Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T709",
+      "before": {
+        "title": "Dry-run implementation for delete",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement --dry-run flag: preview all affected tasks (parent + children if cascade), show impact analysis (pendingLost, activeLost, dependentsAffected), display warnings for high-severity impacts (active tasks), return JSON with wouldDelete structure. No state changes on dry-run.",
+        "phase": "core",
+        "labels": [
+          "dry-run",
+          "safety"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Dry-run implementation for delete",
+        "status": "pending",
+        "priority": "high",
+        "description": "Implement --dry-run flag: preview all affected tasks (parent + children if cascade), show impact analysis (pendingLost, activeLost, dependentsAffected), display warnings for high-severity impacts (active tasks), return JSON with wouldDelete structure. No state changes on dry-run.",
+        "phase": "core",
+        "labels": [
+          "dry-run",
+          "safety"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_2ea4594386cc",
+      "timestamp": "2025-12-24T00:37:10Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T709",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T00:37:10Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_5c7ebd41b9e6",
+      "timestamp": "2025-12-24T00:59:59Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T702",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T00:59:59Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_a717445c6dee",
+      "timestamp": "2025-12-24T01:00:00Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T703",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:00:00Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c428b50ea0bd",
+      "timestamp": "2025-12-24T01:00:01Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T704",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:00:00Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_34886c3b7a2e",
+      "timestamp": "2025-12-24T01:00:01Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T708",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:00:01Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_9d847c602162",
+      "timestamp": "2025-12-24T01:01:12Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T714"
+      },
+      "details": null
+    },
+    {
+      "id": "log_c8bbf3766f5d",
+      "timestamp": "2025-12-24T01:01:18Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T714"
+      },
+      "after": {
+        "currentTask": "T710"
+      },
+      "details": null
+    },
+    {
+      "id": "log_2f194af1e9f3",
+      "timestamp": "2025-12-24T01:09:17Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T705",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:09:17Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_452235a2ef11",
+      "timestamp": "2025-12-24T01:09:18Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T706",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:09:18Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_886c093fe885",
+      "timestamp": "2025-12-24T01:09:18Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T707",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:09:18Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_b0d65eef5c37",
+      "timestamp": "2025-12-24T01:09:19Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T710",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:09:19Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_501570f8381e",
+      "timestamp": "2025-12-24T01:09:20Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T714",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:09:20Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_3bba99d97262",
+      "timestamp": "2025-12-24T01:09:21Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T715",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T01:09:21Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_2e7b4f771b65",
+      "timestamp": "2025-12-24T01:17:50Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T719",
+      "before": {
+        "title": "EPIC: RCSD Pipeline Implementation (Research→Consensus→Spec→Decompose)",
+        "status": "pending",
+        "priority": "critical",
+        "description": "Master epic for implementing the RCSD (Research→Consensus→Spec→Decompose) unified pipeline per RCSD-PIPELINE-SPEC.md. Supersedes T204/T215-T221 plugin approach. Task-anchored directory structure at .claude/rcsd/, 9 guardrailed agents, 5 JSON schemas, 4 new/updated commands. See docs/specs/RCSD-PIPELINE-SPEC.md for authoritative specification.",
+        "phase": "setup",
+        "labels": [
+          "architecture",
+          "epic",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "EPIC: RCSD Pipeline Implementation (Research→Consensus→Spec→Decompose)",
+        "status": "pending",
+        "priority": "critical",
+        "description": "Master epic for implementing the RCSD (Research→Consensus→Spec→Decompose) unified pipeline per RCSD-PIPELINE-SPEC.md. Supersedes T204/T215-T221 plugin approach. Task-anchored directory structure at .claude/rcsd/, 9 guardrailed agents, 5 JSON schemas, 4 new/updated commands. See docs/specs/RCSD-PIPELINE-SPEC.md for authoritative specification.",
+        "phase": "setup",
+        "labels": [
+          "architecture",
+          "epic",
+          "rcsd"
+        ],
+        "files": [
+          ".claude/rcsd/RCSD-INDEX.json",
+          "docs/specs/RCSD-PIPELINE-IMPLEMENTATION-REPORT.md",
+          "docs/specs/RCSD-PIPELINE-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_6dec6770a665",
+      "timestamp": "2025-12-24T01:17:52Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T720",
+      "before": {
+        "title": "Phase 1: RCSD Foundation - Directory Structure & Index Management",
+        "status": "pending",
+        "priority": "high",
+        "description": "Foundation infrastructure for RCSD pipeline. Implements .claude/rcsd/ directory handling, RCSD-INDEX.json read/write, _manifest.json handling, shortName derivation algorithm, and schema validation functions. See RCSD-PIPELINE-SPEC Part 2-3.",
+        "phase": "setup",
+        "labels": [
+          "foundation",
+          "phase-1",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 1: RCSD Foundation - Directory Structure & Index Management",
+        "status": "pending",
+        "priority": "high",
+        "description": "Foundation infrastructure for RCSD pipeline. Implements .claude/rcsd/ directory handling, RCSD-INDEX.json read/write, _manifest.json handling, shortName derivation algorithm, and schema validation functions. See RCSD-PIPELINE-SPEC Part 2-3.",
+        "phase": "setup",
+        "labels": [
+          "foundation",
+          "phase-1",
+          "rcsd"
+        ],
+        "files": [
+          "docs/specs/RCSD-PIPELINE-SPEC.md",
+          "lib/rcsd-pipeline.sh",
+          "schemas/rcsd-index.schema.json",
+          "schemas/rcsd-manifest.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_755ed2043ab8",
+      "timestamp": "2025-12-24T01:17:54Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T721",
+      "before": {
+        "title": "Phase 2: RCSD Research Integration - Task-Aware Research Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Update 'ct research' command for task-aware mode. Implements research output to .claude/rcsd/TXXX_[short-name]/ directory, research→task linking, structured JSON output with citations. See RCSD-PIPELINE-SPEC Part 4.2.",
+        "phase": "core",
+        "labels": [
+          "phase-2",
+          "rcsd",
+          "research"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T720"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 2: RCSD Research Integration - Task-Aware Research Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Update 'ct research' command for task-aware mode. Implements research output to .claude/rcsd/TXXX_[short-name]/ directory, research→task linking, structured JSON output with citations. See RCSD-PIPELINE-SPEC Part 4.2.",
+        "phase": "core",
+        "labels": [
+          "phase-2",
+          "rcsd",
+          "research"
+        ],
+        "files": [
+          "docs/specs/WEB-AGGREGATION-PIPELINE-SPEC.md",
+          "schemas/rcsd-research-output.schema.json",
+          "scripts/research.sh"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T720"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_efddb11bc970",
+      "timestamp": "2025-12-24T01:17:55Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T722",
+      "before": {
+        "title": "Phase 3: RCSD Consensus Command - Multi-Agent Validation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct consensus' command. Implements 5 worker agent prompts (Technical/Design/Docs/Impl/Challenge), synthesis agent prompt, consensus report output, HITL gate handling, voting matrix generation. See RCSD-PIPELINE-SPEC Part 4.3 and Part 5.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "phase-3",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T721"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 3: RCSD Consensus Command - Multi-Agent Validation",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct consensus' command. Implements 5 worker agent prompts (Technical/Design/Docs/Impl/Challenge), synthesis agent prompt, consensus report output, HITL gate handling, voting matrix generation. See RCSD-PIPELINE-SPEC Part 4.3 and Part 5.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "phase-3",
+          "rcsd"
+        ],
+        "files": [
+          "docs/specs/CONSENSUS-FRAMEWORK-SPEC.md",
+          "schemas/rcsd-consensus-report.schema.json",
+          "scripts/consensus.sh"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T721"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_148a7595c0ac",
+      "timestamp": "2025-12-24T01:17:57Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T723",
+      "before": {
+        "title": "Phase 4: RCSD Spec Generation Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct spec' command. Implements spec generation from consensus findings, SPEC-BIBLE-GUIDELINES compliance validation, spec frontmatter handling, implementation report scaffolding. See RCSD-PIPELINE-SPEC Part 4.4 and Part 8.",
+        "phase": "core",
+        "labels": [
+          "phase-4",
+          "rcsd",
+          "spec-generation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T722"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 4: RCSD Spec Generation Command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new 'ct spec' command. Implements spec generation from consensus findings, SPEC-BIBLE-GUIDELINES compliance validation, spec frontmatter handling, implementation report scaffolding. See RCSD-PIPELINE-SPEC Part 4.4 and Part 8.",
+        "phase": "core",
+        "labels": [
+          "phase-4",
+          "rcsd",
+          "spec-generation"
+        ],
+        "files": [
+          "docs/specs/SPEC-BIBLE-GUIDELINES.md",
+          "schemas/rcsd-spec-frontmatter.schema.json",
+          "scripts/spec.sh"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T722"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_1ce3eb20786d",
+      "timestamp": "2025-12-24T01:17:59Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T724",
+      "before": {
+        "title": "Phase 5: RCSD Decompose Integration - Spec-to-Tasks Pipeline",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add '--from-task' flag to 'ct decompose'. Implements spec→task DAG conversion, atomicity validation (6-point test), parent-child task relationships, file associations. Integrates with TASK-DECOMPOSITION-SPEC. See RCSD-PIPELINE-SPEC Part 4.5.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "phase-5",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T723"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Phase 5: RCSD Decompose Integration - Spec-to-Tasks Pipeline",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add '--from-task' flag to 'ct decompose'. Implements spec→task DAG conversion, atomicity validation (6-point test), parent-child task relationships, file associations. Integrates with TASK-DECOMPOSITION-SPEC. See RCSD-PIPELINE-SPEC Part 4.5.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "phase-5",
+          "rcsd"
+        ],
+        "files": [
+          "docs/specs/TASK-DECOMPOSITION-SPEC.md",
+          "scripts/decompose.sh"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T723"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_1dd68907bf1f",
+      "timestamp": "2025-12-24T01:18:01Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T725",
+      "before": {
+        "title": "RCSD Task Schema Extensions (shortName, workflow, associations)",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Schema enhancements for RCSD pipeline. Add shortName, workflow object, and associations fields to task schema. Implement computed fields. Create schema migration v3.1.0. See RCSD-PIPELINE-SPEC Part 6.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T720"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "RCSD Task Schema Extensions (shortName, workflow, associations)",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Schema enhancements for RCSD pipeline. Add shortName, workflow object, and associations fields to task schema. Implement computed fields. Create schema migration v3.1.0. See RCSD-PIPELINE-SPEC Part 6.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": [
+          "lib/validation.sh",
+          "schemas/todo.schema.json"
+        ],
+        "acceptance": null,
+        "depends": [
+          "T720"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_d966e1237088",
+      "timestamp": "2025-12-24T01:23:28Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T726",
+      "before": {
+        "title": "Create lib/rcsd-pipeline.sh with core functions",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new library file with: init_rcsd_directory(), ensure_rcsd_index(), read_rcsd_index(), write_rcsd_index(), get_task_rcsd_dir(). Follows atomic write patterns from lib/file-ops.sh.",
+        "phase": "setup",
+        "labels": [
+          "lib",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create lib/rcsd-pipeline.sh with core functions",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create new library file with: init_rcsd_directory(), ensure_rcsd_index(), read_rcsd_index(), write_rcsd_index(), get_task_rcsd_dir(). Follows atomic write patterns from lib/file-ops.sh.",
+        "phase": "setup",
+        "labels": [
+          "lib",
+          "rcsd"
+        ],
+        "files": [
+          "lib/rcsd-pipeline.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_ff9004260fda",
+      "timestamp": "2025-12-24T01:23:28Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T727",
+      "before": {
+        "title": "Implement shortName derivation algorithm",
+        "status": "pending",
+        "priority": "high",
+        "description": "derive_short_name() function: Strip T###, remove versions, lowercase, tokenize, filter stopwords, take 2-3 words, join with hyphens, truncate to 25 chars. Ensure uniqueness in RCSD-INDEX.json.",
+        "phase": "setup",
+        "labels": [
+          "algorithm",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement shortName derivation algorithm",
+        "status": "pending",
+        "priority": "high",
+        "description": "derive_short_name() function: Strip T###, remove versions, lowercase, tokenize, filter stopwords, take 2-3 words, join with hyphens, truncate to 25 chars. Ensure uniqueness in RCSD-INDEX.json.",
+        "phase": "setup",
+        "labels": [
+          "algorithm",
+          "rcsd"
+        ],
+        "files": [
+          "lib/rcsd-pipeline.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_d610f20ac2fd",
+      "timestamp": "2025-12-24T01:23:29Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T728",
+      "before": {
+        "title": "Implement _manifest.json read/write functions",
+        "status": "pending",
+        "priority": "high",
+        "description": "create_manifest(), read_manifest(), update_manifest_stage(). Track pipeline stage transitions, file references, timestamps. Validate against rcsd-manifest.schema.json.",
+        "phase": "setup",
+        "labels": [
+          "manifest",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement _manifest.json read/write functions",
+        "status": "pending",
+        "priority": "high",
+        "description": "create_manifest(), read_manifest(), update_manifest_stage(). Track pipeline stage transitions, file references, timestamps. Validate against rcsd-manifest.schema.json.",
+        "phase": "setup",
+        "labels": [
+          "manifest",
+          "rcsd"
+        ],
+        "files": [
+          "lib/rcsd-pipeline.sh",
+          "schemas/rcsd-manifest.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_e1e219e376b3",
+      "timestamp": "2025-12-24T01:23:29Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T729",
+      "before": {
+        "title": "Add RCSD schema validation to lib/validation.sh",
+        "status": "pending",
+        "priority": "medium",
+        "description": "validate_rcsd_index(), validate_manifest(), validate_research_output(), validate_consensus_report(). Use existing validate_schema() pattern with rcsd-*.schema.json files.",
+        "phase": "setup",
+        "labels": [
+          "rcsd",
+          "validation"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add RCSD schema validation to lib/validation.sh",
+        "status": "pending",
+        "priority": "medium",
+        "description": "validate_rcsd_index(), validate_manifest(), validate_research_output(), validate_consensus_report(). Use existing validate_schema() pattern with rcsd-*.schema.json files.",
+        "phase": "setup",
+        "labels": [
+          "rcsd",
+          "validation"
+        ],
+        "files": [
+          "lib/validation.sh",
+          "schemas/rcsd-index.schema.json",
+          "schemas/rcsd-manifest.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_cd0cb1ec6699",
+      "timestamp": "2025-12-24T01:23:32Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T730",
+      "before": {
+        "title": "Create task-anchored directory on research init",
+        "status": "pending",
+        "priority": "high",
+        "description": "create_task_rcsd_dir(task_id) creates .claude/rcsd/TXXX_[short-name]/ with _manifest.json initialized to stage='initialized'. Updates RCSD-INDEX.json taskAnchored entry.",
+        "phase": "setup",
+        "labels": [
+          "directory",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create task-anchored directory on research init",
+        "status": "pending",
+        "priority": "high",
+        "description": "create_task_rcsd_dir(task_id) creates .claude/rcsd/TXXX_[short-name]/ with _manifest.json initialized to stage='initialized'. Updates RCSD-INDEX.json taskAnchored entry.",
+        "phase": "setup",
+        "labels": [
+          "directory",
+          "rcsd"
+        ],
+        "files": [
+          ".claude/rcsd/README.md",
+          "lib/rcsd-pipeline.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_c7eb429d019e",
+      "timestamp": "2025-12-24T01:23:32Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T731",
+      "before": {
+        "title": "Add task-aware mode to research command (ct research T###)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Modify scripts/research.sh to accept task ID as positional arg. When task ID provided: create task-anchored directory, set research output paths, link research to task notes.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "rcsd",
+          "research"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add task-aware mode to research command (ct research T###)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Modify scripts/research.sh to accept task ID as positional arg. When task ID provided: create task-anchored directory, set research output paths, link research to task notes.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "rcsd",
+          "research"
+        ],
+        "files": [
+          "scripts/research.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_dbe5464d518c",
+      "timestamp": "2025-12-24T01:23:33Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T732",
+      "before": {
+        "title": "Generate structured research JSON output",
+        "status": "pending",
+        "priority": "high",
+        "description": "Output TXXX_[short-name]_research.json following rcsd-research-output.schema.json. Include: query, sources, findings with citations, themes, contradictions, gaps, confidence scores.",
+        "phase": "core",
+        "labels": [
+          "json",
+          "rcsd",
+          "research"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Generate structured research JSON output",
+        "status": "pending",
+        "priority": "high",
+        "description": "Output TXXX_[short-name]_research.json following rcsd-research-output.schema.json. Include: query, sources, findings with citations, themes, contradictions, gaps, confidence scores.",
+        "phase": "core",
+        "labels": [
+          "json",
+          "rcsd",
+          "research"
+        ],
+        "files": [
+          "schemas/rcsd-research-output.schema.json",
+          "scripts/research.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_63a392d44546",
+      "timestamp": "2025-12-24T01:23:33Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T733",
+      "before": {
+        "title": "Generate human-readable research markdown report",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Output TXXX_[short-name]_research.md with: Executive Summary, Key Findings (with citations), Themes, Contradictions, Gaps, Sources table. Dual format alongside JSON.",
+        "phase": "core",
+        "labels": [
+          "markdown",
+          "rcsd",
+          "research"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Generate human-readable research markdown report",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Output TXXX_[short-name]_research.md with: Executive Summary, Key Findings (with citations), Themes, Contradictions, Gaps, Sources table. Dual format alongside JSON.",
+        "phase": "core",
+        "labels": [
+          "markdown",
+          "rcsd",
+          "research"
+        ],
+        "files": [
+          "scripts/research.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_9e5fcf842b34",
+      "timestamp": "2025-12-24T01:23:34Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T734",
+      "before": {
+        "title": "Update manifest and index after research completes",
+        "status": "pending",
+        "priority": "high",
+        "description": "On research completion: update _manifest.json stage to 'research', record file paths, update RCSD-INDEX.json with research entry. Enable ct consensus to proceed.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "research",
+          "state"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Update manifest and index after research completes",
+        "status": "pending",
+        "priority": "high",
+        "description": "On research completion: update _manifest.json stage to 'research', record file paths, update RCSD-INDEX.json with research entry. Enable ct consensus to proceed.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "research",
+          "state"
+        ],
+        "files": [
+          ".claude/rcsd/RCSD-INDEX.json",
+          "lib/rcsd-pipeline.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_1f054c4ff874",
+      "timestamp": "2025-12-24T01:23:36Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T735",
+      "before": {
+        "title": "Create scripts/consensus.sh command skeleton",
+        "status": "pending",
+        "priority": "high",
+        "description": "New command: ct consensus <task-id>. Parse args, verify task exists in RCSD-INDEX, verify research stage complete, load research output. Follow LLM-AGENT-FIRST-SPEC output format.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "consensus",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create scripts/consensus.sh command skeleton",
+        "status": "pending",
+        "priority": "high",
+        "description": "New command: ct consensus <task-id>. Parse args, verify task exists in RCSD-INDEX, verify research stage complete, load research output. Follow LLM-AGENT-FIRST-SPEC output format.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "consensus",
+          "rcsd"
+        ],
+        "files": [
+          "scripts/consensus.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_fe56024db8af",
+      "timestamp": "2025-12-24T01:23:36Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T736",
+      "before": {
+        "title": "Implement 5 worker agent prompt templates",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create guardrailed prompts for: Technical Validator (backend-architect), Design Philosophy (frontend-architect), Documentation (technical-writer), Implementation (refactoring-expert), Challenge/Red Team (requirements-analyst). Per RCSD-PIPELINE-SPEC Part 5.",
+        "phase": "core",
+        "labels": [
+          "agents",
+          "consensus",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement 5 worker agent prompt templates",
+        "status": "pending",
+        "priority": "high",
+        "description": "Create guardrailed prompts for: Technical Validator (backend-architect), Design Philosophy (frontend-architect), Documentation (technical-writer), Implementation (refactoring-expert), Challenge/Red Team (requirements-analyst). Per RCSD-PIPELINE-SPEC Part 5.",
+        "phase": "core",
+        "labels": [
+          "agents",
+          "consensus",
+          "rcsd"
+        ],
+        "files": [
+          "docs/specs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b4af5d9e5e73",
+      "timestamp": "2025-12-24T01:23:37Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T737",
+      "before": {
+        "title": "Implement synthesis agent prompt and voting matrix",
+        "status": "pending",
+        "priority": "high",
+        "description": "Synthesis agent (project-supervisor-orchestrator) aggregates worker findings, generates voting matrix per claim, determines verdicts (PROVEN/REFUTED/CONTESTED/INSUFFICIENT), flags suspicious consensus.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "rcsd",
+          "synthesis"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement synthesis agent prompt and voting matrix",
+        "status": "pending",
+        "priority": "high",
+        "description": "Synthesis agent (project-supervisor-orchestrator) aggregates worker findings, generates voting matrix per claim, determines verdicts (PROVEN/REFUTED/CONTESTED/INSUFFICIENT), flags suspicious consensus.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "rcsd",
+          "synthesis"
+        ],
+        "files": [
+          "docs/specs/CONSENSUS-FRAMEWORK-SPEC.md",
+          "schemas/rcsd-consensus-report.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_83c834ca2849",
+      "timestamp": "2025-12-24T01:23:37Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T738",
+      "before": {
+        "title": "Generate consensus report JSON and markdown",
+        "status": "pending",
+        "priority": "high",
+        "description": "Output TXXX_[short-name]_consensus-report.json per rcsd-consensus-report.schema.json and TXXX_[short-name]_CONSENSUS-REPORT.md with claims, votes, verdicts, evidence, synthesis.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "output",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Generate consensus report JSON and markdown",
+        "status": "pending",
+        "priority": "high",
+        "description": "Output TXXX_[short-name]_consensus-report.json per rcsd-consensus-report.schema.json and TXXX_[short-name]_CONSENSUS-REPORT.md with claims, votes, verdicts, evidence, synthesis.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "output",
+          "rcsd"
+        ],
+        "files": [
+          "schemas/rcsd-consensus-report.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b945707ae405",
+      "timestamp": "2025-12-24T01:23:38Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T739",
+      "before": {
+        "title": "Implement HITL gate handling for contested claims",
+        "status": "pending",
+        "priority": "medium",
+        "description": "When consensus cannot be reached (CONTESTED/INSUFFICIENT): pause pipeline, prompt user with options, record decision in consensus report. Resume on user input.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "hitl",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement HITL gate handling for contested claims",
+        "status": "pending",
+        "priority": "medium",
+        "description": "When consensus cannot be reached (CONTESTED/INSUFFICIENT): pause pipeline, prompt user with options, record decision in consensus report. Resume on user input.",
+        "phase": "core",
+        "labels": [
+          "consensus",
+          "hitl",
+          "rcsd"
+        ],
+        "files": [
+          "docs/specs/CONSENSUS-FRAMEWORK-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_3f9ab92fb99e",
+      "timestamp": "2025-12-24T01:23:40Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T740",
+      "before": {
+        "title": "Create scripts/spec.sh command skeleton",
+        "status": "pending",
+        "priority": "high",
+        "description": "New command: ct spec <task-id>. Verify consensus stage complete, load consensus report, invoke spec generation agent, output to task-anchored directory.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "rcsd",
+          "spec"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create scripts/spec.sh command skeleton",
+        "status": "pending",
+        "priority": "high",
+        "description": "New command: ct spec <task-id>. Verify consensus stage complete, load consensus report, invoke spec generation agent, output to task-anchored directory.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "rcsd",
+          "spec"
+        ],
+        "files": [
+          "scripts/spec.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b143bcf57658",
+      "timestamp": "2025-12-24T01:23:41Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T741",
+      "before": {
+        "title": "Implement spec generation agent prompt",
+        "status": "pending",
+        "priority": "high",
+        "description": "Agent transforms consensus findings into formal specification. Follows SPEC-BIBLE-GUIDELINES: RFC 2119 usage, numbered Parts, no status tracking, proper frontmatter. Uses system-architect subagent_type.",
+        "phase": "core",
+        "labels": [
+          "agent",
+          "rcsd",
+          "spec"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement spec generation agent prompt",
+        "status": "pending",
+        "priority": "high",
+        "description": "Agent transforms consensus findings into formal specification. Follows SPEC-BIBLE-GUIDELINES: RFC 2119 usage, numbered Parts, no status tracking, proper frontmatter. Uses system-architect subagent_type.",
+        "phase": "core",
+        "labels": [
+          "agent",
+          "rcsd",
+          "spec"
+        ],
+        "files": [
+          "docs/specs/SPEC-BIBLE-GUIDELINES.md"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_f2250d2f47b6",
+      "timestamp": "2025-12-24T01:23:41Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T742",
+      "before": {
+        "title": "Generate spec with YAML frontmatter",
+        "status": "pending",
+        "priority": "high",
+        "description": "Output [SHORT-NAME]-SPEC.md with frontmatter: version, status (DRAFT), taskId, shortName, domain, created, updated, relatedFiles. Validate against rcsd-spec-frontmatter.schema.json.",
+        "phase": "core",
+        "labels": [
+          "frontmatter",
+          "rcsd",
+          "spec"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Generate spec with YAML frontmatter",
+        "status": "pending",
+        "priority": "high",
+        "description": "Output [SHORT-NAME]-SPEC.md with frontmatter: version, status (DRAFT), taskId, shortName, domain, created, updated, relatedFiles. Validate against rcsd-spec-frontmatter.schema.json.",
+        "phase": "core",
+        "labels": [
+          "frontmatter",
+          "rcsd",
+          "spec"
+        ],
+        "files": [
+          "schemas/rcsd-spec-frontmatter.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_0d3f7059c1e1",
+      "timestamp": "2025-12-24T01:23:42Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T743",
+      "before": {
+        "title": "Scaffold implementation report from spec",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Auto-generate [SHORT-NAME]-IMPLEMENTATION-REPORT.md skeleton from spec Parts. Include component status table, phase tracking, superseded tasks section.",
+        "phase": "core",
+        "labels": [
+          "implementation-report",
+          "rcsd",
+          "spec"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Scaffold implementation report from spec",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Auto-generate [SHORT-NAME]-IMPLEMENTATION-REPORT.md skeleton from spec Parts. Include component status table, phase tracking, superseded tasks section.",
+        "phase": "core",
+        "labels": [
+          "implementation-report",
+          "rcsd",
+          "spec"
+        ],
+        "files": [
+          "docs/specs/RCSD-PIPELINE-IMPLEMENTATION-REPORT.md"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_bddeb39af2d8",
+      "timestamp": "2025-12-24T01:23:44Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T744",
+      "before": {
+        "title": "Add --from-task flag to decompose command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Modify scripts/decompose.sh to accept --from-task T###. Load spec from task's RCSD directory, use spec as input for decomposition. Create tasks as children of the RCSD epic task.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "decompose",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add --from-task flag to decompose command",
+        "status": "pending",
+        "priority": "high",
+        "description": "Modify scripts/decompose.sh to accept --from-task T###. Load spec from task's RCSD directory, use spec as input for decomposition. Create tasks as children of the RCSD epic task.",
+        "phase": "core",
+        "labels": [
+          "command",
+          "decompose",
+          "rcsd"
+        ],
+        "files": [
+          "docs/specs/TASK-DECOMPOSITION-SPEC.md",
+          "scripts/decompose.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_f43e6f0da8fe",
+      "timestamp": "2025-12-24T01:23:45Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T745",
+      "before": {
+        "title": "Implement spec-to-task DAG conversion",
+        "status": "pending",
+        "priority": "high",
+        "description": "Parse spec Parts into goal tree, apply 4-phase decomposition (Scope→Goals→DAG→Tasks), validate atomicity (6-point test), generate task hierarchy with dependencies.",
+        "phase": "core",
+        "labels": [
+          "dag",
+          "decompose",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Implement spec-to-task DAG conversion",
+        "status": "pending",
+        "priority": "high",
+        "description": "Parse spec Parts into goal tree, apply 4-phase decomposition (Scope→Goals→DAG→Tasks), validate atomicity (6-point test), generate task hierarchy with dependencies.",
+        "phase": "core",
+        "labels": [
+          "dag",
+          "decompose",
+          "rcsd"
+        ],
+        "files": [
+          "docs/specs/TASK-DECOMPOSITION-SPEC.md",
+          "lib/rcsd-pipeline.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_bb9d3550cf1e",
+      "timestamp": "2025-12-24T01:23:45Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T746",
+      "before": {
+        "title": "Create parent-child task relationships from decomposition",
+        "status": "pending",
+        "priority": "high",
+        "description": "Generated tasks use parentId linking to RCSD epic. Apply hierarchy constraints (max depth 3, max siblings 7). Set phase='core' for implementation tasks.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "hierarchy",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create parent-child task relationships from decomposition",
+        "status": "pending",
+        "priority": "high",
+        "description": "Generated tasks use parentId linking to RCSD epic. Apply hierarchy constraints (max depth 3, max siblings 7). Set phase='core' for implementation tasks.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "hierarchy",
+          "rcsd"
+        ],
+        "files": [
+          "lib/hierarchy.sh",
+          "schemas/todo.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b5c6437485e6",
+      "timestamp": "2025-12-24T01:23:46Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T747",
+      "before": {
+        "title": "Associate files and spec references to decomposed tasks",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Each generated task includes: files array (affected files), acceptance criteria from spec, tracesTo references (Part.Section), decompositionId label.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "files",
+          "rcsd"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Associate files and spec references to decomposed tasks",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Each generated task includes: files array (affected files), acceptance criteria from spec, tracesTo references (Part.Section), decompositionId label.",
+        "phase": "core",
+        "labels": [
+          "decompose",
+          "files",
+          "rcsd"
+        ],
+        "files": [
+          "lib/rcsd-pipeline.sh",
+          "schemas/todo.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_61b77567f8f0",
+      "timestamp": "2025-12-24T01:23:47Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T748",
+      "before": {
+        "title": "Add shortName field to task schema",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add shortName field to todo.schema.json: type string, pattern ^[a-z0-9-]{3,25}$, optional. Used for RCSD directory naming and cross-references.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add shortName field to task schema",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add shortName field to todo.schema.json: type string, pattern ^[a-z0-9-]{3,25}$, optional. Used for RCSD directory naming and cross-references.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": [
+          "schemas/todo.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_02dd0cc92404",
+      "timestamp": "2025-12-24T01:23:48Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T749",
+      "before": {
+        "title": "Add workflow object to task schema",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add workflow object: {stage: enum, stageEnteredAt: ISO-8601, stageHistory: array}. Tracks RCSD pipeline stage for task (research|consensus|spec|decompose|complete).",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add workflow object to task schema",
+        "status": "pending",
+        "priority": "high",
+        "description": "Add workflow object: {stage: enum, stageEnteredAt: ISO-8601, stageHistory: array}. Tracks RCSD pipeline stage for task (research|consensus|spec|decompose|complete).",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": [
+          "schemas/todo.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_7d6b1cd60473",
+      "timestamp": "2025-12-24T01:23:49Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T750",
+      "before": {
+        "title": "Add associations object to task schema",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Add associations object: {spec: [strings], research: [strings], consensus: [strings], relatedTasks: [strings]}. Links tasks to RCSD artifacts.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Add associations object to task schema",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Add associations object: {spec: [strings], research: [strings], consensus: [strings], relatedTasks: [strings]}. Links tasks to RCSD artifacts.",
+        "phase": "core",
+        "labels": [
+          "rcsd",
+          "schema"
+        ],
+        "files": [
+          "schemas/todo.schema.json"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_22b7151ac283",
+      "timestamp": "2025-12-24T01:23:49Z",
+      "sessionId": "session_20251223_161403_c59c69",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T751",
+      "before": {
+        "title": "Create schema migration v3.1.0",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Migration script to add shortName, workflow, associations fields. Non-breaking: all new fields optional with defaults. Update specVersion in _meta.",
+        "phase": "core",
+        "labels": [
+          "migration",
+          "rcsd",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Create schema migration v3.1.0",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Migration script to add shortName, workflow, associations fields. Non-breaking: all new fields optional with defaults. Update specVersion in _meta.",
+        "phase": "core",
+        "labels": [
+          "migration",
+          "rcsd",
+          "schema"
+        ],
+        "files": [
+          "lib/migration.sh",
+          "schemas/todo.schema.json",
+          "scripts/migrate.sh"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
       }
     }
   ]
