@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 1894,
+    "totalEntries": 1906,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-24T07:38:11Z",
+    "lastEntry": "2025-12-24T08:35:55Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -47340,6 +47340,372 @@
       "after": {
         "status": "done",
         "completedAt": "2025-12-24T07:38:10Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_108a073af580",
+      "timestamp": "2025-12-24T08:12:08Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T828",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:12:08Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_6568165c4b41",
+      "timestamp": "2025-12-24T08:12:10Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T829",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:12:09Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_5e88bfe0df79",
+      "timestamp": "2025-12-24T08:12:11Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T830",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:12:11Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_0706fe3f6fcc",
+      "timestamp": "2025-12-24T08:12:13Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T831",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:12:12Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_36b76bc4ab13",
+      "timestamp": "2025-12-24T08:12:14Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T811",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:12:12Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log-1766564518-82282b",
+      "timestamp": "2025-12-24T08:21:58Z",
+      "action": "task_created",
+      "taskId": "T849",
+      "actor": "system",
+      "details": {
+        "title": "T809.1: Document and reorganize Layer 2 architecture",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "T809.1: Document and reorganize Layer 2 architecture",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766564547-05a5d1",
+      "timestamp": "2025-12-24T08:22:27Z",
+      "action": "task_created",
+      "taskId": "T850",
+      "actor": "system",
+      "details": {
+        "title": "T809.2: Promote file-ops.sh and logging.sh to Layer 1",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "T809.2: Promote file-ops.sh and logging.sh to Layer 1",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766564583-81784d",
+      "timestamp": "2025-12-24T08:23:03Z",
+      "action": "task_created",
+      "taskId": "T851",
+      "actor": "system",
+      "details": {
+        "title": "T809.3: Fix backup.sh layer violations (3 same-layer deps)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T809.3: Fix backup.sh layer violations (3 same-layer deps)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766564622-8ce1f2",
+      "timestamp": "2025-12-24T08:23:42Z",
+      "action": "task_created",
+      "taskId": "T852",
+      "actor": "system",
+      "details": {
+        "title": "T809.4: Fix validation.sh layer violations and reduce to 3 deps",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "T809.4: Fix validation.sh layer violations and reduce to 3 deps",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log-1766564646-16eed1",
+      "timestamp": "2025-12-24T08:24:06Z",
+      "action": "task_created",
+      "taskId": "T853",
+      "actor": "system",
+      "details": {
+        "title": "T809.5: Fix migrate.sh layer violation (sources logging.sh L2)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "T809.5: Fix migrate.sh layer violation (sources logging.sh L2)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766564684-52b392",
+      "timestamp": "2025-12-24T08:24:44Z",
+      "action": "task_created",
+      "taskId": "T854",
+      "actor": "system",
+      "details": {
+        "title": "T809.6: Create definitive LAYER-MAP.md documentation",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "T809.6: Create definitive LAYER-MAP.md documentation",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766564708-799439",
+      "timestamp": "2025-12-24T08:25:08Z",
+      "action": "task_created",
+      "taskId": "T855",
+      "actor": "system",
+      "details": {
+        "title": "T809.7: Final compliance verification - all checks must pass",
+        "status": "pending",
+        "priority": "critical"
+      },
+      "before": null,
+      "after": {
+        "title": "T809.7: Final compliance verification - all checks must pass",
+        "status": "pending",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "log_550f501f9324",
+      "timestamp": "2025-12-24T08:32:22Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T818",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:32:22Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_9566ce316676",
+      "timestamp": "2025-12-24T08:32:24Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T819",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:32:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ad48c7d47a39",
+      "timestamp": "2025-12-24T08:32:25Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T820",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:32:24Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_1f8405dd3d70",
+      "timestamp": "2025-12-24T08:32:26Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T821",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:32:25Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_853db5df6102",
+      "timestamp": "2025-12-24T08:32:27Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T822",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:32:27Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_3dab95fe7817",
+      "timestamp": "2025-12-24T08:35:54Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T849",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:35:54Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_4009029ae9e1",
+      "timestamp": "2025-12-24T08:35:55Z",
+      "sessionId": "session_20251223_203915_5fb3b1",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T850",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-24T08:35:55Z"
       },
       "details": {
         "field": "status",

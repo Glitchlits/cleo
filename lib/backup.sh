@@ -2,7 +2,7 @@
 # backup.sh - Unified backup management for claude-todo
 #
 # LAYER: 2 (Core Services)
-# DEPENDENCIES: file-ops.sh, validation.sh, logging.sh
+# DEPENDENCIES: file-ops.sh, logging.sh
 # PROVIDES: create_snapshot_backup, create_safety_backup, create_archive_backup,
 #           create_migration_backup, list_typed_backups, restore_typed_backup,
 #           rotate_backups, get_backup_metadata, BACKUP_TYPES
@@ -109,14 +109,6 @@ if [[ -f "$_LIB_DIR/file-ops.sh" ]]; then
     source "$_LIB_DIR/file-ops.sh"
 else
     echo "ERROR: Cannot find file-ops.sh in $_LIB_DIR" >&2
-    exit 1
-fi
-
-if [[ -f "$_LIB_DIR/validation.sh" ]]; then
-    # shellcheck source=lib/validation.sh
-    source "$_LIB_DIR/validation.sh"
-else
-    echo "ERROR: Cannot find validation.sh in $_LIB_DIR" >&2
     exit 1
 fi
 

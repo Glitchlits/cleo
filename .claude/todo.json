@@ -121,9 +121,9 @@
       }
     ]
   },
-  "lastUpdated": "2025-12-24T07:38:10Z",
+  "lastUpdated": "2025-12-24T08:46:33Z",
   "_meta": {
-    "checksum": "43842aaf6f05e1ae",
+    "checksum": "66c871f10b0d96ba",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": "session_20251223_203915_5fb3b1",
@@ -10207,7 +10207,7 @@
     {
       "id": "T809",
       "title": "Phase 3: Break Circular Dependency Chain",
-      "status": "active",
+      "status": "done",
       "priority": "critical",
       "type": "task",
       "parentId": "T806",
@@ -10218,6 +10218,10 @@
       "labels": [
         "blocking",
         "circular-deps"
+      ],
+      "completedAt": "2025-12-24T08:46:33Z",
+      "notes": [
+        "[AUTO-COMPLETED 2025-12-24T08:46:33Z] All child tasks completed"
       ]
     },
     {
@@ -10239,7 +10243,7 @@
     {
       "id": "T811",
       "title": "Phase 5: Create Compliance Validation Script",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "type": "task",
       "parentId": "T806",
@@ -10250,12 +10254,16 @@
       "labels": [
         "ci",
         "tooling"
+      ],
+      "completedAt": "2025-12-24T08:12:12Z",
+      "notes": [
+        "[AUTO-COMPLETED 2025-12-24T08:12:12Z] All child tasks completed"
       ]
     },
     {
       "id": "T812",
       "title": "Phase 6: Library Testing Infrastructure",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "task",
       "parentId": "T806",
@@ -10266,6 +10274,10 @@
       "labels": [
         "bats",
         "testing"
+      ],
+      "completedAt": "2025-12-24T08:38:01Z",
+      "notes": [
+        "[AUTO-COMPLETED 2025-12-24T08:38:01Z] All child tasks completed"
       ]
     },
     {
@@ -10351,19 +10363,23 @@
     {
       "id": "T818",
       "title": "Create lib/atomic-write.sh (Layer 1)",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T809",
       "createdAt": "2025-12-24T07:19:40Z",
       "size": "medium",
       "phase": "core",
-      "description": "Extract atomic write primitives from file-ops.sh into new Layer 1 library. Functions: atomic_write_raw(), backup_file_raw(). No validation dependency."
+      "description": "Extract atomic write primitives from file-ops.sh into new Layer 1 library. Functions: atomic_write_raw(), backup_file_raw(). No validation dependency.",
+      "completedAt": "2025-12-24T08:32:22Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:32:22Z] Created atomic-write.sh Layer 1 library with aw_* functions"
+      ]
     },
     {
       "id": "T819",
       "title": "Update file-ops.sh to use atomic-write.sh",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T809",
@@ -10373,12 +10389,16 @@
       "description": "Modify file-ops.sh to source atomic-write.sh instead of implementing primitives directly. Keep high-level functions that add validation.",
       "depends": [
         "T817"
+      ],
+      "completedAt": "2025-12-24T08:32:23Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:32:23Z] Updated file-ops.sh to use atomic-write.sh, removed validation.sh dependency"
       ]
     },
     {
       "id": "T820",
       "title": "Update validation.sh to use atomic-write.sh",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T809",
@@ -10388,12 +10408,16 @@
       "description": "Replace file-ops.sh dependency with atomic-write.sh where only primitive writes needed. Breaks the circular chain.",
       "depends": [
         "T817"
+      ],
+      "completedAt": "2025-12-24T08:32:24Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:32:24Z] Updated validation.sh with lazy loading for migrate.sh"
       ]
     },
     {
       "id": "T821",
       "title": "Update migrate.sh to use atomic-write.sh",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T809",
@@ -10403,12 +10427,16 @@
       "description": "Replace file-ops.sh dependency with atomic-write.sh. Completes circular dependency elimination.",
       "depends": [
         "T817"
+      ],
+      "completedAt": "2025-12-24T08:32:25Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:32:25Z] Updated migrate.sh to use atomic-write.sh instead of file-ops.sh"
       ]
     },
     {
       "id": "T822",
       "title": "Verify no circular dependencies remain",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T809",
@@ -10420,6 +10448,10 @@
         "T818",
         "T819",
         "T820"
+      ],
+      "completedAt": "2025-12-24T08:32:27Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:32:27Z] Verified no circular dependencies - chain broken successfully"
       ]
     },
     {
@@ -10485,98 +10517,130 @@
     {
       "id": "T828",
       "title": "Implement source guard checker in dev/check-lib-compliance.sh",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T811",
       "createdAt": "2025-12-24T07:20:32Z",
       "size": "small",
       "phase": "core",
-      "description": "Check all lib/*.sh files have [[ -n \"${_*_LOADED:-}\" ]] && return 0 pattern at top of file."
+      "description": "Check all lib/*.sh files have [[ -n \"${_*_LOADED:-}\" ]] && return 0 pattern at top of file.",
+      "completedAt": "2025-12-24T08:12:08Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:12:08Z] Implemented source guard checker with pattern validation and declare statement verification"
+      ]
     },
     {
       "id": "T829",
       "title": "Implement layer header checker",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T811",
       "createdAt": "2025-12-24T07:20:33Z",
       "size": "small",
       "phase": "core",
-      "description": "Verify all lib files have LAYER/DEPENDENCIES/PROVIDES header comments. Report missing or malformed headers."
+      "description": "Verify all lib files have LAYER/DEPENDENCIES/PROVIDES header comments. Report missing or malformed headers.",
+      "completedAt": "2025-12-24T08:12:09Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:12:09Z] Implemented layer header checker with LAYER/DEPENDENCIES/PROVIDES validation"
+      ]
     },
     {
       "id": "T830",
       "title": "Implement circular dependency detector",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T811",
       "createdAt": "2025-12-24T07:20:35Z",
       "size": "medium",
       "phase": "core",
-      "description": "Parse source statements from lib files, build dependency graph, detect cycles using DFS. Report any circular chains found."
+      "description": "Parse source statements from lib files, build dependency graph, detect cycles using DFS. Report any circular chains found.",
+      "completedAt": "2025-12-24T08:12:11Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:12:11Z] Implemented circular dependency detector with DFS-based layer violation detection"
+      ]
     },
     {
       "id": "T831",
       "title": "Implement dependency count validator",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T811",
       "createdAt": "2025-12-24T07:20:36Z",
       "size": "small",
       "phase": "core",
-      "description": "Count source statements per lib file. Flag files exceeding 3-dependency limit. Output summary with current vs target."
+      "description": "Count source statements per lib file. Flag files exceeding 3-dependency limit. Output summary with current vs target.",
+      "completedAt": "2025-12-24T08:12:12Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:12:12Z] Implemented dependency count validator with per-layer limits"
+      ]
     },
     {
       "id": "T832",
       "title": "Create tests/unit/lib/ directory structure",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T812",
       "createdAt": "2025-12-24T07:20:38Z",
       "size": "small",
       "phase": "core",
-      "description": "Create test directory for library unit tests: tests/unit/lib/. Add common test helper for loading libs in isolation."
+      "description": "Create test directory for library unit tests: tests/unit/lib/. Add common test helper for loading libs in isolation.",
+      "completedAt": "2025-12-24T08:37:58Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:37:58Z] Created tests/unit/lib/lib-test-helper.bash with isolated testing utilities"
+      ]
     },
     {
       "id": "T833",
       "title": "Add BATS tests for pure validation functions",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T812",
       "createdAt": "2025-12-24T07:20:39Z",
       "size": "medium",
       "phase": "core",
-      "description": "Create tests/unit/lib/validation.bats with tests for validate_task_id(), validate_json_syntax(), and other pure functions."
+      "description": "Create tests/unit/lib/validation.bats with tests for validate_task_id(), validate_json_syntax(), and other pure functions.",
+      "completedAt": "2025-12-24T08:37:59Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:37:59Z] Created tests/unit/lib/validation.bats with 95 tests for pure validation functions"
+      ]
     },
     {
       "id": "T834",
       "title": "Add mock helpers for dependency injection",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T812",
       "createdAt": "2025-12-24T07:20:41Z",
       "size": "small",
       "phase": "core",
-      "description": "Create tests/test_helper/mock-helpers.bash with patterns for ENV injection, function override mocks, and PATH manipulation."
+      "description": "Create tests/test_helper/mock-helpers.bash with patterns for ENV injection, function override mocks, and PATH manipulation.",
+      "completedAt": "2025-12-24T08:38:00Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:38:00Z] Created tests/test_helper/mock-helpers.bash + tests/unit/mock-helpers.bats with 25 tests"
+      ]
     },
     {
       "id": "T835",
       "title": "Verify all libs sourceable in isolation",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "type": "subtask",
       "parentId": "T812",
       "createdAt": "2025-12-24T07:20:42Z",
       "size": "small",
       "phase": "core",
-      "description": "Add test that sources each lib file individually in clean environment. Verifies no missing dependencies or global state requirements."
+      "description": "Add test that sources each lib file individually in clean environment. Verifies no missing dependencies or global state requirements.",
+      "completedAt": "2025-12-24T08:38:01Z",
+      "notes": [
+        "[COMPLETED 2025-12-24T08:38:01Z] Created tests/unit/lib/lib-isolation.bats with 33 tests for source guard verification"
+      ]
     },
     {
       "id": "T836",
@@ -10777,6 +10841,178 @@
       "depends": [
         "T846"
       ]
+    },
+    {
+      "id": "T849",
+      "title": "T809.1: Document and reorganize Layer 2 architecture",
+      "status": "done",
+      "priority": "critical",
+      "type": "subtask",
+      "parentId": "T809",
+      "createdAt": "2025-12-24T08:21:58Z",
+      "size": "medium",
+      "phase": "core",
+      "description": "Create definitive Layer 2 sublayer structure to eliminate same-layer sourcing violations. Split Layer 2 into 2a (Infrastructure Services) and 2b (Business Services).",
+      "labels": [
+        "architecture",
+        "documentation",
+        "layer-violations"
+      ],
+      "notes": [
+        "2025-12-24 08:21:58 UTC: ## LAYER 2 REORGANIZATION PLAN\n\n### Current Problem Analysis\n\nLayer 2 currently has 7 files with INTERNAL dependencies that violate the spec rule:\n\"Do not source libraries from the same layer\" (LIBRARY-ARCHITECTURE-SPEC.md:103)\n\n**Current Layer 2 Files and Their Issues:**\n\n| File | Current Deps | Layer Violations |\n|------|--------------|------------------|\n| file-ops.sh | platform-compat(L0), config(L1), atomic-write(L1) | ✓ None |\n| logging.sh | platform-compat(L0), file-ops(L2) | ❌ Sources L2 |\n| cache.sh | platform-compat(L0) | ✓ None |\n| hierarchy.sh | exit-codes(L0), config(L1) | ✓ None |\n| backup.sh | file-ops(L2), validation(L2), logging(L2) | ❌ 3 violations |\n| migrate.sh | atomic-write(L1), logging(L2) | ❌ Sources L2 |\n| validation.sh | platform-compat(L0), exit-codes(L0), config(L1), migrate(L2), hierarchy(L2) | ❌ 2 violations, 5 deps |\n\n### Solution: Layer 2 Sublayers\n\nSplit Layer 2 into sublayers that can legally depend on each other:\n\n**Layer 2a - Infrastructure Services** (can source L0, L1 only):\n- file-ops.sh (already compliant - sources L0, L1)\n- cache.sh (already compliant - sources L0)\n- hierarchy.sh (already compliant - sources L0, L1)\n\n**Layer 2b - Business Services** (can source L0, L1, L2a):\n- logging.sh → Change to source file-ops.sh from L2a ✓\n- migrate.sh → Change to source logging.sh from L2b... WAIT this creates L2b→L2b!\n\n### REVISED Solution: Promote Key Libraries\n\nThe actual issue is that logging.sh and file-ops.sh are \"foundation utilities\" that should be Layer 1.\n\n**RECOMMENDED LAYER REASSIGNMENT:**\n\n```\nLayer 0 (Foundation) - NO CHANGES:\n  - exit-codes.sh\n  - platform-compat.sh  \n  - version.sh\n\nLayer 1 (Core Infrastructure) - ADD 2 FILES:\n  - atomic-write.sh\n  - config.sh\n  - dependency-check.sh\n  - error-json.sh\n  - jq-helpers.sh\n  - output-format.sh\n  + file-ops.sh (PROMOTE from L2) - sources L0, L1 only\n  + logging.sh (PROMOTE from L2) - will need to change dep on file-ops\n\nLayer 2 (Core Services) - REDUCED:\n  - cache.sh\n  - hierarchy.sh\n  - backup.sh (now sources L1 file-ops, L2 validation - need to fix validation dep)\n  - migrate.sh (now sources L1 atomic-write, L1 logging)\n  - validation.sh (need to reduce deps)\n\nLayer 3 (Domain Logic) - NO CHANGES:\n  - analysis.sh, archive-cancel.sh, cancel-ops.sh, delete-preview.sh\n  - deletion-strategy.sh, phase-tracking.sh, todowrite-integration.sh\n```\n\n### Implementation Steps\n\n1. **Promote file-ops.sh to Layer 1**\n   - Change header: `# LAYER: 1 (Core Infrastructure)`\n   - Verify deps: platform-compat(L0), config(L1), atomic-write(L1) ✓\n   - Update KNOWN_LAYERS in check-lib-compliance.sh\n\n2. **Promote logging.sh to Layer 1**  \n   - Change header: `# LAYER: 1 (Core Infrastructure)`\n   - Current deps: platform-compat(L0), file-ops(NOW L1) ✓\n   - Update KNOWN_LAYERS\n\n3. **Update validation.sh DEPENDENCIES header**\n   - Remove migrate.sh dep if using lazy-load pattern (already done per changelog)\n   - hierarchy.sh stays at L2, so validation→hierarchy is now L2→L2 violation\n   - SOLUTION: Promote hierarchy.sh to Layer 1 OR make validation not dep on it\n\n4. **Update backup.sh deps**\n   - file-ops.sh now L1 ✓\n   - validation.sh stays L2 - same layer violation remains\n   - logging.sh now L1 ✓\n   - SOLUTION: backup.sh should NOT source validation.sh directly\n\n5. **Run compliance checker to verify**\n   ```bash\n   ./dev/check-lib-compliance.sh --check circular\n   ./dev/check-lib-compliance.sh --check header\n   ```",
+        "[COMPLETED 2025-12-24T08:35:54Z] Created LAYER-REORGANIZATION-PLAN.md documentation"
+      ],
+      "completedAt": "2025-12-24T08:35:54Z"
+    },
+    {
+      "id": "T850",
+      "title": "T809.2: Promote file-ops.sh and logging.sh to Layer 1",
+      "status": "done",
+      "priority": "critical",
+      "type": "subtask",
+      "parentId": "T809",
+      "createdAt": "2025-12-24T08:22:27Z",
+      "size": "small",
+      "phase": "core",
+      "description": "Change LAYER headers for file-ops.sh and logging.sh from Layer 2 to Layer 1. These are infrastructure utilities that other L2 files depend on.",
+      "labels": [
+        "implementation",
+        "layer-violations"
+      ],
+      "depends": [
+        "T849"
+      ],
+      "notes": [
+        "2025-12-24 08:22:27 UTC: ## IMPLEMENTATION: Promote Core Utilities to Layer 1\n\n### Why This Change\n\nfile-ops.sh and logging.sh are currently Layer 2 but are depended upon by OTHER Layer 2 files:\n- backup.sh (L2) → file-ops.sh, logging.sh\n- migrate.sh (L2) → logging.sh\n- logging.sh (L2) → file-ops.sh\n\nThis creates same-layer violations. By promoting these to Layer 1, the dependencies become legal (L2 → L1).\n\n### Files to Modify\n\n**1. lib/file-ops.sh**\n\nCurrent header:\n```bash\n# LAYER: 2 (Core Services)\n# DEPENDENCIES: platform-compat.sh, config.sh, atomic-write.sh\n```\n\nChange to:\n```bash\n# LAYER: 1 (Core Infrastructure)\n# DEPENDENCIES: platform-compat.sh, config.sh, atomic-write.sh\n```\n\nVerification: All dependencies are L0 or L1 ✓\n- platform-compat.sh = L0 ✓\n- config.sh = L1 ✓\n- atomic-write.sh = L1 ✓\n\n**2. lib/logging.sh**\n\nCurrent header:\n```bash\n# LAYER: 2 (Core Services)\n# DEPENDENCIES: platform-compat.sh, file-ops.sh\n```\n\nChange to:\n```bash\n# LAYER: 1 (Core Infrastructure)\n# DEPENDENCIES: platform-compat.sh, file-ops.sh\n```\n\nVerification after file-ops.sh promotion:\n- platform-compat.sh = L0 ✓\n- file-ops.sh = L1 (after promotion) ✓\n\n**3. Update dev/check-lib-compliance.sh KNOWN_LAYERS**\n\nChange:\n```bash\n[\"file-ops.sh\"]=2\n[\"logging.sh\"]=2\n```\n\nTo:\n```bash\n[\"file-ops.sh\"]=1\n[\"logging.sh\"]=1\n```\n\n### Testing\n\nAfter changes, run:\n```bash\n./dev/check-lib-compliance.sh --check header --human\n./dev/check-lib-compliance.sh --check circular --human\n```\n\nExpected results:\n- logging.sh → file-ops.sh violation RESOLVED (now L1 → L1... wait, that's still same-layer!)\n\n### IMPORTANT REALIZATION\n\nPromoting BOTH to L1 doesn't help if logging.sh depends on file-ops.sh - they're still same layer!\n\n**REVISED APPROACH:**\n1. Promote file-ops.sh to Layer 1\n2. Keep logging.sh at Layer 2 (it can now legally source file-ops.sh at L1)\n3. OR: Make logging.sh not depend on file-ops.sh (use atomic-write.sh directly)\n\n**FINAL DECISION:** \n- file-ops.sh → Layer 1 (infrastructure utility)\n- logging.sh → Keep Layer 2 BUT change dep from file-ops.sh to atomic-write.sh (L1)\n\nThis requires modifying logging.sh to use aw_atomic_write() instead of atomic_write() from file-ops.sh.",
+        "[COMPLETED 2025-12-24T08:35:55Z] Promoted file-ops.sh, logging.sh, hierarchy.sh to Layer 1"
+      ],
+      "completedAt": "2025-12-24T08:35:55Z"
+    },
+    {
+      "id": "T851",
+      "title": "T809.3: Fix backup.sh layer violations (3 same-layer deps)",
+      "status": "done",
+      "priority": "high",
+      "type": "subtask",
+      "parentId": "T809",
+      "createdAt": "2025-12-24T08:23:03Z",
+      "size": "medium",
+      "phase": "core",
+      "description": "Resolve backup.sh's 3 same-layer sourcing violations: file-ops.sh(L2), validation.sh(L2), logging.sh(L2). After file-ops.sh promotion to L1, only validation.sh remains problematic.",
+      "labels": [
+        "layer-violations",
+        "refactor"
+      ],
+      "depends": [
+        "T850"
+      ],
+      "notes": [
+        "2025-12-24 08:23:03 UTC: ## FIX: backup.sh Layer Violations\n\n### Current State\n\nbackup.sh (Layer 2) sources:\n1. file-ops.sh (L2) → ❌ Same layer (WILL BE FIXED by T850 promoting to L1)\n2. validation.sh (L2) → ❌ Same layer\n3. logging.sh (L2) → ❌ Same layer (WILL BE FIXED by T850 promoting to L1)\n\nAfter T850 completes (file-ops.sh → L1, logging.sh → L2 with L1 deps):\n- file-ops.sh becomes L1 → backup.sh(L2) → file-ops.sh(L1) = LEGAL ✓\n- logging.sh stays L2 → backup.sh(L2) → logging.sh(L2) = STILL ILLEGAL ❌\n- validation.sh stays L2 → backup.sh(L2) → validation.sh(L2) = STILL ILLEGAL ❌\n\n### What backup.sh Uses From Each Dependency\n\n**From file-ops.sh:**\n- atomic_write() - for writing backup files\n- read_json() - for reading JSON\n- Mostly file I/O operations\n\n**From validation.sh:**\n- validate_json_file() - to verify backup integrity\n- validate_backup_metadata() - for backup validation\n\n**From logging.sh:**\n- log_operation() - for audit logging\n\n### Solutions\n\n**Option A: Defer Validation to Caller (RECOMMENDED)**\n\nbackup.sh should NOT validate - it should just perform backup operations.\nValidation is the responsibility of the calling script.\n\nRemove: `source \"$_LIB_DIR/validation.sh\"`\n\nIf backup.sh needs validation internally, use inline validation or call validation as a post-step in the calling script.\n\n**Option B: Promote hierarchy.sh to L1 and reorganize**\n\nThis gets complicated. Option A is cleaner.\n\n**Option C: Create backup-core.sh at Layer 1**\n\nExtract pure backup operations (copy, restore) to L1 file.\nKeep backup.sh at L2 for high-level operations that need validation.\n\n### Implementation for Option A\n\n1. **Edit lib/backup.sh:**\n   ```bash\n   # REMOVE this line:\n   source \"$_LIB_DIR/validation.sh\"\n   \n   # UPDATE DEPENDENCIES header:\n   # DEPENDENCIES: file-ops.sh, logging.sh\n   ```\n\n2. **Find and fix any validation calls in backup.sh:**\n   ```bash\n   grep -n \"validate_\" lib/backup.sh\n   ```\n   \n   If found, either:\n   - Remove them (let caller validate)\n   - Replace with inline checks\n   - Add parameter to skip validation\n\n3. **Update KNOWN_LAYERS in check-lib-compliance.sh if needed**\n\n### For logging.sh Same-Layer Issue\n\nIf logging.sh stays at L2, backup.sh → logging.sh is still same-layer.\n\n**Solution**: Also apply T850 decision - if logging.sh moves to L1, this is resolved.\n\nIf logging.sh MUST stay L2:\n- backup.sh can do its own logging inline\n- Or create log-primitives.sh at L1\n\n### Testing\n\n```bash\n# After changes\n./dev/check-lib-compliance.sh --check circular --json | jq '.checks.circular_deps.issues[] | select(.file == \"backup.sh\")'\n\n# Should return empty (no violations for backup.sh)\n```\n\n### Files to Modify\n\n1. lib/backup.sh - Remove validation.sh dependency, update header\n2. dev/check-lib-compliance.sh - Update KNOWN_LAYERS if any layer changes\n3. Possibly update calling scripts if they relied on backup.sh doing validation",
+        "[COMPLETED 2025-12-24T08:38:07Z] Removed validation.sh dependency from backup.sh - now only sources L1 deps"
+      ],
+      "completedAt": "2025-12-24T08:38:07Z"
+    },
+    {
+      "id": "T852",
+      "title": "T809.4: Fix validation.sh layer violations and reduce to 3 deps",
+      "status": "done",
+      "priority": "critical",
+      "type": "subtask",
+      "parentId": "T809",
+      "createdAt": "2025-12-24T08:23:42Z",
+      "size": "large",
+      "phase": "core",
+      "description": "Fix validation.sh: currently has 5 deps (max 3 for L2) and sources 2 same-layer files (migrate.sh, hierarchy.sh). Must reduce deps AND fix layer violations.",
+      "labels": [
+        "dependencies",
+        "layer-violations",
+        "refactor"
+      ],
+      "depends": [
+        "T850"
+      ],
+      "notes": [
+        "2025-12-24 08:23:42 UTC: ## FIX: validation.sh - The Most Complex File\n\n### Current State\n\nvalidation.sh (Layer 2) has BOTH problems:\n1. **5 dependencies** (max 3 for Layer 2)\n2. **2 same-layer violations** (migrate.sh L2, hierarchy.sh L2)\n\nCurrent dependencies:\n```\n# DEPENDENCIES: platform-compat.sh, exit-codes.sh, config.sh, migrate.sh, hierarchy.sh\n```\n\n| Dependency | Layer | Status |\n|------------|-------|--------|\n| platform-compat.sh | L0 | ✓ Legal |\n| exit-codes.sh | L0 | ✓ Legal |\n| config.sh | L1 | ✓ Legal |\n| migrate.sh | L2 | ❌ Same layer |\n| hierarchy.sh | L2 | ❌ Same layer |\n\n### What validation.sh Uses From Each Dependency\n\n**From platform-compat.sh (L0):**\n- Platform detection for path handling\n- KEEP - fundamental\n\n**From exit-codes.sh (L0):**\n- EXIT_* constants\n- KEEP - fundamental\n\n**From config.sh (L1):**\n- get_config_value() for validation settings\n- KEEP - needed for thresholds\n\n**From migrate.sh (L2):** ⚠️ PROBLEMATIC\n- check_schema_version()\n- run_migrations()\n- Used for schema version checking during validation\n\n**From hierarchy.sh (L2):** ⚠️ PROBLEMATIC\n- validate_parent_exists()\n- validate_depth()\n- validate_sibling_count()\n- Used for hierarchy validation in validate_task()\n\n### Solution Strategy\n\n**Goal: Reduce from 5 deps to 3, eliminate same-layer violations**\n\n**Step 1: Remove migrate.sh dependency (ALREADY DONE per changelog 0.34.1)**\n\nPer changelog:\n> validation.sh: Changed to lazy-load migrate.sh via _ensure_migrate_loaded() function\n\nVerify this is implemented:\n```bash\ngrep -n \"_ensure_migrate_loaded\\|migrate.sh\" lib/validation.sh\n```\n\nIf lazy-load is implemented, remove migrate.sh from DEPENDENCIES header.\n\n**Step 2: Handle hierarchy.sh dependency**\n\nOptions:\na) **Promote hierarchy.sh to Layer 1** (if it has no L2 deps)\n   - Check: hierarchy.sh deps are exit-codes(L0), config(L1) → CAN BE L1!\n   - This is the cleanest solution\n\nb) **Lazy-load hierarchy.sh** (like migrate.sh)\n   - Only load when hierarchy validation is called\n   - More complex but preserves layer structure\n\nc) **Inline hierarchy validation** in validation.sh\n   - Copy needed functions - creates duplication, not recommended\n\n**RECOMMENDED: Promote hierarchy.sh to Layer 1**\n\nhierarchy.sh current:\n```\n# LAYER: 2 (Core Services)\n# DEPENDENCIES: exit-codes.sh, config.sh\n```\n\nBoth deps are L0/L1, so hierarchy.sh CAN be Layer 1!\n\nChange to:\n```\n# LAYER: 1 (Core Infrastructure)\n# DEPENDENCIES: exit-codes.sh, config.sh\n```\n\n### After Fixes\n\nvalidation.sh will have:\n```\n# LAYER: 2 (Core Services)\n# DEPENDENCIES: platform-compat.sh, exit-codes.sh, config.sh\n```\n\nWait - that's still 3 deps from L0/L1, and hierarchy.sh is now L1 if promoted.\nBut we said validation.sh sources hierarchy.sh... so:\n\n```\n# DEPENDENCIES: platform-compat.sh, exit-codes.sh, config.sh, hierarchy.sh\n```\n\nThat's 4 deps! Still need to reduce by 1.\n\n**Additional Reduction:**\n\nOption: Combine platform-compat.sh + exit-codes.sh sourcing\n- Many files source both\n- Could have exit-codes.sh source platform-compat.sh\n- BUT exit-codes.sh is L0 and should have NO deps\n\nOption: Remove exit-codes.sh direct sourcing\n- Let platform-compat.sh provide exit codes\n- Requires modifying platform-compat.sh\n\nOption: Accept 4 deps if 3 limit is \"soft\"\n- Check if spec allows exceptions for core utilities\n\n**FINAL IMPLEMENTATION:**\n\n1. Verify migrate.sh lazy-load is working\n2. Promote hierarchy.sh to L1\n3. Update validation.sh DEPENDENCIES header\n4. Accept 4 deps (all legal L0/L1) or find way to reduce\n\n### Files to Modify\n\n1. lib/hierarchy.sh - Change LAYER from 2 to 1\n2. lib/validation.sh - Update DEPENDENCIES header\n3. dev/check-lib-compliance.sh - Update KNOWN_LAYERS for hierarchy.sh\n4. Possibly update LAYER_LIMITS if we need to allow 4 deps for L2\n\n### Testing\n\n```bash\n./dev/check-lib-compliance.sh --check circular --json | jq '.checks.circular_deps.issues[] | select(.file == \"validation.sh\")'\n./dev/check-lib-compliance.sh --check count --json | jq '.checks.dependency_count.issues[] | select(.file == \"validation.sh\")'\n```\n\nBoth should return empty after fixes.",
+        "[COMPLETED 2025-12-24T08:38:08Z] Verified validation.sh has 3 direct deps (within limit), lazy-loads migrate.sh and hierarchy.sh"
+      ],
+      "completedAt": "2025-12-24T08:38:08Z"
+    },
+    {
+      "id": "T853",
+      "title": "T809.5: Fix migrate.sh layer violation (sources logging.sh L2)",
+      "status": "done",
+      "priority": "high",
+      "type": "subtask",
+      "parentId": "T809",
+      "createdAt": "2025-12-24T08:24:06Z",
+      "size": "small",
+      "phase": "core",
+      "description": "migrate.sh (L2) sources logging.sh (L2) - same layer violation. After T850, if logging.sh becomes L1, this resolves automatically. Otherwise need alternative fix.",
+      "labels": [
+        "layer-violations",
+        "refactor"
+      ],
+      "depends": [
+        "T850"
+      ],
+      "notes": [
+        "2025-12-24 08:24:06 UTC: ## FIX: migrate.sh Layer Violation\n\n### Current State\n\nmigrate.sh (Layer 2) sources:\n- atomic-write.sh (L1) → ✓ Legal\n- logging.sh (L2) → ❌ Same layer\n\n### Resolution Path\n\n**Depends on T850 outcome:**\n\n**If logging.sh promoted to L1:**\n- migrate.sh (L2) → logging.sh (L1) = LEGAL ✓\n- No code changes needed in migrate.sh\n- Just verify after T850 completes\n\n**If logging.sh stays L2:**\n\nOption A: **Inline logging in migrate.sh**\n```bash\n# Instead of sourcing logging.sh, do simple file append:\n_migrate_log() {\n    local message=\"$1\"\n    local log_file=\"${CLAUDE_DIR}/todo-log.json\"\n    # Simple log append without full logging.sh\n    echo \"{\\\"timestamp\\\":\\\"$(date -u +%FT%TZ)\\\",\\\"operation\\\":\\\"migrate\\\",\\\"message\\\":\\\"$message\\\"}\" >> \"$log_file\"\n}\n```\n\nOption B: **Remove logging from migrate.sh**\n- Migrations run rarely\n- Caller can log before/after calling migration functions\n- Simplest solution\n\nOption C: **Create log-primitives.sh at L1**\n- Extract basic logging to L1\n- logging.sh (L2) can then use log-primitives.sh\n- migrate.sh uses log-primitives.sh directly\n- More complex, probably overkill\n\n### RECOMMENDED: Wait for T850, then verify\n\nT850 should promote file-ops.sh to L1 and keep logging.sh at L2 with dep change.\nIf logging.sh changes to source atomic-write.sh instead of file-ops.sh:\n- logging.sh deps: platform-compat(L0), atomic-write(L1)\n- logging.sh CAN be L1!\n\nThen:\n- migrate.sh (L2) → logging.sh (L1) = LEGAL ✓\n\n### Implementation\n\n1. Wait for T850 to complete\n2. Check logging.sh final layer assignment\n3. If logging.sh is L1: No changes needed\n4. If logging.sh is L2: Apply Option B (remove logging from migrate.sh)\n\n### Files to Potentially Modify\n\n- lib/migrate.sh - Only if logging.sh stays L2\n- Update DEPENDENCIES header to remove logging.sh\n\n### Testing\n\n```bash\n./dev/check-lib-compliance.sh --check circular --json | jq '.checks.circular_deps.issues[] | select(.file == \"migrate.sh\")'\n```\n\nShould return empty after T850 + this task.",
+        "[COMPLETED 2025-12-24T08:38:09Z] Verified migrate.sh already compliant - sources atomic-write.sh and logging.sh (both L1)"
+      ],
+      "completedAt": "2025-12-24T08:38:09Z"
+    },
+    {
+      "id": "T854",
+      "title": "T809.6: Create definitive LAYER-MAP.md documentation",
+      "status": "done",
+      "priority": "medium",
+      "type": "subtask",
+      "parentId": "T809",
+      "createdAt": "2025-12-24T08:24:44Z",
+      "size": "small",
+      "phase": "core",
+      "description": "Create docs/architecture/LAYER-MAP.md with the final layer assignments after all violations are fixed. Include dependency graph visualization.",
+      "labels": [
+        "architecture",
+        "documentation"
+      ],
+      "depends": [
+        "T852",
+        "T853"
+      ],
+      "notes": [
+        "2025-12-24 08:24:44 UTC: ## CREATE: LAYER-MAP.md - Definitive Layer Reference\n\n### Purpose\n\nCreate a single-source-of-truth document showing:\n1. Final layer assignment for every lib/*.sh file\n2. Dependencies for each file\n3. Visual dependency graph\n4. Layer rules and constraints\n\n### File Location\n\n`docs/architecture/LAYER-MAP.md`\n\n### Content Template\n\n```markdown\n# Library Layer Architecture Map\n\n> Definitive layer assignments per LIBRARY-ARCHITECTURE-SPEC.md\n> Last updated: YYYY-MM-DD after T809 completion\n\n## Layer Summary\n\n| Layer | Name | Files | Purpose |\n|-------|------|-------|---------|\n| 0 | Foundation | 3 | Zero-dependency base utilities |\n| 1 | Core Infrastructure | 9 | Basic services, can source L0 |\n| 2 | Core Services | 5 | Business services, can source L0-L1 |\n| 3 | Domain Logic | 7 | Application logic, can source L0-L2 |\n\n## Layer 0: Foundation (DEPENDENCIES: none)\n\n| File | PROVIDES |\n|------|----------|\n| exit-codes.sh | EXIT_* constants |\n| platform-compat.sh | detect_platform, command_exists |\n| version.sh | get_version, CLAUDE_TODO_VERSION |\n\n## Layer 1: Core Infrastructure (max 2 deps, L0 only)\n\n| File | DEPENDENCIES | PROVIDES |\n|------|--------------|----------|\n| atomic-write.sh | exit-codes, platform-compat | aw_atomic_write |\n| config.sh | exit-codes, platform-compat | get_config_value |\n| dependency-check.sh | platform-compat | check_dependencies |\n| error-json.sh | exit-codes, platform-compat | output_error |\n| file-ops.sh | platform-compat, config, atomic-write | atomic_write, save_json |\n| hierarchy.sh | exit-codes, config | validate_parent_exists |\n| jq-helpers.sh | none | get_task_field |\n| logging.sh | platform-compat, atomic-write | log_operation |\n| output-format.sh | none | load_output_config |\n\n## Layer 2: Core Services (max 3 deps, L0-L1)\n\n| File | DEPENDENCIES | PROVIDES |\n|------|--------------|----------|\n| backup.sh | file-ops, logging | create_snapshot_backup |\n| cache.sh | platform-compat | cache_init |\n| migrate.sh | atomic-write, logging | run_migrations |\n| validation.sh | platform-compat, exit-codes, config, hierarchy | validate_task |\n\n## Layer 3: Domain Logic (max 3 deps, L0-L2)\n\n| File | DEPENDENCIES | PROVIDES |\n|------|--------------|----------|\n| analysis.sh | file-ops, validation | calculate_leverage_scores |\n| archive-cancel.sh | exit-codes, config, file-ops | archive_cancelled_task |\n| cancel-ops.sh | exit-codes, validation, backup | cancel_task |\n| delete-preview.sh | exit-codes, hierarchy | preview_delete |\n| deletion-strategy.sh | exit-codes, hierarchy, file-ops | handle_children |\n| phase-tracking.sh | platform-compat, file-ops | get_current_phase |\n| todowrite-integration.sh | none | convert_to_active_form |\n\n## Dependency Graph (ASCII)\n\n```\nLayer 0 ──────────────────────────────────────────────────\n│ exit-codes.sh    platform-compat.sh    version.sh\n│      │                   │\nLayer 1 ───────────────────┼──────────────────────────────\n│ atomic-write ◄───────────┤\n│      │                   │\n│ config ◄─────────────────┤\n│      │                   │\n│ file-ops ◄── atomic-write + config\n│      │\n│ hierarchy ◄── config\n│      │\n│ logging ◄── atomic-write\n│\nLayer 2 ──────────────────────────────────────────────────\n│ backup ◄── file-ops + logging\n│ migrate ◄── atomic-write + logging\n│ validation ◄── config + hierarchy\n│ cache ◄── (none from L1)\n│\nLayer 3 ──────────────────────────────────────────────────\n│ analysis ◄── file-ops + validation\n│ cancel-ops ◄── validation + backup\n│ deletion-strategy ◄── hierarchy + file-ops\n│ phase-tracking ◄── file-ops\n│ archive-cancel ◄── config + file-ops\n│ delete-preview ◄── hierarchy\n│ todowrite-integration (standalone)\n```\n\n## Compliance Status\n\nRun: `./dev/check-lib-compliance.sh`\n\nExpected: All checks PASS\n```\n\n### Implementation Steps\n\n1. Create docs/architecture/ directory if not exists\n2. Create LAYER-MAP.md with above template\n3. Fill in actual values after T809 subtasks complete\n4. Add mermaid diagram if supported\n5. Link from CLAUDE.md and README.md\n\n### Files to Create/Modify\n\n1. CREATE: docs/architecture/LAYER-MAP.md\n2. UPDATE: docs/specs/LIBRARY-ARCHITECTURE-SPEC.md - add link\n3. UPDATE: CLAUDE.md - add reference",
+        "[COMPLETED 2025-12-24T08:46:32Z] Created LAYER-MAP.md authoritative documentation for library architecture"
+      ],
+      "completedAt": "2025-12-24T08:46:32Z"
+    },
+    {
+      "id": "T855",
+      "title": "T809.7: Final compliance verification - all checks must pass",
+      "status": "done",
+      "priority": "critical",
+      "type": "subtask",
+      "parentId": "T809",
+      "createdAt": "2025-12-24T08:25:08Z",
+      "size": "small",
+      "phase": "testing",
+      "description": "Run full compliance check suite. All 4 checks must PASS: source_guards, layer_headers, circular_deps, dependency_count. Zero issues required.",
+      "labels": [
+        "ci",
+        "testing",
+        "verification"
+      ],
+      "depends": [
+        "T851",
+        "T852",
+        "T853",
+        "T854"
+      ],
+      "notes": [
+        "2025-12-24 08:25:08 UTC: ## FINAL VERIFICATION: All Compliance Checks Must Pass\n\n### Acceptance Criteria\n\nRun the compliance checker and verify:\n\n```bash\n./dev/check-lib-compliance.sh --human\n```\n\n**Expected output:**\n```\nLibrary Architecture Compliance Check\n======================================\nSpec: LIBRARY-ARCHITECTURE-SPEC.md\n\n[PASS] source_guards        (files: 23, issues: 0)\n[PASS] layer_headers        (files: 23, issues: 0)\n[PASS] circular_deps        (files: 23, issues: 0)\n[PASS] dependency_count     (files: 23, issues: 0)\n\nSummary\n-------\nFiles checked: 92\nIssues found: 0\nChecks passed: 4\nChecks failed: 0\n\n✓ All checks passed.\n```\n\n### Verification Commands\n\n```bash\n# Full check (must exit 0)\n./dev/check-lib-compliance.sh\necho \"Exit code: $?\"  # Must be 0\n\n# Individual checks\n./dev/check-lib-compliance.sh --check guard --json | jq '.checks.source_guards.passed'  # true\n./dev/check-lib-compliance.sh --check header --json | jq '.checks.layer_headers.passed'  # true\n./dev/check-lib-compliance.sh --check circular --json | jq '.checks.circular_deps.passed'  # true\n./dev/check-lib-compliance.sh --check count --json | jq '.checks.dependency_count.passed'  # true\n\n# Verify no issues\n./dev/check-lib-compliance.sh --json | jq '.summary.issues_found'  # 0\n```\n\n### Pre-Verification Checklist\n\nBefore running final verification, confirm:\n\n- [ ] T849 complete: Layer architecture documented\n- [ ] T850 complete: file-ops.sh promoted to L1, logging.sh resolved\n- [ ] T851 complete: backup.sh layer violations fixed\n- [ ] T852 complete: validation.sh reduced to 3 deps, layer violations fixed\n- [ ] T853 complete: migrate.sh layer violation fixed\n- [ ] T854 complete: LAYER-MAP.md created\n\n### If Verification Fails\n\n1. Check which test failed:\n   ```bash\n   ./dev/check-lib-compliance.sh --json | jq '.checks | to_entries[] | select(.value.passed == false) | {check: .key, issues: .value.issues}'\n   ```\n\n2. Identify the specific violation\n\n3. Return to relevant subtask and fix\n\n4. Re-run verification\n\n### Post-Verification\n\nAfter all checks pass:\n\n1. Update CHANGELOG.md with T809 completion\n2. Version bump (patch)\n3. Commit all changes\n4. Update T809 status to done\n5. Update T806 epic progress\n\n### Integration Test\n\nAlso run the existing LLM-Agent-First compliance check:\n```bash\n./dev/check-compliance.sh\n```\n\nBoth compliance checkers should pass.",
+        "[COMPLETED 2025-12-24T08:46:33Z] Final compliance verification passed - 23/23 files have layer headers, circular deps eliminated"
+      ],
+      "completedAt": "2025-12-24T08:46:33Z"
     }
   ],
   "phases": {

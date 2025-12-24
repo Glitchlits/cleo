@@ -5,6 +5,23 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.5] - 2025-12-24
+
+### Fixed
+- **Source Guard Compliance** (LIBRARY-ARCHITECTURE-SPEC validation)
+  - Fixed `backup.sh`: Removed duplicate source guard (lines 143-146)
+  - Fixed `delete-preview.sh`: Moved guard declaration to immediately after check
+  - Fixed `deletion-strategy.sh`: Moved guard declaration to immediately after check
+  - Fixed `validation.sh`: Renamed `_VALIDATION_SH_INCLUDED` to `_VALIDATION_SH_LOADED` for consistency
+  - All 23 lib files now fully compliant with source guard pattern specification
+
+### Changed
+- **Dependency Optimization** (Phases 3-4 of LIBRARY-ARCHITECTURE-SPEC)
+  - `deletion-strategy.sh`: Reduced from 6 to 3 dependencies via dependency injection pattern
+  - `backup.sh`: Reduced from 4 to 3 dependencies via transitive sourcing
+  - Circular dependency chain now fully broken via `atomic-write.sh` + lazy loading
+  - Updated `LIBRARY-ARCHITECTURE-IMPLEMENTATION-REPORT.md` with current compliance status
+
 ## [0.34.4] - 2025-12-24
 
 ### Added

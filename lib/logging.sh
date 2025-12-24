@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # logging.sh - Change log functions for CLAUDE-TODO system
 #
-# LAYER: 2 (Core Services)
-# DEPENDENCIES: platform-compat.sh, file-ops.sh
+# LAYER: 1 (Core Infrastructure)
+# DEPENDENCIES: platform-compat.sh, atomic-write.sh
 # PROVIDES: log_operation, get_log_entries, get_task_history, prune_log,
 #           LOG_FILE, generate_log_id
 
@@ -27,12 +27,12 @@ else
     exit 1
 fi
 
-# Source file-ops for atomic writes with file locking
-if [[ -f "$_LIB_DIR/file-ops.sh" ]]; then
-    # shellcheck source=lib/file-ops.sh
-    source "$_LIB_DIR/file-ops.sh"
+# Source atomic-write for primitive atomic operations (Layer 1)
+if [[ -f "$_LIB_DIR/atomic-write.sh" ]]; then
+    # shellcheck source=lib/atomic-write.sh
+    source "$_LIB_DIR/atomic-write.sh"
 else
-    echo "ERROR: Cannot find file-ops.sh in $_LIB_DIR" >&2
+    echo "ERROR: Cannot find atomic-write.sh in $_LIB_DIR" >&2
     exit 1
 fi
 
@@ -346,8 +346,8 @@ log_operation() {
         return 1
     fi
 
-    # Atomic write with file locking via save_json
-    if ! save_json "$log_path" "$updated_log"; then
+    # Atomic write via aw_atomic_write (Layer 1 primitive)
+    if ! aw_atomic_write "$log_path" "$updated_log"; then
         echo "ERROR: Failed to save log entry" >&2
         return 1
     fi
@@ -408,8 +408,8 @@ rotate_log() {
         return 1
     fi
 
-    # Atomic write with file locking via save_json
-    if ! save_json "$log_path" "$updated_log"; then
+    # Atomic write via aw_atomic_write (Layer 1 primitive)
+    if ! aw_atomic_write "$log_path" "$updated_log"; then
         echo "ERROR: Failed to save rotated log file" >&2
         return 1
     fi
@@ -861,8 +861,8 @@ migrate_log_entries() {
         return 1
     fi
 
-    # Atomic write with file locking via save_json
-    if ! save_json "$log_path" "$updated_log"; then
+    # Atomic write via aw_atomic_write (Layer 1 primitive)
+    if ! aw_atomic_write "$log_path" "$updated_log"; then
         echo "ERROR: Failed to save migrated log file" >&2
         return 1
     fi

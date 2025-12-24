@@ -11,11 +11,11 @@
 
 | Task ID | Title | Type | Status |
 |---------|-------|------|--------|
-| **T806** | EPIC: Library Architecture Refactoring | epic | pending |
+| **T806** | EPIC: Library Architecture Refactoring | epic | in progress |
 | T807 | Phase 1: Add Source Guards | task | ✅ COMPLETE |
 | T808 | Phase 2: Add Layer Headers | task | ✅ COMPLETE |
-| T809 | Phase 3: Break Circular Dependency Chain | task | pending |
-| T810 | Phase 4: Reduce High-Dependency Libraries | task | pending |
+| T809 | Phase 3: Break Circular Dependency Chain | task | ✅ COMPLETE |
+| T810 | Phase 4: Reduce High-Dependency Libraries | task | ✅ COMPLETE |
 | T811 | Phase 5: Create Compliance Validation Script | task | pending |
 | T812 | Phase 6: Library Testing Infrastructure | task | pending |
 
@@ -25,13 +25,13 @@
 
 | Metric | Current | Target | Status |
 |--------|---------|--------|--------|
-| Overall Progress | 40% | 100% | IN PROGRESS |
-| Inter-library dependencies | 44 | ≤25 | NEEDS WORK |
-| Max deps per library | 6 | ≤3 | NEEDS WORK |
-| Layer 0 files with deps | 0 | 0 | COMPLETE |
-| Circular dependency chains | 1 | 0 | NEEDS WORK |
-| Libraries with source guards | 21/21 | 21/21 | COMPLETE |
-| Libraries with layer headers | 21/21 | 21/21 | COMPLETE |
+| Overall Progress | 60% | 100% | IN PROGRESS |
+| Inter-library dependencies | 38 | ≤25 | IMPROVED (was 44) |
+| Max deps per library | 3 | ≤3 | ✅ COMPLETE |
+| Layer 0 files with deps | 0 | 0 | ✅ COMPLETE |
+| Circular dependency chains | 0 | 0 | ✅ COMPLETE |
+| Libraries with source guards | 23/23 | 23/23 | ✅ COMPLETE |
+| Libraries with layer headers | 23/23 | 23/23 | ✅ COMPLETE |
 
 ---
 
@@ -41,36 +41,48 @@
 
 | Library | Current Deps | Target | Layer | Status |
 |---------|--------------|--------|-------|--------|
-| `deletion-strategy.sh` | 6 | 3 | 3 | REFACTOR NEEDED |
-| `cancel-ops.sh` | 5 | 3 | 3 | REFACTOR NEEDED |
-| `validation.sh` | 5 | 3 | 2 | REFACTOR NEEDED |
-| `backup.sh` | 4 | 3 | 2 | REFACTOR NEEDED |
-| `archive-cancel.sh` | 4 | 3 | 3 | REFACTOR NEEDED |
-| `file-ops.sh` | 3 | 3 | 2 | OK |
-| `logging.sh` | 2 | 2 | 2 | OK |
-| `phase-tracking.sh` | 2 | 2 | 3 | OK |
-| `migrate.sh` | 2 | 2 | 2 | OK |
-| `hierarchy.sh` | 2 | 2 | 2 | OK |
-| `error-json.sh` | 2 | 2 | 1 | OK |
-| `delete-preview.sh` | 2 | 2 | 3 | OK |
-| `config.sh` | 2 | 2 | 1 | OK |
-| `analysis.sh` | 2 | 2 | 3 | OK |
-| `dependency-check.sh` | 1 | 1 | 1 | OK |
-| `exit-codes.sh` | 0 | 0 | 0 | OK |
-| `platform-compat.sh` | 0 | 0 | 0 | OK |
-| `version.sh` | 0 | 0 | 0 | OK |
-| `output-format.sh` | 0 | 0 | 1 | OK |
-| `grammar.sh` | 0 | 0 | 1 | OK |
+| `deletion-strategy.sh` | 3 | 3 | 3 | ✅ OK (was 6, refactored) |
+| `cancel-ops.sh` | 3 | 3 | 3 | ✅ OK (was 5, refactored) |
+| `validation.sh` | 3 | 3 | 2 | ✅ OK (lazy-loads migrate.sh) |
+| `backup.sh` | 3 | 3 | 2 | ✅ OK (was 4, refactored) |
+| `archive-cancel.sh` | 3 | 3 | 3 | ✅ OK |
+| `file-ops.sh` | 3 | 3 | 2 | ✅ OK |
+| `atomic-write.sh` | 2 | 2 | 1 | ✅ OK (new) |
+| `logging.sh` | 2 | 2 | 2 | ✅ OK |
+| `phase-tracking.sh` | 2 | 2 | 3 | ✅ OK |
+| `migrate.sh` | 2 | 2 | 2 | ✅ OK |
+| `hierarchy.sh` | 2 | 2 | 2 | ✅ OK |
+| `error-json.sh` | 2 | 2 | 1 | ✅ OK |
+| `delete-preview.sh` | 2 | 2 | 3 | ✅ OK |
+| `config.sh` | 2 | 2 | 1 | ✅ OK |
+| `analysis.sh` | 2 | 2 | 3 | ✅ OK |
+| `jq-helpers.sh` | 0 | 0 | 1 | ✅ OK (standalone) |
+| `dependency-check.sh` | 1 | 1 | 1 | ✅ OK |
+| `cache.sh` | 1 | 1 | 2 | ✅ OK |
+| `exit-codes.sh` | 0 | 0 | 0 | ✅ OK |
+| `platform-compat.sh` | 0 | 0 | 0 | ✅ OK |
+| `version.sh` | 0 | 0 | 0 | ✅ OK |
+| `output-format.sh` | 0 | 0 | 1 | ✅ OK |
+| `todowrite-integration.sh` | 0 | 0 | 3 | ✅ OK |
 
 ### Circular Dependency Chain
 
-**CRITICAL**: The following circular dependency exists:
+**RESOLVED** ✅: The circular dependency has been broken via:
+
+1. **atomic-write.sh (Layer 1)**: New file with primitive atomic operations
+2. **Lazy loading in validation.sh**: migrate.sh only loaded on demand via `_ensure_migrate_loaded()`
+3. **Explicit avoidance in file-ops.sh**: Documented comment states it does NOT depend on validation.sh
 
 ```
+Original chain (BROKEN):
 file-ops.sh → validation.sh → migrate.sh → file-ops.sh
-```
 
-**Resolution Required**: Extract atomic write primitives to Layer 1.
+New architecture:
+- atomic-write.sh (L1) provides primitives
+- file-ops.sh (L2) sources atomic-write.sh
+- validation.sh (L2) lazy-loads migrate.sh
+- migrate.sh (L2) sources atomic-write.sh + logging.sh
+```
 
 ---
 
