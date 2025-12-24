@@ -124,6 +124,26 @@ claude-todo list --tree                    # Hierarchical tree view
 
 **Constraints**: max depth 3 (epic→task→subtask), max 7 siblings per parent.
 
+### Task Cancellation (v0.32.0+)
+```bash
+# Cancel/delete tasks (soft-delete)
+claude-todo delete <id> --reason "..."       # Cancel task with required reason
+claude-todo cancel <id> --reason "..."       # Alias for delete
+claude-todo delete <id> --children cascade   # Cancel task and all children
+claude-todo delete <id> --children orphan    # Cancel task, orphan children
+claude-todo delete <id> --children block     # Fail if has children (default)
+claude-todo delete <id> --dry-run            # Preview without changes
+
+# Restore cancelled tasks
+claude-todo uncancel <id>                    # Restore cancelled task to pending
+claude-todo uncancel <id> --cascade          # Restore parent and cancelled children
+claude-todo uncancel <id> --notes "reason"   # Add restoration note
+```
+
+**Exit Codes**: `16` = has children (use --children), `17` = task completed (use archive), `102` = already cancelled/pending
+
+**Aliases**: `cancel` → `delete`, `restore-cancelled` → `uncancel`
+
 ### Maintenance
 ```bash
 claude-todo validate                       # Check file integrity
