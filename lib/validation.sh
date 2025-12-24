@@ -107,15 +107,24 @@ fi
 # CONSTANTS
 # ============================================================================
 
-readonly VALID_STATUSES=("pending" "active" "done" "blocked" "cancelled")
-readonly VALID_OPERATIONS=("create" "update" "complete" "archive" "restore" "delete" "validate" "backup")
-readonly VALID_PHASE_STATUSES=("pending" "active" "completed")
+# Guard readonly declarations to prevent errors on re-sourcing
+if [[ -z "${VALID_STATUSES+x}" ]]; then
+    readonly VALID_STATUSES=("pending" "active" "done" "blocked" "cancelled")
+fi
+if [[ -z "${VALID_OPERATIONS+x}" ]]; then
+    readonly VALID_OPERATIONS=("create" "update" "complete" "archive" "restore" "delete" "validate" "backup")
+fi
+if [[ -z "${VALID_PHASE_STATUSES+x}" ]]; then
+    readonly VALID_PHASE_STATUSES=("pending" "active" "completed")
+fi
 
 # Exit codes (use VAL_ prefix to avoid conflicts with exit-codes.sh)
-readonly VAL_SUCCESS=0
-readonly VAL_SCHEMA_ERROR=1
-readonly VAL_SEMANTIC_ERROR=2
-readonly VAL_BOTH_ERRORS=3
+if [[ -z "${VAL_SUCCESS+x}" ]]; then
+    readonly VAL_SUCCESS=0
+    readonly VAL_SCHEMA_ERROR=1
+    readonly VAL_SEMANTIC_ERROR=2
+    readonly VAL_BOTH_ERRORS=3
+fi
 
 # ============================================================================
 # CONFIG-DRIVEN VALIDATION SETTINGS

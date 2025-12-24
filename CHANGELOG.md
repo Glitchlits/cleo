@@ -5,6 +5,23 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.4] - 2025-12-24
+
+### Added
+- **Library Testing Infrastructure** (T806 Phase 6: T832-T835)
+  - `tests/unit/lib/lib-test-helper.bash`: Isolated testing utilities for library unit tests
+  - `tests/unit/lib/validation.bats`: 95 tests for pure validation functions
+  - `tests/unit/lib/exit-codes.bats`: 69 tests for exit code constants and helpers
+  - `tests/unit/lib/lib-isolation.bats`: 33 tests verifying library source guards
+  - `tests/test_helper/mock-helpers.bash`: Dependency injection mock utilities
+  - `tests/unit/mock-helpers.bats`: 25 tests for mock helper validation
+  - Total: 222+ new unit tests for library layer
+
+### Fixed
+- **Readonly Variable Errors**: Fixed `VALID_PHASE_STATUSES: readonly variable` error in `lib/validation.sh`
+  - Added guards around readonly declarations to prevent re-declaration errors during testing
+  - Fixes session.bats and integration test failures
+
 ## [0.34.2] - 2025-12-24
 
 ### Added
