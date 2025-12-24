@@ -1,6 +1,6 @@
 {
   "$schema": "./schemas/todo.schema.json",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "project": {
     "name": "claude-todo",
     "currentPhase": "core",
@@ -129,7 +129,7 @@
     "activeSession": "session_20251223_203915_5fb3b1",
     "lastModified": "2025-12-24T04:39:15Z",
     "version": "2.3.0",
-    "schemaVersion": "2.3.0"
+    "schemaVersion": "2.4.0"
   },
   "focus": {
     "currentTask": null,

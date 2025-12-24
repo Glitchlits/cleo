@@ -682,6 +682,46 @@ migrate_todo_to_2_3_0() {
     return 0
 }
 
+# Migration from 2.3.0 to 2.4.0 for todo.json
+# Relaxes notes maxLength constraint from 500 to 5000 characters
+# No data transformation needed - just version bump
+migrate_todo_to_2_4_0() {
+    local file="$1"
+
+    echo "  Updating schema version for notes maxLength increase..."
+
+    # Simple version bump - no data transformation needed
+    local updated_content
+    updated_content=$(jq '
+        .version = "2.4.0" |
+        ._meta.schemaVersion = "2.4.0"
+    ' "$file") || {
+        echo "ERROR: Failed to update version fields" >&2
+        return 1
+    }
+
+    # Validate the result
+    if ! echo "$updated_content" | jq empty 2>/dev/null; then
+        echo "ERROR: Migration produced invalid JSON" >&2
+        return 1
+    fi
+
+    # Atomic save using save_json
+    save_json "$file" "$updated_content" || {
+        echo "ERROR: Failed to update file" >&2
+        return 1
+    }
+
+    echo "  Schema version updated to 2.4.0 (notes maxLength: 500 → 5000)"
+
+    # Log migration if log_migration is available
+    if declare -f log_migration >/dev/null 2>&1; then
+        log_migration "$file" "todo" "2.3.0" "2.4.0"
+    fi
+
+    return 0
+}
+
 # ============================================================================
 # BACKWARD COMPATIBILITY CHECKS
 # ============================================================================
