@@ -739,8 +739,6 @@ if [[ "$ARCHIVE_COUNT" -eq 0 && "$ALREADY_ARCHIVED_COUNT" -gt 0 ]]; then
       --argjson pending "$REMAINING_PENDING" \
       --argjson active "$REMAINING_ACTIVE" \
       --argjson blocked "$REMAINING_BLOCKED" \
-      --argjson excludeLabelsApplied "$EXCLUDE_LABELS_APPLIED" \
-      --argjson effectiveExemptLabels "$EXEMPT_LABELS" \
       '{
         "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
         "_meta": {"format": "json", "command": "archive", "timestamp": $ts, "version": $ver},
@@ -749,8 +747,6 @@ if [[ "$ARCHIVE_COUNT" -eq 0 && "$ALREADY_ARCHIVED_COUNT" -gt 0 ]]; then
         "message": "All tasks already archived",
         "tasksSkipped": $tasksSkipped,
         "archived": {"count": 0, "taskIds": []},
-        "excludeLabelsApplied": $excludeLabelsApplied,
-        "effectiveExemptLabels": $effectiveExemptLabels,
         "remaining": {"total": $total, "pending": $pending, "active": $active, "blocked": $blocked}
       }'
   else
@@ -781,18 +777,17 @@ if [[ -n "$CASCADE_FROM" ]]; then
 
   TOTAL_DESCENDANTS=$(echo "$ALL_DESCENDANTS" | jq 'length - 1')  # Exclude root from count
 
-  # Get completed descendants only (filter to status=="done")
-  # Note: We must explicitly filter for done status since ALL_DESCENDANTS includes all descendants
-  COMPLETED_DESCENDANTS=$(jq --argjson ids "$ALL_DESCENDANTS" '
-    [.tasks[] | select(.id as $id | $ids | index($id)) | select(.status == "done")]
-  ' "$TODO_FILE")
+  # Get completed descendants only
+  COMPLETED_DESCENDANTS=$(jq --argjson ids "$ALL_DESCENDANTS" --slurpfile tasks <(jq '.tasks' "$TODO_FILE") '
+    [$tasks[0][] | select(.id as $id | $ids | index($id)) | select(.status == "done")]
+  ' <<< 'null')
 
   COMPLETED_COUNT=$(echo "$COMPLETED_DESCENDANTS" | jq 'length')
 
   # Get incomplete descendants for warning
-  INCOMPLETE_DESCENDANTS=$(jq --argjson ids "$ALL_DESCENDANTS" '
-    [.tasks[] | select(.id as $id | $ids | index($id)) | select(.status != "done")]
-  ' "$TODO_FILE")
+  INCOMPLETE_DESCENDANTS=$(jq --argjson ids "$ALL_DESCENDANTS" --slurpfile tasks <(jq '.tasks' "$TODO_FILE") '
+    [$tasks[0][] | select(.id as $id | $ids | index($id)) | select(.status != "done")]
+  ' <<< 'null')
 
   INCOMPLETE_COUNT=$(echo "$INCOMPLETE_DESCENDANTS" | jq 'length')
 
@@ -1422,9 +1417,8 @@ if ! jq --slurpfile tasks <(echo "$TASKS_WITH_METADATA") --arg ts "$TIMESTAMP" '
   # Update phaseSummary with detailed phase statistics
   # Note: Map phase to string before grouping to handle null phases correctly
   # The .phase field can be null, which cannot be used as an object key in from_entries
-  # Filter out null phases from phaseSummary to avoid jq error with null object keys
   .phaseSummary = (
-    [.archivedTasks[] | select(.phase != null) | . + {_phaseKey: .phase}] |
+    [.archivedTasks[] | . + {_phaseKey: (.phase // "no-phase")}] |
     group_by(._phaseKey) |
     map({
       key: .[0]._phaseKey,

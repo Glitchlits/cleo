@@ -402,7 +402,7 @@ teardown() {
     # Validate should catch circular dependency
     run bash "$VALIDATE_SCRIPT"
     assert_failure
-    assert_output --partial "Circular"
+    assert_output --partial "circular"
 }
 
 # =============================================================================

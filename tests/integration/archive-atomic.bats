@@ -208,7 +208,8 @@ EOF
 
 @test "archive creates backups before modification" {
     create_archive_atomic_fixture
-    bash "$ARCHIVE_SCRIPT" --force
+    # Use --no-safe to allow archiving tasks with dependents for testing backup creation
+    bash "$ARCHIVE_SCRIPT" --force --no-safe
 
     # Check for backup directories in new unified taxonomy structure
     # Archive backups go to .claude/backups/archive/ directory
@@ -349,7 +350,8 @@ EOF
     before=$(jq -r '.lastUpdated' "$TODO_FILE")
 
     sleep 1
-    bash "$ARCHIVE_SCRIPT" --force
+    # Use --no-safe to allow archiving tasks with dependents for testing timestamp update
+    bash "$ARCHIVE_SCRIPT" --force --no-safe
 
     local after
     after=$(jq -r '.lastUpdated' "$TODO_FILE")

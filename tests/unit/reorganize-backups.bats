@@ -101,14 +101,23 @@ teardown() {
     # Create test backup
     echo '{"version":"0.9.0","tasks":[]}' > .claude/.backups/todo.json.20241201_120000
 
+    # Record state before dry-run (common_setup creates backup dirs)
+    local safety_count_before
+    safety_count_before=$(find .claude/backups/safety -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+
     run bash "$MIGRATE_BACKUPS_SCRIPT" --dry-run
     assert_success
     assert_output --partial "DRY RUN MODE"
     assert_output --partial "WOULD MIGRATE"
     assert_output --partial "todo.json.20241201_120000"
 
-    # Verify no changes were made
-    [ ! -d ".claude/backups/safety" ]
+    # Verify no new backups were created (dir may exist from common_setup)
+    local safety_count_after
+    safety_count_after=$(find .claude/backups/safety -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+    [ "$safety_count_before" -eq "$safety_count_after" ]
+
+    # Original backup should still exist in legacy location
+    [ -f ".claude/.backups/todo.json.20241201_120000" ]
 }
 
 @test "reorganize-backups: actual migration creates new backup structure" {

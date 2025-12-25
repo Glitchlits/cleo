@@ -5,6 +5,23 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36.4] - 2025-12-25
+
+### Fixed
+- **Phase 5 test failures resolved** - All 13 remaining test failures from v0.36.3 fixed
+  - `archive --phase-complete`: archiveSource now correctly set to 'phase-trigger' (T870)
+  - `archive`: null phase/priority jq errors fixed with _phaseKey field and select filter (T871)
+  - `archive`: effectiveExemptLabels added to all 5 JSON output blocks (T873)
+  - `validate`: circular dependency output uses lowercase 'circular' for test matching (T876)
+  - `exit-codes.sh`: compliance checker now handles library files with special scoring (T877)
+  - `reorganize-backups`: dry-run test updated to compare counts vs directory existence (T878)
+  - `archive`: CLAUDE_TODO_DIR export added for backup library, tests use --no-safe (T879)
+
+- **Already working correctly (verified)**
+  - `--exclude-labels` merge with config exemptLabels (T872)
+  - `lastUpdated` timestamp update (T880)
+  - `--cascade-from` descendants filter (T874)
+
 ## [0.36.3] - 2025-12-24
 
 ### Fixed

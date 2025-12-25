@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 2029,
+    "totalEntries": 2060,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-24T19:38:45Z",
+    "lastEntry": "2025-12-25T07:05:16Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -48062,6 +48062,738 @@
       "after": null,
       "details": {
         "note": "T866 Phase 1 completed: Layer header fixes for file-ops.sh, hierarchy.sh, logging.sh. Bumped to v0.36.1. Install verified."
+      }
+    },
+    {
+      "id": "log_8eb78bc8d0cc",
+      "timestamp": "2025-12-25T06:12:39Z",
+      "sessionId": null,
+      "action": "task_reopened",
+      "actor": "system",
+      "taskId": "T856",
+      "before": {
+        "status": "done",
+        "completedAt": "2025-12-24T23:03:55Z"
+      },
+      "after": {
+        "status": "pending"
+      },
+      "details": {
+        "reason": "Adding Phase 5: Test Failure Remediation for 13 remaining failures from v0.36.3",
+        "wasAutoCompleted": true,
+        "previousCompletedAt": "2025-12-24T23:03:55Z"
+      }
+    },
+    {
+      "id": "log-1766643183-4e943a",
+      "timestamp": "2025-12-25T06:13:03Z",
+      "action": "task_created",
+      "taskId": "T869",
+      "actor": "system",
+      "details": {
+        "title": "Phase 5: Test Failure Remediation (13 remaining)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Phase 5: Test Failure Remediation (13 remaining)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766643220-90f706",
+      "timestamp": "2025-12-25T06:13:40Z",
+      "action": "task_created",
+      "taskId": "T870",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive --phase-complete archiveSource field",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive --phase-complete archiveSource field",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766643222-59c9c9",
+      "timestamp": "2025-12-25T06:13:42Z",
+      "action": "task_created",
+      "taskId": "T871",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive --phase-complete null phase jq error",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive --phase-complete null phase jq error",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766643223-e07fa2",
+      "timestamp": "2025-12-25T06:13:43Z",
+      "action": "task_created",
+      "taskId": "T872",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive --exclude-labels config merge",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive --exclude-labels config merge",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766643260-92787b",
+      "timestamp": "2025-12-25T06:14:20Z",
+      "action": "task_created",
+      "taskId": "T873",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive effectiveExemptLabels JSON field",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive effectiveExemptLabels JSON field",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766643262-54debb",
+      "timestamp": "2025-12-25T06:14:22Z",
+      "action": "task_created",
+      "taskId": "T874",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive --cascade-from completed descendants filter",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive --cascade-from completed descendants filter",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766643263-a57124",
+      "timestamp": "2025-12-25T06:14:23Z",
+      "action": "task_created",
+      "taskId": "T875",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive safe mode blocking with --force",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive safe mode blocking with --force",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766643295-acfdfe",
+      "timestamp": "2025-12-25T06:14:55Z",
+      "action": "task_created",
+      "taskId": "T876",
+      "actor": "system",
+      "details": {
+        "title": "Fix validate circular dependency detection output",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix validate circular dependency detection output",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766643297-dab318",
+      "timestamp": "2025-12-25T06:14:57Z",
+      "action": "task_created",
+      "taskId": "T877",
+      "actor": "system",
+      "details": {
+        "title": "Fix exit-codes.sh compliance check scoring",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix exit-codes.sh compliance check scoring",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log-1766643298-34f85f",
+      "timestamp": "2025-12-25T06:14:58Z",
+      "action": "task_created",
+      "taskId": "T878",
+      "actor": "system",
+      "details": {
+        "title": "Fix reorganize-backups dry-run directory creation",
+        "status": "pending",
+        "priority": "low"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix reorganize-backups dry-run directory creation",
+        "status": "pending",
+        "priority": "low"
+      }
+    },
+    {
+      "id": "log_25ee2334b949",
+      "timestamp": "2025-12-25T06:16:22Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "session_start",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": "Session started"
+    },
+    {
+      "id": "log-1766644066-fdc791",
+      "timestamp": "2025-12-25T06:27:46Z",
+      "action": "task_created",
+      "taskId": "T879",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive backup creation before modification",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive backup creation before modification",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766644068-0b6fe6",
+      "timestamp": "2025-12-25T06:27:48Z",
+      "action": "task_created",
+      "taskId": "T880",
+      "actor": "system",
+      "details": {
+        "title": "Fix archive lastUpdated timestamp update",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix archive lastUpdated timestamp update",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_af3a538374ff",
+      "timestamp": "2025-12-25T06:28:09Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_cancelled",
+      "actor": "system",
+      "taskId": "T875",
+      "before": {
+        "status": "pending",
+        "cancelledAt": null
+      },
+      "after": {
+        "status": "cancelled",
+        "cancelledAt": "2025-12-25T06:28:08Z"
+      },
+      "details": {
+        "reason": "Tests now pass - safe mode blocking was fixed in earlier v0.36.3 work by adding --no-safe flag to test fixtures",
+        "childStrategy": "block",
+        "affectedCount": 1
+      }
+    },
+    {
+      "id": "log_a485b3928c64",
+      "timestamp": "2025-12-25T06:30:38Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": null,
+      "after": {
+        "currentTask": "T856"
+      },
+      "details": null
+    },
+    {
+      "id": "log_16e1bb937780",
+      "timestamp": "2025-12-25T06:30:39Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T856",
+      "before": {
+        "title": "EPIC: Compliance Remediation",
+        "status": "active",
+        "priority": "high",
+        "description": "UNIFIED EPIC: Library Architecture & Compliance Remediation\n\nConsolidates work from T806, T797, and compliance follow-up into single phased epic.\n\n10-AGENT CONSENSUS FINDINGS:\n\nLAYER VIOLATIONS (5):\n- Root cause: Header misclassification (headers say L1, spec says L2)\n- Solution: Update headers for file-ops.sh, hierarchy.sh, logging.sh to L2\n- Also: Add 'Foundation Utilities' concept to spec for clarity\n\nDEPENDENCY THRESHOLDS:\n- Current: 27 total (target 25), validation.sh=4 (limit 3)\n- Key insight: 2 of validation.sh deps are LAZY-LOADED\n- Solution: Count only eager deps; validation.sh goes 4→2, total 27→25\n- Monitoring: THREE-TIER (GREEN ≤22, YELLOW 23-27, RED ≥28)\n\nRESULT: Zero code changes needed - header fixes + spec clarification only.\n\nPHASES:\n1. Layer Header Fixes\n2. Dependency Count Fixes  \n3. Spec Document Updates\n4. Scripts Compliance (87.4%)\n5. Validation & Release",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "EPIC: Compliance Remediation",
+        "status": "active",
+        "priority": "high",
+        "description": "UNIFIED EPIC: Library Architecture & Compliance Remediation\n\nConsolidates work from T806, T797, and compliance follow-up into single phased epic.\n\n10-AGENT CONSENSUS FINDINGS:\n\nLAYER VIOLATIONS (5):\n- Root cause: Header misclassification (headers say L1, spec says L2)\n- Solution: Update headers for file-ops.sh, hierarchy.sh, logging.sh to L2\n- Also: Add 'Foundation Utilities' concept to spec for clarity\n\nDEPENDENCY THRESHOLDS:\n- Current: 27 total (target 25), validation.sh=4 (limit 3)\n- Key insight: 2 of validation.sh deps are LAZY-LOADED\n- Solution: Count only eager deps; validation.sh goes 4→2, total 27→25\n- Monitoring: THREE-TIER (GREEN ≤22, YELLOW 23-27, RED ≥28)\n\nRESULT: Zero code changes needed - header fixes + spec clarification only.\n\nPHASES:\n1. Layer Header Fixes\n2. Dependency Count Fixes  \n3. Spec Document Updates\n4. Scripts Compliance (87.4%)\n5. Validation & Release",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b78be06a0e0b",
+      "timestamp": "2025-12-25T06:42:11Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T856"
+      },
+      "after": {
+        "currentTask": "T869"
+      },
+      "details": null
+    },
+    {
+      "id": "log_3f48266dcacd",
+      "timestamp": "2025-12-25T06:42:46Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_cd1a9655117f",
+      "timestamp": "2025-12-25T06:45:27Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_a044a9d9e798",
+      "timestamp": "2025-12-25T06:45:43Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_a3f2d5e15070",
+      "timestamp": "2025-12-25T07:04:26Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T870",
+      "before": {
+        "title": "Fix archive --phase-complete archiveSource field",
+        "status": "pending",
+        "priority": "high",
+        "description": "When using --phase-complete, archiveSource should be 'phase-trigger' but is being overwritten by --all flag.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix archive --phase-complete archiveSource field",
+        "status": "pending",
+        "priority": "high",
+        "description": "When using --phase-complete, archiveSource should be 'phase-trigger' but is being overwritten by --all flag.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_94037ba9b21a",
+      "timestamp": "2025-12-25T07:04:29Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T871",
+      "before": {
+        "title": "Fix archive --phase-complete null phase jq error",
+        "status": "pending",
+        "priority": "high",
+        "description": "When tasks have null phase field, archive fails with jq error when building phaseSummary.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix archive --phase-complete null phase jq error",
+        "status": "pending",
+        "priority": "high",
+        "description": "When tasks have null phase field, archive fails with jq error when building phaseSummary.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_96242c8915aa",
+      "timestamp": "2025-12-25T07:04:31Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T876",
+      "before": {
+        "title": "Fix validate circular dependency detection output",
+        "status": "pending",
+        "priority": "high",
+        "description": "Circular dependency detection runs but output doesn't contain 'circular' or 'cycle' keywords.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix validate circular dependency detection output",
+        "status": "pending",
+        "priority": "high",
+        "description": "Circular dependency detection runs but output doesn't contain 'circular' or 'cycle' keywords.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_6ad69533c209",
+      "timestamp": "2025-12-25T07:04:33Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T877",
+      "before": {
+        "title": "Fix exit-codes.sh compliance check scoring",
+        "status": "pending",
+        "priority": "low",
+        "description": "dev/compliance/checks/exit-codes.sh scoring below 80% threshold for EXIT_NO_CHANGE check.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix exit-codes.sh compliance check scoring",
+        "status": "pending",
+        "priority": "low",
+        "description": "dev/compliance/checks/exit-codes.sh scoring below 80% threshold for EXIT_NO_CHANGE check.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_71a425d9a78a",
+      "timestamp": "2025-12-25T07:04:36Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T878",
+      "before": {
+        "title": "Fix reorganize-backups dry-run directory creation",
+        "status": "pending",
+        "priority": "low",
+        "description": "dry-run mode is creating directories when it should only preview changes.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix reorganize-backups dry-run directory creation",
+        "status": "pending",
+        "priority": "low",
+        "description": "dry-run mode is creating directories when it should only preview changes.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_239a94e4f38a",
+      "timestamp": "2025-12-25T07:04:38Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T879",
+      "before": {
+        "title": "Fix archive backup creation before modification",
+        "status": "pending",
+        "priority": "high",
+        "description": "Integration test 'archive creates backups before modification' is failing. The archive.sh script should create a backup before modifying todo.json but this isn't happening correctly.\n\n**Test location**: tests/integration/archive-atomic.bats\n**Expected behavior**: Before archiving tasks, create backup in .claude/backups/safety/\n**Root cause**: Likely backup path mismatch or backup function not being called\n\n**Technical context**:\n- Tier 2 backup system uses .claude/backups/safety/ for pre-operation backups\n- archive.sh should call create_safety_backup() before modifications\n- verify backup file exists with original data preserved",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix archive backup creation before modification",
+        "status": "pending",
+        "priority": "high",
+        "description": "Integration test 'archive creates backups before modification' is failing. The archive.sh script should create a backup before modifying todo.json but this isn't happening correctly.\n\n**Test location**: tests/integration/archive-atomic.bats\n**Expected behavior**: Before archiving tasks, create backup in .claude/backups/safety/\n**Root cause**: Likely backup path mismatch or backup function not being called\n\n**Technical context**:\n- Tier 2 backup system uses .claude/backups/safety/ for pre-operation backups\n- archive.sh should call create_safety_backup() before modifications\n- verify backup file exists with original data preserved",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_f8799d7f08b6",
+      "timestamp": "2025-12-25T07:04:55Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T872",
+      "before": {
+        "title": "Fix archive --exclude-labels config merge",
+        "status": "pending",
+        "priority": "medium",
+        "description": "CLI --exclude-labels should merge with config exemptLabels, but merge is not happening.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix archive --exclude-labels config merge",
+        "status": "pending",
+        "priority": "medium",
+        "description": "CLI --exclude-labels should merge with config exemptLabels, but merge is not happening.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_42a674a78543",
+      "timestamp": "2025-12-25T07:04:57Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T873",
+      "before": {
+        "title": "Fix archive effectiveExemptLabels JSON field",
+        "status": "pending",
+        "priority": "medium",
+        "description": "JSON output missing effectiveExemptLabels field - returns null instead of array.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix archive effectiveExemptLabels JSON field",
+        "status": "pending",
+        "priority": "medium",
+        "description": "JSON output missing effectiveExemptLabels field - returns null instead of array.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_84aef42799f5",
+      "timestamp": "2025-12-25T07:05:00Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T880",
+      "before": {
+        "title": "Fix archive lastUpdated timestamp update",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Integration test 'archive updates lastUpdated timestamp' is failing. The archive operation should update the _meta.lastUpdated field in todo.json after successful archiving.\n\n**Test location**: tests/integration/archive-atomic.bats\n**Expected behavior**: _meta.lastUpdated should be updated to current ISO-8601 timestamp\n**Root cause**: timestamp update not being performed or save_json not preserving update\n\n**Technical context**:\n- lastUpdated field tracks last modification time for anti-hallucination\n- Should use ISO-8601 format: YYYY-MM-DDTHH:MM:SSZ\n- update happens in atomic_write or save_json flow\n- verify jq filter updates _meta correctly",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix archive lastUpdated timestamp update",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Integration test 'archive updates lastUpdated timestamp' is failing. The archive operation should update the _meta.lastUpdated field in todo.json after successful archiving.\n\n**Test location**: tests/integration/archive-atomic.bats\n**Expected behavior**: _meta.lastUpdated should be updated to current ISO-8601 timestamp\n**Root cause**: timestamp update not being performed or save_json not preserving update\n\n**Technical context**:\n- lastUpdated field tracks last modification time for anti-hallucination\n- Should use ISO-8601 format: YYYY-MM-DDTHH:MM:SSZ\n- update happens in atomic_write or save_json flow\n- verify jq filter updates _meta correctly",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_bb55b46eae90",
+      "timestamp": "2025-12-25T07:05:16Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T874",
+      "before": {
+        "title": "Fix archive --cascade-from completed descendants filter",
+        "status": "pending",
+        "priority": "medium",
+        "description": "archive --cascade-from should only archive completed descendants, but is archiving all.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix archive --cascade-from completed descendants filter",
+        "status": "pending",
+        "priority": "medium",
+        "description": "archive --cascade-from should only archive completed descendants, but is archiving all.",
+        "phase": "maintenance",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
       }
     }
   ]

@@ -1259,7 +1259,7 @@ _dfs_detect_cycle() {
         if [[ "$rec_stack" == *",$current,"* ]]; then
             # Build cycle path
             cycle_path="$current (cycle back to start)"
-            echo "ERROR: Circular dependency detected involving: $current" >&2
+            echo "ERROR: circular dependency detected involving: $current" >&2
             echo "Fix: Remove dependency that creates the cycle" >&2
             return 1
         fi
