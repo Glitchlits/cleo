@@ -46,7 +46,8 @@
     "csvDelimiter": ",",
     "dateFormat": "iso8601",
     "showCompactTitles": false,
-    "maxTitleLength": 85
+    "maxTitleLength": 85,
+    "defaultFormat": "json"
   },
   "cli": {
     "aliases": {

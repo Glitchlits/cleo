@@ -10,7 +10,6 @@
 # =============================================================================
 setup_file() {
     load '../test_helper/common_setup'
-    load '../test_helper/assertions'
     common_setup_file
 }
 
@@ -19,6 +18,7 @@ setup_file() {
 # =============================================================================
 setup() {
     load '../test_helper/common_setup'
+    load '../test_helper/assertions'
     load '../test_helper/fixtures'
     common_setup_per_test
 }

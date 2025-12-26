@@ -5,6 +5,28 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36.6] - 2025-12-26
+
+### Fixed
+- **blockers-command.sh temp file handling** - Fixed hardcoded `/tmp/blockers_analysis.json` path
+  - Now uses `mktemp` for unique temp files (test-safe for concurrent execution)
+  - Added `trap RETURN` for automatic cleanup
+  - Handles empty output gracefully (defaults to `[]`)
+  - Resolves 48 test failures in `blockers.bats` and `critical-path.bats`
+
+- **Test infrastructure fixes** - Fixed missing assertions load in 4 test files
+  - `deps.bats`, `export.bats`, `migrate.bats`, `next.bats`: Added `load assertions` to `setup()`
+  - `tree-alias.bats`: Fixed ellipsis check to accept Unicode "…" or ASCII "..."
+  - All 2096 tests now pass
+
+### Completed
+- **Library Architecture tasks resolved** (T797, T806)
+  - T860: Layer headers verified as Layer 2 per spec (23/23 pass)
+  - T864: validation.sh reduced to 2 eager deps via lazy loading
+  - T865: Total dependencies reduced to 25 (target met)
+  - T800: Circular dependency chain resolved (0 circular deps)
+  - T313: readonly variable warnings fixed via source guards
+
 ## [0.36.5] - 2025-12-26
 
 ### Changed

@@ -329,8 +329,8 @@ teardown_file() {
     # Without --wide, title should be truncated at very narrow terminal
     run env COLUMNS=50 bash "$LIST_SCRIPT" --tree --human
     assert_success
-    # Should show truncation indicator (ellipsis)
-    [[ "$output" == *"..."* ]] || [[ "$output" == *"..."* ]]
+    # Should show truncation indicator (ellipsis - Unicode or ASCII)
+    [[ "$output" == *"…"* ]] || [[ "$output" == *"..."* ]]
 
     # With --wide, full title should be shown
     run bash "$LIST_SCRIPT" --tree --human --wide
@@ -439,8 +439,8 @@ teardown_file() {
     # Force narrow terminal - use env to properly pass COLUMNS to subprocess
     run env COLUMNS=50 bash "$LIST_SCRIPT" --tree --human
     assert_success
-    # Should contain ellipsis character (Unicode: ...)
-    assert_output --partial "..."
+    # Should contain ellipsis character (Unicode: … or ASCII: ...)
+    [[ "$output" == *"…"* ]] || [[ "$output" == *"..."* ]] || fail "Expected ellipsis in output"
     # Should NOT contain the full title (it's truncated)
     [[ "$output" != *"$long_title"* ]]
 }

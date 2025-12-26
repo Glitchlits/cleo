@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 2060,
+    "totalEntries": 2113,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-25T07:05:16Z",
+    "lastEntry": "2025-12-26T20:35:30Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -48787,6 +48787,1808 @@
         "description": "archive --cascade-from should only archive completed descendants, but is archiving all.",
         "phase": "maintenance",
         "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_110eea422b15",
+      "timestamp": "2025-12-25T07:09:56Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T871",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:09:56Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_401b24198930",
+      "timestamp": "2025-12-25T07:09:59Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T872",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:09:58Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_d5f6fa107514",
+      "timestamp": "2025-12-25T07:10:01Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T873",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:01Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_3b14c2b72ddf",
+      "timestamp": "2025-12-25T07:10:03Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T874",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:03Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_63a63c5e81c4",
+      "timestamp": "2025-12-25T07:10:06Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T876",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:06Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_94f29f721c70",
+      "timestamp": "2025-12-25T07:10:20Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T870",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:19Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_2e7f5cd719c2",
+      "timestamp": "2025-12-25T07:10:22Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T877",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:22Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_c79621996ac0",
+      "timestamp": "2025-12-25T07:10:25Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T878",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:24Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ffc440d4c226",
+      "timestamp": "2025-12-25T07:10:27Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T879",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:27Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_b618cbcf7a34",
+      "timestamp": "2025-12-25T07:10:29Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T880",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:29Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_f5e5f30d4206",
+      "timestamp": "2025-12-25T07:10:30Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T869",
+      "before": {
+        "status": "active",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:29Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_5c80096d05b7",
+      "timestamp": "2025-12-25T07:10:31Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T856",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-25T07:10:29Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_ae2016acc590",
+      "timestamp": "2025-12-26T14:43:21Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T695",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T14:43:21Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_a623352cd87f",
+      "timestamp": "2025-12-26T14:43:24Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T696",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T14:43:23Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_ef6a25e2f64a",
+      "timestamp": "2025-12-26T14:43:26Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T697",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T14:43:26Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_de4c5677e5a4",
+      "timestamp": "2025-12-26T14:43:28Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T698",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T14:43:28Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_28172c734870",
+      "timestamp": "2025-12-26T14:43:30Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T699",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T14:43:30Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_cd9152d4bf52",
+      "timestamp": "2025-12-26T14:43:31Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T694",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T14:43:30Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "auto_complete"
+      }
+    },
+    {
+      "id": "log_4dfdf2869234",
+      "timestamp": "2025-12-26T14:43:52Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T797",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T14:43:51Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766760243-9837f4",
+      "timestamp": "2025-12-26T14:44:03Z",
+      "action": "task_created",
+      "taskId": "T881",
+      "actor": "system",
+      "details": {
+        "title": "BUG: archive.sh Argument list too long with large jq commands",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "BUG: archive.sh Argument list too long with large jq commands",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_f6722bbc0406",
+      "timestamp": "2025-12-26T14:44:23Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "focus_changed",
+      "actor": "claude",
+      "taskId": null,
+      "before": {
+        "currentTask": "T869"
+      },
+      "after": {
+        "currentTask": "T755"
+      },
+      "details": null
+    },
+    {
+      "id": "log_73b805536be5",
+      "timestamp": "2025-12-26T14:49:16Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T301",
+      "before": {
+        "title": "TECH DEBT: Audit and eliminate hardcoded values - enforce schema-driven design",
+        "status": "pending",
+        "priority": "high",
+        "description": "Found hardcoded phase structures in migration (fixed in v0.13.3), but this is likely systemic. Need comprehensive audit:\n\nKNOWN ISSUES:\n- lib/migrate.sh had hardcoded 4-phase structure (fixed - now reads from template)\n- lib/todowrite-integration.sh has verb mappings that may need review\n- scripts/benchmark-performance.sh has hardcoded phase array for tests\n- scripts/phases.sh has hardcoded examples in help text\n- Likely MORE throughout codebase\n\nAUDIT SCOPE:\n1. Find ALL hardcoded values that should derive from schemas/templates\n2. Identify validation logic duplicated across scripts vs centralized in lib/\n3. Check for magic strings/numbers that should be constants\n4. Review enum values (status, priority, phase status) - are they schema-derived?\n5. Check default values - do they match schema defaults?\n\nPRINCIPLES TO ENFORCE:\n- SINGLE SOURCE OF TRUTH: schemas/*.json and templates/*.json\n- DRY: No duplicate definitions of structures/enums/defaults\n- SOLID: Scripts should depend on abstractions (lib functions), not concrete values\n- Schema-driven: Runtime should validate against and derive from schemas\n\nDELIVERABLES:\n- Comprehensive grep/audit report of all hardcoded values\n- Prioritized list of violations by severity\n- Refactoring plan with helper functions to centralize\n- Tests to prevent regression (schema drift detection)\n\nRelated: v0.13.3 fix for migration phase hardcoding",
+        "phase": "core",
+        "labels": [
+          "architecture",
+          "code-smell",
+          "dry-violation",
+          "solid-violation",
+          "tech-debt"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "TECH DEBT: Audit and eliminate hardcoded values - enforce schema-driven design",
+        "status": "pending",
+        "priority": "high",
+        "description": "Found hardcoded phase structures in migration (fixed in v0.13.3), but this is likely systemic. Need comprehensive audit:\n\nKNOWN ISSUES:\n- lib/migrate.sh had hardcoded 4-phase structure (fixed - now reads from template)\n- lib/todowrite-integration.sh has verb mappings that may need review\n- scripts/benchmark-performance.sh has hardcoded phase array for tests\n- scripts/phases.sh has hardcoded examples in help text\n- Likely MORE throughout codebase\n\nAUDIT SCOPE:\n1. Find ALL hardcoded values that should derive from schemas/templates\n2. Identify validation logic duplicated across scripts vs centralized in lib/\n3. Check for magic strings/numbers that should be constants\n4. Review enum values (status, priority, phase status) - are they schema-derived?\n5. Check default values - do they match schema defaults?\n\nPRINCIPLES TO ENFORCE:\n- SINGLE SOURCE OF TRUTH: schemas/*.json and templates/*.json\n- DRY: No duplicate definitions of structures/enums/defaults\n- SOLID: Scripts should depend on abstractions (lib functions), not concrete values\n- Schema-driven: Runtime should validate against and derive from schemas\n\nDELIVERABLES:\n- Comprehensive grep/audit report of all hardcoded values\n- Prioritized list of violations by severity\n- Refactoring plan with helper functions to centralize\n- Tests to prevent regression (schema drift detection)\n\nRelated: v0.13.3 fix for migration phase hardcoding",
+        "phase": "core",
+        "labels": [
+          "architecture",
+          "audit",
+          "code-smell",
+          "dry-violation",
+          "solid-violation",
+          "tech-debt"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_985a9f7c7925",
+      "timestamp": "2025-12-26T14:49:17Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T310",
+      "before": {
+        "title": "ENHANCEMENT: Consolidate fix/repair terminology and functionality into unified pattern",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem Statement\nThe codebase currently uses inconsistent terminology and patterns for auto-fixing/repairing data:\n1. `validate --fix` - Fixes checksum, focus mismatch, multiple active tasks\n2. `migrate repair` - Fixes phase structure, _meta fields, focus fields\n3. `init --update-claude-md` - Updates CLAUDE.md injection\n\nThis creates confusion about:\n- When to use which command\n- What each command actually fixes\n- Flag conventions (--fix vs repair subcommand)\n\n## Current State Analysis\n\n### `validate --fix` capabilities:\n- Updates checksum to match tasks array\n- Fixes focus.currentTask to match active task\n- Keeps only first active task (deactivates others)\n- Updates CLAUDE.md injection if outdated\n\n### `migrate repair` capabilities:\n- Ensures canonical 5-phase structure\n- Adds missing phases, removes obsolete phases\n- Fixes phase ordering\n- Ensures _meta has all required fields\n- Ensures focus has all required fields\n- Preserves existing status/timestamps\n\n### Flag Convention Inconsistencies:\n- Some commands use `--flag` (double dash): --fix, --dry-run, --auto\n- Some commands use subcommands: repair, status, run\n- No consistent pattern across CLI\n\n## Proposed Solution\n\n### Option A: Unified `--fix` flag\nAdd `--fix` flag to all relevant commands:\n- `validate --fix` (existing)\n- `migrate --fix` (instead of `migrate repair`)\n- `init --fix` (fix project issues)\n\n### Option B: Standalone `repair` command\nCreate `claude-todo repair` as top-level command:\n- `repair --dry-run` - Preview all repairs\n- `repair --auto` - Apply all repairs\n- `repair phases` - Fix phases only\n- `repair schema` - Fix schema compliance\n- `repair checksum` - Fix checksums\n\n### Option C: Hybrid (Recommended)\nKeep `validate --fix` for validation-related fixes\nCreate `claude-todo repair` for structural repairs\nEnsure both produce consistent output format\n\n## Implementation Tasks (if approved)\n1. Create lib/repair.sh with reusable repair interface\n2. Refactor migrate repair to use lib/repair.sh\n3. Add repair logic for other scenarios\n4. Ensure consistent flag naming across CLI\n5. Update documentation\n6. Add integration tests for repair scenarios\n\n## Decision Needed\n- Which option to implement (A, B, or C)?\n- Should --fix and repair both exist or consolidate?\n- What is the \"escape hatch\" for users when things break?",
+        "phase": "core",
+        "labels": [
+          "dx",
+          "enhancement",
+          "feature-phase",
+          "refactor"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "ENHANCEMENT: Consolidate fix/repair terminology and functionality into unified pattern",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem Statement\nThe codebase currently uses inconsistent terminology and patterns for auto-fixing/repairing data:\n1. `validate --fix` - Fixes checksum, focus mismatch, multiple active tasks\n2. `migrate repair` - Fixes phase structure, _meta fields, focus fields\n3. `init --update-claude-md` - Updates CLAUDE.md injection\n\nThis creates confusion about:\n- When to use which command\n- What each command actually fixes\n- Flag conventions (--fix vs repair subcommand)\n\n## Current State Analysis\n\n### `validate --fix` capabilities:\n- Updates checksum to match tasks array\n- Fixes focus.currentTask to match active task\n- Keeps only first active task (deactivates others)\n- Updates CLAUDE.md injection if outdated\n\n### `migrate repair` capabilities:\n- Ensures canonical 5-phase structure\n- Adds missing phases, removes obsolete phases\n- Fixes phase ordering\n- Ensures _meta has all required fields\n- Ensures focus has all required fields\n- Preserves existing status/timestamps\n\n### Flag Convention Inconsistencies:\n- Some commands use `--flag` (double dash): --fix, --dry-run, --auto\n- Some commands use subcommands: repair, status, run\n- No consistent pattern across CLI\n\n## Proposed Solution\n\n### Option A: Unified `--fix` flag\nAdd `--fix` flag to all relevant commands:\n- `validate --fix` (existing)\n- `migrate --fix` (instead of `migrate repair`)\n- `init --fix` (fix project issues)\n\n### Option B: Standalone `repair` command\nCreate `claude-todo repair` as top-level command:\n- `repair --dry-run` - Preview all repairs\n- `repair --auto` - Apply all repairs\n- `repair phases` - Fix phases only\n- `repair schema` - Fix schema compliance\n- `repair checksum` - Fix checksums\n\n### Option C: Hybrid (Recommended)\nKeep `validate --fix` for validation-related fixes\nCreate `claude-todo repair` for structural repairs\nEnsure both produce consistent output format\n\n## Implementation Tasks (if approved)\n1. Create lib/repair.sh with reusable repair interface\n2. Refactor migrate repair to use lib/repair.sh\n3. Add repair logic for other scenarios\n4. Ensure consistent flag naming across CLI\n5. Update documentation\n6. Add integration tests for repair scenarios\n\n## Decision Needed\n- Which option to implement (A, B, or C)?\n- Should --fix and repair both exist or consolidate?\n- What is the \"escape hatch\" for users when things break?",
+        "phase": "core",
+        "labels": [
+          "dx",
+          "enhancement",
+          "feature-phase",
+          "refactor",
+          "tech-debt",
+          "terminology"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_6e3a12fa7127",
+      "timestamp": "2025-12-26T14:49:19Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T424",
+      "before": {
+        "title": "P3: Standardize _meta envelope fields across all commands",
+        "status": "pending",
+        "priority": "medium",
+        "description": "All JSON outputs MUST include consistent _meta fields: format, version, command, timestamp. Some commands have inconsistent _meta.",
+        "phase": "maintenance",
+        "labels": [
+          "json",
+          "llm-agent-first",
+          "p3",
+          "v0.17.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "P3: Standardize _meta envelope fields across all commands",
+        "status": "pending",
+        "priority": "medium",
+        "description": "All JSON outputs MUST include consistent _meta fields: format, version, command, timestamp. Some commands have inconsistent _meta.",
+        "phase": "maintenance",
+        "labels": [
+          "json",
+          "json-output",
+          "llm-agent-first",
+          "p3",
+          "v0.17.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_bdcef0dfcd34",
+      "timestamp": "2025-12-26T14:49:20Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T425",
+      "before": {
+        "title": "P3: Add hierarchy fields to task JSON output",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Write commands MUST include type, parentId, size fields in task JSON per HIERARCHY-ENHANCEMENT-SPEC.",
+        "phase": "maintenance",
+        "labels": [
+          "hierarchy",
+          "json",
+          "llm-agent-first",
+          "p3",
+          "v0.17.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "P3: Add hierarchy fields to task JSON output",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Write commands MUST include type, parentId, size fields in task JSON per HIERARCHY-ENHANCEMENT-SPEC.",
+        "phase": "maintenance",
+        "labels": [
+          "hierarchy",
+          "json",
+          "json-output",
+          "llm-agent-first",
+          "p3",
+          "v0.17.0"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b3a10436ba13",
+      "timestamp": "2025-12-26T14:49:21Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T558",
+      "before": {
+        "title": "ENHANCE: Add 'empty: true' field to JSON output when matches=0",
+        "status": "pending",
+        "priority": "low",
+        "description": "Exit code 100 (EXIT_NO_DATA) indicates empty results. Consider adding explicit 'empty: true' field to JSON output for clearer LLM agent parsing. Currently agents must check 'matches.length == 0' or 'summary.matches == 0'. An explicit boolean would be more direct. Affects: find, list, and other commands that can return empty results.",
+        "phase": "polish",
+        "labels": [
+          "enhancement",
+          "find-command",
+          "lllm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "ENHANCE: Add 'empty: true' field to JSON output when matches=0",
+        "status": "pending",
+        "priority": "low",
+        "description": "Exit code 100 (EXIT_NO_DATA) indicates empty results. Consider adding explicit 'empty: true' field to JSON output for clearer LLM agent parsing. Currently agents must check 'matches.length == 0' or 'summary.matches == 0'. An explicit boolean would be more direct. Affects: find, list, and other commands that can return empty results.",
+        "phase": "polish",
+        "labels": [
+          "enhancement",
+          "find-command",
+          "json-output",
+          "lllm-agent-first",
+          "llm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_7d06295770e4",
+      "timestamp": "2025-12-26T14:49:24Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T448",
+      "before": {
+        "title": "RESEARCH: Release Version Management System Design",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem Statement\nCurrent version label system (v0.15.0, v0.17.0, etc.) has issues:\n1. Version numbers shift as patches and features change scope\n2. Tasks get assigned to versions that never actually release those features\n3. No tracking of what actually shipped in which version\n4. Version labels get out of sync with actual releases\n5. Hallucination/drift between planned vs actual release contents\n\n## Research Questions\n1. How should claude-todo track application versions vs task associations?\n2. Should there be a 'release' entity separate from labels?\n3. How to handle version bumps that move tasks between releases?\n4. How to track what actually shipped vs what was planned?\n5. How to support semver (major.minor.patch) semantics?\n\n## Potential Solutions to Explore\n\n### Option A: Release Entity\n```json\n{\n  \"releases\": {\n    \"v0.19.0\": {\n      \"status\": \"planned\",  // planned, in-progress, released\n      \"targetDate\": null,\n      \"releasedAt\": null,\n      \"tasks\": [\"T429\", \"T430\"],\n      \"changelog\": \"...\"\n    }\n  }\n}\n```\n\n### Option B: Task Release Field\n```json\n{\n  \"id\": \"T429\",\n  \"plannedRelease\": \"v0.19.0\",\n  \"actualRelease\": null,  // Set when task ships\n  \"releaseHistory\": [\"v0.18.0\", \"v0.19.0\"]  // If moved\n}\n```\n\n### Option C: Release Branch Tracking\nIntegration with git tags/releases to sync actual versions.\n\n## Deliverables\n1. Design document comparing options\n2. Schema proposal (if schema change needed)\n3. CLI command proposals (release create, release add, release ship)\n4. Integration with existing phase/label systems\n\n## Success Criteria\n- [ ] Clear recommendation for release tracking approach\n- [ ] Schema design if applicable\n- [ ] Understanding of semver handling\n- [ ] Plan for migration from version labels\n\n## NOT in Scope (for this research)\n- Actual implementation\n- Git integration details\n- CI/CD automation",
+        "phase": "core",
+        "labels": [
+          "feature",
+          "release-management",
+          "research",
+          "schema"
+        ],
+        "files": [
+          "docs/specs/RELEASE-VERSION-MANAGEMENT-IMPLEMENTATION-REPORT.md",
+          "docs/specs/RELEASE-VERSION-MANAGEMENT-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "RESEARCH: Release Version Management System Design",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem Statement\nCurrent version label system (v0.15.0, v0.17.0, etc.) has issues:\n1. Version numbers shift as patches and features change scope\n2. Tasks get assigned to versions that never actually release those features\n3. No tracking of what actually shipped in which version\n4. Version labels get out of sync with actual releases\n5. Hallucination/drift between planned vs actual release contents\n\n## Research Questions\n1. How should claude-todo track application versions vs task associations?\n2. Should there be a 'release' entity separate from labels?\n3. How to handle version bumps that move tasks between releases?\n4. How to track what actually shipped vs what was planned?\n5. How to support semver (major.minor.patch) semantics?\n\n## Potential Solutions to Explore\n\n### Option A: Release Entity\n```json\n{\n  \"releases\": {\n    \"v0.19.0\": {\n      \"status\": \"planned\",  // planned, in-progress, released\n      \"targetDate\": null,\n      \"releasedAt\": null,\n      \"tasks\": [\"T429\", \"T430\"],\n      \"changelog\": \"...\"\n    }\n  }\n}\n```\n\n### Option B: Task Release Field\n```json\n{\n  \"id\": \"T429\",\n  \"plannedRelease\": \"v0.19.0\",\n  \"actualRelease\": null,  // Set when task ships\n  \"releaseHistory\": [\"v0.18.0\", \"v0.19.0\"]  // If moved\n}\n```\n\n### Option C: Release Branch Tracking\nIntegration with git tags/releases to sync actual versions.\n\n## Deliverables\n1. Design document comparing options\n2. Schema proposal (if schema change needed)\n3. CLI command proposals (release create, release add, release ship)\n4. Integration with existing phase/label systems\n\n## Success Criteria\n- [ ] Clear recommendation for release tracking approach\n- [ ] Schema design if applicable\n- [ ] Understanding of semver handling\n- [ ] Plan for migration from version labels\n\n## NOT in Scope (for this research)\n- Actual implementation\n- Git integration details\n- CI/CD automation",
+        "phase": "core",
+        "labels": [
+          "feature",
+          "future",
+          "release-management",
+          "research",
+          "schema"
+        ],
+        "files": [
+          "docs/specs/RELEASE-VERSION-MANAGEMENT-IMPLEMENTATION-REPORT.md",
+          "docs/specs/RELEASE-VERSION-MANAGEMENT-SPEC.md"
+        ],
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_d2254c9360fa",
+      "timestamp": "2025-12-26T14:49:25Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T479",
+      "before": {
+        "title": "P3 Low Priority Enhancements",
+        "status": "pending",
+        "priority": "low",
+        "description": "Phase 3 enhancements: batch semantics, Unicode validation, lock retry, globals refactor, perf requirements, language examples. See docs/specs/LLM-AGENT-FIRST-FINALIZATION-PLAN.md Tasks 4.1-4.6",
+        "phase": "polish",
+        "labels": [
+          "p3",
+          "phase-3"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "P3 Low Priority Enhancements",
+        "status": "pending",
+        "priority": "low",
+        "description": "Phase 3 enhancements: batch semantics, Unicode validation, lock retry, globals refactor, perf requirements, language examples. See docs/specs/LLM-AGENT-FIRST-FINALIZATION-PLAN.md Tasks 4.1-4.6",
+        "phase": "polish",
+        "labels": [
+          "backlog",
+          "p3",
+          "phase-3"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_622080207bd0",
+      "timestamp": "2025-12-26T14:49:26Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T525",
+      "before": {
+        "title": "CHORE: Implement memory retention automation script",
+        "status": "pending",
+        "priority": "low",
+        "description": "Create scripts/cleanup-memories.sh to automate memory lifecycle management per retention policy.\n\nPOLICY CATEGORIES:\n1. permanent (indefinite): project_purpose.md, project_*.md - core identity\n2. reference (indefinite, quarterly review): tech_stack.md, code_style_*.md, *_checklist.md\n3. philosophy (indefinite): *-philosophy.md, *-principles.md\n4. session-handoff (14 days): session-handoff-*.md, session-*.md\n5. task-completion (30 days → archive): t*-complete-*.md\n6. pending-work (delete when resolved): *-pending.md, *-blocked.md\n\nSCRIPT REQUIREMENTS:\n- --dry-run flag for preview\n- Age-based deletion for session files (14 days)\n- Archive support for task-completion files (30 days)\n- Task status checking via claude-todo exists for pending-work files\n- Verbose output showing what would be deleted/archived\n- Integration with claude-todo validate for safety\n\nCLEANUP RULES:\n- session-handoff: delete if age > 14 days AND no unresolved tasks\n- task-completion: archive to .serena/memories/archive/ if age > 30 days\n- pending-work: delete when all referenced T### tasks have status=done\n\nARCHIVE STRUCTURE:\n- Path: .serena/memories/archive/YYYY-MM/filename.md\n- Preserve original timestamps\n- Compress after 90 days (optional)\n\nVALIDATION:\n- Verify task IDs exist before deciding on pending-work deletion\n- Check session-handoff dates against file modification time\n- Report any anomalies",
+        "phase": "polish",
+        "labels": [
+          "automation",
+          "chore",
+          "memory-management"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "CHORE: Implement memory retention automation script",
+        "status": "pending",
+        "priority": "low",
+        "description": "Create scripts/cleanup-memories.sh to automate memory lifecycle management per retention policy.\n\nPOLICY CATEGORIES:\n1. permanent (indefinite): project_purpose.md, project_*.md - core identity\n2. reference (indefinite, quarterly review): tech_stack.md, code_style_*.md, *_checklist.md\n3. philosophy (indefinite): *-philosophy.md, *-principles.md\n4. session-handoff (14 days): session-handoff-*.md, session-*.md\n5. task-completion (30 days → archive): t*-complete-*.md\n6. pending-work (delete when resolved): *-pending.md, *-blocked.md\n\nSCRIPT REQUIREMENTS:\n- --dry-run flag for preview\n- Age-based deletion for session files (14 days)\n- Archive support for task-completion files (30 days)\n- Task status checking via claude-todo exists for pending-work files\n- Verbose output showing what would be deleted/archived\n- Integration with claude-todo validate for safety\n\nCLEANUP RULES:\n- session-handoff: delete if age > 14 days AND no unresolved tasks\n- task-completion: archive to .serena/memories/archive/ if age > 30 days\n- pending-work: delete when all referenced T### tasks have status=done\n\nARCHIVE STRUCTURE:\n- Path: .serena/memories/archive/YYYY-MM/filename.md\n- Preserve original timestamps\n- Compress after 90 days (optional)\n\nVALIDATION:\n- Verify task IDs exist before deciding on pending-work deletion\n- Check session-handoff dates against file modification time\n- Report any anomalies",
+        "phase": "polish",
+        "labels": [
+          "automation",
+          "chore",
+          "maintenance",
+          "memory-management"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_b12c1646d093",
+      "timestamp": "2025-12-26T14:50:55Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_cancelled",
+      "actor": "system",
+      "taskId": "T881",
+      "before": {
+        "status": "pending",
+        "cancelledAt": null
+      },
+      "after": {
+        "status": "cancelled",
+        "cancelledAt": "2025-12-26T14:50:54Z"
+      },
+      "details": {
+        "reason": "Duplicate of T847 (Refactor archive.sh jq invocations) which will fix ARG_MAX issue",
+        "childStrategy": "block",
+        "affectedCount": 1
+      }
+    },
+    {
+      "id": "log_c630910081f7",
+      "timestamp": "2025-12-26T14:50:57Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T847",
+      "before": {
+        "title": "Refactor archive.sh (169 jq invocations)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Refactor scripts/archive.sh to use jq wrapper functions. File has 169 jq invocations - highest in codebase. Major token savings opportunity.",
+        "phase": "core",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T846"
+        ],
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Refactor archive.sh (169 jq invocations)",
+        "status": "pending",
+        "priority": "high",
+        "description": "Refactor scripts/archive.sh to use jq wrapper functions. File has 169 jq invocations - highest in codebase. Major token savings opportunity.",
+        "phase": "core",
+        "labels": null,
+        "files": null,
+        "acceptance": null,
+        "depends": [
+          "T846"
+        ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766760754-6c9be8",
+      "timestamp": "2025-12-26T14:52:34Z",
+      "action": "task_created",
+      "taskId": "T882",
+      "actor": "system",
+      "details": {
+        "title": "FEATURE: Add 'persistent' field for evergreen epics",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "FEATURE: Add 'persistent' field for evergreen epics",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766760771-1d674d",
+      "timestamp": "2025-12-26T14:52:51Z",
+      "action": "task_created",
+      "taskId": "T883",
+      "actor": "system",
+      "details": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_3216f86d4f49",
+      "timestamp": "2025-12-26T14:53:18Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_249eb5e18f8c",
+      "timestamp": "2025-12-26T19:13:36Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_db9e99148379",
+      "timestamp": "2025-12-26T19:13:55Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_12597386eb2f",
+      "timestamp": "2025-12-26T19:14:19Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_2981b08f80f9",
+      "timestamp": "2025-12-26T19:14:33Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_6040d5bff115",
+      "timestamp": "2025-12-26T19:14:51Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_8fd6ef3e3c35",
+      "timestamp": "2025-12-26T19:15:08Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_5e57864f8a58",
+      "timestamp": "2025-12-26T19:15:26Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T883",
+      "before": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": null,
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "FEATURE: Add persistent field for evergreen epics",
+        "status": "pending",
+        "priority": "medium",
+        "description": "Add optional 'persistent: true' boolean field to task schema that prevents auto-completion when all children are done. For evergreen/bucket epics like Tech Debt, Bugs, Research, Maintenance that should never auto-close.\n\nSCHEMA CHANGE (schemas/todo.schema.json):\n  persistent: { type: boolean, default: false }\n\nCLI INTEGRATION:\n  claude-todo add 'Tech Debt' --type epic --persistent\n  claude-todo update T001 --persistent true\n\nFILES TO MODIFY:\n  - schemas/todo.schema.json\n  - lib/hierarchy.sh  \n  - scripts/add-task.sh\n  - scripts/update-task.sh\n  - scripts/complete-task.sh\n  - tests/unit/hierarchy.bats\n  - docs/\n\nSee notes for full 5-agent research consensus and analysis.",
+        "phase": "core",
+        "labels": [
+          "feature",
+          "hierarchy",
+          "schema"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_1d2e73fbe039",
+      "timestamp": "2025-12-26T19:43:28Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_7f6c04c1228b",
+      "timestamp": "2025-12-26T19:44:16Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_9a4aba241d76",
+      "timestamp": "2025-12-26T19:44:18Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_1fb28aa1d224",
+      "timestamp": "2025-12-26T19:44:38Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log_86f58c6994b6",
+      "timestamp": "2025-12-26T19:44:39Z",
+      "sessionId": null,
+      "action": "config_changed",
+      "actor": "system",
+      "taskId": null,
+      "before": null,
+      "after": null,
+      "details": {
+        "operation": "backup_rotation",
+        "type": "archive",
+        "deleted": 1,
+        "retained": 3,
+        "errors": 0
+      }
+    },
+    {
+      "id": "log-1766778569-b72da9",
+      "timestamp": "2025-12-26T19:49:29Z",
+      "action": "task_created",
+      "taskId": "T884",
+      "actor": "system",
+      "details": {
+        "title": "BATS Optimization Phase 2: Full Compliance",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "BATS Optimization Phase 2: Full Compliance",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766778590-ce0c33",
+      "timestamp": "2025-12-26T19:49:50Z",
+      "action": "task_created",
+      "taskId": "T885",
+      "actor": "system",
+      "details": {
+        "title": "Migrate all 55 remaining test files to setup_file() pattern",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Migrate all 55 remaining test files to setup_file() pattern",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766778592-413f9c",
+      "timestamp": "2025-12-26T19:49:52Z",
+      "action": "task_created",
+      "taskId": "T886",
+      "actor": "system",
+      "details": {
+        "title": "Create static fixture files with pre-computed checksums",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Create static fixture files with pre-computed checksums",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766778593-e36d4d",
+      "timestamp": "2025-12-26T19:49:53Z",
+      "action": "task_created",
+      "taskId": "T887",
+      "actor": "system",
+      "details": {
+        "title": "Implement jq assertion batching across all test files",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Implement jq assertion batching across all test files",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778595-098953",
+      "timestamp": "2025-12-26T19:49:55Z",
+      "action": "task_created",
+      "taskId": "T888",
+      "actor": "system",
+      "details": {
+        "title": "Review and disposition tests/REVIEW-tests/ directory",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Review and disposition tests/REVIEW-tests/ directory",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778596-1f82e3",
+      "timestamp": "2025-12-26T19:49:56Z",
+      "action": "task_created",
+      "taskId": "T889",
+      "actor": "system",
+      "details": {
+        "title": "Update tests/README.md with BATS optimization standards",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Update tests/README.md with BATS optimization standards",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778597-30e2cb",
+      "timestamp": "2025-12-26T19:49:57Z",
+      "action": "task_created",
+      "taskId": "T890",
+      "actor": "system",
+      "details": {
+        "title": "Verify GNU parallel and validate parallel test execution",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Verify GNU parallel and validate parallel test execution",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766778614-251cf2",
+      "timestamp": "2025-12-26T19:50:14Z",
+      "action": "task_created",
+      "taskId": "T891",
+      "actor": "system",
+      "details": {
+        "title": "Migrate tests/unit/*.bats to setup_file() (50 files)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Migrate tests/unit/*.bats to setup_file() (50 files)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766778615-04e456",
+      "timestamp": "2025-12-26T19:50:15Z",
+      "action": "task_created",
+      "taskId": "T892",
+      "actor": "system",
+      "details": {
+        "title": "Migrate tests/integration/*.bats to setup_file() (6 remaining)",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Migrate tests/integration/*.bats to setup_file() (6 remaining)",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log-1766778617-6e6cc9",
+      "timestamp": "2025-12-26T19:50:17Z",
+      "action": "task_created",
+      "taskId": "T893",
+      "actor": "system",
+      "details": {
+        "title": "Migrate tests/golden/golden.bats to setup_file()",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Migrate tests/golden/golden.bats to setup_file()",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778618-25e10a",
+      "timestamp": "2025-12-26T19:50:18Z",
+      "action": "task_created",
+      "taskId": "T894",
+      "actor": "system",
+      "details": {
+        "title": "Migrate tests/edge-cases/ and tests/migration/ to setup_file()",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Migrate tests/edge-cases/ and tests/migration/ to setup_file()",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778633-d4b3fe",
+      "timestamp": "2025-12-26T19:50:33Z",
+      "action": "task_created",
+      "taskId": "T895",
+      "actor": "system",
+      "details": {
+        "title": "Audit debug scripts in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Audit debug scripts in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778635-5ed4e8",
+      "timestamp": "2025-12-26T19:50:35Z",
+      "action": "task_created",
+      "taskId": "T896",
+      "actor": "system",
+      "details": {
+        "title": "Audit focus/hierarchy tests in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Audit focus/hierarchy tests in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778636-c96551",
+      "timestamp": "2025-12-26T19:50:36Z",
+      "action": "task_created",
+      "taskId": "T897",
+      "actor": "system",
+      "details": {
+        "title": "Audit JSON fixtures in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Audit JSON fixtures in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766778638-47a026",
+      "timestamp": "2025-12-26T19:50:38Z",
+      "action": "task_created",
+      "taskId": "T898",
+      "actor": "system",
+      "details": {
+        "title": "Audit special tests in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Audit special tests in REVIEW-tests/",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log-1766779701-28e0f6",
+      "timestamp": "2025-12-26T20:08:21Z",
+      "action": "task_created",
+      "taskId": "T899",
+      "actor": "system",
+      "details": {
+        "title": "Fix test isolation issues for parallel execution",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix test isolation issues for parallel execution",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log_c4c368f680ba",
+      "timestamp": "2025-12-26T20:18:16Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T427",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T20:18:16Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log-1766780497-2e43b0",
+      "timestamp": "2025-12-26T20:21:37Z",
+      "action": "task_created",
+      "taskId": "T900",
+      "actor": "system",
+      "details": {
+        "title": "Fix parallel test race conditions in blockers analyze tests",
+        "status": "pending",
+        "priority": "medium"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix parallel test race conditions in blockers analyze tests",
+        "status": "pending",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "log_a194498af4ca",
+      "timestamp": "2025-12-26T20:21:59Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T900",
+      "before": {
+        "title": "Fix parallel test race conditions in blockers analyze tests",
+        "status": "pending",
+        "priority": "medium",
+        "description": "9-10 tests fail intermittently when running test suite with parallel execution (bats --jobs N) but pass consistently in sequential mode. This is a test infrastructure issue, not a product bug.\n\nAFFECTED TESTS:\n- blockers analyze tests\n- critical-path tests\n\nSYMPTOMS:\n- Tests pass 100% in sequential mode (./tests/run-all-tests.sh --no-parallel)\n- Tests fail 9-10 times in parallel mode (./tests/run-all-tests.sh)\n- Failures are non-deterministic (race condition)\n\nROOT CAUSE HYPOTHESIS:\n- Shared temp directory conflicts in BATS parallel execution\n- Tests may be writing to same paths or reading stale state\n- BATS_FILE_TMPDIR vs BATS_TEST_TMPDIR misuse possible\n\nINVESTIGATION STEPS:\n1. Run: bats --jobs 8 tests/unit/blockers.bats (multiple times to reproduce)\n2. Check temp directory isolation in affected test files\n3. Verify setup_file() vs setup() patterns per BATS-OPTIMIZATION-SPEC\n4. Look for shared state between tests (global vars, file paths)\n\nREFERENCE:\n- BATS-OPTIMIZATION-SPEC: claudedocs/BATS-OPTIMIZATION-SPEC.md\n- Discovered during T694 verification (2025-12-26)\n- Sequential test results: 2096/2096 PASS\n- Parallel test results: ~2086-2087/2096 PASS",
+        "phase": "maintenance",
+        "labels": [
+          "bats",
+          "bug",
+          "infrastructure",
+          "test"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix parallel test race conditions in blockers analyze tests",
+        "status": "pending",
+        "priority": "medium",
+        "description": "9-10 tests fail intermittently when running test suite with parallel execution (bats --jobs N) but pass consistently in sequential mode. This is a test infrastructure issue, not a product bug.\n\nAFFECTED TESTS:\n- blockers analyze tests\n- critical-path tests\n\nSYMPTOMS:\n- Tests pass 100% in sequential mode (./tests/run-all-tests.sh --no-parallel)\n- Tests fail 9-10 times in parallel mode (./tests/run-all-tests.sh)\n- Failures are non-deterministic (race condition)\n\nROOT CAUSE HYPOTHESIS:\n- Shared temp directory conflicts in BATS parallel execution\n- Tests may be writing to same paths or reading stale state\n- BATS_FILE_TMPDIR vs BATS_TEST_TMPDIR misuse possible\n\nINVESTIGATION STEPS:\n1. Run: bats --jobs 8 tests/unit/blockers.bats (multiple times to reproduce)\n2. Check temp directory isolation in affected test files\n3. Verify setup_file() vs setup() patterns per BATS-OPTIMIZATION-SPEC\n4. Look for shared state between tests (global vars, file paths)\n\nREFERENCE:\n- BATS-OPTIMIZATION-SPEC: claudedocs/BATS-OPTIMIZATION-SPEC.md\n- Discovered during T694 verification (2025-12-26)\n- Sequential test results: 2096/2096 PASS\n- Parallel test results: ~2086-2087/2096 PASS",
+        "phase": "maintenance",
+        "labels": [
+          "bats",
+          "bug",
+          "infrastructure",
+          "test"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_93661df2d9e8",
+      "timestamp": "2025-12-26T20:35:04Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T860",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T20:35:04Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_2f5e1a950664",
+      "timestamp": "2025-12-26T20:35:06Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T864",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T20:35:06Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_67f350e9bf10",
+      "timestamp": "2025-12-26T20:35:09Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T865",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T20:35:09Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_d905cc1a89ab",
+      "timestamp": "2025-12-26T20:35:26Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "status_changed",
+      "actor": "system",
+      "taskId": "T800",
+      "before": {
+        "status": "pending",
+        "completedAt": null
+      },
+      "after": {
+        "status": "done",
+        "completedAt": "2025-12-26T20:35:26Z"
+      },
+      "details": {
+        "field": "status",
+        "operation": "complete"
+      }
+    },
+    {
+      "id": "log_926804f7293a",
+      "timestamp": "2025-12-26T20:35:30Z",
+      "sessionId": "session_20251224_221622_f92f8a",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T377",
+      "before": {
+        "title": "Extract CLI wrapper logic to lib/cli-utils.sh",
+        "status": "pending",
+        "priority": "low",
+        "description": "Move the command resolution and suggestion logic from the inline WRAPPER_EOF in install.sh to a dedicated lib/cli-utils.sh for better maintainability and testing.",
+        "phase": "polish",
+        "labels": [
+          "llm-agent-first",
+          "refactoring"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Extract CLI wrapper logic to lib/cli-utils.sh",
+        "status": "pending",
+        "priority": "low",
+        "description": "Move the command resolution and suggestion logic from the inline WRAPPER_EOF in install.sh to a dedicated lib/cli-utils.sh for better maintainability and testing.",
+        "phase": "polish",
+        "labels": [
+          "llm-agent-first",
+          "refactoring"
+        ],
         "files": null,
         "acceptance": null,
         "depends": null,
