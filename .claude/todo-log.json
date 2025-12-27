@@ -3,9 +3,9 @@
   "version": "2.1.0",
   "project": "claude-todo",
   "_meta": {
-    "totalEntries": 2196,
+    "totalEntries": 2199,
     "firstEntry": "2025-12-13T07:14:38Z",
-    "lastEntry": "2025-12-27T07:47:14Z",
+    "lastEntry": "2025-12-27T07:51:47Z",
     "entriesPruned": 0
   },
   "entries": [
@@ -52693,6 +52693,153 @@
         "depends": [
           "T652"
         ],
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log-1766821879-bb29cd",
+      "timestamp": "2025-12-27T07:51:19Z",
+      "action": "task_created",
+      "taskId": "T925",
+      "actor": "system",
+      "details": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high"
+      },
+      "before": null,
+      "after": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high"
+      }
+    },
+    {
+      "id": "log_5c61e7bc900c",
+      "timestamp": "2025-12-27T07:51:36Z",
+      "sessionId": "session_20251226_234029_22628e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T925",
+      "before": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem\nThe --tree flag shows 'No hierarchy data available' despite valid hierarchy data existing.\n\n## Observed\n- ct tree --parent T650 --human → \"No hierarchy data available\"  \n- JSON output: .tree field is empty array []\n- Tasks have correct parentId (T908→T651→T650) but tree not built\n\n## Expected (per LLM-AGENT-FIRST-SPEC)\n\n### JSON Default\n```json\n{\"tree\": [{\"id\": \"T650\", \"children\": [{\"id\": \"T651\", \"children\": [...]}]}]}\n```\n\n### Human (--human)\n```\nT650 [epic] EPIC: Rebrand\n├── T651 [task] Phase 1\n│   ├── T908 [subtask] Create paths.sh\n│   └── T909 [subtask] Add functions\n└── T652 [task] Phase 2\n```\n\n## Root Cause\nTree building logic not connected to --tree code path. show command works (has hierarchy.children), list --tree does not.\n\n## Files\n- scripts/list-tasks.sh\n- lib/hierarchy.sh\n\n## Acceptance\n1. ct tree returns .tree[] with nested children (JSON)\n2. ct tree --human renders ASCII tree\n3. ct tree --parent ID shows subtree",
+        "phase": "core",
+        "labels": [
+          "bug",
+          "hierarchy",
+          "llm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem\nThe --tree flag shows 'No hierarchy data available' despite valid hierarchy data existing.\n\n## Observed\n- ct tree --parent T650 --human → \"No hierarchy data available\"  \n- JSON output: .tree field is empty array []\n- Tasks have correct parentId (T908→T651→T650) but tree not built\n\n## Expected (per LLM-AGENT-FIRST-SPEC)\n\n### JSON Default\n```json\n{\"tree\": [{\"id\": \"T650\", \"children\": [{\"id\": \"T651\", \"children\": [...]}]}]}\n```\n\n### Human (--human)\n```\nT650 [epic] EPIC: Rebrand\n├── T651 [task] Phase 1\n│   ├── T908 [subtask] Create paths.sh\n│   └── T909 [subtask] Add functions\n└── T652 [task] Phase 2\n```\n\n## Root Cause\nTree building logic not connected to --tree code path. show command works (has hierarchy.children), list --tree does not.\n\n## Files\n- scripts/list-tasks.sh\n- lib/hierarchy.sh\n\n## Acceptance\n1. ct tree returns .tree[] with nested children (JSON)\n2. ct tree --human renders ASCII tree\n3. ct tree --parent ID shows subtree",
+        "phase": "core",
+        "labels": [
+          "bug",
+          "hierarchy",
+          "llm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_a9c30b8c51b1",
+      "timestamp": "2025-12-27T07:51:39Z",
+      "sessionId": "session_20251226_234029_22628e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T925",
+      "before": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem\nThe --tree flag shows 'No hierarchy data available' despite valid hierarchy data existing.\n\n## Observed\n- ct tree --parent T650 --human → \"No hierarchy data available\"  \n- JSON output: .tree field is empty array []\n- Tasks have correct parentId (T908→T651→T650) but tree not built\n\n## Expected (per LLM-AGENT-FIRST-SPEC)\n\n### JSON Default\n```json\n{\"tree\": [{\"id\": \"T650\", \"children\": [{\"id\": \"T651\", \"children\": [...]}]}]}\n```\n\n### Human (--human)\n```\nT650 [epic] EPIC: Rebrand\n├── T651 [task] Phase 1\n│   ├── T908 [subtask] Create paths.sh\n│   └── T909 [subtask] Add functions\n└── T652 [task] Phase 2\n```\n\n## Root Cause\nTree building logic not connected to --tree code path. show command works (has hierarchy.children), list --tree does not.\n\n## Files\n- scripts/list-tasks.sh\n- lib/hierarchy.sh\n\n## Acceptance\n1. ct tree returns .tree[] with nested children (JSON)\n2. ct tree --human renders ASCII tree\n3. ct tree --parent ID shows subtree",
+        "phase": "core",
+        "labels": [
+          "bug",
+          "hierarchy",
+          "llm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem\nThe --tree flag shows 'No hierarchy data available' despite valid hierarchy data existing.\n\n## Observed\n- ct tree --parent T650 --human → \"No hierarchy data available\"  \n- JSON output: .tree field is empty array []\n- Tasks have correct parentId (T908→T651→T650) but tree not built\n\n## Expected (per LLM-AGENT-FIRST-SPEC)\n\n### JSON Default\n```json\n{\"tree\": [{\"id\": \"T650\", \"children\": [{\"id\": \"T651\", \"children\": [...]}]}]}\n```\n\n### Human (--human)\n```\nT650 [epic] EPIC: Rebrand\n├── T651 [task] Phase 1\n│   ├── T908 [subtask] Create paths.sh\n│   └── T909 [subtask] Add functions\n└── T652 [task] Phase 2\n```\n\n## Root Cause\nTree building logic not connected to --tree code path. show command works (has hierarchy.children), list --tree does not.\n\n## Files\n- scripts/list-tasks.sh\n- lib/hierarchy.sh\n\n## Acceptance\n1. ct tree returns .tree[] with nested children (JSON)\n2. ct tree --human renders ASCII tree\n3. ct tree --parent ID shows subtree",
+        "phase": "core",
+        "labels": [
+          "bug",
+          "hierarchy",
+          "llm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "details": {
+        "operation": "update"
+      }
+    },
+    {
+      "id": "log_dbf26557564f",
+      "timestamp": "2025-12-27T07:51:47Z",
+      "sessionId": "session_20251226_234029_22628e",
+      "action": "task_updated",
+      "actor": "system",
+      "taskId": "T925",
+      "before": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem\nThe --tree flag shows 'No hierarchy data available' despite valid hierarchy data existing.\n\n## Observed\n- ct tree --parent T650 --human → \"No hierarchy data available\"  \n- JSON output: .tree field is empty array []\n- Tasks have correct parentId (T908→T651→T650) but tree not built\n\n## Expected (per LLM-AGENT-FIRST-SPEC)\n\n### JSON Default\n```json\n{\"tree\": [{\"id\": \"T650\", \"children\": [{\"id\": \"T651\", \"children\": [...]}]}]}\n```\n\n### Human (--human)\n```\nT650 [epic] EPIC: Rebrand\n├── T651 [task] Phase 1\n│   ├── T908 [subtask] Create paths.sh\n│   └── T909 [subtask] Add functions\n└── T652 [task] Phase 2\n```\n\n## Root Cause\nTree building logic not connected to --tree code path. show command works (has hierarchy.children), list --tree does not.\n\n## Files\n- scripts/list-tasks.sh\n- lib/hierarchy.sh\n\n## Acceptance\n1. ct tree returns .tree[] with nested children (JSON)\n2. ct tree --human renders ASCII tree\n3. ct tree --parent ID shows subtree",
+        "phase": "core",
+        "labels": [
+          "bug",
+          "hierarchy",
+          "llm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
+        "blockedBy": null
+      },
+      "after": {
+        "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+        "status": "pending",
+        "priority": "high",
+        "description": "## Problem\nThe --tree flag shows 'No hierarchy data available' despite valid hierarchy data existing.\n\n## Observed\n- ct tree --parent T650 --human → \"No hierarchy data available\"  \n- JSON output: .tree field is empty array []\n- Tasks have correct parentId (T908→T651→T650) but tree not built\n\n## Expected (per LLM-AGENT-FIRST-SPEC)\n\n### JSON Default\n```json\n{\"tree\": [{\"id\": \"T650\", \"children\": [{\"id\": \"T651\", \"children\": [...]}]}]}\n```\n\n### Human (--human)\n```\nT650 [epic] EPIC: Rebrand\n├── T651 [task] Phase 1\n│   ├── T908 [subtask] Create paths.sh\n│   └── T909 [subtask] Add functions\n└── T652 [task] Phase 2\n```\n\n## Root Cause\nTree building logic not connected to --tree code path. show command works (has hierarchy.children), list --tree does not.\n\n## Files\n- scripts/list-tasks.sh\n- lib/hierarchy.sh\n\n## Acceptance\n1. ct tree returns .tree[] with nested children (JSON)\n2. ct tree --human renders ASCII tree\n3. ct tree --parent ID shows subtree",
+        "phase": "core",
+        "labels": [
+          "bug",
+          "hierarchy",
+          "llm-agent-first"
+        ],
+        "files": null,
+        "acceptance": null,
+        "depends": null,
         "blockedBy": null
       },
       "details": {

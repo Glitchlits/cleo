@@ -121,9 +121,9 @@
       }
     ]
   },
-  "lastUpdated": "2025-12-27T07:47:14Z",
+  "lastUpdated": "2025-12-27T07:51:47Z",
   "_meta": {
-    "checksum": "b3d77704225f934d",
+    "checksum": "a1b2823cbbc7e4e8",
     "configVersion": "2.1.0",
     "lastSessionId": null,
     "activeSession": "session_20251226_234029_22628e",
@@ -4322,6 +4322,27 @@
       ],
       "depends": [
         "T923"
+      ]
+    },
+    {
+      "id": "T925",
+      "title": "Fix --tree flag: Missing JSON hierarchy and visual tree rendering",
+      "status": "pending",
+      "priority": "high",
+      "type": "task",
+      "parentId": null,
+      "createdAt": "2025-12-27T07:51:19Z",
+      "phase": "core",
+      "description": "## Problem\nThe --tree flag shows 'No hierarchy data available' despite valid hierarchy data existing.\n\n## Observed\n- ct tree --parent T650 --human → \"No hierarchy data available\"  \n- JSON output: .tree field is empty array []\n- Tasks have correct parentId (T908→T651→T650) but tree not built\n\n## Expected (per LLM-AGENT-FIRST-SPEC)\n\n### JSON Default\n```json\n{\"tree\": [{\"id\": \"T650\", \"children\": [{\"id\": \"T651\", \"children\": [...]}]}]}\n```\n\n### Human (--human)\n```\nT650 [epic] EPIC: Rebrand\n├── T651 [task] Phase 1\n│   ├── T908 [subtask] Create paths.sh\n│   └── T909 [subtask] Add functions\n└── T652 [task] Phase 2\n```\n\n## Root Cause\nTree building logic not connected to --tree code path. show command works (has hierarchy.children), list --tree does not.\n\n## Files\n- scripts/list-tasks.sh\n- lib/hierarchy.sh\n\n## Acceptance\n1. ct tree returns .tree[] with nested children (JSON)\n2. ct tree --human renders ASCII tree\n3. ct tree --parent ID shows subtree",
+      "labels": [
+        "bug",
+        "hierarchy",
+        "llm-agent-first"
+      ],
+      "notes": [
+        "2025-12-27 07:51:36 UTC: **LLM-AGENT-FIRST-SPEC Compliance:**\n- Part 3.4: JSON envelope MUST include $schema and _meta\n- Format resolution via resolve_format() - JSON is default\n- --human flag for text/visual rendering\n- No --format json needed per spec",
+        "2025-12-27 07:51:39 UTC: **Discovered during CLEO migration planning:**\n- T650 epic has T651-T654 as children\n- T651 task has T908-T913 as subtasks\n- show T651 correctly displays hierarchy.children\n- list --tree does NOT build tree structure\n- Bug blocks CLEO progress visibility",
+        "2025-12-27 07:51:47 UTC: Test Cases: (1) ct tree --parent T650 | jq .tree[0].children should be >0 (2) ct tree --human should show tree chars (3) ct tree --type epic should only show epics as roots"
       ]
     }
   ],
