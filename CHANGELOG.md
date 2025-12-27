@@ -5,6 +5,27 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.1] - 2025-12-27
+
+### Fixed
+- **Schema migration detection** - Fixed incorrect status code handling in `scripts/migrate.sh`
+  - Status code 3 (major version upgrade like 0.x → 2.x) was falling through to unknown/no-migration
+  - Now properly requires `--force` flag for major version upgrades
+  - Added status code 4 for "data newer than schema" (cannot migrate, upgrade cleo instead)
+  - `cleo migrate status` now shows correct migration needs for all version differences
+
+- **Project migration preserves .claude/** - `cleo claude-migrate --project` no longer removes `.claude/`
+  - Only migrates CLEO-specific files: todo.json, todo-config.json, todo-log.json, todo-archive.json
+  - Other files in `.claude/` (Claude Code settings, MCP configs, etc.) are preserved
+  - JSON output includes `claudeDirPreserved: true` and `remainingInClaude` count
+  - Detects if `.claude/` contains no CLEO files and reports "nothing to migrate"
+
+### Changed
+- **Migration status codes** - Improved semantic clarity in `lib/migrate.sh`
+  - `check_compatibility()` now returns: 0=current, 1=patch, 2=minor, 3=major, 4=data_newer
+  - Major version migrations (e.g., 0.2.1 → 2.4.0) are now allowed with `--force`
+  - Data newer than schema is now clearly separated as an upgrade-cleo scenario
+
 ## [0.38.0] - 2025-12-27
 
 ### Added

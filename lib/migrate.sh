@@ -877,8 +877,9 @@ migrate_todo_to_2_4_0() {
 # Returns:
 #   0 = current (no action needed)
 #   1 = patch_only (just bump version, no data transformation)
-#   2 = migration_needed (MINOR/MAJOR change requiring data transformation)
-#   3 = incompatible (data is newer than schema, or major version mismatch)
+#   2 = migration_needed (MINOR change requiring data transformation)
+#   3 = major_upgrade (MAJOR version upgrade - can migrate with --force)
+#   4 = data_newer (data is newer than schema - cannot migrate, upgrade cleo)
 check_compatibility() {
     local file="$1"
     local file_type="$2"
@@ -892,7 +893,7 @@ check_compatibility() {
 
     # Use the new compare_schema_versions for detailed comparison
     local comparison
-    comparison=$(compare_schema_versions "$current_version" "$expected_version") || return 3
+    comparison=$(compare_schema_versions "$current_version" "$expected_version") || return 4
 
     case "$comparison" in
         equal)
@@ -905,14 +906,14 @@ check_compatibility() {
             return 2  # Migration needed (MINOR change)
             ;;
         major_diff)
-            return 3  # Incompatible (MAJOR version mismatch)
+            return 3  # Major upgrade (can migrate with --force)
             ;;
         data_newer)
-            return 3  # Incompatible (data is newer than schema)
+            return 4  # Data newer than schema (cannot migrate, upgrade cleo)
             ;;
         *)
             echo "ERROR: Unknown comparison result: $comparison" >&2
-            return 3
+            return 4
             ;;
     esac
 }
@@ -925,7 +926,8 @@ check_compatibility() {
 # Uses smart semver-based migration detection:
 #   - PATCH changes: version bump only (no data transformation)
 #   - MINOR changes: full migration with data transformation
-#   - MAJOR changes: incompatible, requires manual intervention
+#   - MAJOR changes: major upgrade (can migrate with --force in CLI)
+#   - DATA_NEWER: cannot migrate, need to upgrade cleo
 # Args: $1 = file path, $2 = file type
 # Returns: 0 if compatible or migrated, 1 on error
 ensure_compatible_version() {
@@ -975,7 +977,7 @@ ensure_compatible_version() {
             fi
             ;;
         2)
-            # MINOR (or greater within same MAJOR) change - full migration needed
+            # MINOR change - full migration with data transformation
             echo "Migration required: $file (v$current_version → v$expected_version)"
             echo "  MINOR change detected - data transformation required"
 
@@ -988,20 +990,25 @@ ensure_compatible_version() {
             fi
             ;;
         3)
-            # Incompatible (MAJOR mismatch or data is newer than schema)
-            local comparison
-            comparison=$(compare_schema_versions "$current_version" "$expected_version")
+            # MAJOR version upgrade - can be migrated
+            echo "Major upgrade required: $file (v$current_version → v$expected_version)"
+            echo "  MAJOR change detected - data transformation required"
 
-            echo "ERROR: Incompatible schema version" >&2
-            echo "  File: $file" >&2
-            echo "  Current version: $current_version" >&2
-            echo "  Expected version: $expected_version" >&2
-
-            if [[ "$comparison" == "data_newer" ]]; then
-                echo "  Data file is newer than schema - upgrade cleo" >&2
+            if migrate_file "$file" "$file_type" "$current_version" "$expected_version"; then
+                echo "✓ Major upgrade successful"
+                return 0
             else
-                echo "  Major version mismatch - manual intervention required" >&2
+                echo "✗ Major upgrade failed" >&2
+                return 1
             fi
+            ;;
+        4)
+            # Data is newer than schema - cannot migrate
+            echo "ERROR: Cannot migrate - data version is newer than schema" >&2
+            echo "  File: $file" >&2
+            echo "  Data version: $current_version" >&2
+            echo "  Schema version: $expected_version" >&2
+            echo "  Please upgrade cleo to a newer version" >&2
             return 1
             ;;
         *)
@@ -1458,25 +1465,22 @@ show_migration_status() {
             fi
         fi
 
-        # Return codes: 0=current, 1=patch_only, 2=migration_needed, 3=incompatible
+        # Return codes: 0=current, 1=patch, 2=minor, 3=major, 4=data_newer
         case $status in
             0)
                 echo "✓ $file_type: v$current_version (current)"
                 ;;
             1)
-                echo "↑ $file_type: v$current_version → v$expected_version (version bump only)"
+                echo "↑ $file_type: v$current_version → v$expected_version (patch update)"
                 ;;
             2)
                 echo "⚠ $file_type: v$current_version → v$expected_version (migration needed)$needs_v2_2_migration"
                 ;;
             3)
-                local comparison
-                comparison=$(compare_schema_versions "$current_version" "$expected_version")
-                if [[ "$comparison" == "data_newer" ]]; then
-                    echo "✗ $file_type: v$current_version (newer than schema v$expected_version - upgrade cleo)"
-                else
-                    echo "✗ $file_type: v$current_version (incompatible with v$expected_version)"
-                fi
+                echo "⚡ $file_type: v$current_version → v$expected_version (major upgrade - use --force)"
+                ;;
+            4)
+                echo "✗ $file_type: v$current_version (newer than schema v$expected_version - upgrade cleo)"
                 ;;
         esac
     done

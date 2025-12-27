@@ -681,7 +681,30 @@ update_injection_markers() {
     return 1
 }
 
+# CLEO-specific files to migrate from .claude/
+# Other files in .claude/ are left untouched
+readonly CLEO_FILES=(
+    "todo.json"
+    "todo-config.json"
+    "todo-log.json"
+    "todo-archive.json"
+)
+
+# Check if .claude/ contains CLEO files
+has_cleo_files_in_legacy() {
+    local legacy_path="$1"
+
+    for file in "${CLEO_FILES[@]}"; do
+        if [[ -f "$legacy_path/$file" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Migrate project directory: .claude → .cleo
+# IMPORTANT: Only migrates CLEO-specific files.
+# The .claude/ directory is preserved for other tools.
 run_project_migration() {
     local legacy_path
     local target_path
@@ -690,12 +713,24 @@ run_project_migration() {
     legacy_path=$(get_legacy_project_dir)
     target_path=$(get_cleo_dir)
 
-    # Check if legacy exists
+    # Check if legacy directory exists
     if ! has_legacy_project_dir; then
         if is_json_output "$FORMAT"; then
             printf '{"success":false,"error":"No legacy project directory found","code":%d}\n' "$MIGRATE_NO_LEGACY"
         else
             echo "No legacy project directory found at $legacy_path"
+            echo "Nothing to migrate."
+        fi
+        return $MIGRATE_NO_LEGACY
+    fi
+
+    # Check if it actually contains CLEO files
+    if ! has_cleo_files_in_legacy "$legacy_path"; then
+        if is_json_output "$FORMAT"; then
+            printf '{"success":false,"error":"No CLEO files found in .claude/","code":%d}\n' "$MIGRATE_NO_LEGACY"
+        else
+            echo "No CLEO files found in $legacy_path"
+            echo "The .claude/ directory exists but contains no claude-todo data."
             echo "Nothing to migrate."
         fi
         return $MIGRATE_NO_LEGACY
@@ -738,7 +773,7 @@ run_project_migration() {
         fi
     fi
 
-    # Create backup first
+    # Create backup of CLEO files only
     if is_json_output "$FORMAT"; then
         : # JSON output will be at the end
     else
@@ -746,10 +781,12 @@ run_project_migration() {
         echo "CLEO Project Migration"
         echo "======================"
         echo ""
-        echo "Source: $legacy_path"
+        echo "Source: $legacy_path (CLEO files only)"
         echo "Target: $target_path"
         echo ""
-        echo "Step 1/5: Creating backup..."
+        echo "Note: Other files in .claude/ will be preserved."
+        echo ""
+        echo "Step 1/5: Creating backup of CLEO files..."
     fi
 
     backup_path=$(create_project_backup "$legacy_path")
@@ -765,49 +802,48 @@ run_project_migration() {
     if ! is_json_output "$FORMAT"; then
         echo "  ✓ Backup created: $backup_path"
         echo ""
-        if [[ -n "$target_backup_path" ]]; then
-            echo "Step 2/5: Merging files (force mode)..."
-        else
-            echo "Step 2/5: Moving files..."
-        fi
+        echo "Step 2/5: Moving CLEO files..."
     fi
 
-    # Move or merge the directory
-    if [[ -n "$target_backup_path" ]]; then
-        # Force mode: merge legacy files into existing target
-        if ! cp -r "$legacy_path"/* "$target_path"/ 2>/dev/null; then
-            if is_json_output "$FORMAT"; then
-                printf '{"success":false,"error":"Merge operation failed","source":"%s","target":"%s","code":%d}\n' \
-                    "$legacy_path" "$target_path" "$MIGRATE_RENAME_FAILED"
+    # Ensure target directory exists
+    mkdir -p "$target_path"
+
+    # Move only CLEO-specific files (not the entire directory)
+    local files_moved=0
+    for file in "${CLEO_FILES[@]}"; do
+        if [[ -f "$legacy_path/$file" ]]; then
+            if mv "$legacy_path/$file" "$target_path/$file" 2>/dev/null; then
+                ((files_moved++))
+                if [[ "$VERBOSE" == "true" ]] && ! is_json_output "$FORMAT"; then
+                    echo "    Moved: $file"
+                fi
             else
-                echo "Error: Failed to merge $legacy_path → $target_path"
-                echo "Backup available at: $backup_path"
-                echo "Target backup at: $target_backup_path"
+                if is_json_output "$FORMAT"; then
+                    printf '{"success":false,"error":"Failed to move file","file":"%s","code":%d}\n' \
+                        "$file" "$MIGRATE_RENAME_FAILED"
+                else
+                    echo "Error: Failed to move $legacy_path/$file → $target_path/$file"
+                    echo "Backup available at: $backup_path"
+                fi
+                return $MIGRATE_RENAME_FAILED
             fi
-            return $MIGRATE_RENAME_FAILED
         fi
-        # Remove legacy directory after successful merge
-        rm -rf "$legacy_path" 2>/dev/null || true
-    else
-        # Normal mode: move the directory
-        if ! mv "$legacy_path" "$target_path" 2>/dev/null; then
-            if is_json_output "$FORMAT"; then
-                printf '{"success":false,"error":"Move operation failed","source":"%s","target":"%s","code":%d}\n' \
-                    "$legacy_path" "$target_path" "$MIGRATE_RENAME_FAILED"
-            else
-                echo "Error: Failed to move $legacy_path → $target_path"
-                echo "Backup available at: $backup_path"
+    done
+
+    # Also move backups directory if it exists and contains CLEO backups
+    if [[ -d "$legacy_path/backups" ]]; then
+        mkdir -p "$target_path/backups"
+        # Move backup contents, not the directory itself
+        if cp -r "$legacy_path/backups/"* "$target_path/backups/" 2>/dev/null; then
+            rm -rf "$legacy_path/backups" 2>/dev/null || true
+            if [[ "$VERBOSE" == "true" ]] && ! is_json_output "$FORMAT"; then
+                echo "    Moved: backups/"
             fi
-            return $MIGRATE_RENAME_FAILED
         fi
     fi
 
     if ! is_json_output "$FORMAT"; then
-        if [[ -n "$target_backup_path" ]]; then
-            echo "  ✓ Merged: $legacy_path → $target_path"
-        else
-            echo "  ✓ Moved: $legacy_path → $target_path"
-        fi
+        echo "  ✓ Moved $files_moved CLEO files"
         echo ""
         echo "Step 3/5: Renaming config files..."
     fi
@@ -862,10 +898,10 @@ run_project_migration() {
     local migrated_count
     migrated_count=$(find "$target_path" -type f 2>/dev/null | wc -l | tr -d ' ')
 
-    # Verify key files
-    local has_todo=false
-    if [[ -f "$target_path/todo.json" ]]; then
-        has_todo=true
+    # Check what remains in .claude/ (for informational purposes)
+    local remaining_in_claude=0
+    if [[ -d "$legacy_path" ]]; then
+        remaining_in_claude=$(find "$legacy_path" -type f 2>/dev/null | wc -l | tr -d ' ')
     fi
 
     # Build success output
@@ -890,7 +926,9 @@ run_project_migration() {
     "configsRenamed": ${configs_renamed},
     "gitignoreUpdated": ${gitignore_updated},
     "markersUpdated": ${markers_updated},
-    "backup": "${backup_path}"
+    "backup": "${backup_path}",
+    "claudeDirPreserved": true,
+    "remainingInClaude": ${remaining_in_claude}
   }
 }
 EOF
@@ -898,16 +936,19 @@ EOF
         echo "Migration Complete!"
         echo ""
         echo "Summary:"
-        echo "  Source: $legacy_path (removed)"
+        echo "  Source: $legacy_path (CLEO files migrated)"
         echo "  Target: $target_path"
-        echo "  Files:  $migrated_count"
+        echo "  Files migrated: $files_moved"
         echo "  Config files renamed: $configs_renamed"
         echo "  .gitignore updated: $gitignore_updated"
         echo "  Markers updated: $markers_updated"
         echo "  Backup: $backup_path"
+        if [[ $remaining_in_claude -gt 0 ]]; then
+            echo ""
+            echo "Note: $remaining_in_claude files remain in .claude/ (other tools' data)"
+        fi
         echo ""
         echo "To restore if needed:"
-        echo "  rm -rf $target_path"
         echo "  tar -xzf $backup_path"
         echo ""
     fi

@@ -271,11 +271,19 @@ cmd_status() {
             local status
             check_compatibility "$file" "$file_type" && status=$? || status=$?
 
+            # check_compatibility returns:
+            # 0 = current (no action needed)
+            # 1 = patch_only (just bump version)
+            # 2 = migration_needed (MINOR change)
+            # 3 = major_upgrade (MAJOR version upgrade - can migrate with --force)
+            # 4 = data_newer (data is newer than schema - cannot migrate)
             case $status in
                 0) status_text="current"; needs_migration=false ;;
-                1) status_text="outdated"; needs_migration=true ;;
-                2) status_text="incompatible"; needs_migration=true ;;
-                *) status_text="unknown"; needs_migration=false ;;
+                1) status_text="patch_update"; needs_migration=true ;;
+                2) status_text="migration_needed"; needs_migration=true ;;
+                3) status_text="major_upgrade"; needs_migration=true ;;
+                4) status_text="data_newer"; needs_migration=false ;;
+                *) status_text="unknown"; needs_migration=true ;;
             esac
 
             files_json=$(echo "$files_json" | jq \
@@ -352,32 +360,50 @@ cmd_check() {
             continue
         fi
 
+        # check_compatibility returns:
+        # 0 = current (no action needed)
+        # 1 = patch_only (just bump version)
+        # 2 = migration_needed (MINOR change)
+        # 3 = major_upgrade (MAJOR version upgrade - can migrate with --force)
+        # 4 = data_newer (data is newer than schema - cannot migrate)
         local status
         check_compatibility "$file" "$file_type" && status=$? || status=$?
 
-        if [[ $status -eq 1 ]]; then
-            needs_migration=true
-            break
-        elif [[ $status -eq 2 ]]; then
-            if [[ "$FORMAT" == "json" ]]; then
-                jq -n \
-                    --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
-                    --arg file "$file" \
-                    '{
-                        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
-                        "_meta": {"command": "migrate", "subcommand": "check", "timestamp": $timestamp, "format": "json"},
-                        "success": false,
-                        "error": {
-                            "code": "E_INCOMPATIBLE_VERSION",
-                            "message": ("Incompatible version found in " + $file),
-                            "file": $file
-                        }
-                    }'
-            else
-                output_error "$E_INPUT_INVALID" "Incompatible version found in $file"
-            fi
-            exit "${EXIT_INVALID_INPUT:-1}"
-        fi
+        case $status in
+            0) ;; # Current, no action needed
+            1|2|3)
+                needs_migration=true
+                break
+                ;;
+            4)
+                # Data is newer than schema - cannot migrate
+                if [[ "$FORMAT" == "json" ]]; then
+                    local current_version expected_version
+                    current_version=$(detect_file_version "$file")
+                    expected_version=$(get_expected_version "$file_type")
+                    jq -n \
+                        --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+                        --arg file "$file" \
+                        --arg current "$current_version" \
+                        --arg expected "$expected_version" \
+                        '{
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
+                            "_meta": {"command": "migrate", "subcommand": "check", "timestamp": $timestamp, "format": "json"},
+                            "success": false,
+                            "error": {
+                                "code": "E_DATA_NEWER",
+                                "message": "Data version newer than schema - upgrade cleo",
+                                "file": $file,
+                                "dataVersion": $current,
+                                "schemaVersion": $expected
+                            }
+                        }'
+                else
+                    output_error "$E_INPUT_INVALID" "Data version newer than schema in $file - upgrade cleo"
+                fi
+                exit "${EXIT_INVALID_INPUT:-1}"
+                ;;
+        esac
     done
 
     if [[ "$FORMAT" == "json" ]]; then
@@ -444,7 +470,9 @@ cmd_run() {
     )
 
     local migration_needed=false
-    local incompatible_found=false
+    local major_upgrade_needed=false
+    local data_newer_found=false
+    local problematic_file=""
 
     for file_spec in "${files[@]}"; do
         IFS=':' read -r file file_type <<< "$file_spec"
@@ -453,22 +481,44 @@ cmd_run() {
             continue
         fi
 
+        # check_compatibility returns:
+        # 0 = current (no action needed)
+        # 1 = patch_only (just bump version)
+        # 2 = migration_needed (MINOR change)
+        # 3 = major_upgrade (MAJOR version upgrade - can migrate with --force)
+        # 4 = data_newer (data is newer than schema - cannot migrate)
         local status
         check_compatibility "$file" "$file_type" && status=$? || status=$?
 
-        if [[ $status -eq 1 ]]; then
-            migration_needed=true
-        elif [[ $status -eq 2 ]]; then
-            incompatible_found=true
-        fi
+        case $status in
+            1|2) migration_needed=true ;;
+            3)   migration_needed=true; major_upgrade_needed=true ;;
+            4)   data_newer_found=true; problematic_file="$file" ;;
+        esac
     done
 
-    if [[ "$incompatible_found" == "true" ]]; then
+    # Data newer than schema - cannot migrate, need to upgrade cleo
+    if [[ "$data_newer_found" == "true" ]]; then
+        local current_version expected_version
+        current_version=$(detect_file_version "$problematic_file")
+        expected_version=$(get_expected_version "$(echo "$problematic_file" | sed 's/.*\///' | sed 's/\.json$//' | sed 's/todo-//')")
         if [[ "$FORMAT" == "json" ]] && declare -f output_error &>/dev/null; then
-            output_error "$E_INPUT_INVALID" "Incompatible versions detected" "${EXIT_INVALID_INPUT:-1}" true "Manual intervention required"
+            output_error "$E_INPUT_INVALID" "Data version ($current_version) newer than schema ($expected_version)" "${EXIT_INVALID_INPUT:-1}" true "Upgrade cleo to a newer version"
         else
-            output_error "$E_INPUT_INVALID" "Incompatible versions detected"
-            echo "Manual intervention required" >&2
+            output_error "$E_INPUT_INVALID" "Data version ($current_version) is newer than schema ($expected_version)"
+            echo "Your data was created by a newer version of cleo." >&2
+            echo "Please upgrade cleo: npm install -g cleo OR update from source" >&2
+        fi
+        exit "${EXIT_INVALID_INPUT:-1}"
+    fi
+
+    # Major version upgrades (e.g., 0.x → 2.x) require --force
+    if [[ "$major_upgrade_needed" == "true" && "$force_migration" == "false" ]]; then
+        if [[ "$FORMAT" == "json" ]] && declare -f output_error &>/dev/null; then
+            output_error "$E_INPUT_INVALID" "Major version upgrade detected" "${EXIT_INVALID_INPUT:-1}" true "Use --force to upgrade from legacy schema"
+        else
+            output_error "$E_INPUT_INVALID" "Major version upgrade detected (e.g., 0.x → 2.x)"
+            echo "Use: cleo migrate run --force" >&2
         fi
         exit "${EXIT_INVALID_INPUT:-1}"
     fi
@@ -549,20 +599,27 @@ cmd_run() {
             continue
         fi
 
+        # check_compatibility returns:
+        # 0 = current, 1 = patch, 2 = minor, 3 = major, 4 = data_newer
         local status
         check_compatibility "$file" "$file_type" && status=$? || status=$?
 
-        # Force migration if flag is set, otherwise only migrate if needed
-        if [[ $status -eq 1 || "$force_migration" == "true" ]]; then
-            if [[ "$force_migration" == "true" && $status -eq 0 ]]; then
-                echo "Migrating $file_type (forced)..."
-            else
-                echo "Migrating $file_type..."
-            fi
-
+        # Skip status 4 (data_newer) - already handled above
+        # Force migration if flag is set, otherwise only migrate if status 1-3
+        if [[ ($status -ge 1 && $status -le 3) || "$force_migration" == "true" ]]; then
             local current_version expected_version
             current_version=$(detect_file_version "$file")
             expected_version=$(get_expected_version "$file_type")
+
+            if [[ "$force_migration" == "true" && $status -eq 0 ]]; then
+                echo "Migrating $file_type (forced)..."
+            elif [[ $status -eq 3 ]]; then
+                echo "Migrating $file_type (major upgrade: $current_version → $expected_version)..."
+            elif [[ $status -eq 1 ]]; then
+                echo "Migrating $file_type (patch: $current_version → $expected_version)..."
+            else
+                echo "Migrating $file_type ($current_version → $expected_version)..."
+            fi
 
             if ! migrate_file "$file" "$file_type" "$current_version" "$expected_version"; then
                 echo "✗ Migration failed for $file_type" >&2
