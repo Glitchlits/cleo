@@ -1,9 +1,9 @@
 {
   "$schema": "https://claude-todo.dev/schemas/v1/spec-index.schema.json",
   "_meta": {
-    "version": "1.0.5",
-    "lastUpdated": "2025-12-23",
-    "totalSpecs": 19,
+    "version": "1.0.6",
+    "lastUpdated": "2025-12-27",
+    "totalSpecs": 20,
     "totalReports": 11
   },
   "authorities": {
@@ -20,7 +20,8 @@
     "consensus-investigation": "CONSENSUS-FRAMEWORK-SPEC.md",
     "multi-agent-abstraction": "MULTI-AGENT-ABSTRACTION-SPEC.md",
     "rcsd-pipeline": "RCSD-PIPELINE-SPEC.md",
-    "task-decomposition": "TASK-DECOMPOSITION-SPEC.md"
+    "task-decomposition": "TASK-DECOMPOSITION-SPEC.md",
+    "multi-session": "MULTI-SESSION-SPEC.md"
   },
   "specs": [
     {
@@ -277,6 +278,19 @@
       "dependedOnBy": ["RCSD-PIPELINE-SPEC.md"],
       "implementationReport": "TASK-DECOMPOSITION-IMPLEMENTATION-REPORT.md",
       "isAuthoritativeFor": ["task-decomposition"]
+    },
+    {
+      "file": "MULTI-SESSION-SPEC.md",
+      "version": "1.0.0",
+      "status": "DRAFT",
+      "type": "SPEC",
+      "domain": "multi-session",
+      "category": "architecture",
+      "synopsis": "Multi-session concurrent agent architecture. Scoped sessions (epic/taskGroup/phase), per-scope active task validation, conflict detection, session lifecycle (start/suspend/resume/end). Enables parallel LLM agents.",
+      "lastUpdated": "2025-12-27",
+      "dependsOn": ["SPEC-BIBLE-GUIDELINES.md", "LLM-AGENT-FIRST-SPEC.md", "FILE-LOCKING-SPEC.md", "TASK-HIERARCHY-SPEC.md", "CONFIG-SYSTEM-SPEC.md"],
+      "dependedOnBy": [],
+      "isAuthoritativeFor": ["multi-session"]
     }
   ],
   "reports": [
@@ -370,6 +384,13 @@
     }
   ],
   "recentChanges": [
+    {
+      "date": "2025-12-27",
+      "file": "MULTI-SESSION-SPEC.md",
+      "changeType": "Created",
+      "version": "1.0.0",
+      "description": "Multi-session concurrent agent architecture. Scoped sessions (epic/taskGroup/phase), per-scope active task validation, conflict detection, session lifecycle. New sessions.schema.json, config.multiSession section."
+    },
     {
       "date": "2025-12-23",
       "file": "RCSD-PIPELINE-SPEC.md",

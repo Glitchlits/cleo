@@ -5,6 +5,57 @@ All notable changes to the claude-todo system will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.0] - 2025-12-27
+
+### Added
+- **Multi-Session Architecture Schema** (DRAFT)
+  - New `schemas/sessions.schema.json` - Session registry for concurrent LLM agents
+  - Session scope types: `task`, `taskGroup`, `subtree`, `epicPhase`, `epic`, `custom`
+  - Per-session focus state (independent `currentTask`, `sessionNote`, `nextAction`)
+  - Session lifecycle: `active`, `suspended`, `ended` with full history preservation
+  - Conflict detection: HARD (task-level) and SOFT (scope overlap) conflicts
+  - Session stats tracking: tasksCompleted, focusChanges, totalActiveMinutes
+
+- **Config Schema: multiSession section** (`config.schema.json`)
+  - `multiSession.enabled`: Opt-in multi-session mode (default: false)
+  - `multiSession.maxConcurrentSessions`: Limit concurrent sessions (default: 5)
+  - `multiSession.maxActiveTasksPerScope`: Per-scope active task limit (default: 1)
+  - `multiSession.scopeValidation`: strict/warn/none for overlap handling
+  - `multiSession.allowNestedScopes`, `allowScopeOverlap`: Scope conflict policies
+  - `multiSession.sessionTimeoutHours`, `autoSuspendOnTimeout`: Timeout handling
+  - `multiSession.historyRetentionDays`: Ended session retention
+
+- **Todo Schema: Multi-session fields** (`todo.schema.json`)
+  - `_meta.multiSessionEnabled`: Mode indicator
+  - `_meta.activeSessionCount`: Quick session count
+  - `_meta.sessionsFile`: Reference to sessions.json
+  - `focus.primarySession`: Default session for CLI commands
+
+- **Log Schema: Session actions** (`log.schema.json`)
+  - New actions: `session_suspended`, `session_resumed`, `session_scope_defined`, `session_scope_conflict`, `session_focus_changed`, `session_timeout_warning`, `session_orphan_detected`, `session_auto_suspended`
+  - New fields: `scope` (type, rootTaskId, phaseFilter, taskCount), `agentId`, `otherActiveSessions`
+
+- **MULTI-SESSION-SPEC.md** - Comprehensive implementation specification
+  - 11 parts: Architecture, Scope Model, Conflict Detection, Lifecycle, Focus, Locking, Backup, CLI, Migration, Error Codes, Implementation Phases
+  - RFC 2119 compliant
+
+### Documentation
+- Updated `docs/INDEX.md` with MULTI-SESSION-SPEC.md link
+- Updated `docs/specs/SPEC-INDEX.json` with multi-session authority
+
+## [0.36.9] - 2025-12-27
+
+### Changed
+- **CLEO Migration: File naming cleanup** (T926)
+  - Renamed `todo-config.json` → `config.json` throughout codebase
+  - Renamed `todo-log.json` → `log.json` in migration script
+  - Cleaner naming since `.cleo/` directory provides namespace isolation
+  - `claude-migrate` script now renames files during both global and project migration
+
+### Fixed
+- **claude-migrate.sh .gitignore update bug** - Fixed sed command that was replacing `.cleo` with `.cleo` instead of `.claude` with `.cleo`
+- **Global migration missing config rename** - Added `rename_project_configs()` call to global migration flow
+
 ## [0.36.8] - 2025-12-27
 
 ### Fixed
