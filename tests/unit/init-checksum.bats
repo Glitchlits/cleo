@@ -5,15 +5,30 @@
 # Tests that init creates valid checksums that pass validation.
 # =============================================================================
 
-setup() {
+# =============================================================================
+# File-Level Setup (runs once per test file)
+# =============================================================================
+setup_file() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
+    common_setup_file
+}
+
+# =============================================================================
+# Per-Test Setup (runs before each test)
+# =============================================================================
+setup() {
+    load '../test_helper/common_setup'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -95,7 +110,7 @@ teardown() {
     cd "$TEST_TEMP_DIR"
     bash "$INIT_SCRIPT" --no-claude-md test-project
 
-    run bash "$INIT_SCRIPT" --force --no-claude-md test-project-2
+    run bash "$INIT_SCRIPT" --force --confirm-wipe --no-claude-md test-project-2
     assert_success
 
     run bash "$VALIDATE_SCRIPT"

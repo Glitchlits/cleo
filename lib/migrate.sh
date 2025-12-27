@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
 # migrate.sh - Schema version migration system for claude-todo
-# Handles schema version changes gracefully with automatic data migration
+#
+# LAYER: 2 (Core Services)
+# DEPENDENCIES: logging.sh (transitively provides atomic-write.sh)
+# PROVIDES: check_schema_version, run_migrations, get_default_phases,
+#           parse_version, compare_versions, get_schema_version_from_file,
+#           compare_schema_versions, bump_version_only, check_compatibility,
+#           SCHEMA_VERSION_TODO, SCHEMA_VERSION_CONFIG, SCHEMA_VERSION_ARCHIVE,
+#           SCHEMA_VERSION_LOG, SCHEMA_DIR
 
-# Source guard - prevent multiple sourcing
+#=== SOURCE GUARD ================================================
 [[ -n "${_MIGRATE_SH_LOADED:-}" ]] && return 0
-_MIGRATE_SH_LOADED=1
+declare -r _MIGRATE_SH_LOADED=1
 
 set -euo pipefail
 
 # Source dependencies
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/file-ops.sh
-source "$SCRIPT_DIR/file-ops.sh"
 # shellcheck source=lib/logging.sh
 source "$SCRIPT_DIR/logging.sh"
 
@@ -19,8 +24,8 @@ source "$SCRIPT_DIR/logging.sh"
 # CONSTANTS
 # ============================================================================
 
-# Current schema versions (single source of truth)
-SCHEMA_VERSION_TODO="2.3.0"
+# Current schema versions (fallback if schema file doesn't have schemaVersion)
+SCHEMA_VERSION_TODO="2.4.0"
 SCHEMA_VERSION_CONFIG="2.2.0"
 SCHEMA_VERSION_ARCHIVE="2.1.0"
 SCHEMA_VERSION_LOG="2.1.0"
@@ -30,6 +35,151 @@ MIGRATIONS_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}/migrations"
 
 # Templates directory (source of truth for default structures)
 TEMPLATES_DIR="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}/templates"
+
+# Schema directory
+SCHEMA_DIR="${SCHEMA_DIR:-${CLAUDE_TODO_HOME:-$HOME/.claude-todo}/schemas}"
+
+# ============================================================================
+# LOCAL HELPER FUNCTIONS (LAYER 2)
+# ============================================================================
+
+# save_json - Atomic JSON save using Layer 1 primitives
+# This is a local implementation that doesn't require file-ops.sh
+# Args: $1 = file path, $2 = JSON content
+# Returns: 0 on success, 1 on failure
+save_json() {
+    local file="$1"
+    local content="$2"
+
+    if [[ -z "$file" || -z "$content" ]]; then
+        echo "save_json: Both file path and content required" >&2
+        return 1
+    fi
+
+    # Validate JSON before writing
+    if ! echo "$content" | jq empty 2>/dev/null; then
+        echo "save_json: Invalid JSON content" >&2
+        return 1
+    fi
+
+    # Use atomic-write.sh primitives
+    aw_atomic_write "$file" "$content"
+}
+
+# ============================================================================
+# SCHEMA VERSION HELPERS
+# ============================================================================
+
+# Get schema version from schema file (single source of truth)
+# Falls back to constants if schema file doesn't have schemaVersion field
+# Args: $1 = file type (todo|config|archive|log)
+# Returns: version string
+get_schema_version_from_file() {
+    local file_type="$1"
+    local schema_file=""
+
+    # Map file type to schema file
+    case "$file_type" in
+        todo)    schema_file="${SCHEMA_DIR}/todo.schema.json" ;;
+        config)  schema_file="${SCHEMA_DIR}/config.schema.json" ;;
+        archive) schema_file="${SCHEMA_DIR}/archive.schema.json" ;;
+        log)     schema_file="${SCHEMA_DIR}/log.schema.json" ;;
+        *)
+            echo "ERROR: Unknown file type: $file_type" >&2
+            return 1
+            ;;
+    esac
+
+    # Try to read schemaVersion from the schema file
+    if [[ -f "$schema_file" ]]; then
+        local version
+        version=$(jq -r '.schemaVersion // empty' "$schema_file" 2>/dev/null)
+        if [[ -n "$version" && "$version" != "null" ]]; then
+            echo "$version"
+            return 0
+        fi
+    fi
+
+    # Fallback to constants if schema doesn't have schemaVersion yet
+    case "$file_type" in
+        todo)    echo "$SCHEMA_VERSION_TODO" ;;
+        config)  echo "$SCHEMA_VERSION_CONFIG" ;;
+        archive) echo "$SCHEMA_VERSION_ARCHIVE" ;;
+        log)     echo "$SCHEMA_VERSION_LOG" ;;
+    esac
+}
+
+# Compare schema versions and determine the type of difference
+# Args: $1 = data version (from file), $2 = schema version (expected)
+# Returns: "equal", "patch_only", "minor_diff", "major_diff", "data_newer"
+compare_schema_versions() {
+    local data_version="$1"
+    local schema_version="$2"
+
+    # Parse versions - handle both X.Y.Z and X.Y formats
+    local data_major data_minor data_patch
+    local schema_major schema_minor schema_patch
+
+    # Parse data version
+    if [[ "$data_version" =~ ^([0-9]+)\.([0-9]+)(\.([0-9]+))?$ ]]; then
+        data_major="${BASH_REMATCH[1]}"
+        data_minor="${BASH_REMATCH[2]}"
+        data_patch="${BASH_REMATCH[4]:-0}"
+    else
+        echo "ERROR: Invalid data version format: $data_version" >&2
+        return 1
+    fi
+
+    # Parse schema version
+    if [[ "$schema_version" =~ ^([0-9]+)\.([0-9]+)(\.([0-9]+))?$ ]]; then
+        schema_major="${BASH_REMATCH[1]}"
+        schema_minor="${BASH_REMATCH[2]}"
+        schema_patch="${BASH_REMATCH[4]:-0}"
+    else
+        echo "ERROR: Invalid schema version format: $schema_version" >&2
+        return 1
+    fi
+
+    # Compare versions
+    if [[ "$data_version" == "$schema_version" ]] || \
+       [[ "$data_major" == "$schema_major" && "$data_minor" == "$schema_minor" && "$data_patch" == "$schema_patch" ]]; then
+        echo "equal"
+    elif [[ "$data_major" -gt "$schema_major" ]]; then
+        echo "data_newer"
+    elif [[ "$data_major" == "$schema_major" && "$data_minor" -gt "$schema_minor" ]]; then
+        echo "data_newer"
+    elif [[ "$data_major" == "$schema_major" && "$data_minor" == "$schema_minor" && "$data_patch" -gt "$schema_patch" ]]; then
+        echo "data_newer"
+    elif [[ "$data_major" -ne "$schema_major" ]]; then
+        echo "major_diff"
+    elif [[ "$data_minor" -ne "$schema_minor" ]]; then
+        echo "minor_diff"
+    else
+        # Same major.minor, different patch (data_patch < schema_patch)
+        echo "patch_only"
+    fi
+}
+
+# For PATCH-only differences, just update the version field - no data transformation
+# Args: $1 = file path, $2 = new version
+# Returns: 0 on success, 1 on failure
+bump_version_only() {
+    local file="$1"
+    local new_version="$2"
+
+    echo "  Version bump only (no data transformation needed)"
+
+    local updated_content
+    updated_content=$(jq --arg ver "$new_version" '
+        .version = $ver |
+        if ._meta then ._meta.schemaVersion = $ver else . end
+    ' "$file") || {
+        echo "ERROR: Failed to bump version" >&2
+        return 1
+    }
+
+    save_json "$file" "$updated_content"
+}
 
 # ============================================================================
 # DEFAULT STRUCTURE HELPERS
@@ -677,48 +827,94 @@ migrate_todo_to_2_3_0() {
     return 0
 }
 
+# Migration from 2.3.0 to 2.4.0 for todo.json
+# Relaxes notes maxLength constraint from 500 to 5000 characters
+# No data transformation needed - just version bump
+migrate_todo_to_2_4_0() {
+    local file="$1"
+
+    echo "  Updating schema version for notes maxLength increase..."
+
+    # Simple version bump - no data transformation needed
+    local updated_content
+    updated_content=$(jq '
+        .version = "2.4.0" |
+        ._meta.schemaVersion = "2.4.0"
+    ' "$file") || {
+        echo "ERROR: Failed to update version fields" >&2
+        return 1
+    }
+
+    # Validate the result
+    if ! echo "$updated_content" | jq empty 2>/dev/null; then
+        echo "ERROR: Migration produced invalid JSON" >&2
+        return 1
+    fi
+
+    # Atomic save using save_json
+    save_json "$file" "$updated_content" || {
+        echo "ERROR: Failed to update file" >&2
+        return 1
+    }
+
+    echo "  Schema version updated to 2.4.0 (notes maxLength: 500 → 5000)"
+
+    # Log migration if log_migration is available
+    if declare -f log_migration >/dev/null 2>&1; then
+        log_migration "$file" "todo" "2.3.0" "2.4.0"
+    fi
+
+    return 0
+}
+
 # ============================================================================
 # BACKWARD COMPATIBILITY CHECKS
 # ============================================================================
 
 # Check if file is compatible with current schema
+# Uses smart semver-based migration detection
 # Args: $1 = file path, $2 = file type
-# Returns: 0 if compatible, 1 if migration needed, 2 if incompatible
+# Returns:
+#   0 = current (no action needed)
+#   1 = patch_only (just bump version, no data transformation)
+#   2 = migration_needed (MINOR/MAJOR change requiring data transformation)
+#   3 = incompatible (data is newer than schema, or major version mismatch)
 check_compatibility() {
     local file="$1"
     local file_type="$2"
 
     local current_version expected_version
     current_version=$(detect_file_version "$file")
-    expected_version=$(get_expected_version "$file_type")
+    # Use get_schema_version_from_file for dynamic version detection
+    expected_version=$(get_schema_version_from_file "$file_type") || {
+        expected_version=$(get_expected_version "$file_type")
+    }
 
-    if [[ "$current_version" == "$expected_version" ]]; then
-        return 0  # Exact match
-    fi
+    # Use the new compare_schema_versions for detailed comparison
+    local comparison
+    comparison=$(compare_schema_versions "$current_version" "$expected_version") || return 3
 
-    # Parse versions
-    local curr_parts exp_parts
-    curr_parts=$(parse_version "$current_version") || return 2
-    exp_parts=$(parse_version "$expected_version") || return 2
-
-    # Explicitly set IFS to space for version parsing (IFS may have been modified by caller)
-    IFS=' ' read -r curr_major curr_minor curr_patch <<< "$curr_parts"
-    IFS=' ' read -r exp_major exp_minor exp_patch <<< "$exp_parts"
-
-    # Check backward compatibility rules
-    if [[ $curr_major -ne $exp_major ]]; then
-        # Major version mismatch - incompatible
-        return 2
-    fi
-
-    if [[ $curr_minor -lt $exp_minor ]] || \
-       [[ $curr_minor -eq $exp_minor && $curr_patch -lt $exp_patch ]]; then
-        # Current is older - migration needed
-        return 1
-    fi
-
-    # Current is newer or equal - compatible
-    return 0
+    case "$comparison" in
+        equal)
+            return 0  # No action needed
+            ;;
+        patch_only)
+            return 1  # Just bump version, no data transformation
+            ;;
+        minor_diff)
+            return 2  # Migration needed (MINOR change)
+            ;;
+        major_diff)
+            return 3  # Incompatible (MAJOR version mismatch)
+            ;;
+        data_newer)
+            return 3  # Incompatible (data is newer than schema)
+            ;;
+        *)
+            echo "ERROR: Unknown comparison result: $comparison" >&2
+            return 3
+            ;;
+    esac
 }
 
 # ============================================================================
@@ -726,6 +922,10 @@ check_compatibility() {
 # ============================================================================
 
 # Check and migrate file if needed
+# Uses smart semver-based migration detection:
+#   - PATCH changes: version bump only (no data transformation)
+#   - MINOR changes: full migration with data transformation
+#   - MAJOR changes: incompatible, requires manual intervention
 # Args: $1 = file path, $2 = file type
 # Returns: 0 if compatible or migrated, 1 on error
 ensure_compatible_version() {
@@ -735,19 +935,49 @@ ensure_compatible_version() {
     check_compatibility "$file" "$file_type"
     local compat_status=$?
 
+    local current_version expected_version
+    current_version=$(detect_file_version "$file")
+    expected_version=$(get_schema_version_from_file "$file_type") || {
+        expected_version=$(get_expected_version "$file_type")
+    }
+
     case $compat_status in
         0)
-            # Already compatible
+            # Already compatible (equal versions)
             return 0
             ;;
         1)
-            # Migration needed
-            local current_version expected_version
-            current_version=$(detect_file_version "$file")
-            expected_version=$(get_expected_version "$file_type")
+            # PATCH-only difference - just bump version, no data transformation
+            echo "Version bump: $file (v$current_version → v$expected_version)"
+            echo "  PATCH change detected - no data transformation needed"
 
+            # Create backup before version bump
+            local backup_file
+            backup_file=$(create_backup "$file" "pre-version-bump") || {
+                echo "ERROR: Failed to create backup" >&2
+                return 1
+            }
+            echo "  Backup created: $backup_file"
+
+            if bump_version_only "$file" "$expected_version"; then
+                echo "✓ Version bump successful"
+                log_migration "$file" "$file_type" "$current_version" "$expected_version"
+                return 0
+            else
+                echo "✗ Version bump failed" >&2
+                echo "Restoring backup..." >&2
+                restore_file "$backup_file" "$file" || {
+                    echo "CRITICAL: Failed to restore backup!" >&2
+                    echo "Manual recovery required from: $backup_file" >&2
+                    return 1
+                }
+                return 1
+            fi
+            ;;
+        2)
+            # MINOR (or greater within same MAJOR) change - full migration needed
             echo "Migration required: $file (v$current_version → v$expected_version)"
-            echo "Automatic migration will be attempted..."
+            echo "  MINOR change detected - data transformation required"
 
             if migrate_file "$file" "$file_type" "$current_version" "$expected_version"; then
                 echo "✓ Migration successful"
@@ -757,17 +987,25 @@ ensure_compatible_version() {
                 return 1
             fi
             ;;
-        2)
-            # Incompatible
-            local current_version expected_version
-            current_version=$(detect_file_version "$file")
-            expected_version=$(get_expected_version "$file_type")
+        3)
+            # Incompatible (MAJOR mismatch or data is newer than schema)
+            local comparison
+            comparison=$(compare_schema_versions "$current_version" "$expected_version")
 
             echo "ERROR: Incompatible schema version" >&2
             echo "  File: $file" >&2
             echo "  Current version: $current_version" >&2
             echo "  Expected version: $expected_version" >&2
-            echo "  Major version mismatch - manual intervention required" >&2
+
+            if [[ "$comparison" == "data_newer" ]]; then
+                echo "  Data file is newer than schema - upgrade claude-todo" >&2
+            else
+                echo "  Major version mismatch - manual intervention required" >&2
+            fi
+            return 1
+            ;;
+        *)
+            echo "ERROR: Unknown compatibility status: $compat_status" >&2
             return 1
             ;;
     esac
@@ -787,18 +1025,18 @@ log_migration() {
 # BACKWARD COMPATIBILITY ALIASES
 # ============================================================================
 
-# Alias for backward compatibility with file-ops.sh function names
+# Alias for backward compatibility - uses atomic-write.sh primitives
+# Args: $1 = file to backup, $2 = label (ignored for compatibility)
+# Returns: backup file path on stdout
 create_backup() {
-    # create_backup used to accept two arguments: file and label
-    # backup_file only accepts one argument: file
-    # The label argument is ignored for backward compatibility
-    backup_file "$1"
+    local file="$1"
+    # $2 (label) is ignored for backward compatibility
+    aw_create_backup "$file"
 }
 
-# Alias for backward compatibility with file-ops.sh function names
+# Alias for backward compatibility
+# Args: $1 = backup file, $2 = target file
 restore_file() {
-    # restore_file(backup_file, target_file) -> restore_backup(target_file, backup_num)
-    # This is a different signature, so we need to handle it carefully
     local backup="$1"
     local target="$2"
 
@@ -1051,12 +1289,12 @@ execute_repair() {
         .project.phases = $repaired_phases |
 
         # Ensure _meta has all fields
-        ._meta.schemaVersion = "2.2.0" |
+        ._meta.schemaVersion = "2.4.0" |
         ._meta.configVersion = (._meta.configVersion // "2.1.0") |
         (if ._meta.checksum == null then ._meta.checksum = "pending" else . end) |
 
         # Ensure version field
-        .version = "2.2.0" |
+        .version = "2.4.0" |
 
         # Ensure focus has all fields
         .focus.sessionNote = (.focus.sessionNote // null) |
@@ -1203,7 +1441,9 @@ show_migration_status() {
 
         local current_version expected_version
         current_version=$(detect_file_version "$file")
-        expected_version=$(get_expected_version "$file_type")
+        expected_version=$(get_schema_version_from_file "$file_type") || {
+            expected_version=$(get_expected_version "$file_type")
+        }
 
         local status
         check_compatibility "$file" "$file_type" && status=$? || status=$?
@@ -1218,15 +1458,25 @@ show_migration_status() {
             fi
         fi
 
+        # Return codes: 0=current, 1=patch_only, 2=migration_needed, 3=incompatible
         case $status in
             0)
-                echo "✓ $file_type: v$current_version (compatible)"
+                echo "✓ $file_type: v$current_version (current)"
                 ;;
             1)
-                echo "⚠ $file_type: v$current_version (migration needed → v$expected_version)$needs_v2_2_migration"
+                echo "↑ $file_type: v$current_version → v$expected_version (version bump only)"
                 ;;
             2)
-                echo "✗ $file_type: v$current_version (incompatible with v$expected_version)"
+                echo "⚠ $file_type: v$current_version → v$expected_version (migration needed)$needs_v2_2_migration"
+                ;;
+            3)
+                local comparison
+                comparison=$(compare_schema_versions "$current_version" "$expected_version")
+                if [[ "$comparison" == "data_newer" ]]; then
+                    echo "✗ $file_type: v$current_version (newer than schema v$expected_version - upgrade claude-todo)"
+                else
+                    echo "✗ $file_type: v$current_version (incompatible with v$expected_version)"
+                fi
                 ;;
         esac
     done

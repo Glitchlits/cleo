@@ -15,15 +15,157 @@
 # Reference: lib/hierarchy.sh, HIERARCHY-ENHANCEMENT-SPEC.md
 # =============================================================================
 
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
+}
+
+@test "JSON output includes autoCompletedParents array for nested hierarchy" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes --format json
+    assert_success
+
+    # Verify JSON contains autoCompletedParents
+    echo "$output" | jq -e '.autoCompletedParents' >/dev/null
+    local auto_completed=$(echo "$output" | jq -r '.autoCompletedParents[0]')
+    [[ "$auto_completed" == "$epic_id" ]]
+}
+
+@test "parent auto-complete respects config disabled" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    # Disable auto-complete in config
+    jq '.hierarchy.autoCompleteParent = false' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    # Complete only child - parent should NOT auto-complete
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes
+    assert_success
+
+    local epic_status=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    [[ "$epic_status" != "done" ]]
+}
+
+@test "parent auto-complete works with multiple children" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task1_id=$(create_child_task "Child 1" "$epic_id" "task")
+    local task2_id=$(create_child_task "Child 2" "$epic_id" "task")
+    local task3_id=$(create_child_task "Child 3" "$epic_id" "task")
+
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    # Complete first two children - parent should NOT auto-complete
+    run bash "$COMPLETE_SCRIPT" "$task1_id" --skip-notes
+    assert_success
+    run bash "$COMPLETE_SCRIPT" "$task2_id" --skip-notes
+    assert_success
+
+    local epic_status=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    [[ "$epic_status" != "done" ]]
+
+    # Complete last child - parent SHOULD auto-complete
+    run bash "$COMPLETE_SCRIPT" "$task3_id" --skip-notes
+    assert_success
+
+    epic_status=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    [[ "$epic_status" == "done" ]]
+}
+
+@test "parent auto-complete works with nested hierarchy" {
+    create_empty_todo
+
+    # Create: epic -> task -> subtask
+    local epic=$(create_epic "Epic")
+    local task=$(create_child_task "Task" "$epic" "task")
+    local subtask=$(create_child_task "Subtask" "$task" "subtask")
+
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    # Complete subtask - should auto-complete task, then epic
+    run bash "$COMPLETE_SCRIPT" "$subtask" --skip-notes
+    assert_success
+
+    # Both task and epic should be done
+    local task_status=$(jq -r --arg id "$task" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    local epic_status=$(jq -r --arg id "$epic" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+
+    [[ "$task_status" == "done" ]]
+    [[ "$epic_status" == "done" ]]
+}
+
+@test "parent auto-complete disabled when mode is set to off" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    # Set mode to off
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "off"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes
+    assert_success
+
+    local epic_status=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    [[ "$epic_status" != "done" ]]
+}
+
+@test "auto-completed parent has system auto-complete note" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes
+    assert_success
+
+    # Check for auto-complete note
+    local note=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .notes[0] // ""' "$TODO_FILE")
+    [[ "$note" == *"AUTO-COMPLETED"* ]]
+    [[ "$note" == *"All child tasks completed"* ]]
+}
+
+@test "JSON output includes autoCompletedParents array for simple case" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes --format json
+    assert_success
+
+    # Verify JSON contains autoCompletedParents
+    echo "$output" | jq -e '.autoCompletedParents' >/dev/null
+    local auto_completed=$(echo "$output" | jq -r '.autoCompletedParents[0]')
+    [[ "$auto_completed" == "$epic_id" ]]
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -928,4 +1070,159 @@ create_hierarchy_fixture() {
     # T003's parent is T002, T002's parent is T001
     [[ "$chain" == *"T002"* ]]
     [[ "$chain" == *"T001"* ]]
+}
+
+# =============================================================================
+# Orphan Detection Tests (T341)
+# =============================================================================
+
+@test "detect_orphans finds task with missing parent" {
+    create_empty_todo
+    # Create task then manually corrupt parentId
+    bash "$ADD_SCRIPT" "Task" --priority medium > /dev/null
+
+    # Manually add task with invalid parentId
+    jq '.tasks += [{"id": "T002", "title": "Orphan", "description": "orphan desc", "status": "pending", "priority": "medium", "parentId": "T999", "createdAt": "2025-12-01T10:00:00Z"}]' "$TODO_FILE" > "${TODO_FILE}.tmp"
+    mv "${TODO_FILE}.tmp" "$TODO_FILE"
+
+    source "$LIB_DIR/hierarchy.sh"
+
+    local orphans=$(detect_orphans "$TODO_FILE")
+    [[ "$orphans" == *"T002"* ]]
+}
+
+@test "validate --check-orphans reports orphaned tasks" {
+    create_empty_todo
+    jq '.tasks += [{"id":"T001","title":"Orphan","description":"test orphan","status":"pending","priority":"medium","parentId":"T999","createdAt":"2025-12-01T10:00:00Z"}]' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+
+    # Disable checksum validation for this test since we manually modified the file
+    export CLAUDE_TODO_VALIDATION_CHECKSUM_ENABLED=false
+    
+    # Run validation - expect failure due to orphaned tasks, but verify reporting works
+    run bash "$VALIDATE_SCRIPT" --check-orphans
+    assert_failure
+    assert_output --partial "orphaned tasks"
+    assert_output --partial "T001"
+    assert_output --partial "Orphan"
+    assert_output --partial "T999"
+    
+    # Re-enable checksum validation for other tests
+    unset CLAUDE_TODO_VALIDATION_CHECKSUM_ENABLED
+}
+
+@test "validate --fix-orphans unlink repairs orphans" {
+    create_empty_todo
+    jq '.tasks += [{"id":"T001","title":"Orphan","description":"test orphan","status":"pending","priority":"medium","parentId":"T999","createdAt":"2025-12-01T10:00:00Z"}]' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+
+    # Disable checksum validation for this test since we manually modified the file
+    export CLAUDE_TODO_VALIDATION_CHECKSUM_ENABLED=false
+    
+    # Run validation with fix - expect success after fixing orphans
+    run bash "$VALIDATE_SCRIPT" --fix-orphans unlink
+    assert_success
+    assert_output --partial "Unlinked 1 orphaned tasks"
+
+    # Verify parentId is now null
+    local parent=$(jq -r '.tasks[] | select(.id == "T001") | .parentId // "null"' "$TODO_FILE")
+    [[ "$parent" == "null" ]]
+    
+    # Re-enable checksum validation for other tests
+    unset CLAUDE_TODO_VALIDATION_CHECKSUM_ENABLED
+}
+
+# =============================================================================
+# Parent Auto-Complete Tests (T340)
+# =============================================================================
+
+@test "completing last sibling auto-completes parent when enabled" {
+    create_empty_todo
+
+    # Create hierarchy: epic -> 2 tasks
+    local epic_id=$(create_epic "Test Epic")
+    local task1_id=$(create_child_task "Child 1" "$epic_id" "task")
+    local task2_id=$(create_child_task "Child 2" "$epic_id" "task")
+
+    # Enable auto-complete in config
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    # Complete first child - parent should NOT auto-complete
+    run bash "$COMPLETE_SCRIPT" "$task1_id" --skip-notes
+    assert_success
+
+    local epic_status=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    [[ "$epic_status" != "done" ]]
+
+    # Complete second child - parent SHOULD auto-complete
+    run bash "$COMPLETE_SCRIPT" "$task2_id" --skip-notes
+    assert_success
+
+    epic_status=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    [[ "$epic_status" == "done" ]]
+}
+
+@test "parent auto-complete disabled when mode is off" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    # Set mode to off
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "off"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes
+    assert_success
+
+    local epic_status=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
+    [[ "$epic_status" != "done" ]]
+}
+
+@test "auto-completed parent has system note" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes
+    assert_success
+
+    # Check for auto-complete note
+    local note=$(jq -r --arg id "$epic_id" '.tasks[] | select(.id == $id) | .notes[0] // ""' "$TODO_FILE")
+    [[ "$note" == *"AUTO-COMPLETED"* ]]
+    [[ "$note" == *"All child tasks completed"* ]]
+}
+
+@test "JSON output has no debug fields" {
+    create_empty_todo
+    local task_id=$(bash "$ADD_SCRIPT" "Test Task" -q)
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --format json --skip-notes
+    assert_success
+
+    # Should NOT contain debug fields
+    echo "$output" | jq -e '.debugConfig' && fail "Debug field found in output"
+    echo "$output" | jq -e '._meta.debug' && fail "Debug field found in _meta"
+
+    # Should be valid JSON
+    echo "$output" | jq -e '.success' >/dev/null
+}
+
+@test "checksum is recalculated after parent auto-complete" {
+    create_empty_todo
+
+    local epic_id=$(create_epic "Test Epic")
+    local task_id=$(create_child_task "Only Child" "$epic_id" "task")
+
+    jq '.hierarchy.autoCompleteParent = true | .hierarchy.autoCompleteMode = "auto"' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
+
+    local before_checksum=$(jq -r '._meta.checksum' "$TODO_FILE")
+
+    run bash "$COMPLETE_SCRIPT" "$task_id" --skip-notes
+    assert_success
+
+    local after_checksum=$(jq -r '._meta.checksum' "$TODO_FILE")
+
+    # Checksums should be different (file was modified)
+    [[ "$before_checksum" != "$after_checksum" ]]
 }

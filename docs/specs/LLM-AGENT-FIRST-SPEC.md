@@ -29,6 +29,7 @@ This specification uses RFC 2119 keywords to indicate requirement levels:
 | **[SPEC-BIBLE-GUIDELINES.md](SPEC-BIBLE-GUIDELINES.md)** | **AUTHORITATIVE** for specification standards |
 | **[LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md](LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md)** | **AUTHORITATIVE** for task ID format, validation, error codes 10-22 |
 | **[TASK-HIERARCHY-SPEC.md](TASK-HIERARCHY-SPEC.md)** | Hierarchy features (type, parentId, size) affecting JSON output |
+| **[RCSD-PIPELINE-SPEC.md](RCSD-PIPELINE-SPEC.md)** | Uses: RCSD commands (consensus, spec, decompose) MUST follow this spec |
 | **[LLM-TASK-ID-SYSTEM-DESIGN-IMPLEMENTATION-REPORT.md](LLM-TASK-ID-SYSTEM-DESIGN-IMPLEMENTATION-REPORT.md)** | Tracks implementation status against all LLM specs |
 
 ---

@@ -103,6 +103,14 @@ TASK_TYPE_FILTER=""   # Filter by type: epic|task|subtask
 PARENT_FILTER=""      # Filter by parentId
 CHILDREN_OF=""        # Show children of specific task
 SHOW_TREE=false       # Display hierarchical tree view
+WIDE_MODE=false       # Show full title without truncation (--wide flag)
+
+# Terminal width detection for tree title truncation (T675)
+# Reserve ~25 chars for: indent (depth*4) + connector (4) + ID (5) + icons (6) + padding (6)
+TERM_WIDTH="${COLUMNS:-80}"
+TREE_OVERHEAD=25
+TREE_TITLE_WIDTH=$((TERM_WIDTH - TREE_OVERHEAD))
+[[ "$TREE_TITLE_WIDTH" -lt 20 ]] && TREE_TITLE_WIDTH=20  # Minimum 20 chars
 
 # Valid format values
 VALID_FORMATS="text json jsonl markdown table"
@@ -120,8 +128,10 @@ Filters:
   -l, --label LABEL         Filter by label
       --since DATE          Show tasks created after date (ISO 8601: YYYY-MM-DD)
       --until DATE          Show tasks created before date (ISO 8601: YYYY-MM-DD)
-      --all                 Include archived tasks (combines active + archived)
-      --archived            Show ONLY archived tasks
+      --all, --include-archive
+                            Include archived tasks in results (combines active + archived)
+      --archived, --archive-only
+                            Show only archived tasks (mutually exclusive with --all)
       --limit N             Show first N tasks only
       --offset N            Skip first N tasks (for pagination)
 
@@ -130,6 +140,7 @@ Hierarchy Filters (v0.17.0):
       --parent ID           Filter by parent task ID
       --children ID         Show direct children of task ID
       --tree                Display tasks in hierarchical tree view
+      --wide                Show full titles in tree view (implied by --human)
 
 Sorting:
   --sort FIELD              Sort by field: status|priority|createdAt|title (default: priority)
@@ -159,7 +170,9 @@ Examples:
   claude-todo list --json                   # JSON output (shortcut)
   claude-todo list --human                  # Human-readable text output
   claude-todo list --all --limit 20         # Last 20 tasks including archive
+  claude-todo list --include-archive        # Same as --all (combines active + archived)
   claude-todo list --archived               # Show only archived tasks
+  claude-todo list --archive-only           # Same as --archived
   claude-todo list --archived -p high       # Archived high-priority tasks
   claude-todo list --limit 50 --offset 50   # Second page (51-100)
   claude-todo list -v                       # Verbose mode with all details
@@ -185,8 +198,8 @@ log_error() {
 # Check dependencies
 check_deps() {
   if ! command -v jq &> /dev/null; then
-    log_error "jq is required but not installed"
-    exit 1
+    output_error "$E_DEPENDENCY_MISSING" "jq is required but not installed" "$EXIT_DEPENDENCY_ERROR" true "Install jq: brew install jq (macOS) or apt install jq (Linux)"
+    exit "$EXIT_DEPENDENCY_ERROR"
   fi
 }
 
@@ -201,6 +214,7 @@ while [[ $# -gt 0 ]]; do
     --parent) PARENT_FILTER="$2"; shift 2 ;;
     --children) CHILDREN_OF="$2"; shift 2 ;;
     --tree) SHOW_TREE=true; shift ;;
+    --wide) WIDE_MODE=true; shift ;;
     --since) SINCE_DATE="$2"; shift 2 ;;
     --until) UNTIL_DATE="$2"; shift 2 ;;
     --sort) SORT_FIELD="$2"; GROUP_BY_PRIORITY=false; shift 2 ;;
@@ -208,8 +222,8 @@ while [[ $# -gt 0 ]]; do
     -f|--format) FORMAT="$2"; shift 2 ;;
     --json) FORMAT="json"; shift ;;
     --human) FORMAT="text"; shift ;;
-    --all) INCLUDE_ARCHIVE=true; shift ;;
-    --archived) SHOW_ARCHIVED=true; shift ;;
+    --all|--include-archive) INCLUDE_ARCHIVE=true; shift ;;
+    --archived|--archive-only) SHOW_ARCHIVED=true; shift ;;
     --limit) LIMIT="$2"; shift 2 ;;
     --offset) OFFSET="$2"; shift 2 ;;
     --notes) SHOW_NOTES=true; shift ;;
@@ -226,11 +240,17 @@ while [[ $# -gt 0 ]]; do
       else
         output_error "$E_INPUT_INVALID" "Unknown option: $1"
       fi
-      exit "${EXIT_INVALID_INPUT:-1}"
+      exit "$EXIT_INVALID_INPUT"
       ;;
     *) shift ;;
   esac
 done
+
+# Mutual exclusion: --include-archive and --archive-only cannot be used together
+if [[ "$INCLUDE_ARCHIVE" == true && "$SHOW_ARCHIVED" == true ]]; then
+  output_error "$E_INPUT_INVALID" "--include-archive (--all) and --archive-only (--archived) cannot be used together" "$EXIT_INVALID_INPUT" true "Use --include-archive to combine active+archived, or --archive-only for archived tasks only"
+  exit "$EXIT_INVALID_INPUT"
+fi
 
 check_deps
 
@@ -253,14 +273,14 @@ fi
 
 # Validate format (Issue T142: reject invalid formats instead of silent fallback)
 if ! echo "$VALID_FORMATS" | grep -qw "$FORMAT"; then
-  output_error "$E_INPUT_INVALID" "Invalid format: $FORMAT" 1 true "Valid formats: $VALID_FORMATS"
-  exit 1
+  output_error "$E_INPUT_INVALID" "Invalid format: $FORMAT" "$EXIT_INVALID_INPUT" true "Valid formats: $VALID_FORMATS"
+  exit "$EXIT_INVALID_INPUT"
 fi
 
 # Check if todo.json exists
 if [[ ! -f "$TODO_FILE" ]]; then
-  log_error "$TODO_FILE not found. Run claude-todo init first."
-  exit 1
+  output_error "$E_FILE_NOT_FOUND" "$TODO_FILE not found. Run 'claude-todo init' to initialize." "$EXIT_NOT_FOUND" true "Run: claude-todo init"
+  exit "$EXIT_NOT_FOUND"
 fi
 
 # PERFORMANCE OPTIMIZATION: Build filter expression early to reduce task loading
@@ -288,7 +308,15 @@ if [[ -n "$LABEL_FILTER" ]]; then
 fi
 
 # Apply hierarchy filters (v0.17.0)
+# Validate --type filter value (T646 finding: missing validation)
 if [[ -n "$TASK_TYPE_FILTER" ]]; then
+  case "$TASK_TYPE_FILTER" in
+    epic|task|subtask) ;;
+    *)
+      output_error "$E_INPUT_INVALID" "Invalid task type: $TASK_TYPE_FILTER" "$EXIT_INVALID_INPUT" true "Valid types: epic, task, subtask"
+      exit "$EXIT_INVALID_INPUT"
+      ;;
+  esac
   PRE_FILTER="$PRE_FILTER | select(.type == \"$TASK_TYPE_FILTER\")"
 fi
 
@@ -312,8 +340,12 @@ fi
 
 # PERFORMANCE: Use -r for raw output to reduce overhead, then compact with -c only when needed
 # Load tasks with early filtering applied (reduces memory footprint)
+# Track data source for metadata: "active", "archive", or "combined"
+DATA_SOURCE="active"
+
 if [[ "$SHOW_ARCHIVED" == true ]]; then
   # Show ONLY archived tasks
+  DATA_SOURCE="archive"
   if [[ ! -f "$ARCHIVE_FILE" ]]; then
     if [[ "$FORMAT" == "json" ]]; then
       # Return proper JSON envelope for empty archive
@@ -326,7 +358,8 @@ if [[ "$SHOW_ARCHIVED" == true ]]; then
             "format": "json",
             "version": $version,
             "command": "list",
-            "timestamp": $timestamp
+            "timestamp": $timestamp,
+            "source": "archive"
           },
           "filters": {"archived": true},
           "summary": {
@@ -344,12 +377,16 @@ if [[ "$SHOW_ARCHIVED" == true ]]; then
     fi
     exit 0
   fi
-  TASKS=$(jq -c ".archivedTasks[] | $PRE_FILTER" "$ARCHIVE_FILE" 2>/dev/null || echo "")
+  # Add _source: "archive" to each archived task
+  TASKS=$(jq -c ".archivedTasks[] | $PRE_FILTER | . + {\"_source\": \"archive\"}" "$ARCHIVE_FILE" 2>/dev/null || echo "")
 elif [[ "$INCLUDE_ARCHIVE" == true ]] && [[ -f "$ARCHIVE_FILE" ]]; then
   # Combine both files in single jq invocation (more efficient than separate calls)
-  TASKS=$(jq -c "((.tasks[] // empty), (input.archivedTasks[] // empty)) | $PRE_FILTER" "$TODO_FILE" "$ARCHIVE_FILE" 2>/dev/null || echo "")
+  # Add _source field to distinguish active vs archived tasks
+  DATA_SOURCE="combined"
+  TASKS=$(jq -c "((.tasks[] // empty) | . + {\"_source\": \"active\"}), ((input.archivedTasks[] // empty) | . + {\"_source\": \"archive\"}) | $PRE_FILTER" "$TODO_FILE" "$ARCHIVE_FILE" 2>/dev/null || echo "")
 else
-  TASKS=$(jq -c ".tasks[] | $PRE_FILTER" "$TODO_FILE" 2>/dev/null || echo "")
+  # Active tasks only - add _source: "active" for consistency in combined views
+  TASKS=$(jq -c ".tasks[] | $PRE_FILTER | . + {\"_source\": \"active\"}" "$TODO_FILE" 2>/dev/null || echo "")
 fi
 
 # Handle empty task list
@@ -359,13 +396,15 @@ if [[ -z "$TASKS" ]]; then
     jq -n \
       --arg version "$VERSION" \
       --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+      --arg source "$DATA_SOURCE" \
       '{
         "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
         "_meta": {
           "format": "json",
           "version": $version,
           "command": "list",
-          "timestamp": $timestamp
+          "timestamp": $timestamp,
+          "source": $source
         },
         "filters": {},
         "summary": {
@@ -519,7 +558,8 @@ render_task() {
   local notes=$(echo "$task" | jq -r '.notes // []')
   local createdAt=$(echo "$task" | jq -r '.createdAt')
   local completedAt=$(echo "$task" | jq -r '.completedAt // ""')
-  local isArchived=$(echo "$task" | jq -r 'has("_archive")')
+  # Check for _source field (new) or _archive field (legacy) to detect archived tasks
+  local isArchived=$(echo "$task" | jq -r 'if ._source == "archive" then "true" elif has("_archive") then "true" else "false" end')
 
   local status_col=$(status_color "$status")
   local status_ic=$(status_icon "$status")
@@ -660,20 +700,21 @@ TREE_JSON="null"
 if [[ "$SHOW_TREE" == true ]]; then
     # Build hierarchical tree from filtered tasks using parentId
     TREE_JSON=$(echo "$FILTERED_TASKS" | jq '
-        # Index tasks by id
-        (map({(.id): .}) | add) as $lookup |
+        # Store the full task list
+        . as $tasks |
 
-        # Find root tasks (no parent or parent not in current set)
-        [.[] | select(.parentId == null or ($lookup[.parentId] == null))] as $roots |
+        # Get children of a task
+        def get_children($parent_id):
+          [$tasks[] | select(.parentId == $parent_id)];
 
-        # Recursive function to build tree
-        def build_tree(task):
-            task + {
-                children: [.[] | select(.parentId == task.id) | build_tree(.)]
-            };
+        # Recursive tree building
+        def build_tree($task):
+          $task + {
+            children: [get_children($task.id)[] | build_tree(.)]
+          };
 
-        # Build tree from roots
-        [$roots[] | . as $root | $lookup | to_entries | map(.value) | build_tree($root)]
+        # Find root tasks
+        [$tasks[] | select(.parentId == null) | build_tree(.)]
     ')
 fi
 
@@ -681,11 +722,23 @@ fi
 case "$FORMAT" in
   json)
     # JSON format with metadata envelope
-    # Use stdin piping to avoid "Argument list too long" with large task arrays
-    echo "$FILTERED_TASKS" | jq \
+    # FIX: Use temporary files to avoid "Argument list too long" with large datasets
+    TEMP_TASKS_FILE=$(mktemp)
+    TEMP_TREE_FILE=$(mktemp)
+    trap "rm -f '$TEMP_TASKS_FILE' '$TEMP_TREE_FILE'" EXIT
+
+    # Write data to temp files (avoids shell argument limits)
+    echo "$FILTERED_TASKS" > "$TEMP_TASKS_FILE"
+    echo "$TREE_JSON" > "$TEMP_TREE_FILE"
+
+    # Use --slurpfile to read large JSON from files instead of command line
+    jq -n \
+      --slurpfile tasks "$TEMP_TASKS_FILE" \
+      --slurpfile tree_data "$TEMP_TREE_FILE" \
       --arg version "$VERSION" \
       --arg timestamp "$CURRENT_TIMESTAMP" \
       --arg checksum "$TASKS_CHECKSUM" \
+      --arg source "$DATA_SOURCE" \
       --argjson execution_ms "$EXECUTION_MS" \
       --arg status "$STATUS_FILTER" \
       --arg priority "$PRIORITY_FILTER" \
@@ -698,7 +751,7 @@ case "$FORMAT" in
       --argjson blocked "$BLOCKED_COUNT" \
       --argjson done "$DONE_COUNT" \
       --argjson show_tree "$(if [[ "$SHOW_TREE" == true ]]; then echo true; else echo false; fi)" \
-      --argjson tree_data "$TREE_JSON" '{
+      '{
       "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
       "_meta": {
         format: "json",
@@ -706,7 +759,8 @@ case "$FORMAT" in
         command: "list",
         timestamp: $timestamp,
         checksum: $checksum,
-        execution_ms: $execution_ms
+        execution_ms: $execution_ms,
+        source: $source
       },
       "success": true,
       filters: {
@@ -723,8 +777,8 @@ case "$FORMAT" in
         blocked: $blocked,
         done: $done
       },
-      tasks: .,
-      tree: (if $show_tree then $tree_data else null end)
+      tasks: $tasks[0],
+      tree: (if $show_tree then $tree_data[0] else null end)
     } | if .tree == null then del(.tree) else . end'
     ;;
 
@@ -734,8 +788,9 @@ case "$FORMAT" in
     jq -nc --arg version "$VERSION" \
       --arg timestamp "$CURRENT_TIMESTAMP" \
       --arg checksum "$TASKS_CHECKSUM" \
+      --arg source "$DATA_SOURCE" \
       --argjson execution_ms "$EXECUTION_MS" \
-      '{_type: "meta", version: $version, command: "list", timestamp: $timestamp, checksum: $checksum, execution_ms: $execution_ms}'
+      '{_type: "meta", version: $version, command: "list", timestamp: $timestamp, checksum: $checksum, execution_ms: $execution_ms, source: $source}'
 
     # Lines 2-N: Tasks (one per line)
     echo "$FILTERED_TASKS" | jq -c '.[] | {_type: "task"} + .'
@@ -849,27 +904,56 @@ case "$FORMAT" in
       fi
       echo ""
 
-      # Render tree using jq - simpler indented format
+      # Calculate title width for tree rendering (T675, T676)
+      # --wide flag shows full titles without truncation
+      if [[ "$WIDE_MODE" == true ]]; then
+        title_width=999  # Effectively unlimited when --wide specified
+      else
+        title_width=$TREE_TITLE_WIDTH  # Use terminal-width-based truncation
+      fi
+
+      # Render tree using jq with proper connectors (T673, T674)
+      # Uses render_children to handle prefix accumulation correctly
       tree_output=""
       if [[ "$UNICODE_ENABLED" == true ]]; then
-        tree_output=$(echo "$TREE_JSON" | jq -r '
+        tree_output=$(echo "$TREE_JSON" | jq -r --argjson width "$title_width" '
           def sicon: if . == "done" then "✓" elif . == "active" then "◉" elif . == "blocked" then "⊗" else "○" end;
-          def render(depth):
-            ("    " * depth) as $indent |
-            (if depth > 0 then "├── " else "" end) as $prefix |
-            "\($indent)\($prefix)\(.id) \(.status | sicon) \(.title[0:45])",
-            if (.children | length) > 0 then (.children[] | render(depth + 1)) else empty end;
-          .[] | render(0)
+          def picon: if . == "critical" then "🔴" elif . == "high" then "🟡" elif . == "medium" then "🔵" else "⚪" end;
+          def truncate_title: if (.title | length) > $width then .title[0:($width - 1)] + "…" else .title end;
+          def render_children(prefix):
+            (.children | length) as $n |
+            if $n > 0 then
+              range($n) as $i |
+              (if $i == ($n - 1) then "└── " else "├── " end) as $conn |
+              (if $i == ($n - 1) then "    " else "│   " end) as $cont |
+              .children[$i] |
+              "\(prefix)\($conn)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+              render_children(prefix + $cont)
+            else empty end;
+          def render_root:
+            "\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+            render_children("");
+          .[] | render_root
         ' 2>/dev/null)
       else
-        tree_output=$(echo "$TREE_JSON" | jq -r '
+        tree_output=$(echo "$TREE_JSON" | jq -r --argjson width "$title_width" '
           def sicon: if . == "done" then "+" elif . == "active" then "*" elif . == "blocked" then "x" else "o" end;
-          def render(depth):
-            ("    " * depth) as $indent |
-            (if depth > 0 then "+-- " else "" end) as $prefix |
-            "\($indent)\($prefix)\(.id) \(.status | sicon) \(.title[0:45])",
-            if (.children | length) > 0 then (.children[] | render(depth + 1)) else empty end;
-          .[] | render(0)
+          def picon: if . == "critical" then "!" elif . == "high" then "H" elif . == "medium" then "M" else "L" end;
+          def truncate_title: if (.title | length) > $width then .title[0:($width - 3)] + "..." else .title end;
+          def render_children(prefix):
+            (.children | length) as $n |
+            if $n > 0 then
+              range($n) as $i |
+              (if $i == ($n - 1) then "`-- " else "+-- " end) as $conn |
+              (if $i == ($n - 1) then "    " else "|   " end) as $cont |
+              .children[$i] |
+              "\(prefix)\($conn)\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+              render_children(prefix + $cont)
+            else empty end;
+          def render_root:
+            "\(.id) \(.status | sicon) \((.priority // "medium") | picon) \(truncate_title)",
+            render_children("");
+          .[] | render_root
         ' 2>/dev/null)
       fi
 

@@ -723,6 +723,7 @@ Key definitions:
 | [SPEC-BIBLE-GUIDELINES.md](SPEC-BIBLE-GUIDELINES.md) | **AUTHORITATIVE** for specification standards |
 | [LLM-AGENT-FIRST-SPEC.md](LLM-AGENT-FIRST-SPEC.md) | Related: LLM-first command design principles |
 | [CONFIG-SYSTEM-SPEC.md](CONFIG-SYSTEM-SPEC.md) | Related: Configuration system authority |
+| [RCSD-PIPELINE-SPEC.md](RCSD-PIPELINE-SPEC.md) | Related: Defines phase context for RCSD pipeline stages (Research→setup, Decompose→core) |
 | PHASE-SYSTEM-IMPLEMENTATION-REPORT.md | Tracks implementation status (pending creation) |
 
 ---

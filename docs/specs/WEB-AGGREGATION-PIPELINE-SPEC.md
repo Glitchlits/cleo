@@ -842,6 +842,7 @@ When llms.txt is absent:
 | Document | Relationship |
 |----------|--------------|
 | [SPEC-BIBLE-GUIDELINES.md](SPEC-BIBLE-GUIDELINES.md) | Authoritative for specification format |
+| [RCSD-PIPELINE-SPEC.md](RCSD-PIPELINE-SPEC.md) | **Stage**: This spec implements the RESEARCH stage of the RCSD Pipeline (Part 2) |
 | [WEB-AGGREGATION-PIPELINE-IMPLEMENTATION-REPORT.md](WEB-AGGREGATION-PIPELINE-IMPLEMENTATION-REPORT.md) | Tracks implementation status |
 
 ---

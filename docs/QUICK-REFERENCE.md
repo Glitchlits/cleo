@@ -19,7 +19,7 @@
 │ ├── todo-archive.json (completed)                  │
 │ ├── todo-config.json (settings)                    │
 │ ├── todo-log.json (audit trail)                    │
-│ └── .backups/ (versioned backups)                  │
+│ └── .backups/ (Tier 1: operational backups)        │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -550,7 +550,7 @@ echo "Created: $formatted"
 ## Backup Rotation
 
 ```
-.backups/
+.claude/.backups/                    # Tier 1: Operational backups
 ├── todo.json.1  ← Most recent (current backup)
 ├── todo.json.2
 ├── ...

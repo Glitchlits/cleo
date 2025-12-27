@@ -429,7 +429,7 @@ declare -A CMD_MAP=(
   [focus]="focus.sh"
   [export]="export.sh"
   [migrate]="migrate.sh"
-  [migrate-backups]="migrate-backups.sh"
+  [reorganize-backups]="reorganize-backups.sh"
   [update]="update-task.sh"
   [dash]="dash.sh"
   [next]="next.sh"
@@ -447,6 +447,13 @@ declare -A CMD_MAP=(
   [find]="find.sh"
   [commands]="commands.sh"
   [research]="research.sh"
+  [reparent]="reparent.sh"
+  [promote]="promote.sh"
+  [unarchive]="unarchive.sh"
+  [archive-stats]="archive-stats.sh"
+  [delete]="delete.sh"
+  [uncancel]="uncancel.sh"
+  [reopen]="reopen.sh"
 )
 
 # Brief descriptions for main help
@@ -465,7 +472,7 @@ declare -A CMD_DESC=(
   [focus]="Manage task focus (set/clear/note/next)"
   [export]="Export tasks to TodoWrite/JSON/Markdown format"
   [migrate]="Migrate todo files to current schema version"
-  [migrate-backups]="Migrate legacy backups to unified taxonomy"
+  [reorganize-backups]="Reorganize legacy backups to unified taxonomy"
   [update]="Update existing task fields"
   [dash]="Show project dashboard (status, focus, phases, activity)"
   [next]="Suggest next task based on priority and dependencies"
@@ -483,6 +490,13 @@ declare -A CMD_DESC=(
   [find]="Fuzzy search tasks by title, ID, or labels"
   [commands]="List and query available commands (JSON by default)"
   [research]="Multi-source web research aggregation (Tavily, Context7, Reddit)"
+  [reparent]="Move a task to a different parent task"
+  [promote]="Remove parent from a task (make it root-level)"
+  [unarchive]="Restore archived tasks back to todo.json"
+  [archive-stats]="Generate analytics and reports from archived tasks"
+  [delete]="Cancel/delete a task with child handling strategies"
+  [uncancel]="Restore cancelled tasks back to pending status"
+  [reopen]="Restore completed tasks back to pending status"
 )
 
 # ============================================
@@ -500,6 +514,16 @@ declare -A CMD_ALIASES=(
   [tags]="labels"
   [search]="find"
   [dig]="research"
+  [tree]="list --tree"
+  [cancel]="delete"
+  [restore-cancelled]="uncancel"
+  [restore-done]="reopen"
+)
+
+# Aliases that include flags (need special handling in resolve_command)
+# Format: alias -> "command flag1 flag2..."
+declare -A ALIASED_FLAGS=(
+  [tree]="--tree"
 )
 
 # ============================================
@@ -666,23 +690,35 @@ debug_validate() {
 # ============================================
 # RESOLVE COMMAND (handles aliases and plugins)
 # ============================================
+# Returns: "type:command:aliased_flags" where aliased_flags may be empty
 resolve_command() {
   local cmd="$1"
+  local original_cmd="$cmd"
+  local aliased_flags=""
 
   # Check if it's an alias first
   if [[ -n "${CMD_ALIASES[$cmd]:-}" ]]; then
-    cmd="${CMD_ALIASES[$cmd]}"
+    local alias_val="${CMD_ALIASES[$cmd]}"
+    # Split alias into command and flags (first word is command)
+    cmd="${alias_val%% *}"
+    # Check for aliased flags (stored separately for clarity)
+    if [[ -n "${ALIASED_FLAGS[$original_cmd]:-}" ]]; then
+      aliased_flags="${ALIASED_FLAGS[$original_cmd]}"
+    elif [[ "$alias_val" == *" "* ]]; then
+      # Fallback: extract flags from alias value itself
+      aliased_flags="${alias_val#* }"
+    fi
   fi
 
   # Check plugins (plugins override core commands)
   if [[ -n "${PLUGIN_MAP[$cmd]:-}" ]]; then
-    echo "plugin:${PLUGIN_MAP[$cmd]}"
+    echo "plugin:${PLUGIN_MAP[$cmd]}:$aliased_flags"
     return 0
   fi
 
   # Check core commands
   if [[ -n "${CMD_MAP[$cmd]:-}" ]]; then
-    echo "core:$cmd"
+    echo "core:$cmd:$aliased_flags"
     return 0
   fi
 
@@ -700,7 +736,7 @@ show_main_help() {
   echo "       claude-todo help <command>    Show detailed command help"
   echo ""
   echo "Commands:"
-  for cmd in init add update complete list find focus session archive validate stats backup restore export migrate migrate-backups log dash next labels deps blockers phases phase exists history show analyze config commands; do
+  for cmd in init add update complete delete uncancel reopen list find focus session archive unarchive validate stats backup restore export migrate reorganize-backups log dash next labels deps blockers phases phase exists history show analyze config commands; do
     printf "  %-14s %s\n" "$cmd" "${CMD_DESC[$cmd]}"
   done
   echo "  version        Show version"
@@ -786,10 +822,12 @@ case "$CMD" in
     if [[ -n "${2:-}" ]]; then
       resolved=$(resolve_command "$2")
       if [[ $? -eq 0 ]]; then
-        if [[ "$resolved" == plugin:* ]]; then
-          bash "${resolved#plugin:}" --help
+        # Parse resolved format: type:command:aliased_flags
+        IFS=':' read -r resolved_type resolved_cmd resolved_flags <<< "$resolved"
+        if [[ "$resolved_type" == "plugin" ]]; then
+          bash "$resolved_cmd" --help
         else
-          bash "$SCRIPT_DIR/${CMD_MAP[${resolved#core:}]}" --help
+          bash "$SCRIPT_DIR/${CMD_MAP[$resolved_cmd]}" --help
         fi
       else
         echo "Unknown command: $2"
@@ -804,14 +842,18 @@ case "$CMD" in
     resolved=$(resolve_command "$CMD")
     if [[ $? -eq 0 ]]; then
       shift
-      if [[ "$resolved" == plugin:* ]]; then
-        [[ "$DEBUG" == "1" ]] && echo "[DEBUG] Executing plugin: ${resolved#plugin:}" >&2
-        exec bash "${resolved#plugin:}" "$@"
+      # Parse resolved format: type:command:aliased_flags
+      IFS=':' read -r resolved_type resolved_cmd resolved_flags <<< "$resolved"
+      if [[ "$resolved_type" == "plugin" ]]; then
+        [[ "$DEBUG" == "1" ]] && echo "[DEBUG] Executing plugin: $resolved_cmd" >&2
+        # shellcheck disable=SC2086
+        exec bash "$resolved_cmd" $resolved_flags "$@"
       else
-        target_cmd="${resolved#core:}"
-        script="$SCRIPT_DIR/${CMD_MAP[$target_cmd]}"
-        [[ "$DEBUG" == "1" ]] && echo "[DEBUG] Executing: $script" >&2
-        exec bash "$script" "$@"
+        script="$SCRIPT_DIR/${CMD_MAP[$resolved_cmd]}"
+        [[ "$DEBUG" == "1" ]] && echo "[DEBUG] Executing: $script $resolved_flags" >&2
+        # Inject aliased flags before user arguments
+        # shellcheck disable=SC2086
+        exec bash "$script" $resolved_flags "$@"
       fi
     else
       echo "Unknown command: $CMD"
@@ -994,6 +1036,19 @@ if [[ -d "$SCRIPT_DIR/docs" ]]; then
   log_info "Documentation installed ($total_docs files in 4 directories)"
 else
   log_warn "Documentation directory not found at $SCRIPT_DIR/docs"
+fi
+
+# ============================================
+# TAB COMPLETION SCRIPTS (T638)
+# ============================================
+log_step "Installing tab completion scripts..."
+
+if [[ -d "$SCRIPT_DIR/completions" ]]; then
+  mkdir -p "$INSTALL_DIR/completions"
+  cp -r "$SCRIPT_DIR/completions/"* "$INSTALL_DIR/completions/"
+  log_info "Tab completions installed: $INSTALL_DIR/completions"
+else
+  log_warn "Completions directory not found at $SCRIPT_DIR/completions"
 fi
 
 # ============================================
@@ -1208,4 +1263,12 @@ echo ""
 echo "Verify installation:"
 echo "  claude-todo version"
 echo "  ct version          # shortcut"
+echo ""
+echo "Tab Completion (optional):"
+echo "  Bash: Add to ~/.bashrc:"
+echo "    source ~/.claude-todo/completions/bash-completion.sh"
+echo ""
+echo "  Zsh: Add to ~/.zshrc:"
+echo "    fpath=(~/.claude-todo/completions \$fpath)"
+echo "    autoload -Uz compinit && compinit"
 echo ""

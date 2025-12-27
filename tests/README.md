@@ -43,7 +43,7 @@ tests/
 
 ## Prerequisites
 
-1. **BATS** - Bash Automated Testing System
+1. **BATS** - Bash Automated Testing System (v1.5.0+ for parallel)
    ```bash
    # macOS
    brew install bats-core
@@ -51,17 +51,32 @@ tests/
    # Debian/Ubuntu
    sudo apt-get install bats
 
+   # Fedora
+   sudo dnf install bats
+
    # From source
    git clone https://github.com/bats-core/bats-core.git
    cd bats-core && sudo ./install.sh /usr/local
    ```
 
-2. **Git submodules** - Initialize helper libraries
+2. **GNU parallel** - Required for parallel test execution
+   ```bash
+   # macOS
+   brew install parallel
+
+   # Debian/Ubuntu
+   sudo apt-get install parallel
+
+   # Fedora
+   sudo dnf install parallel
+   ```
+
+3. **Git submodules** - Initialize helper libraries
    ```bash
    git submodule update --init --recursive
    ```
 
-3. **jq** - JSON processor (required for many tests)
+4. **jq** - JSON processor (required for many tests)
    ```bash
    # macOS
    brew install jq
@@ -99,9 +114,56 @@ bats tests/integration/*.bats
 bats tests/unit/add-task.bats --filter "add task with --priority"
 ```
 
+## Running Tests in Parallel
+
+The test suite supports parallel execution for faster test runs on multi-core systems.
+
+### Parallel Execution
+
+```bash
+# Default: 16 parallel jobs (auto-detected)
+./tests/run-all-tests.sh
+
+# Maximum speed: use all available CPU cores
+./tests/run-all-tests.sh --fast
+
+# Set specific job count
+./tests/run-all-tests.sh --jobs 8
+
+# Disable parallel (sequential mode)
+./tests/run-all-tests.sh --no-parallel
+```
+
+### Performance Comparison
+
+| Mode | Command | Typical Time |
+|------|---------|--------------|
+| Sequential | `--no-parallel` | ~10 min |
+| Default (16 jobs) | (none) | ~2 min |
+| Fast (all cores) | `--fast` | ~1.5 min |
+
+**Requirements for parallel execution:**
+- BATS 1.5.0+ (supports `--jobs` flag)
+- GNU parallel (required for `--jobs` to work)
+- Test isolation via `BATS_TEST_TMPDIR` (already implemented)
+
+**Install GNU parallel:**
+```bash
+# Fedora
+sudo dnf install parallel
+
+# Debian/Ubuntu
+sudo apt install parallel
+
+# macOS
+brew install parallel
+```
+
 ## Writing New Tests
 
-### Basic Test Structure
+### Basic Test Structure (Optimized)
+
+All test files should use the `setup_file()` pattern for optimal performance:
 
 ```bash
 #!/usr/bin/env bats
@@ -111,15 +173,28 @@ bats tests/unit/add-task.bats --filter "add task with --priority"
 # Description of what this test file covers.
 # =============================================================================
 
+# File-level setup (runs once per file)
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
+# Per-test setup (runs before each test)
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 }
 
+# Per-test teardown (runs after each test)
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+# File-level teardown (runs once per file)
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -140,8 +215,12 @@ teardown() {
 
 | Function | Description |
 |----------|-------------|
-| `common_setup` | Initialize test environment, paths, temp directory |
-| `common_teardown` | Clean up temp directory |
+| `common_setup_file` | File-level initialization (runs once per .bats file) |
+| `common_setup_per_test` | Per-test setup (isolated temp directory) |
+| `common_teardown_per_test` | Per-test cleanup |
+| `common_teardown_file` | File-level cleanup (runs once per .bats file) |
+| `common_setup` | Legacy: Combined setup (deprecated, use per_test) |
+| `common_teardown` | Legacy: Combined teardown (deprecated, use per_test) |
 | `$PROJECT_ROOT` | Path to claude-todo project root |
 | `$TODO_FILE` | Path to test todo.json |
 | `$CONFIG_FILE` | Path to test config.json |

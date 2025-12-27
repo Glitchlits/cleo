@@ -1330,6 +1330,7 @@ A conforming implementation MAY:
 | **[LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md](LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md)** | **AUTHORITATIVE** for task ID format |
 | **[CONSENSUS-FRAMEWORK-SPEC.md](CONSENSUS-FRAMEWORK-SPEC.md)** | **AUTHORITATIVE** for challenge protocol, evidence standards |
 | **[PHASE-SYSTEM-SPEC.md](PHASE-SYSTEM-SPEC.md)** | Related for phase assignment |
+| **[RCSD-PIPELINE-SPEC.md](RCSD-PIPELINE-SPEC.md)** | **Stage**: This spec implements the DECOMPOSE stage of the RCSD Pipeline (Part 4) |
 
 ---
 

@@ -434,7 +434,7 @@ Legend:
            ┌─────────┐          ┌──────────────────┐
            │ Delete  │          │ Create Backup    │
            │  Temp   │          │ todo.json →      │
-           │  ERROR  │          │ .backups/        │
+           │  ERROR  │          │ .claude/.backups/│
            └─────────┘          │ todo.json.N      │
                                 └────────┬─────────┘
                                          │
@@ -581,8 +581,8 @@ Commands:
                   BACKUP ROTATION POLICY
                   (max_backups: 10)
 
-Current State:
-.backups/
+Current State (Tier 1 - Operational Backups):
+.claude/.backups/
 ├── todo.json.1  (most recent)
 ├── todo.json.2
 ├── todo.json.3
@@ -627,7 +627,7 @@ Current State:
                 └──────────────────────┘
 
 Result:
-.backups/
+.claude/.backups/
 ├── todo.json.1  (NEW - just backed up)
 ├── todo.json.2  (was .1)
 ├── todo.json.3  (was .2)

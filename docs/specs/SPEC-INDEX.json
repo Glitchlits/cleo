@@ -1,10 +1,10 @@
 {
   "$schema": "https://claude-todo.dev/schemas/v1/spec-index.schema.json",
   "_meta": {
-    "version": "1.0.3",
-    "lastUpdated": "2025-12-20",
-    "totalSpecs": 16,
-    "totalReports": 9
+    "version": "1.0.5",
+    "lastUpdated": "2025-12-23",
+    "totalSpecs": 19,
+    "totalReports": 11
   },
   "authorities": {
     "task-ids": "LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md",
@@ -17,7 +17,10 @@
     "file-operations": "FILE-LOCKING-SPEC.md",
     "versioning": "RELEASE-VERSION-MANAGEMENT-SPEC.md",
     "search": "FIND-COMMAND-SPEC.md",
-    "consensus-investigation": "CONSENSUS-FRAMEWORK-SPEC.md"
+    "consensus-investigation": "CONSENSUS-FRAMEWORK-SPEC.md",
+    "multi-agent-abstraction": "MULTI-AGENT-ABSTRACTION-SPEC.md",
+    "rcsd-pipeline": "RCSD-PIPELINE-SPEC.md",
+    "task-decomposition": "TASK-DECOMPOSITION-SPEC.md"
   },
   "specs": [
     {
@@ -43,7 +46,7 @@
       "synopsis": "Task ID system design (T001 format). Flat sequential IDs with parentId for hierarchy. Six guarantees: unique, immutable, stable, sequential, referenceable, recoverable.",
       "lastUpdated": "2025-01-17",
       "dependsOn": [],
-      "dependedOnBy": ["TASK-HIERARCHY-SPEC.md", "PHASE-SYSTEM-SPEC.md", "TODOWRITE-SYNC-SPEC.md", "FIND-COMMAND-SPEC.md", "CONSENSUS-FRAMEWORK-SPEC.md"],
+      "dependedOnBy": ["TASK-HIERARCHY-SPEC.md", "PHASE-SYSTEM-SPEC.md", "TODOWRITE-SYNC-SPEC.md", "FIND-COMMAND-SPEC.md", "CONSENSUS-FRAMEWORK-SPEC.md", "RCSD-PIPELINE-SPEC.md", "TASK-DECOMPOSITION-SPEC.md"],
       "implementationReport": "LLM-TASK-ID-SYSTEM-DESIGN-IMPLEMENTATION-REPORT.md",
       "isAuthoritativeFor": ["task-ids"]
     },
@@ -71,7 +74,7 @@
       "synopsis": "Dual-level phase model: project lifecycle phases vs task categorization. Defines phase transitions, history, validation rules.",
       "lastUpdated": "2025-12-17",
       "dependsOn": ["LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md"],
-      "dependedOnBy": ["TODOWRITE-SYNC-SPEC.md", "PHASE-DELETE-IMPLEMENTATION.md", "PHASE-RENAME-IMPLEMENTATION.md", "PHASE-ROLLBACK-IMPLEMENTATION.md"],
+      "dependedOnBy": ["TODOWRITE-SYNC-SPEC.md", "PHASE-DELETE-IMPLEMENTATION.md", "PHASE-RENAME-IMPLEMENTATION.md", "PHASE-ROLLBACK-IMPLEMENTATION.md", "RCSD-PIPELINE-SPEC.md"],
       "isAuthoritativeFor": ["phase-lifecycle"]
     },
     {
@@ -212,10 +215,10 @@
       "type": "SPEC",
       "domain": "web-aggregation",
       "category": "research",
-      "synopsis": "Unified web aggregation pipeline for LLM agents. Stage-based architecture: Discovery, Extraction, Normalization, Distillation, Output. 60-80% token reduction.",
-      "lastUpdated": "2025-12-19",
+      "synopsis": "Unified web aggregation pipeline for LLM agents. Stage-based architecture: Discovery, Extraction, Normalization, Distillation, Output. 60-80% token reduction. RESEARCH stage of RCSD pipeline.",
+      "lastUpdated": "2025-12-23",
       "dependsOn": [],
-      "dependedOnBy": [],
+      "dependedOnBy": ["RCSD-PIPELINE-SPEC.md"],
       "implementationReport": "WEB-AGGREGATION-PIPELINE-IMPLEMENTATION-REPORT.md",
       "isAuthoritativeFor": ["web-aggregation"]
     },
@@ -229,9 +232,51 @@
       "synopsis": "Multi-agent consensus framework for claim validation. 7 agents (orchestrator + 5 workers + synthesis), 4 phases, RFC 2119 compliant. Anti-consensus protocol, HITL gates, evidence standards.",
       "lastUpdated": "2025-12-20",
       "dependsOn": ["SPEC-BIBLE-GUIDELINES.md", "LLM-AGENT-FIRST-SPEC.md", "LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md"],
-      "dependedOnBy": [],
+      "dependedOnBy": ["RCSD-PIPELINE-SPEC.md"],
       "implementationReport": "CONSENSUS-FRAMEWORK-IMPLEMENTATION-REPORT.md",
       "isAuthoritativeFor": ["consensus-investigation"]
+    },
+    {
+      "file": "MULTI-AGENT-ABSTRACTION-SPEC.md",
+      "version": "1.0.0",
+      "status": "DRAFT",
+      "type": "SPEC",
+      "domain": "multi-agent-abstraction",
+      "category": "architecture",
+      "synopsis": "Abstraction layer for multi-agent CLI support (Claude, Gemini, Codex, Kimi). Defines environment variables, path resolution, agent detection, sync protocol adapters. Brand: cleo.",
+      "lastUpdated": "2025-12-22",
+      "dependsOn": ["SPEC-BIBLE-GUIDELINES.md", "LLM-AGENT-FIRST-SPEC.md", "TODOWRITE-SYNC-SPEC.md", "CONFIG-SYSTEM-SPEC.md"],
+      "dependedOnBy": [],
+      "implementationReport": "../../claudedocs/rebrand/MULTI-AGENT-ABSTRACTION-IMPLEMENTATION-REPORT.md",
+      "isAuthoritativeFor": ["multi-agent-abstraction"]
+    },
+    {
+      "file": "RCSD-PIPELINE-SPEC.md",
+      "version": "1.0.0",
+      "status": "DRAFT",
+      "type": "SPEC",
+      "domain": "rcsd-pipeline",
+      "category": "architecture",
+      "synopsis": "Unified Research→Consensus→Spec→Decompose pipeline. Task-anchored directory structure (.claude/rcsd/), 9 guardrailed agents, schema-validated outputs. Supersedes T204/T215-T221 plugin approach.",
+      "lastUpdated": "2025-12-23",
+      "dependsOn": ["SPEC-BIBLE-GUIDELINES.md", "LLM-AGENT-FIRST-SPEC.md", "CONSENSUS-FRAMEWORK-SPEC.md", "TASK-DECOMPOSITION-SPEC.md", "PHASE-SYSTEM-SPEC.md", "LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md"],
+      "dependedOnBy": [],
+      "implementationReport": "RCSD-PIPELINE-IMPLEMENTATION-REPORT.md",
+      "isAuthoritativeFor": ["rcsd-pipeline"]
+    },
+    {
+      "file": "TASK-DECOMPOSITION-SPEC.md",
+      "version": "1.0.0",
+      "status": "DRAFT",
+      "type": "SPEC",
+      "domain": "task-decomposition",
+      "category": "feature",
+      "synopsis": "4-phase task decomposition: Scope Analysis→Goal Decomposition→Dependency Graph→Task Specification. 6-point atomicity test, HTN-inspired recursive breakdown, challenge protocol integration.",
+      "lastUpdated": "2025-12-23",
+      "dependsOn": ["SPEC-BIBLE-GUIDELINES.md", "LLM-AGENT-FIRST-SPEC.md", "TASK-HIERARCHY-SPEC.md", "LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md"],
+      "dependedOnBy": ["RCSD-PIPELINE-SPEC.md"],
+      "implementationReport": "TASK-DECOMPOSITION-IMPLEMENTATION-REPORT.md",
+      "isAuthoritativeFor": ["task-decomposition"]
     }
   ],
   "reports": [
@@ -306,9 +351,53 @@
       "phase": "phase-1",
       "lastUpdated": "2025-12-20",
       "notes": "Phase 1: 8/10 components. Schema+validation complete, tree view pending."
+    },
+    {
+      "file": "../../claudedocs/rebrand/MULTI-AGENT-ABSTRACTION-IMPLEMENTATION-REPORT.md",
+      "relatedSpec": "MULTI-AGENT-ABSTRACTION-SPEC.md",
+      "progress": "0%",
+      "phase": "planning",
+      "lastUpdated": "2025-12-22",
+      "notes": "Spec complete, implementation not started. 4 phases planned."
+    },
+    {
+      "file": "RCSD-PIPELINE-IMPLEMENTATION-REPORT.md",
+      "relatedSpec": "RCSD-PIPELINE-SPEC.md",
+      "progress": "0%",
+      "phase": "planning",
+      "lastUpdated": "2025-12-23",
+      "notes": "Spec complete, schemas created. Supersedes T204/T215-T221 plugin approach. 5 phases planned."
     }
   ],
   "recentChanges": [
+    {
+      "date": "2025-12-23",
+      "file": "RCSD-PIPELINE-SPEC.md",
+      "changeType": "Created",
+      "version": "1.0.0",
+      "description": "Unified Research→Consensus→Spec→Decompose pipeline. Task-anchored .claude/rcsd/ directory, 9 guardrailed agents, 5 JSON schemas. Supersedes T204/T215-T221 plugin approach."
+    },
+    {
+      "date": "2025-12-23",
+      "file": "RCSD-PIPELINE-IMPLEMENTATION-REPORT.md",
+      "changeType": "Created",
+      "version": "1.0.0",
+      "description": "Implementation tracking for RCSD pipeline. 12 components, 5 phases planned."
+    },
+    {
+      "date": "2025-12-23",
+      "file": "TASK-DECOMPOSITION-SPEC.md",
+      "changeType": "Created",
+      "version": "1.0.0",
+      "description": "4-phase task decomposition spec. DECOMPOSE stage of RCSD pipeline. 6-point atomicity test, HTN-inspired breakdown."
+    },
+    {
+      "date": "2025-12-22",
+      "file": "MULTI-AGENT-ABSTRACTION-SPEC.md",
+      "changeType": "Created",
+      "version": "1.0.0",
+      "description": "Multi-agent abstraction spec for rebranding to cleo. Converted from PLAN.md to proper SPEC following SPEC-BIBLE-GUIDELINES. Defines env vars, paths, agent detection, sync adapters."
+    },
     {
       "date": "2025-12-20",
       "file": "TASK-HIERARCHY-SPEC.md",

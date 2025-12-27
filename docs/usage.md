@@ -638,8 +638,8 @@ claude-todo validate --file .claude/.backups/todo.json.1
 # List all available backups
 ls -lah .claude/.backups/
 
-# Restore from specific backup
-claude-todo restore .claude/.backups/backup-2025-12-05-100000/
+# Restore from Tier 2 snapshot backup
+claude-todo restore .claude/backups/snapshot/snapshot_20251205_100000/
 ```
 
 **For complete troubleshooting guide, see [troubleshooting.md](reference/troubleshooting.md)**

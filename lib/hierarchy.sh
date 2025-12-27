@@ -1,21 +1,17 @@
 #!/usr/bin/env bash
-# lib/hierarchy.sh - Hierarchy validation and helper functions for claude-todo
+# hierarchy.sh - Hierarchy validation and helper functions for claude-todo
 #
-# Provides validation functions for the Epic → Task → Subtask hierarchy:
-# - Parent existence validation
-# - Maximum depth enforcement (3 levels)
-# - Maximum siblings enforcement (7 children)
-# - Parent type validation (subtask cannot have children)
-# - Circular reference detection
-# - Orphan detection
+# LAYER: 2 (Data Layer)
+# DEPENDENCIES: config.sh
+# PROVIDES: validate_parent_exists, validate_depth, validate_sibling_count,
+#           validate_parent_type, detect_circular_reference, get_children,
+#           get_descendants, get_depth, get_task_type, calculate_type_from_depth
 #
-# Version: 0.17.0
-# Part of: Hierarchy Enhancement (v0.17.0)
-# Spec: HIERARCHY-ENHANCEMENT-SPEC.md, LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md
-#
-# Usage:
-#   source "${LIB_DIR}/hierarchy.sh"
-#   validate_parent_exists "T001" "$TODO_FILE" || exit $EXIT_PARENT_NOT_FOUND
+# Epic -> Task -> Subtask hierarchy with max depth 3, configurable sibling limits
+
+#=== SOURCE GUARD ================================================
+[[ -n "${_HIERARCHY_LOADED:-}" ]] && return 0
+declare -r _HIERARCHY_LOADED=1
 
 set -euo pipefail
 
@@ -25,15 +21,7 @@ set -euo pipefail
 
 _HIERARCHY_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Source exit codes if not already loaded
-if [[ -z "${EXIT_PARENT_NOT_FOUND:-}" ]]; then
-    if [[ -f "$_HIERARCHY_LIB_DIR/exit-codes.sh" ]]; then
-        # shellcheck source=lib/exit-codes.sh
-        source "$_HIERARCHY_LIB_DIR/exit-codes.sh"
-    fi
-fi
-
-# Source config library for get_config_value
+# Source config library for get_config_value (which includes exit-codes.sh)
 if [[ -f "$_HIERARCHY_LIB_DIR/config.sh" ]]; then
     # shellcheck source=lib/config.sh
     source "$_HIERARCHY_LIB_DIR/config.sh" 2>/dev/null || true
@@ -600,36 +588,6 @@ validate_hierarchy() {
     return 0
 }
 
-# detect_orphans - Find tasks with invalid parentId references
-#
-# Args:
-#   $1 - Path to todo.json
-#
-# Returns: Space-separated list of orphan task IDs, or empty if none
-detect_orphans() {
-    local todo_file="$1"
-    local orphans=""
-
-    # Get all task IDs
-    local all_ids
-    all_ids=$(jq -r '.tasks[].id' "$todo_file" 2>/dev/null)
-
-    # Check each task's parentId
-    for task_id in $all_ids; do
-        local parent_id
-        parent_id=$(get_task_parent "$task_id" "$todo_file")
-
-        if [[ "$parent_id" != "null" && -n "$parent_id" ]]; then
-            # Check if parent exists
-            if ! echo "$all_ids" | grep -qw "$parent_id"; then
-                orphans="$orphans $task_id"
-            fi
-        fi
-    done
-
-    echo "${orphans# }"
-}
-
 # infer_task_type - Infer type based on hierarchy position
 #
 # Args:
@@ -726,7 +684,353 @@ export -f validate_max_active_siblings
 export -f validate_parent_type
 export -f validate_no_circular_reference
 export -f validate_hierarchy
+# ============================================================================
+# ORPHAN DETECTION AND REPAIR (T341)
+# ============================================================================
+
+# Detect orphaned tasks (parentId references non-existent or archived task)
+# Args: $1 = todo file path
+# Returns: JSON array of orphan task IDs with details
+detect_orphans() {
+    local todo_file="${1:-$TODO_FILE}"
+
+    # Get all valid parent IDs (tasks that exist)
+    local valid_parents
+    valid_parents=$(jq -r '[.tasks[].id] | @json' "$todo_file")
+
+    # Find tasks with parentId that doesn't exist
+    jq --argjson valid "$valid_parents" '
+        [.tasks[] |
+         select(.parentId != null and .parentId != "") |
+         select([.parentId] | inside($valid) | not) |
+         {id, title, parentId, status, reason: "parent_not_found"}
+        ]
+    ' "$todo_file"
+}
+
+# Repair orphans by unlinking (set parentId to null)
+# Args: $1 = todo file path, $2 = task ID or "all"
+repair_orphan_unlink() {
+    local todo_file="${1:-$TODO_FILE}"
+    local task_id="$2"
+
+    if [[ "$task_id" == "all" ]]; then
+        local orphan_ids
+        orphan_ids=$(detect_orphans "$todo_file" | jq -r '.[].id')
+        local count=0
+
+        for id in $orphan_ids; do
+            jq --arg id "$id" '
+                .tasks |= map(if .id == $id then .parentId = null else . end)
+            ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+            ((count++))
+        done
+        echo "$count"
+    else
+        jq --arg id "$task_id" '
+            .tasks |= map(if .id == $id then .parentId = null else . end)
+        ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+    fi
+}
+
+# Repair orphans by deletion (more destructive)
+# Args: $1 = todo file path, $2 = task ID or "all"
+repair_orphan_delete() {
+    local todo_file="${1:-$TODO_FILE}"
+    local task_id="$2"
+
+    if [[ "$task_id" == "all" ]]; then
+        local orphan_ids
+        orphan_ids=$(detect_orphans "$todo_file" | jq -r '.[].id')
+        local count=0
+
+        for id in $orphan_ids; do
+            jq --arg id "$id" '
+                .tasks |= map(select(.id != $id))
+            ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+            ((count++))
+        done
+        echo "$count"
+    else
+        jq --arg id "$task_id" '
+            .tasks |= map(select(.id != $id))
+        ' "$todo_file" > "${todo_file}.tmp" && mv "${todo_file}.tmp" "$todo_file"
+    fi
+}
+
+# ============================================================================
+# DEPENDENCY MANAGEMENT (T707)
+# ============================================================================
+
+# get_dependent_tasks - Find all tasks that depend on a given task
+#
+# Searches for tasks where the given task ID appears in their 'depends' array.
+# This is the inverse of dependencies - finding what depends ON this task.
+#
+# Args:
+#   $1 - Task ID to find dependents for
+#   $2 - Path to todo.json
+#
+# Returns: Space-separated list of dependent task IDs (empty if none)
+#
+# Example:
+#   dependents=$(get_dependent_tasks "T001" "$TODO_FILE")
+#   # Returns "T005 T008" if T005 and T008 have T001 in their depends array
+get_dependent_tasks() {
+    local task_id="$1"
+    local todo_file="$2"
+
+    if [[ ! -f "$todo_file" ]]; then
+        echo ""
+        return 0
+    fi
+
+    # Find all tasks that have task_id in their depends array
+    local dependents
+    dependents=$(jq -r --arg id "$task_id" '
+        [.tasks[] |
+         select(.depends != null and (.depends | type == "array") and (.depends | index($id))) |
+         .id
+        ] | join(" ")
+    ' "$todo_file" 2>/dev/null)
+
+    echo "$dependents"
+}
+
+# get_dependent_tasks_for_ids - Find all tasks that depend on any of given task IDs
+#
+# Efficiently finds dependents for multiple tasks at once (used in cascade delete).
+# Returns tasks that depend on ANY of the provided IDs, excluding the IDs themselves.
+#
+# Args:
+#   $1 - JSON array of task IDs to find dependents for (e.g., '["T001", "T002"]')
+#   $2 - Path to todo.json
+#
+# Returns: Space-separated list of dependent task IDs (empty if none)
+#
+# Example:
+#   dependents=$(get_dependent_tasks_for_ids '["T001", "T002"]' "$TODO_FILE")
+get_dependent_tasks_for_ids() {
+    local task_ids_json="$1"
+    local todo_file="$2"
+
+    if [[ ! -f "$todo_file" ]]; then
+        echo ""
+        return 0
+    fi
+
+    # Find all tasks that have any of the task_ids in their depends array
+    # Exclude tasks that are themselves in the affected list
+    local dependents
+    dependents=$(jq -r --argjson ids "$task_ids_json" '
+        [.tasks[] |
+         select(.depends != null and (.depends | type == "array")) |
+         select((.depends | any(. as $dep | $ids | index($dep) != null))) |
+         select(.id as $tid | $ids | index($tid) == null) |
+         .id
+        ] | unique | join(" ")
+    ' "$todo_file" 2>/dev/null)
+
+    echo "$dependents"
+}
+
+# cleanup_dependencies - Remove a task ID from all dependents' depends arrays
+#
+# Used when deleting/orphaning a task to clean up references in other tasks.
+# This is an atomic operation that modifies the todo file in-place.
+#
+# Args:
+#   $1 - Task ID to remove from dependencies
+#   $2 - Path to todo.json
+#   $3 - (Optional) Lock already acquired (pass lock_fd to skip locking)
+#
+# Returns: JSON result with cleanup details
+#
+# Example:
+#   result=$(cleanup_dependencies "T001" "$TODO_FILE")
+#   # Removes T001 from depends arrays of T005, T008
+cleanup_dependencies() {
+    local task_id="$1"
+    local todo_file="$2"
+    local existing_lock="${3:-}"
+
+    if [[ ! -f "$todo_file" ]]; then
+        jq -n --arg id "$task_id" '{
+            "success": false,
+            "error": "Todo file not found",
+            "taskId": $id
+        }'
+        return 1
+    fi
+
+    # Find dependents before cleanup
+    local dependents
+    dependents=$(get_dependent_tasks "$task_id" "$todo_file")
+
+    if [[ -z "$dependents" ]]; then
+        # No dependents to clean up
+        jq -n --arg id "$task_id" '{
+            "success": true,
+            "taskId": $id,
+            "dependentsAffected": [],
+            "dependencyAction": "none",
+            "message": "No dependents to clean up"
+        }'
+        return 0
+    fi
+
+    # Count affected
+    local dependent_count
+    dependent_count=$(echo "$dependents" | wc -w | tr -d ' ')
+
+    # Remove task_id from all depends arrays (atomic jq operation)
+    local updated_json
+    updated_json=$(jq --arg id "$task_id" '
+        .tasks |= map(
+            if .depends != null and (.depends | type == "array") then
+                .depends |= map(select(. != $id))
+            else . end
+        )
+    ' "$todo_file")
+
+    if [[ $? -ne 0 ]]; then
+        jq -n --arg id "$task_id" '{
+            "success": false,
+            "error": "Failed to update dependencies",
+            "taskId": $id
+        }'
+        return 1
+    fi
+
+    # Save using save_json if available, otherwise direct write
+    if declare -f save_json >/dev/null 2>&1; then
+        if ! save_json "$todo_file" "$updated_json"; then
+            jq -n --arg id "$task_id" '{
+                "success": false,
+                "error": "Failed to save dependency cleanup",
+                "taskId": $id
+            }'
+            return 1
+        fi
+    else
+        echo "$updated_json" > "$todo_file"
+    fi
+
+    # Build affected list as JSON array
+    local affected_json
+    affected_json=$(echo "$dependents" | tr ' ' '\n' | jq -R . | jq -s .)
+
+    jq -n \
+        --arg id "$task_id" \
+        --argjson affected "$affected_json" \
+        --argjson count "$dependent_count" \
+        '{
+            "success": true,
+            "taskId": $id,
+            "dependentsAffected": $affected,
+            "dependencyAction": "removed",
+            "affectedCount": $count,
+            "message": "Removed task from \($count) dependent task(s)"
+        }'
+}
+
+# cleanup_dependencies_for_ids - Remove multiple task IDs from all depends arrays
+#
+# Efficiently cleans up dependencies for multiple tasks at once (used in cascade delete).
+#
+# Args:
+#   $1 - JSON array of task IDs to remove (e.g., '["T001", "T002"]')
+#   $2 - Path to todo.json
+#
+# Returns: JSON result with cleanup details
+cleanup_dependencies_for_ids() {
+    local task_ids_json="$1"
+    local todo_file="$2"
+
+    if [[ ! -f "$todo_file" ]]; then
+        jq -n --argjson ids "$task_ids_json" '{
+            "success": false,
+            "error": "Todo file not found",
+            "taskIds": $ids
+        }'
+        return 1
+    fi
+
+    # Find all external dependents before cleanup
+    local dependents
+    dependents=$(get_dependent_tasks_for_ids "$task_ids_json" "$todo_file")
+
+    if [[ -z "$dependents" ]]; then
+        jq -n --argjson ids "$task_ids_json" '{
+            "success": true,
+            "taskIds": $ids,
+            "dependentsAffected": [],
+            "dependencyAction": "none",
+            "message": "No external dependents to clean up"
+        }'
+        return 0
+    fi
+
+    local dependent_count
+    dependent_count=$(echo "$dependents" | wc -w | tr -d ' ')
+
+    # Remove all affected IDs from all depends arrays
+    local updated_json
+    updated_json=$(jq --argjson ids "$task_ids_json" '
+        .tasks |= map(
+            if .depends != null and (.depends | type == "array") then
+                .depends |= [.[] | select(. as $d | $ids | index($d) == null)]
+            else . end
+        )
+    ' "$todo_file")
+
+    if [[ $? -ne 0 ]]; then
+        jq -n --argjson ids "$task_ids_json" '{
+            "success": false,
+            "error": "Failed to update dependencies",
+            "taskIds": $ids
+        }'
+        return 1
+    fi
+
+    # Save
+    if declare -f save_json >/dev/null 2>&1; then
+        if ! save_json "$todo_file" "$updated_json"; then
+            jq -n --argjson ids "$task_ids_json" '{
+                "success": false,
+                "error": "Failed to save dependency cleanup",
+                "taskIds": $ids
+            }'
+            return 1
+        fi
+    else
+        echo "$updated_json" > "$todo_file"
+    fi
+
+    local affected_json
+    affected_json=$(echo "$dependents" | tr ' ' '\n' | jq -R . | jq -s .)
+
+    jq -n \
+        --argjson ids "$task_ids_json" \
+        --argjson affected "$affected_json" \
+        --argjson count "$dependent_count" \
+        '{
+            "success": true,
+            "taskIds": $ids,
+            "dependentsAffected": $affected,
+            "dependencyAction": "removed",
+            "affectedCount": $count,
+            "message": "Removed tasks from \($count) dependent task(s)"
+        }'
+}
+
 export -f detect_orphans
+export -f repair_orphan_unlink
+export -f repair_orphan_delete
 export -f infer_task_type
 export -f validate_task_type
 export -f validate_task_size
+export -f get_dependent_tasks
+export -f get_dependent_tasks_for_ids
+export -f cleanup_dependencies
+export -f cleanup_dependencies_for_ids

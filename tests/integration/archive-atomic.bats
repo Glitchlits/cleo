@@ -5,15 +5,25 @@
 # Tests atomic operations and orphaned dependency cleanup during archive.
 # =============================================================================
 
+# Load test helpers
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -188,7 +198,8 @@ EOF
 
 @test "archive --all cleans up all orphaned dependencies" {
     create_archive_atomic_fixture
-    bash "$ARCHIVE_SCRIPT" --all
+    # Use --no-safe to allow archiving tasks with active dependents (testing cleanup logic)
+    bash "$ARCHIVE_SCRIPT" --all --no-safe
 
     # After --all, T006's depends on T002 should be cleaned (T002 archived)
     local t006_has_depends
@@ -207,7 +218,8 @@ EOF
 
 @test "archive creates backups before modification" {
     create_archive_atomic_fixture
-    bash "$ARCHIVE_SCRIPT" --force
+    # Use --no-safe to allow archiving tasks with dependents for testing backup creation
+    bash "$ARCHIVE_SCRIPT" --force --no-safe
 
     # Check for backup directories in new unified taxonomy structure
     # Archive backups go to .claude/backups/archive/ directory
@@ -348,7 +360,8 @@ EOF
     before=$(jq -r '.lastUpdated' "$TODO_FILE")
 
     sleep 1
-    bash "$ARCHIVE_SCRIPT" --force
+    # Use --no-safe to allow archiving tasks with dependents for testing timestamp update
+    bash "$ARCHIVE_SCRIPT" --force --no-safe
 
     local after
     after=$(jq -r '.lastUpdated' "$TODO_FILE")

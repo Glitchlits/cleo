@@ -50,12 +50,22 @@ fi
 
 # Defaults
 FORCE=false
+CONFIRM_WIPE=false
 NO_CLAUDE_MD=false
 UPDATE_CLAUDE_MD=false
 PROJECT_NAME=""
 FORMAT=""
 QUIET=false
 COMMAND_NAME="init"
+
+# Source required libraries for LLM-Agent-First compliance
+LIB_DIR="$CLAUDE_TODO_HOME/lib"
+if [[ -f "$LIB_DIR/exit-codes.sh" ]]; then
+    source "$LIB_DIR/exit-codes.sh"
+fi
+if [[ -f "$LIB_DIR/error-json.sh" ]]; then
+    source "$LIB_DIR/error-json.sh"
+fi
 
 # Source output formatting and error libraries
 LIB_DIR="$CLAUDE_TODO_HOME/lib"
@@ -76,7 +86,8 @@ Usage: claude-todo init [PROJECT_NAME] [OPTIONS]
 Initialize CLAUDE-TODO in the current directory.
 
 Options:
-  --force             Overwrite existing files
+  --force             Signal intent to reinitialize (requires --confirm-wipe)
+  --confirm-wipe      Confirm data destruction when used with --force
   --no-claude-md      Skip CLAUDE.md integration
   --update-claude-md  Update existing CLAUDE.md injection (idempotent)
   -f, --format FMT    Output format: text, json (default: auto-detect)
@@ -84,6 +95,20 @@ Options:
   --json              Force JSON output
   -q, --quiet         Suppress non-essential output
   -h, --help          Show this help
+
+DESTRUCTIVE REINITIALIZE:
+  Both --force AND --confirm-wipe are required to reinitialize an existing
+  project. This will:
+  1. Create a safety backup of ALL existing data files
+  2. PERMANENTLY WIPE: todo.json, todo-archive.json, todo-config.json, todo-log.json
+  3. Initialize fresh data files
+
+  Example: claude-todo init --force --confirm-wipe
+
+Exit Codes:
+  0   - Success
+  101 - Project already initialized (use --force --confirm-wipe to reinitialize)
+  2   - Invalid input (--force without --confirm-wipe)
 
 Creates:
   .claude/todo.json         Active tasks
@@ -123,6 +148,7 @@ generate_timestamp() {
 while [[ $# -gt 0 ]]; do
   case $1 in
     --force) FORCE=true; shift ;;
+    --confirm-wipe) CONFIRM_WIPE=true; shift ;;
     --no-claude-md) NO_CLAUDE_MD=true; shift ;;
     --update-claude-md) UPDATE_CLAUDE_MD=true; shift ;;
     -f|--format) FORMAT="$2"; shift 2 ;;
@@ -178,26 +204,31 @@ if [[ "$UPDATE_CLAUDE_MD" == true ]]; then
 
   action_taken="updated"
   if grep -q "CLAUDE-TODO:START" CLAUDE.md 2>/dev/null; then
-    # Replace existing block using sed
-    # Create temp file with new content
+    # Remove ALL existing injection blocks (handles multiple/duplicates)
+    # and place new injection at TOP of file
     temp_file=$(mktemp)
 
-    # Extract content before START tag (handles versioned tags like v0.12.1)
-    sed -n '1,/<!-- CLAUDE-TODO:START/p' CLAUDE.md | head -n -1 > "$temp_file"
+    # First, add the new injection template at the top
+    cat "$injection_template" > "$temp_file"
 
-    # Append new injection template
-    cat "$injection_template" >> "$temp_file"
-
-    # Append content after END tag (if any)
-    sed -n '/<!-- CLAUDE-TODO:END -->/,${/<!-- CLAUDE-TODO:END -->/d; p}' CLAUDE.md >> "$temp_file"
+    # Strip ALL injection blocks using awk (handles multiple START/END pairs)
+    # Also removes any leading blank lines from the cleaned content
+    awk '
+      /<!-- CLAUDE-TODO:START/ { skip = 1; next }
+      /<!-- CLAUDE-TODO:END -->/ { skip = 0; next }
+      !skip { print }
+    ' CLAUDE.md | sed '/./,$!d' >> "$temp_file"
 
     # Replace original file
     mv "$temp_file" CLAUDE.md
     action_taken="updated"
   else
-    # No existing block, append new one
-    echo "" >> CLAUDE.md
-    cat "$injection_template" >> CLAUDE.md
+    # No existing block, prepend new injection at TOP
+    temp_file=$(mktemp)
+    cat "$injection_template" > "$temp_file"
+    echo "" >> "$temp_file"
+    cat CLAUDE.md >> "$temp_file"
+    mv "$temp_file" CLAUDE.md
     action_taken="added"
   fi
 
@@ -235,16 +266,210 @@ fi
 [[ -z "$PROJECT_NAME" ]] && PROJECT_NAME=$(basename "$PWD")
 PROJECT_NAME=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
 
-# Check for existing files
-if [[ -f ".claude/todo.json" ]] && [[ "$FORCE" != true ]]; then
-  log_warn "Project already initialized at .claude/todo.json"
-  log_warn "Use --force to reinitialize (will preserve existing tasks but reset config)"
-  exit 1
+# ============================================================================
+# CHECK FOR EXISTING INITIALIZATION (with proper safeguards)
+# ============================================================================
+
+# List of data files that would be wiped during reinitialize
+DATA_FILES=("todo.json" "todo-archive.json" "todo-config.json" "todo-log.json")
+TODO_DIR=".claude"
+
+# Check if project is already initialized
+_project_initialized() {
+    [[ -f "$TODO_DIR/todo.json" ]]
+}
+
+# Count existing data files for reporting
+_count_existing_files() {
+    local count=0
+    for file in "${DATA_FILES[@]}"; do
+        [[ -f "$TODO_DIR/$file" ]] && ((count++))
+    done
+    echo "$count"
+}
+
+# Create safety backup of ALL data files before destructive reinit
+_create_init_safety_backup() {
+    local backup_timestamp
+    backup_timestamp=$(date +"%Y%m%d_%H%M%S")
+    local backup_id="safety_${backup_timestamp}_init_reinitialize"
+    local backup_path="$TODO_DIR/backups/safety/$backup_id"
+    local files_backed_up=0
+    local total_size=0
+
+    # Ensure backup directory exists
+    mkdir -p "$backup_path" 2>/dev/null || {
+        log_error "Failed to create backup directory: $backup_path"
+        return 1
+    }
+
+    # Backup each existing data file
+    for file in "${DATA_FILES[@]}"; do
+        local source_file="$TODO_DIR/$file"
+        if [[ -f "$source_file" ]]; then
+            cp "$source_file" "$backup_path/$file" || {
+                log_error "Failed to backup $file"
+                return 1
+            }
+            ((files_backed_up++))
+            # Get file size
+            if command -v stat &>/dev/null; then
+                local fsize
+                fsize=$(stat -c%s "$source_file" 2>/dev/null || stat -f%z "$source_file" 2>/dev/null || echo 0)
+                total_size=$((total_size + fsize))
+            fi
+        fi
+    done
+
+    # Create metadata.json for the backup
+    if command -v jq &>/dev/null; then
+        local ts_iso
+        ts_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        jq -n \
+            --arg type "safety" \
+            --arg ts "$ts_iso" \
+            --arg ver "$VERSION" \
+            --arg trigger "init_reinitialize" \
+            --arg op "reinitialize" \
+            --argjson size "$total_size" \
+            --argjson count "$files_backed_up" \
+            '{
+                backupType: $type,
+                timestamp: $ts,
+                version: $ver,
+                trigger: $trigger,
+                operation: $op,
+                totalSize: $size,
+                fileCount: $count,
+                files: [],
+                neverDelete: false
+            }' > "$backup_path/metadata.json"
+    fi
+
+    echo "$backup_path"
+    return 0
+}
+
+if _project_initialized; then
+    existing_count=$(_count_existing_files)
+
+    if [[ "$FORCE" != true ]]; then
+        # Project exists, --force not provided
+        # Exit with EXIT_ALREADY_EXISTS (101) per LLM-Agent-First spec
+        if [[ "$FORMAT" == "json" ]] && declare -f output_error &>/dev/null; then
+            jq -n \
+                --arg version "$VERSION" \
+                --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+                --argjson existingFiles "$existing_count" \
+                '{
+                    "$schema": "https://claude-todo.dev/schemas/v1/error.schema.json",
+                    "_meta": {
+                        "format": "json",
+                        "version": $version,
+                        "command": "init",
+                        "timestamp": $timestamp
+                    },
+                    "success": false,
+                    "error": {
+                        "code": "E_ALREADY_INITIALIZED",
+                        "message": "Project already initialized at .claude/todo.json",
+                        "exitCode": 101,
+                        "recoverable": true,
+                        "suggestion": "Use --force --confirm-wipe to reinitialize (DESTRUCTIVE: will wipe all existing data after creating safety backup)",
+                        "context": {
+                            "existingFiles": $existingFiles,
+                            "dataDirectory": ".claude",
+                            "affectedFiles": ["todo.json", "todo-archive.json", "todo-config.json", "todo-log.json"]
+                        }
+                    }
+                }'
+        else
+            log_warn "Project already initialized at .claude/todo.json"
+            log_warn "Found $existing_count data file(s) that would be WIPED:"
+            for file in "${DATA_FILES[@]}"; do
+                [[ -f "$TODO_DIR/$file" ]] && log_warn "  - $TODO_DIR/$file"
+            done
+            log_warn ""
+            log_warn "To reinitialize, use BOTH flags: --force --confirm-wipe"
+            log_warn "This will create a safety backup before wiping ALL existing data."
+        fi
+        exit "${EXIT_ALREADY_EXISTS:-101}"
+    fi
+
+    if [[ "$CONFIRM_WIPE" != true ]]; then
+        # --force provided but --confirm-wipe not provided
+        # Exit with EXIT_INVALID_INPUT (2) - missing required confirmation
+        if [[ "$FORMAT" == "json" ]] && declare -f output_error &>/dev/null; then
+            jq -n \
+                --arg version "$VERSION" \
+                --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+                --argjson existingFiles "$existing_count" \
+                '{
+                    "$schema": "https://claude-todo.dev/schemas/v1/error.schema.json",
+                    "_meta": {
+                        "format": "json",
+                        "version": $version,
+                        "command": "init",
+                        "timestamp": $timestamp
+                    },
+                    "success": false,
+                    "error": {
+                        "code": "E_CONFIRMATION_REQUIRED",
+                        "message": "--force requires --confirm-wipe to proceed with destructive reinitialize",
+                        "exitCode": 2,
+                        "recoverable": true,
+                        "suggestion": "Add --confirm-wipe to confirm you want to WIPE all existing data (a safety backup will be created first)",
+                        "context": {
+                            "existingFiles": $existingFiles,
+                            "dataDirectory": ".claude",
+                            "affectedFiles": ["todo.json", "todo-archive.json", "todo-config.json", "todo-log.json"],
+                            "safetyBackupLocation": ".claude/backups/safety/"
+                        }
+                    }
+                }'
+        else
+            log_error "--force requires --confirm-wipe for destructive reinitialize"
+            log_warn ""
+            log_warn "⚠️  DESTRUCTIVE OPERATION WARNING ⚠️"
+            log_warn "This will PERMANENTLY WIPE $existing_count data file(s):"
+            for file in "${DATA_FILES[@]}"; do
+                [[ -f "$TODO_DIR/$file" ]] && log_warn "  - $TODO_DIR/$file"
+            done
+            log_warn ""
+            log_warn "A safety backup will be created at: .claude/backups/safety/"
+            log_warn ""
+            log_warn "To proceed, run: claude-todo init --force --confirm-wipe"
+        fi
+        exit "${EXIT_INVALID_INPUT:-2}"
+    fi
+
+    # Both --force and --confirm-wipe provided - proceed with backup then wipe
+    log_info "Creating safety backup before reinitialize..."
+    backup_path=$(_create_init_safety_backup)
+    backup_result=$?
+
+    if [[ $backup_result -ne 0 ]]; then
+        if [[ "$FORMAT" == "json" ]] && declare -f output_error &>/dev/null; then
+            output_error "E_FILE_WRITE_ERROR" "Failed to create safety backup - aborting reinitialize" "${EXIT_FILE_ERROR:-3}" false "Check disk space and permissions for .claude/backups/safety/"
+        else
+            log_error "Failed to create safety backup - aborting reinitialize"
+            log_error "Existing data has NOT been modified."
+        fi
+        exit "${EXIT_FILE_ERROR:-3}"
+    fi
+
+    log_info "Safety backup created at: $backup_path"
+    log_warn "Proceeding with DESTRUCTIVE reinitialize - wiping existing data..."
+
+    # Remove existing data files (backup already created)
+    for file in "${DATA_FILES[@]}"; do
+        [[ -f "$TODO_DIR/$file" ]] && rm -f "$TODO_DIR/$file"
+    done
 fi
 
 TIMESTAMP=$(generate_timestamp)
 CHECKSUM=$(calculate_checksum)
-TODO_DIR=".claude"
+# TODO_DIR already set above in the safeguard section
 
 # Determine templates and schemas directories (installed or source)
 if [[ -d "$CLAUDE_TODO_HOME/templates" ]]; then
@@ -453,15 +678,21 @@ if [[ "$NO_CLAUDE_MD" != true ]]; then
       log_warn "CLAUDE.md already has task integration (skipped)"
     else
       # Inject CLI-based task management instructions from template
+      # PREPEND to top of file (injection should be first thing in CLAUDE.md)
       local injection_template="$CLAUDE_TODO_HOME/templates/CLAUDE-INJECTION.md"
       if [[ -f "$injection_template" ]]; then
-        echo "" >> CLAUDE.md
-        cat "$injection_template" >> CLAUDE.md
-        log_info "Updated CLAUDE.md (from template)"
+        local temp_file
+        temp_file=$(mktemp)
+        cat "$injection_template" > "$temp_file"
+        echo "" >> "$temp_file"
+        cat CLAUDE.md >> "$temp_file"
+        mv "$temp_file" CLAUDE.md
+        log_info "Updated CLAUDE.md (from template, prepended)"
       else
         # Fallback minimal injection if template missing
-        cat >> CLAUDE.md << 'CLAUDE_EOF'
-
+        local temp_file
+        temp_file=$(mktemp)
+        cat > "$temp_file" << 'CLAUDE_EOF'
 <!-- CLAUDE-TODO:START -->
 ## Task Management (claude-todo)
 
@@ -481,8 +712,11 @@ ct exists <id>             # Verify task exists
 - **CLI only** - Never edit `.claude/*.json` directly
 - **Verify state** - Use `ct list` before assuming
 <!-- CLAUDE-TODO:END -->
+
 CLAUDE_EOF
-        log_info "Updated CLAUDE.md (fallback)"
+        cat CLAUDE.md >> "$temp_file"
+        mv "$temp_file" CLAUDE.md
+        log_info "Updated CLAUDE.md (fallback, prepended)"
       fi
     fi
   else

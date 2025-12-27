@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
-# migrate-backups.sh - Migrate legacy backups to new taxonomy
+# reorganize-backups.sh - Reorganize legacy backups to new taxonomy
 # Part of claude-todo system
 #
-# Migrates backups from old locations to new unified taxonomy:
+# Reorganizes backups from old locations to new unified taxonomy:
 #   Old: .claude/.backups/ (various naming patterns)
 #   New: .claude/backups/{snapshot,safety,incremental,archive,migration}/
 #
+# NOTE: This is a one-time backup DIRECTORY reorganization, separate from
+#       schema migration (claude-todo migrate). Use this when upgrading
+#       from older claude-todo versions with legacy backup locations.
+#
 # Usage:
-#   migrate-backups.sh --detect        # List detected legacy backups
-#   migrate-backups.sh --dry-run       # Preview migration without changes
-#   migrate-backups.sh --run           # Perform actual migration
-#   migrate-backups.sh --cleanup       # Remove old .backups directory after migration
+#   reorganize-backups.sh --detect     # List detected legacy backups
+#   reorganize-backups.sh --dry-run    # Preview reorganization without changes
+#   reorganize-backups.sh --run        # Perform actual reorganization
+#   reorganize-backups.sh --cleanup    # Remove old .backups directory after reorganization
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -22,6 +26,16 @@ IFS=$'\n\t'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 LIB_DIR="$PROJECT_ROOT/lib"
+CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
+
+# Load VERSION from central location
+if [[ -f "$CLAUDE_TODO_HOME/VERSION" ]]; then
+  VERSION="$(cat "$CLAUDE_TODO_HOME/VERSION" | tr -d '[:space:]')"
+elif [[ -f "$PROJECT_ROOT/VERSION" ]]; then
+  VERSION="$(cat "$PROJECT_ROOT/VERSION" | tr -d '[:space:]')"
+else
+  VERSION="unknown"
+fi
 
 # Source required libraries
 # shellcheck source=lib/logging.sh
@@ -54,9 +68,10 @@ fi
 readonly LEGACY_BACKUP_DIR=".claude/.backups"
 readonly NEW_BACKUP_DIR=".claude/backups"
 readonly MIGRATION_LOG=".claude/backup-migration.log"
-COMMAND_NAME="migrate-backups"
+COMMAND_NAME="reorganize-backups"
 FORMAT=""
 QUIET=false
+DRY_RUN=false
 
 # ============================================================================
 # LEGACY BACKUP CLASSIFICATION
@@ -534,6 +549,7 @@ migrate_all_backups() {
                 "legacyDir": $legacyDir,
                 "newDir": $newDir,
                 "logFile": (if $dryRun then null else $logFile end),
+                "wouldMigrate": (if $dryRun then $migrated else null end),
                 "summary": {
                     "total": $total,
                     "migrated": $migrated,
@@ -598,12 +614,7 @@ cleanup_legacy_backups() {
 
     # Safety check: ensure new backup directory exists and has backups
     if [[ ! -d "$NEW_BACKUP_DIR" ]]; then
-        if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then
-            output_error "$E_FILE_NOT_FOUND" "New backup directory not found: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
-        else
-            output_error "$E_FILE_NOT_FOUND" "New backup directory not found: $NEW_BACKUP_DIR"
-            echo "Run migration first before cleanup" >&2
-        fi
+        output_error "$E_FILE_NOT_FOUND" "New backup directory not found: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
         return 1
     fi
 
@@ -611,12 +622,7 @@ cleanup_legacy_backups() {
     new_backup_count=$(find "$NEW_BACKUP_DIR" -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
 
     if [[ "$new_backup_count" -eq 0 ]]; then
-        if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then
-            output_error "$E_FILE_NOT_FOUND" "No backups found in new location: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
-        else
-            output_error "$E_FILE_NOT_FOUND" "No backups found in new location: $NEW_BACKUP_DIR"
-            echo "Run migration first before cleanup" >&2
-        fi
+        output_error "$E_FILE_NOT_FOUND" "No backups found in new location: $NEW_BACKUP_DIR" 1 true "Run migration first before cleanup"
         return 1
     fi
 
@@ -807,7 +813,7 @@ main() {
 
     if [[ $# -eq 0 ]]; then
         show_usage
-        exit 1
+        exit "$EXIT_INVALID_INPUT"
     fi
 
     # Parse arguments
@@ -819,6 +825,7 @@ main() {
                 ;;
             --dry-run)
                 ACTION="dry-run"
+                DRY_RUN=true
                 shift
                 ;;
             --run)
@@ -847,7 +854,7 @@ main() {
                 ;;
             -h|--help)
                 show_usage
-                exit 0
+                exit "$EXIT_SUCCESS"
                 ;;
             *)
                 if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then

@@ -5,15 +5,24 @@
 # Tests archive functionality including completed task archival and cleanup.
 # =============================================================================
 
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -209,7 +218,8 @@ teardown() {
 EOF
 
     # Use --all to bypass both age retention AND preserveRecentCount
-    bash "$ARCHIVE_SCRIPT" --all
+    # Use --no-safe to allow archiving even with active dependents (tests dependency cleanup)
+    bash "$ARCHIVE_SCRIPT" --all --no-safe
 
     # T002's depends should be cleaned up
     local depends

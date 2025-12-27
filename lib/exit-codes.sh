@@ -1,27 +1,28 @@
 #!/usr/bin/env bash
-# exit-codes.sh - Standardized exit codes for claude-todo
-# Part of the claude-todo-system library
+# exit-codes.sh - Standardized exit codes for claude-todo CLI
 #
-# Provides consistent exit code constants for all commands.
-# Enables reliable error handling in agent automation workflows.
-#
-# Version: 0.16.0
-# Part of: LLM-Agent-First Implementation (Phase 1)
-#
-# Usage:
-#   source "${LIB_DIR}/exit-codes.sh"
-#   exit $EXIT_NOT_FOUND
+# LAYER: 0 (Foundation)
+# DEPENDENCIES: none
+# PROVIDES: EXIT_SUCCESS, EXIT_GENERAL_ERROR, EXIT_INVALID_INPUT, EXIT_FILE_ERROR,
+#           EXIT_NOT_FOUND, EXIT_DEPENDENCY_ERROR, EXIT_VALIDATION_ERROR,
+#           EXIT_LOCK_TIMEOUT, EXIT_CONFIG_ERROR, EXIT_PARENT_NOT_FOUND,
+#           EXIT_DEPTH_EXCEEDED, EXIT_SIBLING_LIMIT, EXIT_INVALID_PARENT_TYPE,
+#           EXIT_CIRCULAR_REFERENCE, EXIT_ORPHAN_DETECTED, EXIT_HAS_CHILDREN,
+#           EXIT_TASK_COMPLETED, EXIT_CASCADE_FAILED, EXIT_HAS_DEPENDENTS,
+#           EXIT_CHECKSUM_MISMATCH, EXIT_CONCURRENT_MODIFICATION, EXIT_ID_COLLISION,
+#           EXIT_NO_DATA, EXIT_ALREADY_EXISTS, EXIT_NO_CHANGE,
+#           get_exit_code_name, is_error_code, is_recoverable_code,
+#           is_no_change_code, is_success_code
 #
 # Exit Code Ranges:
 #   0      - Success
 #   1-99   - Error conditions
 #   100+   - Special conditions (not errors, but notable states)
 
-# Guard against multiple sourcing (readonly variables would fail)
-# Also guard against legacy libraries that define EXIT_SUCCESS as readonly
+#=== SOURCE GUARD ================================================
 [[ -n "${_EXIT_CODES_SH_LOADED:-}" ]] && return 0
 [[ -n "${EXIT_SUCCESS:-}" ]] && { _EXIT_CODES_SH_LOADED=1; return 0; }
-_EXIT_CODES_SH_LOADED=1
+declare -r _EXIT_CODES_SH_LOADED=1
 
 set -euo pipefail
 
@@ -96,6 +97,22 @@ readonly EXIT_CIRCULAR_REFERENCE=14
 # Examples: parentId references deleted/archived task
 readonly EXIT_ORPHAN_DETECTED=15
 
+# Task has children, cannot delete without strategy
+# Examples: delete T001 where T001 has child tasks
+readonly EXIT_HAS_CHILDREN=16
+
+# Task is completed, should use archive instead
+# Examples: delete T001 where T001.status is "done"
+readonly EXIT_TASK_COMPLETED=17
+
+# Cascade deletion partially failed
+# Examples: some child tasks failed to delete during --children=cascade
+readonly EXIT_CASCADE_FAILED=18
+
+# Task has dependents, cannot delete without --orphan flag
+# Examples: delete T001 where other tasks have T001 in their depends array
+readonly EXIT_HAS_DEPENDENTS=19
+
 # ============================================================================
 # CONCURRENCY ERROR CODES (20-29)
 # Multi-agent coordination errors
@@ -127,7 +144,43 @@ readonly EXIT_NO_DATA=100
 readonly EXIT_ALREADY_EXISTS=101
 
 # No changes needed or made (operation was no-op)
-# Examples: update with same values, validation found no issues
+#
+# EXIT_NO_CHANGE (102) - Idempotency Signal for LLM Agents
+# =========================================================
+# See: LLM-AGENT-FIRST-SPEC.md Part 5.6 (Idempotency Requirements)
+#
+# SEMANTICS:
+#   - The command was VALID (not an error)
+#   - The operation was SUCCESSFUL (no failure occurred)
+#   - State is UNCHANGED (no modifications made)
+#
+# AGENT RETRY BEHAVIOR:
+#   - Agents SHOULD treat EXIT_NO_CHANGE as SUCCESS
+#   - Agents MUST NOT retry when receiving EXIT_NO_CHANGE
+#   - Retrying is safe but wasteful (state already matches intent)
+#
+# COMMANDS THAT RETURN EXIT_NO_CHANGE:
+#   - update: Updating with identical values (no actual changes)
+#   - complete: Task already has status "done"
+#   - archive: Task already in archive
+#   - restore: Task already in active todo.json
+#
+# JSON OUTPUT WHEN RETURNED:
+#   {
+#     "success": true,
+#     "noChange": true,
+#     "reason": "Task already completed",
+#     "message": "No changes made (already in target state)"
+#   }
+#
+# IMPORTANT FOR AGENTS:
+#   This exit code enables safe retry loops. If an agent's previous
+#   operation succeeded but the response was lost (network issue),
+#   the retry will return 102 instead of creating a duplicate or
+#   corrupting state. The agent can safely proceed knowing the
+#   intended state has been achieved.
+#
+# Examples: update with same values, complete on done task, archive on archived task
 readonly EXIT_NO_CHANGE=102
 
 # ============================================================================
@@ -158,6 +211,10 @@ get_exit_code_name() {
         13)  echo "INVALID_PARENT_TYPE" ;;
         14)  echo "CIRCULAR_REFERENCE" ;;
         15)  echo "ORPHAN_DETECTED" ;;
+        16)  echo "HAS_CHILDREN" ;;
+        17)  echo "TASK_COMPLETED" ;;
+        18)  echo "CASCADE_FAILED" ;;
+        19)  echo "HAS_DEPENDENTS" ;;
         # Concurrency (20-29)
         20)  echo "CHECKSUM_MISMATCH" ;;
         21)  echo "CONCURRENT_MODIFICATION" ;;
@@ -190,12 +247,53 @@ is_recoverable_code() {
         # Recoverable general errors
         1|2|4|6|7|8) return 0 ;;
         # Recoverable hierarchy errors (can be fixed by user action)
-        10|11|12|13|15) return 0 ;;
+        10|11|12|13|15|16|17|19) return 0 ;;
+        # Not recoverable: cascade failure (partial state, needs manual intervention)
+        18) return 1 ;;
         # Recoverable concurrency errors (retry may succeed)
         20|21|22) return 0 ;;
         # Special codes are not errors, so "recoverable" doesn't apply
         *)    return 1 ;;
     esac
+}
+
+# Check if exit code indicates no change (idempotent operation)
+# See: LLM-AGENT-FIRST-SPEC.md Part 5.6 (Idempotency Requirements)
+#
+# Args: $1 = exit code number
+# Returns: 0 if exit code is EXIT_NO_CHANGE, 1 otherwise
+#
+# Usage:
+#   if is_no_change_code "$exit_code"; then
+#       # Operation succeeded but no state change occurred
+#       # Agent should NOT retry - target state already achieved
+#   fi
+#
+# Agent Guidance:
+#   - Treat as success (proceed with workflow)
+#   - Do NOT retry (wasteful, state already correct)
+#   - Log as "success (no change)" for audit trails
+is_no_change_code() {
+    local code="$1"
+    [[ "$code" -eq 102 ]]
+}
+
+# Check if exit code indicates success (including special success states)
+# Includes EXIT_SUCCESS (0), EXIT_NO_DATA (100), EXIT_ALREADY_EXISTS (101),
+# and EXIT_NO_CHANGE (102).
+#
+# Args: $1 = exit code number
+# Returns: 0 if success/special, 1 if error
+#
+# Usage (for agent retry logic):
+#   if is_success_code "$exit_code"; then
+#       # Operation succeeded - do NOT retry
+#   else
+#       # Operation failed - may need retry based on is_recoverable_code
+#   fi
+is_success_code() {
+    local code="$1"
+    [[ "$code" -eq 0 || "$code" -ge 100 ]]
 }
 
 # ============================================================================
@@ -220,6 +318,10 @@ export EXIT_SIBLING_LIMIT
 export EXIT_INVALID_PARENT_TYPE
 export EXIT_CIRCULAR_REFERENCE
 export EXIT_ORPHAN_DETECTED
+export EXIT_HAS_CHILDREN
+export EXIT_TASK_COMPLETED
+export EXIT_CASCADE_FAILED
+export EXIT_HAS_DEPENDENTS
 
 # Export constants - Concurrency (20-29)
 export EXIT_CHECKSUM_MISMATCH
@@ -235,3 +337,5 @@ export EXIT_NO_CHANGE
 export -f get_exit_code_name
 export -f is_error_code
 export -f is_recoverable_code
+export -f is_no_change_code
+export -f is_success_code

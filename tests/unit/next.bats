@@ -6,18 +6,33 @@
 # output formats.
 # =============================================================================
 
+# =============================================================================
+# File-Level Setup (runs once per test file)
+# =============================================================================
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
+# =============================================================================
+# Per-Test Setup (runs before each test)
+# =============================================================================
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 
     # Set NEXT_SCRIPT path
     export NEXT_SCRIPT="${SCRIPTS_DIR}/next.sh"
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -423,4 +438,48 @@ teardown() {
     assert_success
     # When explaining, should mention blocked tasks if any exist
     refute_output ""
+}
+
+# =============================================================================
+# Hierarchy Awareness Tests (T346)
+# =============================================================================
+
+@test "next prefers tasks in focused epic" {
+    create_empty_todo
+    local epic1=$(bash "$ADD_SCRIPT" "Epic 1" --type epic -q)
+    local epic2=$(bash "$ADD_SCRIPT" "Epic 2" --type epic -q)
+    local task1=$(bash "$ADD_SCRIPT" "Task in E1" --parent "$epic1" --priority medium -q)
+    local task2=$(bash "$ADD_SCRIPT" "Task in E2" --parent "$epic2" --priority medium -q)
+
+    # Focus on epic1
+    bash "$FOCUS_SCRIPT" set "$epic1"
+
+    run bash "$NEXT_SCRIPT"
+    assert_success
+    # Should suggest task in same epic
+    assert_output --partial "$task1"
+}
+
+@test "next prefers leaf tasks" {
+    create_empty_todo
+    local epic=$(bash "$ADD_SCRIPT" "Epic" --type epic -q)
+    local parent_task=$(bash "$ADD_SCRIPT" "Parent Task" --parent "$epic" --priority medium -q)
+    local leaf_task=$(bash "$ADD_SCRIPT" "Leaf Task" --parent "$epic" --priority medium -q)
+    bash "$ADD_SCRIPT" "Subtask" --parent "$parent_task" --type subtask
+
+    run bash "$NEXT_SCRIPT"
+    assert_success
+    # Should prefer leaf task (no children)
+    assert_output --partial "$leaf_task"
+}
+
+@test "next shows parent context" {
+    create_empty_todo
+    local epic=$(bash "$ADD_SCRIPT" "Auth Epic" --type epic -q)
+    local task=$(bash "$ADD_SCRIPT" "Implement JWT" --parent "$epic" -q)
+
+    run bash "$NEXT_SCRIPT"
+    assert_success
+    assert_output --partial "Parent:"
+    assert_output --partial "Auth Epic"
 }

@@ -1,16 +1,17 @@
 #!/bin/bash
-# =============================================================================
 # todowrite-integration.sh - TodoWrite Integration Library
-# =============================================================================
-# Provides grammar transformation and format conversion for Claude Code's
-# TodoWrite integration. Maintains anti-hallucination principles by deriving
-# activeForm from title (single source of truth).
 #
-# Usage:
-#   source lib/todowrite-integration.sh
-#   activeForm=$(convert_to_active_form "Implement authentication")
-#   # Returns: "Implementing authentication"
-# =============================================================================
+# LAYER: 3 (Domain Logic)
+# DEPENDENCIES: none (standalone grammar transformation)
+# PROVIDES: convert_to_active_form, map_status_to_todowrite, map_status_from_todowrite,
+#           task_to_todowrite, export_to_todowrite, apply_grammar_rules,
+#           VERB_TO_ACTIVE, STATUS_TO_TODOWRITE, STATUS_FROM_TODOWRITE
+#
+# Grammar transformation and format conversion for Claude Code's TodoWrite integration
+
+#=== SOURCE GUARD ================================================
+[[ -n "${_TODOWRITE_INTEGRATION_LOADED:-}" ]] && return 0
+declare -r _TODOWRITE_INTEGRATION_LOADED=1
 
 # Disable strict mode for associative array lookups
 set +u
@@ -276,7 +277,7 @@ convert_to_active_form() {
             is_likely_verb=false ;;
         bug|feature|issue|task|story|epic|ticket|pr|review|release|version|v1|v2|patch)
             is_likely_verb=false ;;
-        new|old|main|primary|secondary|final|initial|temp|temporary|quick|fast|slow)
+        new|old|main|primary|secondary|final|initial|temp|temporary|quick|fast|slow|high|medium|low|blocked|pending|active|done|critical|urgent|important)
             is_likely_verb=false ;;
         # If word is very short and not in lookup, probably not a verb
         *)

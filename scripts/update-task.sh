@@ -9,13 +9,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_SCRIPT="${SCRIPT_DIR}/log.sh"
 CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
 
-# Source version from central location
-if [[ -f "$CLAUDE_TODO_HOME/VERSION" ]]; then
-  VERSION="$(cat "$CLAUDE_TODO_HOME/VERSION" | tr -d '[:space:]')"
-elif [[ -f "$SCRIPT_DIR/../VERSION" ]]; then
-  VERSION="$(cat "$SCRIPT_DIR/../VERSION" | tr -d '[:space:]')"
-else
-  VERSION="0.16.0"
+# Source version library for proper version management
+if [[ -f "$CLAUDE_TODO_HOME/lib/version.sh" ]]; then
+  source "$CLAUDE_TODO_HOME/lib/version.sh"
+elif [[ -f "$SCRIPT_DIR/../lib/version.sh" ]]; then
+  source "$SCRIPT_DIR/../lib/version.sh"
 fi
 
 # Command name for JSON output
@@ -75,6 +73,7 @@ fi
 : "${EXIT_INVALID_INPUT:=2}"
 : "${EXIT_FILE_ERROR:=3}"
 : "${EXIT_NOT_FOUND:=4}"
+: "${EXIT_DEPENDENCY_ERROR:=5}"
 : "${EXIT_VALIDATION_ERROR:=6}"
 : "${EXIT_NO_CHANGE:=102}"
 # Hierarchy exit codes
@@ -238,7 +237,7 @@ Exit Codes:
   13  = Invalid parent type (subtask cannot have children)
   102 = No changes (dry-run or no-op)
 EOF
-  exit 0
+  exit "$EXIT_SUCCESS"
 }
 
 log_error() { echo -e "${RED}[ERROR]${NC} $1" >&2; }
@@ -248,7 +247,7 @@ log_info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
 check_deps() {
   if ! command -v jq &> /dev/null; then
     log_error "jq is required but not installed"
-    exit 1
+    exit "$EXIT_DEPENDENCY_ERROR"
   fi
 }
 
@@ -554,14 +553,14 @@ while [[ $# -gt 0 ]]; do
     -*)
       log_error "Unknown option: $1"
       echo "Use --help for usage information" >&2
-      exit 1
+      exit "$EXIT_INVALID_INPUT"
       ;;
     *)
       if [[ -z "$TASK_ID" ]]; then
         TASK_ID="$1"
       else
         log_error "Unexpected argument: $1"
-        exit 1
+        exit "$EXIT_INVALID_INPUT"
       fi
       shift
       ;;
@@ -664,19 +663,19 @@ if [[ -n "$LABELS_TO_SET" ]]; then
 fi
 
 # Validate inputs
-[[ -n "$NEW_TITLE" ]] && { validate_title_local "$NEW_TITLE" || exit 1; }
-[[ -n "$NEW_STATUS" ]] && { validate_status "$NEW_STATUS" || exit 1; }
-[[ -n "$NEW_PRIORITY" ]] && { validate_priority "$NEW_PRIORITY" || exit 1; }
-[[ -n "$NEW_PHASE" ]] && { validate_phase "$NEW_PHASE" || exit 1; }
-[[ -n "$LABELS_TO_ADD" ]] && { validate_labels "$LABELS_TO_ADD" || exit 1; }
-[[ -n "$LABELS_TO_SET" ]] && { validate_labels "$LABELS_TO_SET" || exit 1; }
-[[ -n "$DEPENDS_TO_ADD" ]] && { validate_depends "$DEPENDS_TO_ADD" || exit 1; }
-[[ -n "$DEPENDS_TO_SET" ]] && { validate_depends "$DEPENDS_TO_SET" || exit 1; }
+[[ -n "$NEW_TITLE" ]] && { validate_title_local "$NEW_TITLE" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$NEW_STATUS" ]] && { validate_status "$NEW_STATUS" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$NEW_PRIORITY" ]] && { validate_priority "$NEW_PRIORITY" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$NEW_PHASE" ]] && { validate_phase "$NEW_PHASE" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$LABELS_TO_ADD" ]] && { validate_labels "$LABELS_TO_ADD" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$LABELS_TO_SET" ]] && { validate_labels "$LABELS_TO_SET" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$DEPENDS_TO_ADD" ]] && { validate_depends "$DEPENDS_TO_ADD" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$DEPENDS_TO_SET" ]] && { validate_depends "$DEPENDS_TO_SET" || exit "$EXIT_VALIDATION_ERROR"; }
 
 # Validate field lengths (v0.20.0+)
-[[ -n "$NEW_DESCRIPTION" ]] && { validate_description "$NEW_DESCRIPTION" || exit 1; }
-[[ -n "$NOTE_TO_ADD" ]] && { validate_note "$NOTE_TO_ADD" || exit 1; }
-[[ -n "$NEW_BLOCKED_BY" ]] && { validate_blocked_by "$NEW_BLOCKED_BY" || exit 1; }
+[[ -n "$NEW_DESCRIPTION" ]] && { validate_description "$NEW_DESCRIPTION" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$NOTE_TO_ADD" ]] && { validate_note "$NOTE_TO_ADD" || exit "$EXIT_VALIDATION_ERROR"; }
+[[ -n "$NEW_BLOCKED_BY" ]] && { validate_blocked_by "$NEW_BLOCKED_BY" || exit "$EXIT_VALIDATION_ERROR"; }
 
 # Validate hierarchy fields (v0.20.0+)
 if [[ -n "$NEW_TYPE" ]]; then
@@ -1072,6 +1071,199 @@ fi
 # Strip leading pipe if present
 JQ_UPDATES="${JQ_UPDATES# | }"
 
+# ============================================================================
+# IDEMPOTENCY CHECK: Detect if any actual changes would be made
+# Per LLM-AGENT-FIRST-SPEC.md Part 5.6 - Idempotency Requirements
+# ============================================================================
+
+# Check if all requested changes match current values (no-op scenario)
+# This enables safe retry behavior for agents - retrying an update that already
+# succeeded returns EXIT_NO_CHANGE (102) instead of writing duplicate data
+check_idempotent_no_change() {
+    local has_actual_change=false
+
+    # Scalar fields - compare before vs requested values
+    if [[ -n "$NEW_TITLE" ]]; then
+        local current_title
+        current_title=$(echo "$TASK" | jq -r '.title')
+        [[ "$current_title" != "$NEW_TITLE" ]] && has_actual_change=true
+    fi
+
+    if [[ -n "$NEW_STATUS" ]]; then
+        [[ "$CURRENT_STATUS" != "$NEW_STATUS" ]] && has_actual_change=true
+    fi
+
+    if [[ -n "$NEW_PRIORITY" ]]; then
+        local current_priority
+        current_priority=$(echo "$TASK" | jq -r '.priority // "medium"')
+        [[ "$current_priority" != "$NEW_PRIORITY" ]] && has_actual_change=true
+    fi
+
+    if [[ -n "$NEW_DESCRIPTION" ]]; then
+        local current_description
+        current_description=$(echo "$TASK" | jq -r '.description // ""')
+        [[ "$current_description" != "$NEW_DESCRIPTION" ]] && has_actual_change=true
+    fi
+
+    if [[ -n "$NEW_PHASE" ]]; then
+        local current_phase
+        current_phase=$(echo "$TASK" | jq -r '.phase // ""')
+        [[ "$current_phase" != "$NEW_PHASE" ]] && has_actual_change=true
+    fi
+
+    if [[ -n "$NEW_BLOCKED_BY" ]]; then
+        local current_blocked_by
+        current_blocked_by=$(echo "$TASK" | jq -r '.blockedBy // ""')
+        [[ "$current_blocked_by" != "$NEW_BLOCKED_BY" ]] && has_actual_change=true
+    fi
+
+    # Hierarchy fields
+    if [[ -n "$NEW_TYPE" ]]; then
+        local current_type
+        current_type=$(echo "$TASK" | jq -r '.type // "task"')
+        [[ "$current_type" != "$NEW_TYPE" ]] && has_actual_change=true
+    fi
+
+    if [[ -n "$NEW_PARENT_ID" ]]; then
+        local current_parent
+        current_parent=$(echo "$TASK" | jq -r '.parentId // ""')
+        # Handle removal case (empty string means remove parent)
+        if [[ "$NEW_PARENT_ID" == "" ]]; then
+            [[ -n "$current_parent" && "$current_parent" != "null" ]] && has_actual_change=true
+        else
+            [[ "$current_parent" != "$NEW_PARENT_ID" ]] && has_actual_change=true
+        fi
+    fi
+
+    if [[ -n "$NEW_SIZE" ]]; then
+        local current_size
+        current_size=$(echo "$TASK" | jq -r '.size // ""')
+        [[ "$current_size" != "$NEW_SIZE" ]] && has_actual_change=true
+    fi
+
+    # Array operations - clear and set always checked for actual effect
+    if [[ "$CLEAR_LABELS" == true ]]; then
+        # Only a change if there are labels to clear
+        local label_count
+        label_count=$(echo "$TASK" | jq '.labels // [] | length')
+        [[ "$label_count" -gt 0 ]] && has_actual_change=true
+    elif [[ -n "$LABELS_TO_SET" ]]; then
+        # Check if new labels differ from current
+        local current_labels new_labels
+        current_labels=$(echo "$TASK" | jq -c '.labels // [] | sort')
+        IFS=',' read -ra label_arr <<< "$LABELS_TO_SET"
+        new_labels=$(printf '%s\n' "${label_arr[@]}" | jq -R . | jq -s 'map(gsub("^\\s+|\\s+$";"")) | sort')
+        [[ "$current_labels" != "$new_labels" ]] && has_actual_change=true
+    elif [[ -n "$LABELS_TO_ADD" ]]; then
+        # Check if labels to add are already present
+        local current_labels new_label_exists
+        current_labels=$(echo "$TASK" | jq -c '.labels // []')
+        IFS=',' read -ra add_labels_arr <<< "$LABELS_TO_ADD"
+        for lbl in "${add_labels_arr[@]}"; do
+            lbl=$(echo "$lbl" | xargs)
+            new_label_exists=$(echo "$current_labels" | jq --arg l "$lbl" 'index($l) != null')
+            [[ "$new_label_exists" != "true" ]] && has_actual_change=true
+        done
+    fi
+
+    if [[ "$CLEAR_FILES" == true ]]; then
+        local file_count
+        file_count=$(echo "$TASK" | jq '.files // [] | length')
+        [[ "$file_count" -gt 0 ]] && has_actual_change=true
+    elif [[ -n "$FILES_TO_SET" ]]; then
+        local current_files new_files
+        current_files=$(echo "$TASK" | jq -c '.files // [] | sort')
+        IFS=',' read -ra file_arr <<< "$FILES_TO_SET"
+        new_files=$(printf '%s\n' "${file_arr[@]}" | jq -R . | jq -s 'map(gsub("^\\s+|\\s+$";"")) | sort')
+        [[ "$current_files" != "$new_files" ]] && has_actual_change=true
+    elif [[ -n "$FILES_TO_ADD" ]]; then
+        local current_files new_file_exists
+        current_files=$(echo "$TASK" | jq -c '.files // []')
+        IFS=',' read -ra add_files_arr <<< "$FILES_TO_ADD"
+        for f in "${add_files_arr[@]}"; do
+            f=$(echo "$f" | xargs)
+            new_file_exists=$(echo "$current_files" | jq --arg f "$f" 'index($f) != null')
+            [[ "$new_file_exists" != "true" ]] && has_actual_change=true
+        done
+    fi
+
+    if [[ "$CLEAR_ACCEPTANCE" == true ]]; then
+        local acc_count
+        acc_count=$(echo "$TASK" | jq '.acceptance // [] | length')
+        [[ "$acc_count" -gt 0 ]] && has_actual_change=true
+    elif [[ -n "$ACCEPTANCE_TO_SET" ]]; then
+        local current_acc new_acc
+        current_acc=$(echo "$TASK" | jq -c '.acceptance // []')
+        IFS=',' read -ra acc_arr <<< "$ACCEPTANCE_TO_SET"
+        new_acc=$(printf '%s\n' "${acc_arr[@]}" | jq -R . | jq -s 'map(gsub("^\\s+|\\s+$";""))')
+        [[ "$current_acc" != "$new_acc" ]] && has_actual_change=true
+    elif [[ -n "$ACCEPTANCE_TO_ADD" ]]; then
+        # Adding acceptance criteria is always a change (they append, don't dedupe)
+        has_actual_change=true
+    fi
+
+    if [[ "$CLEAR_DEPENDS" == true ]]; then
+        local dep_count
+        dep_count=$(echo "$TASK" | jq '.depends // [] | length')
+        [[ "$dep_count" -gt 0 ]] && has_actual_change=true
+    elif [[ -n "$DEPENDS_TO_SET" ]]; then
+        local current_deps new_deps
+        current_deps=$(echo "$TASK" | jq -c '.depends // [] | sort')
+        IFS=',' read -ra dep_arr <<< "$DEPENDS_TO_SET"
+        new_deps=$(printf '%s\n' "${dep_arr[@]}" | jq -R . | jq -s 'map(gsub("^\\s+|\\s+$";"")) | sort')
+        [[ "$current_deps" != "$new_deps" ]] && has_actual_change=true
+    elif [[ -n "$DEPENDS_TO_ADD" ]]; then
+        local current_deps new_dep_exists
+        current_deps=$(echo "$TASK" | jq -c '.depends // []')
+        IFS=',' read -ra add_deps_arr <<< "$DEPENDS_TO_ADD"
+        for dep in "${add_deps_arr[@]}"; do
+            dep=$(echo "$dep" | xargs)
+            new_dep_exists=$(echo "$current_deps" | jq --arg d "$dep" 'index($d) != null')
+            [[ "$new_dep_exists" != "true" ]] && has_actual_change=true
+        done
+    fi
+
+    # Notes always add (append-only), so they always constitute a change
+    [[ -n "$NOTE_TO_ADD" ]] && has_actual_change=true
+
+    echo "$has_actual_change"
+}
+
+HAS_CHANGES=$(check_idempotent_no_change)
+
+if [[ "$HAS_CHANGES" == "false" ]]; then
+    # No actual changes - return idempotent success
+    if [[ "$FORMAT" == "json" ]]; then
+        jq -n \
+            --arg version "${CLAUDE_TODO_VERSION:-$(get_version)}" \
+            --arg command "$COMMAND_NAME" \
+            --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+            --arg task_id "$TASK_ID" \
+            --argjson task "$TASK" \
+            '{
+                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "_meta": {
+                    "format": "json",
+                    "command": $command,
+                    "timestamp": $timestamp,
+                    "version": $version
+                },
+                "success": true,
+                "noChange": true,
+                "taskId": $task_id,
+                "task": $task,
+                "message": "No changes needed - task already has these values"
+            }'
+    else
+        [[ "$QUIET" != true ]] && log_info "No changes needed for $TASK_ID - task already has these values"
+    fi
+    exit "${EXIT_NO_CHANGE:-102}"
+fi
+
+# ============================================================================
+# END IDEMPOTENCY CHECK
+# ============================================================================
+
 # Calculate what the updated task would look like (for dry-run and JSON output)
 UPDATED_TODO=$(jq --arg id "$TASK_ID" \
   --arg new_title "$NEW_TITLE" \
@@ -1098,9 +1290,9 @@ UPDATED_TASK=$(echo "$UPDATED_TODO" | jq --arg id "$TASK_ID" '.tasks[] | select(
 # Handle dry-run mode
 if [[ "$DRY_RUN" == true ]]; then
   if [[ "$FORMAT" == "json" ]]; then
-    # JSON dry-run output
+    # JSON dry-run output (LLM-Agent-First Spec v3.0 compliant)
     jq -n \
-      --arg version "$VERSION" \
+      --arg version "${CLAUDE_TODO_VERSION:-$(get_version)}" \
       --arg command "$COMMAND_NAME" \
       --arg timestamp "$TIMESTAMP" \
       --arg task_id "$TASK_ID" \
@@ -1112,14 +1304,15 @@ if [[ "$DRY_RUN" == true ]]; then
           "format": "json",
           "command": $command,
           "timestamp": $timestamp,
-          "version": $version,
-          "dryRun": true
+          "version": $version
         },
         "success": true,
-        "taskId": $task_id,
-        "changes": $changes,
-        "task": $task,
-        "message": "Dry run - no changes applied"
+        "dryRun": true,
+        "wouldUpdate": {
+          "taskId": $task_id,
+          "changes": $changes,
+          "resultingTask": $task
+        }
       }'
   else
     # Text dry-run output
@@ -1190,7 +1383,7 @@ fi
 if [[ "$FORMAT" == "json" ]]; then
   # JSON success output
   jq -n \
-    --arg version "$VERSION" \
+    --arg version "${CLAUDE_TODO_VERSION:-$(get_version)}" \
     --arg command "$COMMAND_NAME" \
     --arg timestamp "$TIMESTAMP" \
     --arg task_id "$TASK_ID" \

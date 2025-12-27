@@ -5,15 +5,24 @@
 # Tests focus management functionality including set, show, clear, and notes.
 # =============================================================================
 
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -271,4 +280,44 @@ teardown() {
     create_blocked_tasks
     run bash "$FOCUS_SCRIPT" set T002
     # May fail or succeed depending on implementation
+}
+
+# =============================================================================
+# Hierarchy Awareness Tests (T345)
+# =============================================================================
+
+@test "focus show displays parent context" {
+    create_empty_todo
+    local epic=$(bash "$ADD_SCRIPT" "Epic" --type epic -q)
+    local task=$(bash "$ADD_SCRIPT" "Task" --parent "$epic" -q)
+
+    bash "$FOCUS_SCRIPT" set "$task"
+    run bash "$FOCUS_SCRIPT" show
+    assert_success
+    assert_output --partial "Parent:"
+    assert_output --partial "$epic"
+}
+
+@test "focus show displays children summary" {
+    create_empty_todo
+    local epic=$(bash "$ADD_SCRIPT" "Epic" --type epic -q)
+    bash "$ADD_SCRIPT" "Task 1" --parent "$epic"
+    bash "$ADD_SCRIPT" "Task 2" --parent "$epic"
+
+    bash "$FOCUS_SCRIPT" set "$epic"
+    run bash "$FOCUS_SCRIPT" show
+    assert_success
+    assert_output --partial "Children:"
+    assert_output --partial "pending"
+}
+
+@test "focus show JSON includes hierarchy object" {
+    create_empty_todo
+    local epic=$(bash "$ADD_SCRIPT" "Epic" --type epic -q)
+    local task=$(bash "$ADD_SCRIPT" "Task" --parent "$epic" -q)
+
+    bash "$FOCUS_SCRIPT" set "$task"
+    run bash "$FOCUS_SCRIPT" show --format json
+    assert_success
+    echo "$output" | jq -e '.hierarchy'
 }

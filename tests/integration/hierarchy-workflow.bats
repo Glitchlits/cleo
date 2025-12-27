@@ -26,7 +26,7 @@ setup() {
     load '../test_helper/fixtures'
     load '../test_helper/edge-case-fixtures'
     load '../test_helper/assertions'
-    common_setup
+    common_setup_per_test
 
     # Create empty archive for tests
     export ARCHIVE_FILE="${TEST_TEMP_DIR}/.claude/todo-archive.json"
@@ -34,7 +34,11 @@ setup() {
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -771,7 +775,7 @@ count_children() {
 @test "dry run: hierarchy add shows what would be created" {
     create_empty_todo
 
-    run bash "$ADD_SCRIPT" "Test Epic" --description "Epic" --type epic --size large --dry-run
+    run bash "$ADD_SCRIPT" "Test Epic" --description "Epic" --type epic --size large --dry-run --format json
     assert_success
 
     # Should show dry run flag in JSON output

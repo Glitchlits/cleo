@@ -1,3 +1,62 @@
+<!-- CLAUDE-TODO:START v0.24.0 -->
+## Task Management (claude-todo)
+
+Use `ct` (alias for `claude-todo`) for all task operations. Full docs: `~/.claude-todo/docs/TODO_Task_Management.md`
+
+### ALWAYS USE Data Integrity
+- **JSON auto-detection**: Piped output → JSON (no `--format` needed)
+- **Native filters**: Use `--status`, `--label`, `--phase` instead of jq
+- **Context-efficient**: Prefer `find` over `list` for task discovery
+- **Command discovery**: `ct commands -r critical` (no jq needed)
+- **CLI only** - NEVER edit `.claude/*.json` directly
+- **Verify state** - Use `claude-todo list` before assuming
+- **Session discipline** - ALWAYS Start/end sessions properly
+
+### Essential Commands
+```bash
+ct list                    # View tasks (JSON when piped)
+ct find "query"            # Fuzzy search (99% less context than list)
+ct add "Task"              # Create task
+ct done <id>               # Complete task
+ct focus set <id>          # Set active task
+ct focus show              # Show current focus
+ct session start|end       # Session lifecycle
+ct exists <id>             # Verify task exists
+ct dash                    # Project overview
+ct analyze                 # Task triage (JSON default)
+ct analyze --auto-focus    # Auto-set focus to top task
+```
+
+### Command Discovery
+```bash
+claude-todo commands -r critical    # Show critical commands (no jq needed)
+```
+
+### MUST use Session Protocol
+```bash
+claude-todo session start           # Start work session
+claude-todo session end             # End work session
+```
+
+### Phase Tracking
+```bash
+ct phases                  # List phases with progress
+ct phase set <slug>        # Set current project phase
+ct phase show              # Show current phase
+ct phase set <slug>        # Set current project phase
+ct list --phase core       # Filter tasks by phase
+```
+### Phase Integration
+- Tasks can be assigned to project phases
+- Phases provide progress tracking and organization
+- Use `claude-todo list --phase <slug>` to filter by phase
+
+### Data Integrity
+- **CLI only** - Never edit `.claude/*.json` directly
+- **Verify state** - Use `ct list` before assuming
+- **Session discipline** - Start/end sessions properly
+<!-- CLAUDE-TODO:END -->
+
 # Repository Guidelines
 
 ## Project Overview
@@ -6,7 +65,7 @@
 
 ### Core Mission
 - **Anti-hallucination validation**: Every operation is validated before execution
-- **Context persistence**: State is maintained across sessions with immutable audit trails  
+- **Context persistence**: State is maintained across sessions with immutable audit trails 
 - **Structured output**: JSON by default, with human-readable formatting opt-in
 - **Atomic operations**: All writes use temp file → validate → backup → rename pattern
 
@@ -140,44 +199,10 @@ Format: `<type>: <summary>`
 - All tests must pass (`./tests/run-all-tests.sh`)
 - Follow existing code style
 
-## LLM-Agent-First Design Principles
-
-### JSON Auto-Detection
-- Piped output automatically becomes JSON (no `--format` needed)
-- Use `--status`, `--label`, `--phase` for native filtering
-- Prefer `find` over `list` for context efficiency
-
-### Command Discovery
-```bash
-claude-todo commands -r critical    # Show critical commands (no jq needed)
-```
-
-### Session Protocol
-```bash
-claude-todo session start           # Start work session
-claude-todo session end             # End work session
-```
-
 ### Data Integrity
 - **CLI only** - Never edit `.claude/*.json` directly
 - **Verify state** - Use `claude-todo list` before assuming
 - **Session discipline** - Start/end sessions properly
-
-## Phase Tracking System (v0.13.0+)
-
-### Phase Commands
-```bash
-claude-todo phases                  # List phases with progress
-claude-todo phases show <slug>      # Tasks in specific phase
-claude-todo phases stats            # Detailed phase statistics
-claude-todo phase set <slug>        # Set current project phase
-claude-todo phase show              # Show current phase details
-```
-
-### Phase Integration
-- Tasks can be assigned to project phases
-- Phases provide progress tracking and organization
-- Use `claude-todo list --phase <slug>` to filter by phase
 
 ## Key Files & Entry Points
 
@@ -195,7 +220,7 @@ claude-todo phase show              # Show current phase details
 - `lib/phase-tracking.sh` - Phase management
 
 ### Schema Definitions
-- `schemas/todo.schema.json` - Main task schema (v2.2.0 with project.phases)
+- `schemas/todo.schema.json` - Main task schema
 
 ## Validation & Error Handling
 
@@ -213,10 +238,62 @@ Before any task operation, validate:
 - Validation errors prevent operations
 - Clear error messages for debugging
 
+## Backup System Operations
+
+### Path Discovery
+LLM agents MUST NOT hardcode backup paths. Use:
+```bash
+# Get backup directory from config
+claude-todo config get backup.directory
+# Default: .claude/backups/
+```
+
+### Creating Backups
+```bash
+# Manual snapshot (recommended before major changes)
+claude-todo backup
+
+# System creates safety backups automatically before:
+# - validate --fix
+# - restore
+# - archive
+# - complete
+```
+
+### Listing Backups
+```bash
+claude-todo backup --list           # All backups
+claude-todo backup --list --type snapshot  # Filter by type
+```
+
+### Restoring Backups
+```bash
+# ALWAYS verify what you're restoring first
+claude-todo backup --list
+
+# Restore specific backup
+claude-todo restore <backup-id>
+
+# System creates safety backup before restore
+```
+
+### Error Recovery
+If backup operations fail:
+1. Check disk space: `df -h .claude/`
+2. Check permissions: `ls -la .claude/backups/`
+3. Run validation: `claude-todo validate --fix`
+4. Check audit log: `claude-todo log --operation backup`
+
+### Best Practices
+- Create snapshot before multi-task operations
+- Never delete backups directly - use retention policies
+- Verify restore target before executing
+- Migration backups are NEVER deleted automatically
+
 ## Agent Notes
 
 ### When Using AI Agents
-1. **Follow CLAUDE.md** - It defines repository-specific workflow expectations
+1. **Follow AGENTS.md** - It defines repository-specific workflow expectations
 2. **Respect atomic operations** - Never bypass the temp→validate→backup→rename pattern
 3. **Maintain data integrity** - Always validate before and after operations
 4. **Use proper testing** - Add tests for new features and bug fixes

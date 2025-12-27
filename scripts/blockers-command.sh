@@ -411,6 +411,10 @@ list_blocked_tasks() {
 
 # Analyze blocking chains
 analyze_blocking_chains() {
+  local _tmp_analysis
+  _tmp_analysis=$(mktemp)
+  trap "rm -f '$_tmp_analysis'" RETURN
+
   local blocked_tasks
   blocked_tasks=$(get_blocked_tasks)
 
@@ -451,10 +455,14 @@ analyze_blocking_chains() {
         impactCount: $impact,
         blockingChain: $chain
       }'
-  done | jq -s '.' > /tmp/blockers_analysis.json
+  done | jq -s '.' > "$_tmp_analysis"
 
-  analysis=$(cat /tmp/blockers_analysis.json)
-  rm -f /tmp/blockers_analysis.json
+  # If the file is empty or doesn't exist, use empty array
+  if [[ -s "$_tmp_analysis" ]]; then
+    analysis=$(cat "$_tmp_analysis")
+  else
+    analysis="[]"
+  fi
 
   # Find critical path using comprehensive analysis (all tasks, not just blocked)
   local critical_path

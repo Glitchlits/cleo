@@ -473,8 +473,8 @@ which claude-todo
 **Step 1: List available backups**
 ```bash
 ls -lah .claude/.backups/
-# Shows: todo.json.1, todo.json.2, etc.
-# Most recent = highest number
+# Shows: todo.json.1, todo.json.2, etc. (Tier 1 operational)
+# Most recent = lowest number (.1 is newest)
 ```
 
 **Step 2: Validate backup integrity**
@@ -1139,8 +1139,8 @@ claude-todo migrate run --auto && claude-todo migrate repair --auto && claude-to
 | Missing field | Add required field manually |
 | Command not found | Check symlinks: `ls ~/.local/bin/claude-todo` |
 | Slow performance | Archive old completed tasks |
-| Corrupted file | Restore from `.claude/.backups/` |
-| No backups | Check `.backups/` directory exists |
+| Corrupted file | Restore from `.claude/.backups/` (Tier 1) or `.claude/backups/` (Tier 2) |
+| No backups | Check `.claude/.backups/` directory exists |
 
 ---
 

@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # logging.sh - Change log functions for CLAUDE-TODO system
-# Part of the claude-todo-system library
+#
+# LAYER: 2 (Data Layer)
+# DEPENDENCIES: atomic-write.sh
+# PROVIDES: log_operation, get_log_entries, get_task_history, prune_log,
+#           LOG_FILE, generate_log_id
+
+#=== SOURCE GUARD ================================================
+[[ -n "${_LOGGING_LOADED:-}" ]] && return 0
+declare -r _LOGGING_LOADED=1
 
 set -euo pipefail
 
@@ -10,21 +18,13 @@ set -euo pipefail
 
 _LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Source platform compatibility layer
-if [[ -f "$_LIB_DIR/platform-compat.sh" ]]; then
-    # shellcheck source=lib/platform-compat.sh
-    source "$_LIB_DIR/platform-compat.sh"
+# Source atomic-write for primitive atomic operations (Layer 1)
+# Note: atomic-write.sh transitively provides platform-compat.sh
+if [[ -f "$_LIB_DIR/atomic-write.sh" ]]; then
+    # shellcheck source=lib/atomic-write.sh
+    source "$_LIB_DIR/atomic-write.sh"
 else
-    echo "ERROR: Cannot find platform-compat.sh in $_LIB_DIR" >&2
-    exit 1
-fi
-
-# Source file-ops for atomic writes with file locking
-if [[ -f "$_LIB_DIR/file-ops.sh" ]]; then
-    # shellcheck source=lib/file-ops.sh
-    source "$_LIB_DIR/file-ops.sh"
-else
-    echo "ERROR: Cannot find file-ops.sh in $_LIB_DIR" >&2
+    echo "ERROR: Cannot find atomic-write.sh in $_LIB_DIR" >&2
     exit 1
 fi
 
@@ -66,6 +66,10 @@ if [[ -z "${VALID_ACTIONS:-}" ]]; then
         "task_updated"
         "status_changed"
         "task_archived"
+        "task_cancelled"
+        "task_restored_from_cancelled"
+        "task_reopened"
+        "dependency_removed"
         "focus_changed"
         "config_changed"
         "validation_run"
@@ -335,8 +339,8 @@ log_operation() {
         return 1
     fi
 
-    # Atomic write with file locking via save_json
-    if ! save_json "$log_path" "$updated_log"; then
+    # Atomic write via aw_atomic_write (Layer 1 primitive)
+    if ! aw_atomic_write "$log_path" "$updated_log"; then
         echo "ERROR: Failed to save log entry" >&2
         return 1
     fi
@@ -397,8 +401,8 @@ rotate_log() {
         return 1
     fi
 
-    # Atomic write with file locking via save_json
-    if ! save_json "$log_path" "$updated_log"; then
+    # Atomic write via aw_atomic_write (Layer 1 primitive)
+    if ! aw_atomic_write "$log_path" "$updated_log"; then
         echo "ERROR: Failed to save rotated log file" >&2
         return 1
     fi
@@ -850,8 +854,8 @@ migrate_log_entries() {
         return 1
     fi
 
-    # Atomic write with file locking via save_json
-    if ! save_json "$log_path" "$updated_log"; then
+    # Atomic write via aw_atomic_write (Layer 1 primitive)
+    if ! aw_atomic_write "$log_path" "$updated_log"; then
         echo "ERROR: Failed to save migrated log file" >&2
         return 1
     fi
@@ -872,6 +876,114 @@ handle_log_error() {
     local error_msg="$1"
     echo "WARNING: Logging failed: $error_msg" >&2
     echo "This will not prevent the operation from completing" >&2
+}
+
+
+# ============================================================================
+# CANCELLATION LOGGING FUNCTIONS
+# ============================================================================
+
+# Log task cancellation with full cascade details
+# Parameters:
+#   $1 - Primary task ID being cancelled
+#   $2 - Cancellation reason
+#   $3 - Child handling mode (cascade, orphan, block)
+#   $4 - JSON array of all affected task IDs (including primary)
+#   $5 - Session ID (optional)
+log_task_cancelled() {
+    local task_id="$1"
+    local reason="$2"
+    local child_mode="${3:-orphan}"
+    local affected_ids="${4:-[]}"
+    local session_id="${5:-null}"
+    local before
+    local after
+    local details
+    local cascade_count
+    local original_status="${6:-pending}"
+
+    # Calculate cascade count (affected minus primary task)
+    cascade_count=$(echo "$affected_ids" | jq 'length - 1')
+    [[ "$cascade_count" -lt 0 ]] && cascade_count=0
+
+    before=$(jq -n --arg status "$original_status" '{status: $status}')
+    after=$(jq -n '{status: "cancelled"}')
+
+    details=$(jq -n \
+        --arg reason "$reason" \
+        --arg mode "$child_mode" \
+        --argjson affected "$affected_ids" \
+        --argjson count "$cascade_count" \
+        '{
+            originalStatus: $status,
+            cancellationReason: $reason,
+            childHandlingMode: $mode,
+            affectedTaskIds: $affected,
+            cascadeCount: $count
+        }' --arg status "$original_status")
+
+    log_operation "task_cancelled" "system" "$task_id" "$before" "$after" "$details" "$session_id"
+}
+
+# Log task restoration from cancelled status
+# Parameters:
+#   $1 - Task ID being restored
+#   $2 - Original cancellation reason (for audit trail)
+#   $3 - New status to restore to
+#   $4 - Session ID (optional)
+log_task_restored() {
+    local task_id="$1"
+    local original_reason="${2:-}"
+    local new_status="${3:-pending}"
+    local session_id="${4:-null}"
+    local before
+    local after
+    local details
+
+    before=$(jq -n '{status: "cancelled"}')
+    after=$(jq -n --arg status "$new_status" '{status: $status}')
+
+    if [[ -n "$original_reason" ]]; then
+        details=$(jq -n \
+            --arg reason "$original_reason" \
+            --arg new_status "$new_status" \
+            '{
+                restoredFrom: "cancelled",
+                originalCancellationReason: $reason,
+                restoredToStatus: $new_status
+            }')
+    else
+        details=$(jq -n --arg new_status "$new_status" '{
+            restoredFrom: "cancelled",
+            restoredToStatus: $new_status
+        }')
+    fi
+
+    log_operation "task_restored_from_cancelled" "system" "$task_id" "$before" "$after" "$details" "$session_id"
+}
+
+# Log dependency removal (e.g., when a depended-upon task is cancelled)
+# Parameters:
+#   $1 - Task ID that had dependency removed
+#   $2 - Removed dependency ID (the cancelled task)
+#   $3 - Reason for removal
+#   $4 - Session ID (optional)
+log_dependency_removed() {
+    local task_id="$1"
+    local removed_dep_id="$2"
+    local reason="${3:-task_cancelled}"
+    local session_id="${4:-null}"
+    local details
+
+    details=$(jq -n \
+        --arg removed "$removed_dep_id" \
+        --arg reason "$reason" \
+        '{
+            removedDependencyId: $removed,
+            removalReason: $reason
+        }')
+
+    log_operation "dependency_removed" "system" "$task_id" "null" "null" "$details" "$session_id"
 }
 
 # ============================================================================

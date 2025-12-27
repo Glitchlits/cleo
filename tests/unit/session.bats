@@ -5,15 +5,24 @@
 # Tests session management functionality including start, end, and status.
 # =============================================================================
 
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -107,8 +116,8 @@ teardown() {
 @test "session end is safe without active session" {
     create_independent_tasks
     run bash "$SESSION_SCRIPT" end
-    # Should handle gracefully
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
+    # Should handle gracefully - returns EXIT_NO_CHANGE (102) when no active session
+    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 102 ]]
 }
 
 @test "session end logs session completion" {

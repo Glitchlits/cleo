@@ -9,21 +9,17 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_SCRIPT="${SCRIPT_DIR}/log.sh"
 ARCHIVE_SCRIPT="${SCRIPT_DIR}/archive.sh"
 
-# Version from central location
-CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
-if [[ -f "$CLAUDE_TODO_HOME/VERSION" ]]; then
-  VERSION="$(cat "$CLAUDE_TODO_HOME/VERSION" | tr -d '[:space:]')"
-elif [[ -f "$SCRIPT_DIR/../VERSION" ]]; then
-  VERSION="$(cat "$SCRIPT_DIR/../VERSION" | tr -d '[:space:]')"
-else
-  VERSION="0.16.0"
-fi
+
 
 # Command name for error-json library
 COMMAND_NAME="complete"
 
 # Source logging library for should_use_color function
 LIB_DIR="${SCRIPT_DIR}/../lib"
+if [[ -f "$LIB_DIR/version.sh" ]]; then
+  # shellcheck source=../lib/version.sh
+  source "$LIB_DIR/version.sh"
+fi
 if [[ -f "$LIB_DIR/logging.sh" ]]; then
   # shellcheck source=../lib/logging.sh
   source "$LIB_DIR/logging.sh"
@@ -62,6 +58,18 @@ fi
 if [[ -f "$LIB_DIR/config.sh" ]]; then
   # shellcheck source=../lib/config.sh
   source "$LIB_DIR/config.sh"
+fi
+
+# Source phase tracking library for phase context validation (v2.2.0)
+if [[ -f "$LIB_DIR/phase-tracking.sh" ]]; then
+  # shellcheck source=../lib/phase-tracking.sh
+  source "$LIB_DIR/phase-tracking.sh"
+fi
+
+# Source validation library for input validation (Part 5.3 compliance)
+if [[ -f "$LIB_DIR/validation.sh" ]]; then
+  # shellcheck source=../lib/validation.sh
+  source "$LIB_DIR/validation.sh"
 fi
 
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
@@ -136,7 +144,7 @@ Examples:
 After completion, if autoArchiveOnComplete is enabled in config,
 the archive script will run automatically.
 EOF
-  exit 0
+  exit "$EXIT_SUCCESS"
 }
 
 log_info()  { [[ "$QUIET" != true ]] && echo -e "${GREEN}[INFO]${NC} $1" || true; }
@@ -147,7 +155,7 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1" >&2; }
 check_deps() {
   if ! command -v jq &> /dev/null; then
     log_error "jq is required but not installed"
-    exit 1
+    exit "$EXIT_DEPENDENCY_ERROR"
   fi
 }
 
@@ -165,7 +173,7 @@ while [[ $# -gt 0 ]]; do
       NOTES="${2:-}"
       if [[ -z "$NOTES" ]]; then
         log_error "--notes requires a text argument"
-        exit 1
+        exit "$EXIT_INVALID_INPUT"
       fi
       shift 2
       ;;
@@ -173,7 +181,7 @@ while [[ $# -gt 0 ]]; do
       FORMAT="${2:-}"
       if [[ -z "$FORMAT" ]]; then
         log_error "--format requires an argument (text or json)"
-        exit 1
+        exit "$EXIT_INVALID_INPUT"
       fi
       shift 2
       ;;
@@ -182,7 +190,7 @@ while [[ $# -gt 0 ]]; do
     --dry-run) DRY_RUN=true; shift ;;
     --skip-notes) SKIP_NOTES=true; shift ;;
     --skip-archive) SKIP_ARCHIVE=true; shift ;;
-    -*) log_error "Unknown option: $1"; exit 1 ;;
+    -*) log_error "Unknown option: $1"; exit "$EXIT_INVALID_INPUT" ;;
     *) TASK_ID="$1"; shift ;;
   esac
 done
@@ -207,7 +215,7 @@ if [[ -z "$NOTES" && "$SKIP_NOTES" == false ]]; then
     echo "Example:" >&2
     echo "  claude-todo complete $TASK_ID --notes 'Implemented feature. Tests passing.'" >&2
     echo "  claude-todo complete $TASK_ID --skip-notes" >&2
-    exit 1
+    exit "$EXIT_INVALID_INPUT"
   fi
 fi
 
@@ -221,7 +229,7 @@ if [[ ! "$TASK_ID" =~ ^T[0-9]{3,}$ ]]; then
     exit "${EXIT_INVALID_INPUT:-2}"
   else
     log_error "Invalid task ID format: $TASK_ID (must be T### format)"
-    exit 1
+    exit "$EXIT_INVALID_INPUT"
   fi
 fi
 
@@ -233,7 +241,7 @@ if [[ ! -f "$TODO_FILE" ]]; then
     exit "${EXIT_FILE_ERROR:-3}"
   else
     log_error "$TODO_FILE not found. Run claude-todo init first."
-    exit 1
+    exit "$EXIT_FILE_ERROR"
   fi
 fi
 
@@ -244,7 +252,7 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
     exit "${EXIT_FILE_ERROR:-3}"
   else
     log_error "$CONFIG_FILE not found. Run claude-todo init first."
-    exit 1
+    exit "$EXIT_FILE_ERROR"
   fi
 fi
 
@@ -269,7 +277,7 @@ if [[ -z "$TASK" ]]; then
     exit "${EXIT_NOT_FOUND:-4}"
   else
     log_error "Task $TASK_ID not found"
-    exit 1
+    exit "$EXIT_NOT_FOUND"
   fi
 fi
 
@@ -279,18 +287,22 @@ CURRENT_STATUS=$(echo "$TASK" | jq -r '.status')
 # Capture createdAt for cycle time calculation
 CREATED_AT=$(echo "$TASK" | jq -r '.createdAt // empty')
 
+# Idempotency check: Per LLM-AGENT-FIRST-SPEC.md Part 5.6
+# Completing already-done task returns EXIT_NO_CHANGE (102)
+# Agents should treat EXIT_NO_CHANGE as success, not retry
 if [[ "$CURRENT_STATUS" == "done" ]]; then
   TASK_TITLE=$(echo "$TASK" | jq -r '.title')
   COMPLETED_AT=$(echo "$TASK" | jq -r '.completedAt')
 
   if [[ "$FORMAT" == "json" ]]; then
-    # For JSON output, report this as already completed (not an error)
+    # JSON output with noChange: true per spec Part 5.6
     TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     jq -n \
-      --arg version "$VERSION" \
+      --arg version "${CLAUDE_TODO_VERSION:-unknown}" \
       --arg timestamp "$TIMESTAMP" \
       --arg taskId "$TASK_ID" \
       --arg completedAt "$COMPLETED_AT" \
+      --arg message "Task $TASK_ID is already complete" \
       --argjson task "$TASK" \
       '{
         "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
@@ -301,8 +313,9 @@ if [[ "$CURRENT_STATUS" == "done" ]]; then
           "version": $version
         },
         "success": true,
-        "alreadyCompleted": true,
+        "noChange": true,
         "taskId": $taskId,
+        "message": $message,
         "completedAt": $completedAt,
         "task": $task
       }'
@@ -312,9 +325,12 @@ if [[ "$CURRENT_STATUS" == "done" ]]; then
     echo ""
     echo "Task: $TASK_TITLE"
     echo "Completed at: $COMPLETED_AT"
-    exit 0
+    exit "${EXIT_NO_CHANGE:-102}"
   fi
 fi
+
+# Debug output for parent auto-complete (remove after testing)
+# Debug output removed - functionality verified
 
 # Validate status transition (pending/active/blocked → done)
 if [[ ! "$CURRENT_STATUS" =~ ^(pending|active|blocked)$ ]]; then
@@ -324,7 +340,7 @@ if [[ ! "$CURRENT_STATUS" =~ ^(pending|active|blocked)$ ]]; then
     exit "${EXIT_VALIDATION_ERROR:-6}"
   else
     log_error "Invalid status transition: $CURRENT_STATUS → done"
-    exit 1
+    exit "$EXIT_VALIDATION_ERROR"
   fi
 fi
 
@@ -346,7 +362,7 @@ if [[ "$DRY_RUN" == true ]]; then
 
   if [[ "$FORMAT" == "json" ]]; then
     jq -n \
-      --arg version "$VERSION" \
+      --arg version "${CLAUDE_TODO_VERSION:-unknown}" \
       --arg timestamp "$DRY_TIMESTAMP" \
       --arg taskId "$TASK_ID" \
       --arg completedAt "$DRY_TIMESTAMP" \
@@ -388,7 +404,7 @@ if [[ "$DRY_RUN" == true ]]; then
     echo ""
     echo -e "${YELLOW}No changes made (dry-run mode)${NC}"
   fi
-  exit 0
+  exit "$EXIT_SUCCESS"
 fi
 
 # Create safety backup before modification using unified backup library
@@ -433,7 +449,7 @@ if [[ -n "$NOTES" ]]; then
     )
   ' "$TODO_FILE") || {
     log_error "jq failed to update tasks (with notes)"
-    exit 1
+    exit "$EXIT_FILE_ERROR"
   }
 else
   UPDATED_TASKS=$(jq --arg id "$TASK_ID" --arg ts "$TIMESTAMP" '
@@ -446,21 +462,19 @@ else
     )
   ' "$TODO_FILE") || {
     log_error "jq failed to update tasks (no notes)"
-    exit 1
+    exit "$EXIT_FILE_ERROR"
   }
 fi
 
 # Verify UPDATED_TASKS is valid JSON and not empty
 if [[ -z "$UPDATED_TASKS" ]]; then
   log_error "Generated empty JSON structure"
-  exit 1
+  exit "$EXIT_FILE_ERROR"
 fi
 
 if ! echo "$UPDATED_TASKS" | jq empty 2>/dev/null; then
   log_error "Generated invalid JSON structure"
-  echo "DEBUG: UPDATED_TASKS content:" >&2
-  echo "$UPDATED_TASKS" >&2
-  exit 1
+  exit "$EXIT_FILE_ERROR"
 fi
 
 # Recalculate checksum
@@ -481,14 +495,14 @@ FINAL_JSON=$(echo "$UPDATED_TASKS" | jq --arg checksum "$NEW_CHECKSUM" --arg ts 
 # - Proper error handling
 if ! save_json "$TODO_FILE" "$FINAL_JSON"; then
   log_error "Failed to write todo file. Rolling back."
-  exit 1
+  exit "$EXIT_FILE_ERROR"
 fi
 
 # Verify task was actually updated
 VERIFY_STATUS=$(jq --arg id "$TASK_ID" '.tasks[] | select(.id == $id) | .status' "$TODO_FILE")
 if [[ "$VERIFY_STATUS" != '"done"' ]]; then
   log_error "Failed to update task status."
-  exit 1
+  exit "$EXIT_FILE_ERROR"
 fi
 
 # Capture after state
@@ -497,6 +511,14 @@ AFTER_STATE=$(jq --arg id "$TASK_ID" '.tasks[] | select(.id == $id) | {status, c
 # Get full completed task for output
 COMPLETED_TASK=$(jq --arg id "$TASK_ID" '.tasks[] | select(.id == $id)' "$TODO_FILE")
 TASK_TITLE=$(echo "$COMPLETED_TASK" | jq -r '.title')
+
+# Phase context check (permissive - warn only, never block completion)
+if declare -f check_phase_context >/dev/null 2>&1; then
+  TASK_PHASE=$(echo "$COMPLETED_TASK" | jq -r '.phase // empty')
+  if [[ -n "$TASK_PHASE" ]]; then
+    check_phase_context "$TASK_PHASE" "$TODO_FILE" || true  # Never block completion
+  fi
+fi
 
 # Calculate cycle time (days between created and completed)
 CYCLE_TIME_DAYS=""
@@ -575,11 +597,295 @@ if [[ "$SKIP_ARCHIVE" == false ]]; then
   fi
 fi
 
+# Check for parent auto-complete functionality
+AUTO_COMPLETED_PARENTS=()
+
+# Read configuration with proper fallback
+AUTO_COMPLETE_PARENT="false"
+AUTO_COMPLETE_MODE="off"
+
+# Check if config.sh library is available and loaded
+if declare -f get_config_value >/dev/null 2>&1; then
+  # Use config library (preferred method)
+  AUTO_COMPLETE_PARENT=$(get_config_value "hierarchy.autoCompleteParent" "false")
+  AUTO_COMPLETE_MODE=$(get_config_value "hierarchy.autoCompleteMode" "off")
+elif [[ -f "$CONFIG_FILE" ]]; then
+  # Fallback: direct JSON reading
+  AUTO_COMPLETE_PARENT=$(jq -r '.hierarchy.autoCompleteParent // false' "$CONFIG_FILE")
+  AUTO_COMPLETE_MODE=$(jq -r '.hierarchy.autoCompleteMode // "off"' "$CONFIG_FILE")
+fi
+
+# === SOLID/DRY REFACTOR: Parent Auto-Complete Functions ===
+
+# Check if all siblings of a task are completed
+# Args: $1 - parentId, $2 - currentTaskId, $3 - todoFile
+# Returns: 0 if all siblings completed, 1 if any incomplete
+all_siblings_completed() {
+  local parent_id="$1"
+  local current_task_id="$2"
+  local todo_file="$3"
+  
+  # Check if any siblings are incomplete (pending, active, or blocked)
+  local incomplete_siblings
+  incomplete_siblings=$(jq --arg parentId "$parent_id" --arg currentId "$current_task_id" '
+    .tasks[] | 
+    select(.parentId == $parentId and .id != $currentId and 
+           (.status == "pending" or .status == "active" or .status == "blocked"))
+  ' "$todo_file")
+  
+  [[ -z "$incomplete_siblings" ]]
+}
+
+# Generate completion note based on auto-complete mode
+# Args: $1 - mode (auto/suggest/off), $2 - timestamp, $3 - userConfirmed (optional)
+# Returns: completion note or empty string
+generate_completion_note() {
+  local mode="$1"
+  local timestamp="$2"
+  local user_confirmed="${3:-false}"
+  
+  case "$mode" in
+    "auto")
+      echo "[AUTO-COMPLETED $timestamp] All child tasks completed"
+      ;;
+    "suggest")
+      if [[ "$user_confirmed" == "true" ]]; then
+        echo "[AUTO-COMPLETED $timestamp] All child tasks completed (user confirmed)"
+      else
+        # In suggest mode without confirmation, return empty to skip completion
+        echo ""
+      fi
+      ;;
+    "off")
+      echo ""
+      ;;
+    *)
+      echo ""
+      ;;
+  esac
+}
+
+# Prompt user for parent auto-complete confirmation (for suggest mode)
+# Args: $1 - parentId, $2 - parentTitle, $3 - format
+# Returns: 0 if user confirms, 1 if user declines
+prompt_parent_completion() {
+  local parent_id="$1"
+  local parent_title="$2"
+  local format="$3"
+  
+  # Skip prompting in JSON mode
+  if [[ "$format" == "json" ]]; then
+    return 0
+  fi
+  
+  echo ""
+  log_info "Parent task $parent_id is ready for completion (all children done)"
+  echo -e "${BLUE}Parent:${NC} $parent_title"
+  echo -e "${YELLOW}Auto-complete parent?${NC} [Y/n] "
+  
+  read -r -p "" response
+  [[ ! "$response" =~ ^[Nn]$ ]]
+}
+
+# Complete a parent task and update the todo file
+# Args: $1 - parentId, $2 - completionNote, $3 - timestamp, $4 - todoFile, $5 - format
+# Returns: 0 on success, 1 on failure
+complete_parent_task() {
+  local parent_id="$1"
+  local completion_note="$2"
+  local timestamp="$3"
+  local todo_file="$4"
+  local format="$5"
+  
+  # Update parent task
+  local updated_tasks
+  updated_tasks=$(jq --arg id "$parent_id" --arg ts "$timestamp" --arg note "$completion_note" '
+    .tasks |= map(
+      if .id == $id then
+        .status = "done" |
+        .completedAt = $ts |
+        del(.blockedBy) |
+        .notes = ((.notes // []) + [$note])
+      else . end
+    )
+  ' "$todo_file") || {
+    [[ "$format" != "json" ]] && log_warn "Failed to auto-complete parent task $parent_id"
+    return 1
+  }
+  
+  # Verify updated tasks is valid JSON
+  if [[ -z "$updated_tasks" ]] || ! echo "$updated_tasks" | jq empty 2>/dev/null; then
+    [[ "$format" != "json" ]] && log_warn "Generated invalid JSON for parent task $parent_id"
+    return 1
+  fi
+  
+  # Generate fresh checksum for parent update
+  local parent_tasks_json
+  parent_tasks_json=$(echo "$updated_tasks" | jq -c '.tasks')
+  local parent_checksum
+  parent_checksum=$(echo "$parent_tasks_json" | sha256sum | cut -c1-16)
+  
+  # Update file with new checksum and lastUpdated
+  local final_json
+  final_json=$(echo "$updated_tasks" | jq --arg checksum "$parent_checksum" --arg ts "$timestamp" '
+    ._meta.checksum = $checksum |
+    .lastUpdated = $ts
+  ')
+  
+  # Save the updated file
+  if save_json "$todo_file" "$final_json"; then
+    return 0
+  else
+    [[ "$format" != "json" ]] && log_warn "Failed to save updated todo file for parent $parent_id"
+    return 1
+  fi
+}
+
+# Log parent auto-completion operation
+# Args: $1 - parentId, $2 - parentTask (JSON), $3 - timestamp, $4 - logScript
+log_parent_completion() {
+  local parent_id="$1"
+  local parent_task="$2"
+  local timestamp="$3"
+  local log_script="$4"
+  
+  if [[ -f "$log_script" ]]; then
+    local parent_before_state
+    parent_before_state=$(echo "$parent_task" | jq '{status, completedAt}')
+    local parent_after_state
+    parent_after_state=$(echo "$parent_task" | jq --arg ts "$timestamp" '{status: "done", completedAt: $ts}')
+    
+    "$log_script" \
+      --action "status_changed" \
+      --task-id "$parent_id" \
+      --before "$parent_before_state" \
+      --after "$parent_after_state" \
+      --details "{\"field\":\"status\",\"operation\":\"auto_complete\"}" \
+      --actor "system" >/dev/null 2>&1 || true
+  fi
+}
+
+# Handle auto-complete for a single parent task (non-recursive)
+# Args: $1 - parentId, $2 - completedTaskId, $3 - todoFile, $4 - format, $5 - autoCompleteMode, $6 - timestamp
+# Returns: 0 if parent was auto-completed, 1 if not
+handle_single_parent_auto_complete() {
+  local parent_id="$1"
+  local completed_task_id="$2"
+  local todo_file="$3"
+  local format="$4"
+  local auto_complete_mode="$5"
+  local timestamp="$6"
+  
+  # Get parent task
+  local parent_task
+  parent_task=$(jq --arg id "$parent_id" '.tasks[] | select(.id == $id)' "$todo_file")
+  
+  # Return if parent doesn't exist
+  [[ -z "$parent_task" ]] && return 1
+  
+  local parent_status
+  parent_status=$(echo "$parent_task" | jq -r '.status')
+  
+  # Return if parent is already completed
+  [[ ! "$parent_status" =~ ^(pending|active|blocked)$ ]] && return 1
+  
+  # Check if all siblings are completed
+  if ! all_siblings_completed "$parent_id" "$completed_task_id" "$todo_file"; then
+    return 1
+  fi
+  
+  # All conditions met, prepare for auto-completion
+  local parent_title
+  parent_title=$(echo "$parent_task" | jq -r '.title')
+  local user_confirmed="false"
+  local completion_note=""
+  
+  # Handle different modes
+  if [[ "$auto_complete_mode" == "suggest" ]]; then
+    # Prompt user for confirmation (skip in JSON mode)
+    if [[ "$format" == "json" ]]; then
+      user_confirmed="true"
+    else
+      if prompt_parent_completion "$parent_id" "$parent_title" "$format"; then
+        user_confirmed="true"
+      else
+        # User declined, skip auto-complete
+        [[ "$format" != "json" ]] && log_info "Parent auto-complete skipped by user"
+        return 1
+      fi
+    fi
+  elif [[ "$auto_complete_mode" == "auto" ]]; then
+    user_confirmed="true"
+  else
+    # Mode is off, skip auto-complete
+    return 1
+  fi
+  
+  # Generate completion note
+  completion_note=$(generate_completion_note "$auto_complete_mode" "$timestamp" "$user_confirmed")
+  
+  # Skip if no completion note (e.g., suggest mode without confirmation)
+  [[ -z "$completion_note" ]] && return 1
+  
+  # Complete the parent task
+  if complete_parent_task "$parent_id" "$completion_note" "$timestamp" "$todo_file" "$format"; then
+    # Log the operation
+    log_parent_completion "$parent_id" "$parent_task" "$timestamp" "$LOG_SCRIPT"
+    
+    # Output success message
+    [[ "$format" != "json" ]] && log_info "Auto-completed parent task: $parent_id - $parent_title"
+    
+    # Return success
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Recursive function to handle parent auto-complete with cascade
+# Args: $1 - taskId, $2 - todoFile, $3 - format, $4 - autoCompleteMode, $5 - timestamp, $6 - autoCompletedParentsArrayName
+# Returns: 0 on success, updates autoCompletedParents array
+cascade_parent_auto_complete() {
+  local task_id="$1"
+  local todo_file="$2"
+  local format="$3"
+  local auto_complete_mode="$4"
+  local timestamp="$5"
+  local auto_completed_parents_array="$6"
+  
+  # Get parent ID of the current task
+  local parent_id
+  parent_id=$(jq -r --arg id "$task_id" '.tasks[] | select(.id == $id) | .parentId // ""' "$todo_file")
+  
+  # Return if no parent
+  [[ -z "$parent_id" || "$parent_id" == "null" ]] && return 0
+  
+  # Try to auto-complete the parent
+  if handle_single_parent_auto_complete "$parent_id" "$task_id" "$todo_file" "$format" "$auto_complete_mode" "$timestamp"; then
+    # Add parent to auto-completed list
+    eval "$auto_completed_parents_array+=(\"$parent_id\")"
+    
+    # Recursively check if the grandparent can also be auto-completed
+    cascade_parent_auto_complete "$parent_id" "$todo_file" "$format" "$auto_complete_mode" "$timestamp" "$auto_completed_parents_array"
+  fi
+  
+  return 0
+}
+
+# Handle parent auto-complete with recursive cascade using SOLID/DRY functions
+if [[ "$AUTO_COMPLETE_PARENT" == "true" && "$AUTO_COMPLETE_MODE" != "off" ]]; then
+  # Use recursive cascade function to handle all levels of hierarchy
+  cascade_parent_auto_complete "$TASK_ID" "$TODO_FILE" "$FORMAT" "$AUTO_COMPLETE_MODE" "$TIMESTAMP" "AUTO_COMPLETED_PARENTS"
+fi
+# End of refactored parent auto-complete section
+
 # Output based on format
 if [[ "$FORMAT" == "json" ]]; then
   # Build JSON output with all completion details
+  AUTO_COMPLETED_JSON=$(printf '%s\n' "${AUTO_COMPLETED_PARENTS[@]}" | jq -R . | jq -s .)
+  
   jq -n \
-    --arg version "$VERSION" \
+    --arg version "${CLAUDE_TODO_VERSION:-unknown}" \
     --arg timestamp "$TIMESTAMP" \
     --arg taskId "$TASK_ID" \
     --arg completedAt "$TIMESTAMP" \
@@ -587,6 +893,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --argjson archived "$ARCHIVED" \
     --argjson focusCleared "$FOCUS_CLEARED" \
     --argjson task "$COMPLETED_TASK" \
+    --argjson autoCompletedParents "$AUTO_COMPLETED_JSON" \
     '{
       "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
       "_meta": {
@@ -601,6 +908,7 @@ if [[ "$FORMAT" == "json" ]]; then
       "cycleTimeDays": (if $cycleTime == "null" then null else ($cycleTime | tonumber) end),
       "archived": $archived,
       "focusCleared": $focusCleared,
+      "autoCompletedParents": $autoCompletedParents,
       "task": $task
     }'
 else
@@ -617,6 +925,15 @@ else
   if [[ -n "$CYCLE_TIME_DAYS" ]]; then
     echo -e "${BLUE}Cycle Time:${NC} ${CYCLE_TIME_DAYS} days"
   fi
-  echo ""
-  log_info "Task completion successful"
+  
+  # Show auto-completed parents if any
+  if [[ ${#AUTO_COMPLETED_PARENTS[@]} -gt 0 ]]; then
+    echo ""
+    log_info "Auto-completed parent tasks:"
+    for parent_id in "${AUTO_COMPLETED_PARENTS[@]}"; do
+      PARENT_TASK=$(jq --arg id "$parent_id" '.tasks[] | select(.id == $id)' "$TODO_FILE")
+      PARENT_TITLE=$(echo "$PARENT_TASK" | jq -r '.title')
+      echo -e "  ${GREEN}✓${NC} $parent_id - $PARENT_TITLE"
+    done
+  fi
 fi

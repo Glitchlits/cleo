@@ -7,12 +7,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
 
 # Source version from central location
-if [[ -f "$CLAUDE_TODO_HOME/VERSION" ]]; then
-  VERSION="$(cat "$CLAUDE_TODO_HOME/VERSION" | tr -d '[:space:]')"
-elif [[ -f "$SCRIPT_DIR/../VERSION" ]]; then
-  VERSION="$(cat "$SCRIPT_DIR/../VERSION" | tr -d '[:space:]')"
-else
-  VERSION="0.1.0"
+# Source version library for proper version management
+LIB_DIR="${SCRIPT_DIR}/../lib"
+if [[ -f "$LIB_DIR/version.sh" ]]; then
+  # shellcheck source=../lib/version.sh
+  source "$LIB_DIR/version.sh"
 fi
 
 # Source logging library for should_use_color function
@@ -35,6 +34,12 @@ if [[ -f "$LIB_DIR/error-json.sh" ]]; then
   source "$LIB_DIR/error-json.sh"
 fi
 
+# Source file-ops library for save_json function
+if [[ -f "$LIB_DIR/file-ops.sh" ]]; then
+  # shellcheck source=../lib/file-ops.sh
+  source "$LIB_DIR/file-ops.sh"
+fi
+
 # Set TODO_FILE after sourcing logging.sh (LOG_FILE is set by logging.sh)
 TODO_FILE="${TODO_FILE:-.claude/todo.json}"
 
@@ -46,6 +51,9 @@ if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
 else
   RED='' GREEN='' NC=''
 fi
+
+# Command name for output formatting
+COMMAND_NAME="log"
 
 # Defaults
 ACTION=""
@@ -139,7 +147,7 @@ Examples:
   claude-todo log --action status_changed --task-id T001 --before '{"status":"pending"}' --after '{"status":"active"}'
   claude-todo log --action task_created --task-id T005 --after '{"title":"New task"}'
 EOF
-  exit 0
+  exit "$EXIT_SUCCESS"
 }
 
 log_info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
@@ -249,7 +257,7 @@ case "$SUBCOMMAND" in
 
       jq -n \
         --arg timestamp "$current_timestamp" \
-        --arg version "$VERSION" \
+        --arg version "${CLAUDE_TODO_VERSION:-$(get_version)}" \
         --argjson entries "$entries" \
         --argjson count "$entry_count" \
         --argjson limit "$LIMIT" \
@@ -277,7 +285,7 @@ case "$SUBCOMMAND" in
       ' "$LOG_FILE"
     fi
 
-    exit 0
+    exit "$EXIT_SUCCESS"
     ;;
 
   show)
@@ -330,7 +338,7 @@ case "$SUBCOMMAND" in
       (if .details then "Details:\n\(.details | if type == "string" then . else tojson end)" else "" end)
     ' | grep -v '^$' || true
 
-    exit 0
+    exit "$EXIT_SUCCESS"
     ;;
 
   migrate)
@@ -348,10 +356,10 @@ case "$SUBCOMMAND" in
     migrated_count=$(migrate_log_entries "$LOG_FILE")
     if [[ $? -eq 0 ]]; then
       log_info "Migration completed successfully ($migrated_count entries migrated)"
-      exit 0
+      exit "$EXIT_SUCCESS"
     else
       log_error "Migration failed"
-      exit 1
+      exit "$EXIT_GENERAL_ERROR"
     fi
     ;;
   rotate)
@@ -377,7 +385,7 @@ case "$SUBCOMMAND" in
           echo "Options:"
           echo "  --force    Force rotation regardless of size"
           echo "  --help     Show this help"
-          exit 0
+          exit "$EXIT_SUCCESS"
           ;;
         *) shift ;;
       esac
@@ -411,7 +419,7 @@ case "$SUBCOMMAND" in
         log_info "Use --force to rotate anyway"
       fi
     fi
-    exit 0
+    exit "$EXIT_SUCCESS"
     ;;
 
   add|"")
@@ -556,7 +564,7 @@ UPDATED_LOG=$(jq --argjson entry "$ENTRY" --arg ts "$TIMESTAMP" '
 # Atomic write with file locking via save_json
 if ! save_json "$LOG_FILE" "$UPDATED_LOG"; then
   log_error "Failed to save log entry"
-  exit 1
+  exit "$EXIT_FILE_ERROR"
 fi
 
 log_info "Logged: $ACTION ($LOG_ID)"

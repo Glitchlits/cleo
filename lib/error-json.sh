@@ -1,25 +1,19 @@
 #!/usr/bin/env bash
 # error-json.sh - Standardized error JSON output for claude-todo
-# Part of the claude-todo-system library
 #
-# Provides format-aware error output functions that return structured JSON
-# when FORMAT=json, otherwise colored text to stderr.
+# LAYER: 1 (Core Infrastructure)
+# DEPENDENCIES: exit-codes.sh, platform-compat.sh
+# PROVIDES: output_error, output_error_with_context, format_error_json,
+#           add_error_context, get_error_code_name
 #
-# This is a critical component for LLM-agent-first design, enabling:
+# Critical component for LLM-agent-first design:
 # - Reliable error parsing in automation workflows
 # - Structured error codes and recovery suggestions
 # - Consistent error format across all commands
-#
-# Version: 0.16.0
-# Part of: LLM-Agent-First Implementation (Phase 1)
-#
-# Usage:
-#   source "${LIB_DIR}/error-json.sh"
-#   output_error "E_TASK_NOT_FOUND" "Task T999 does not exist" $EXIT_NOT_FOUND false "Use 'ct exists' to verify task ID"
-#
-# Dependencies:
-#   - exit-codes.sh (sourced automatically)
-#   - jq (for JSON construction)
+
+#=== SOURCE GUARD ================================================
+[[ -n "${_ERROR_JSON_SH_LOADED:-}" ]] && return 0
+declare -r _ERROR_JSON_SH_LOADED=1
 
 set -euo pipefail
 
@@ -312,6 +306,8 @@ readonly E_SESSION_NOT_ACTIVE="E_SESSION_NOT_ACTIVE"
 # General errors
 readonly E_UNKNOWN="E_UNKNOWN"
 readonly E_NOT_INITIALIZED="E_NOT_INITIALIZED"
+readonly E_ALREADY_INITIALIZED="E_ALREADY_INITIALIZED"
+readonly E_CONFIRMATION_REQUIRED="E_CONFIRMATION_REQUIRED"
 
 # Hierarchy errors (see LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md Part 12)
 readonly E_PARENT_NOT_FOUND="E_PARENT_NOT_FOUND"
@@ -320,6 +316,12 @@ readonly E_SIBLING_LIMIT="E_SIBLING_LIMIT"
 readonly E_INVALID_PARENT_TYPE="E_INVALID_PARENT_TYPE"
 readonly E_CIRCULAR_REFERENCE="E_CIRCULAR_REFERENCE"
 readonly E_ORPHAN_DETECTED="E_ORPHAN_DETECTED"
+
+# Deletion errors (task deletion system)
+readonly E_HAS_CHILDREN="E_HAS_CHILDREN"
+readonly E_TASK_COMPLETED="E_TASK_COMPLETED"
+readonly E_CASCADE_FAILED="E_CASCADE_FAILED"
+readonly E_CANCEL_REASON_REQUIRED="E_CANCEL_REASON_REQUIRED"
 
 # Concurrency errors (multi-agent coordination)
 readonly E_CHECKSUM_MISMATCH="E_CHECKSUM_MISMATCH"
@@ -343,9 +345,11 @@ export E_INPUT_MISSING E_INPUT_INVALID E_INPUT_FORMAT
 export E_DEPENDENCY_MISSING E_DEPENDENCY_VERSION
 export E_PHASE_NOT_FOUND E_PHASE_INVALID
 export E_SESSION_ACTIVE E_SESSION_NOT_ACTIVE
-export E_UNKNOWN E_NOT_INITIALIZED
+export E_UNKNOWN E_NOT_INITIALIZED E_ALREADY_INITIALIZED E_CONFIRMATION_REQUIRED
 # Hierarchy error codes
 export E_PARENT_NOT_FOUND E_DEPTH_EXCEEDED E_SIBLING_LIMIT
 export E_INVALID_PARENT_TYPE E_CIRCULAR_REFERENCE E_ORPHAN_DETECTED
+# Deletion error codes
+export E_HAS_CHILDREN E_TASK_COMPLETED E_CASCADE_FAILED E_CANCEL_REASON_REQUIRED
 # Concurrency error codes
 export E_CHECKSUM_MISMATCH E_CONCURRENT_MODIFICATION E_ID_COLLISION

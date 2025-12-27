@@ -647,7 +647,7 @@ All fix operations MUST support `--dry-run`:
       "proposed_state": "v2.3.0",
       "operation": "migrate",
       "reversible": true,
-      "backup_path": ".claude/.backups/todo.json.pre-migrate",
+      "backup_path": ".claude/backups/safety/safety_pre-migrate/",
       "risk_level": "low"
     }
   ],
@@ -682,8 +682,8 @@ Every auto-fix operation MUST:
   "fix_result": {
     "success": true,
     "fixes_applied": 2,
-    "backup_path": ".claude/.backups/todo.json.1734693600",
-    "rollback_command": "ct restore .claude/.backups/todo.json.1734693600",
+    "backup_path": ".claude/backups/safety/safety_1734693600_health_fix/",
+    "rollback_command": "ct restore .claude/backups/safety/safety_1734693600_health_fix/",
     "audit_log_entry": {
       "operation": "health_auto_fix",
       "timestamp": "2025-12-20T10:00:00Z",

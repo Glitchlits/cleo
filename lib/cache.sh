@@ -1,44 +1,17 @@
 #!/usr/bin/env bash
-
-#####################################################################
 # cache.sh - Index Caching Library for Claude Todo System
 #
-# NOTE: This library is sourced by other scripts, so VERSION variable
-# should already be set by the sourcing script. If not, we set a fallback.
+# LAYER: 2 (Core Services)
+# DEPENDENCIES: platform-compat.sh
+# PROVIDES: cache_init, cache_invalidate, cache_get_tasks_by_label,
+#           cache_get_tasks_by_phase, cache_is_stale, cache_rebuild
 #
-# Provides O(1) lookups for labels and phases through cached indices:
-# - Label-to-task index: quickly find all tasks with a specific label
-# - Phase-to-task index: quickly find all tasks in a specific phase
-# - Checksum-based staleness detection
-# - Lazy regeneration on first query after changes
-#
-# Cache files stored in .claude/.cache/:
-#   - labels.index.json: label -> task ID mapping
-#   - phases.index.json: phase -> task ID mapping
-#   - checksum.txt: SHA256 of todo.json for staleness detection
-#
-# PERFORMANCE CHARACTERISTICS:
-#   - Lookup time: O(1) via bash associative arrays
-#   - Build time: O(n) where n = number of tasks
-#   - Staleness check: O(1) via checksum comparison
-#   - Memory usage: O(m) where m = number of unique labels/phases
-#
-# Typical performance (1000 tasks, 50 labels, 5 phases):
-#   - cache_get_tasks_by_label: < 1ms
-#   - cache_get_tasks_by_phase: < 1ms
-#   - cache_init (cold): ~50ms
-#   - cache_init (warm): < 1ms
-#
-# Usage:
-#   source lib/cache.sh
-#   cache_init                          # Initialize cache system
-#   cache_get_tasks_by_label "bug"      # Get task IDs with label
-#   cache_get_tasks_by_phase "core"     # Get task IDs in phase
-#   cache_invalidate                    # Force cache rebuild
-#
-# Version: 1.0.0
-# Part of: claude-todo CLI (Phase 4 - T074)
-#####################################################################
+# O(1) lookups for labels and phases through cached indices with
+# checksum-based staleness detection and lazy regeneration
+
+#=== SOURCE GUARD ================================================
+[[ -n "${_CACHE_LOADED:-}" ]] && return 0
+declare -r _CACHE_LOADED=1
 
 # Set VERSION if not already set (should be set by sourcing script)
 if [[ -z "${VERSION:-}" ]]; then
@@ -436,6 +409,282 @@ invalidate_phase_cache() {
     fi
 }
 
+#####################################################################
+# Hierarchy Indexing & Caching (T348)
+#####################################################################
+
+# Hierarchy cache files
+CACHE_HIERARCHY_INDEX="$CACHE_DIR/hierarchy.index.json"
+CACHE_CHILDREN_INDEX="$CACHE_DIR/children.index.json"
+CACHE_DEPTH_INDEX="$CACHE_DIR/depth.index.json"
+
+# In-memory hierarchy caches
+declare -A _PARENT_CACHE      # task_id -> parent_id
+declare -A _CHILDREN_CACHE    # parent_id -> comma-separated child IDs
+declare -A _DEPTH_CACHE       # task_id -> depth
+declare -A _CHILD_COUNT_CACHE # task_id -> number of children
+_HIERARCHY_CACHE_VALID=false
+
+# Build hierarchy index from todo.json
+_cache_build_hierarchy_index() {
+    local todo_file="${1:-${TODO_FILE:-.claude/todo.json}}"
+
+    jq -c '
+        reduce .tasks[] as $task ({};
+            .[$task.id] = {
+                parentId: ($task.parentId // null),
+                type: ($task.type // "task")
+            }
+        )
+    ' "$todo_file"
+}
+
+# Build children index (parent -> list of children)
+_cache_build_children_index() {
+    local todo_file="${1:-${TODO_FILE:-.claude/todo.json}}"
+
+    jq -c '
+        reduce .tasks[] as $task ({};
+            if $task.parentId then
+                .[$task.parentId] = ((.[$task.parentId] // []) + [$task.id])
+            else . end
+        )
+    ' "$todo_file"
+}
+
+# Build depth index (task -> depth in hierarchy)
+_cache_build_depth_index() {
+    local todo_file="${1:-${TODO_FILE:-.claude/todo.json}}"
+
+    jq -c '
+        # Build parent lookup
+        (reduce .tasks[] as $task ({};
+            .[$task.id] = ($task.parentId // null)
+        )) as $parents |
+
+        # Calculate depth for each task
+        def get_depth($id):
+            if $id == null then 0
+            elif $parents[$id] == null then 0
+            else 1 + get_depth($parents[$id])
+            end;
+
+        reduce .tasks[] as $task ({};
+            .[$task.id] = get_depth($task.id)
+        )
+    ' "$todo_file"
+}
+
+# Write hierarchy cache files
+_cache_write_hierarchy_files() {
+    local todo_file="${1:-${TODO_FILE:-.claude/todo.json}}"
+
+    # Create cache directory
+    mkdir -p "$CACHE_DIR"
+
+    # Build and write indices
+    _cache_build_hierarchy_index "$todo_file" > "$CACHE_HIERARCHY_INDEX"
+    _cache_build_children_index "$todo_file" > "$CACHE_CHILDREN_INDEX"
+    _cache_build_depth_index "$todo_file" > "$CACHE_DEPTH_INDEX"
+}
+
+# Load hierarchy cache into memory
+_cache_load_hierarchy_memory() {
+    # Clear existing cache
+    _PARENT_CACHE=()
+    _CHILDREN_CACHE=()
+    _DEPTH_CACHE=()
+    _CHILD_COUNT_CACHE=()
+
+    if [[ -f "$CACHE_HIERARCHY_INDEX" ]]; then
+        # Load parent relationships
+        while IFS='=' read -r key value; do
+            _PARENT_CACHE["$key"]="$value"
+        done < <(jq -r 'to_entries[] | "\(.key)=\(.value.parentId // "")"' "$CACHE_HIERARCHY_INDEX" 2>/dev/null)
+    fi
+
+    if [[ -f "$CACHE_CHILDREN_INDEX" ]]; then
+        # Load children relationships
+        while IFS='=' read -r key value; do
+            _CHILDREN_CACHE["$key"]="$value"
+            # Count children
+            if [[ -n "$value" ]]; then
+                _CHILD_COUNT_CACHE["$key"]=$(echo "$value" | tr ',' '\n' | wc -l | tr -d ' ')
+            else
+                _CHILD_COUNT_CACHE["$key"]=0
+            fi
+        done < <(jq -r 'to_entries[] | "\(.key)=\(.value | join(","))"' "$CACHE_CHILDREN_INDEX" 2>/dev/null)
+    fi
+
+    if [[ -f "$CACHE_DEPTH_INDEX" ]]; then
+        # Load depth values
+        while IFS='=' read -r key value; do
+            _DEPTH_CACHE["$key"]="$value"
+        done < <(jq -r 'to_entries[] | "\(.key)=\(.value)"' "$CACHE_DEPTH_INDEX" 2>/dev/null)
+    fi
+
+    _HIERARCHY_CACHE_VALID=true
+}
+
+# Initialize hierarchy cache system
+cache_init_hierarchy() {
+    local todo_file="${1:-${TODO_FILE:-.claude/todo.json}}"
+
+    if [[ "$_HIERARCHY_CACHE_VALID" == "true" ]]; then
+        return 0
+    fi
+
+    if _cache_is_stale "$todo_file" || \
+       [[ ! -f "$CACHE_HIERARCHY_INDEX" ]] || \
+       [[ ! -f "$CACHE_CHILDREN_INDEX" ]] || \
+       [[ ! -f "$CACHE_DEPTH_INDEX" ]]; then
+        _cache_write_hierarchy_files "$todo_file"
+        _cache_load_hierarchy_memory
+        return 1  # cache was rebuilt
+    else
+        _cache_load_hierarchy_memory
+        return 0  # cache was valid
+    fi
+}
+
+# Get parent ID for a task (O(1) lookup)
+# Args: $1 = task ID
+# Returns: parent ID or empty string
+cache_get_parent() {
+    local task_id="$1"
+
+    cache_init_hierarchy >/dev/null 2>&1
+
+    echo "${_PARENT_CACHE[$task_id]:-}"
+}
+
+# Get children IDs for a task (O(1) lookup)
+# Args: $1 = task ID
+# Returns: comma-separated child IDs or empty string
+cache_get_children() {
+    local task_id="$1"
+
+    cache_init_hierarchy >/dev/null 2>&1
+
+    echo "${_CHILDREN_CACHE[$task_id]:-}"
+}
+
+# Get depth for a task (O(1) lookup)
+# Args: $1 = task ID
+# Returns: depth (0 for root tasks)
+cache_get_depth() {
+    local task_id="$1"
+
+    cache_init_hierarchy >/dev/null 2>&1
+
+    echo "${_DEPTH_CACHE[$task_id]:-0}"
+}
+
+# Get child count for a task (O(1) lookup)
+# Args: $1 = task ID
+# Returns: number of children
+cache_get_child_count() {
+    local task_id="$1"
+
+    cache_init_hierarchy >/dev/null 2>&1
+
+    echo "${_CHILD_COUNT_CACHE[$task_id]:-0}"
+}
+
+# Get all root tasks (tasks with no parent)
+# Returns: comma-separated task IDs
+cache_get_root_tasks() {
+    cache_init_hierarchy >/dev/null 2>&1
+
+    local root_tasks=""
+    for task_id in "${!_PARENT_CACHE[@]}"; do
+        if [[ -z "${_PARENT_CACHE[$task_id]}" ]]; then
+            if [[ -n "$root_tasks" ]]; then
+                root_tasks="$root_tasks,$task_id"
+            else
+                root_tasks="$task_id"
+            fi
+        fi
+    done
+    echo "$root_tasks"
+}
+
+# Get all tasks at a specific depth
+# Args: $1 = depth level
+# Returns: comma-separated task IDs
+cache_get_tasks_at_depth() {
+    local target_depth="$1"
+
+    cache_init_hierarchy >/dev/null 2>&1
+
+    local tasks=""
+    for task_id in "${!_DEPTH_CACHE[@]}"; do
+        if [[ "${_DEPTH_CACHE[$task_id]}" == "$target_depth" ]]; then
+            if [[ -n "$tasks" ]]; then
+                tasks="$tasks,$task_id"
+            else
+                tasks="$task_id"
+            fi
+        fi
+    done
+    echo "$tasks"
+}
+
+# Get all leaf tasks (tasks with no children)
+# Returns: comma-separated task IDs
+cache_get_leaf_tasks() {
+    cache_init_hierarchy >/dev/null 2>&1
+
+    local leaf_tasks=""
+    for task_id in "${!_PARENT_CACHE[@]}"; do
+        local child_count="${_CHILD_COUNT_CACHE[$task_id]:-0}"
+        if [[ "$child_count" -eq 0 ]]; then
+            if [[ -n "$leaf_tasks" ]]; then
+                leaf_tasks="$leaf_tasks,$task_id"
+            else
+                leaf_tasks="$task_id"
+            fi
+        fi
+    done
+    echo "$leaf_tasks"
+}
+
+# Invalidate hierarchy cache
+cache_invalidate_hierarchy() {
+    _HIERARCHY_CACHE_VALID=false
+    rm -f "$CACHE_HIERARCHY_INDEX" "$CACHE_CHILDREN_INDEX" "$CACHE_DEPTH_INDEX" 2>/dev/null
+}
+
+# Get hierarchy cache statistics
+cache_hierarchy_stats() {
+    cache_init_hierarchy >/dev/null 2>&1
+
+    local parent_count="${#_PARENT_CACHE[@]}"
+    local children_count="${#_CHILDREN_CACHE[@]}"
+    local depth_count="${#_DEPTH_CACHE[@]}"
+    local max_depth=0
+
+    for depth in "${_DEPTH_CACHE[@]}"; do
+        if [[ "$depth" -gt "$max_depth" ]]; then
+            max_depth="$depth"
+        fi
+    done
+
+    cat << EOF
+{
+  "hierarchyInitialized": $_HIERARCHY_CACHE_VALID,
+  "taskCount": $parent_count,
+  "parentsWithChildren": $children_count,
+  "maxDepth": $max_depth,
+  "cacheFiles": {
+    "hierarchy": "$CACHE_HIERARCHY_INDEX",
+    "children": "$CACHE_CHILDREN_INDEX",
+    "depth": "$CACHE_DEPTH_INDEX"
+  }
+}
+EOF
+}
+
 # Export all public functions
 export -f build_phase_index
 export -f get_phase_tasks
@@ -443,3 +692,13 @@ export -f count_tasks_by_phase
 export -f get_phase_stats
 export -f get_phase_progress
 export -f invalidate_phase_cache
+export -f cache_init_hierarchy
+export -f cache_get_parent
+export -f cache_get_children
+export -f cache_get_depth
+export -f cache_get_child_count
+export -f cache_get_root_tasks
+export -f cache_get_tasks_at_depth
+export -f cache_get_leaf_tasks
+export -f cache_invalidate_hierarchy
+export -f cache_hierarchy_stats

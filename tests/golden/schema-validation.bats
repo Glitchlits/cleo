@@ -14,16 +14,32 @@ PROJECT_ROOT="$(cd "$SCHEMA_DIR/../.." && pwd)"
 FIXTURES_DIR="$SCHEMA_DIR/fixtures/schema"
 SCHEMA_FILE="$PROJECT_ROOT/schemas/todo.schema.json"
 
-setup() {
-    # Create temporary test directory
-    TEST_DIR="$(mktemp -d)"
-
-    # Ensure fixtures directory exists
+# =============================================================================
+# File-Level Setup (runs once per test file)
+# =============================================================================
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+    # Ensure fixtures directory exists (only once per file)
     mkdir -p "$FIXTURES_DIR"
 }
 
+# =============================================================================
+# Per-Test Setup (runs before each test)
+# =============================================================================
+setup() {
+    load '../test_helper/common_setup'
+    common_setup_per_test
+    # Use BATS-managed temp directory (auto-cleaned)
+    TEST_DIR="${BATS_TEST_TMPDIR}"
+}
+
 teardown() {
-    rm -rf "$TEST_DIR"
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -88,10 +104,11 @@ except ValidationError as e:
     [ "$status" -eq 0 ]
 }
 
-@test "schema has v2.2 ID" {
+@test "schema has correct ID format" {
     run jq -r '."$id"' "$SCHEMA_FILE"
     [ "$status" -eq 0 ]
-    [[ "$output" == "claude-todo-schema-v2.2" ]]
+    # Schema ID follows URL format: https://claude-todo.dev/schemas/v1/todo.schema.json
+    [[ "$output" == "https://claude-todo.dev/schemas/v1/todo.schema.json" ]]
 }
 
 @test "schema requires project object" {

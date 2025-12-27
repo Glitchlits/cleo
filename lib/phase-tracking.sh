@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 # phase-tracking.sh - Project-level phase tracking for claude-todo
-# Part of the v2.2.0 phase management feature
+#
+# LAYER: 3 (Domain Logic)
+# DEPENDENCIES: file-ops.sh (transitive: platform-compat.sh)
+# PROVIDES: get_current_phase, set_current_phase, get_all_phases, get_phase,
+#           validate_phase_slug, update_phase_status, get_phase_progress
+
+#=== SOURCE GUARD ================================================
+[[ -n "${_PHASE_TRACKING_LOADED:-}" ]] && return 0
+declare -r _PHASE_TRACKING_LOADED=1
 
 set -euo pipefail
 
 # Library dependencies
 _LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$_LIB_DIR/platform-compat.sh"
 source "$_LIB_DIR/file-ops.sh"
 
 # ============================================================================
@@ -267,14 +274,55 @@ validate_current_phase_consistency() {
     return 0
 }
 
+# ============================================================================
+# PHASE VALIDATION CONFIG FUNCTIONS
+# ============================================================================
+
+# Get phase validation config options
+# Returns: JSON object with warnPhaseContext and enforcePhaseOrder
+get_phase_validation_config() {
+    local config_file="${CONFIG_FILE:-${CLAUDE_TODO_DIR:-.claude}/todo-config.json}"
+
+    # Default values per PHASE-SYSTEM-SPEC.md (permissive by default)
+    local warn_phase_context="false"
+    local enforce_phase_order="false"
+
+    if [[ -f "$config_file" ]]; then
+        warn_phase_context=$(jq -r '.validation.phaseValidation.warnPhaseContext // false' "$config_file")
+        enforce_phase_order=$(jq -r '.validation.phaseValidation.enforcePhaseOrder // false' "$config_file")
+    fi
+
+    echo "{\"warnPhaseContext\": $warn_phase_context, \"enforcePhaseOrder\": $enforce_phase_order}"
+}
+
+# Check if phase context warnings are enabled
+# Returns: 0 (success) if enabled, 1 (failure) if disabled
+is_phase_warning_enabled() {
+    local config_file="${CONFIG_FILE:-${CLAUDE_TODO_DIR:-.claude}/todo-config.json}"
+
+    if [[ -f "$config_file" ]]; then
+        local warn_enabled
+        warn_enabled=$(jq -r '.validation.phaseValidation.warnPhaseContext // false' "$config_file")
+        [[ "$warn_enabled" == "true" ]]
+    else
+        # Default: warnings disabled (permissive)
+        return 1
+    fi
+}
+
 # Check if task phase matches project phase (warning only)
 # Args: $1 = task phase, $2 = todo file path
-# Returns: 0 if match, 1 if mismatch (warning issued)
+# Returns: 0 if match or warnings disabled, 1 if mismatch (warning issued)
 check_phase_context() {
     local task_phase="$1"
     local todo_file="${2:-$TODO_FILE}"
-    local project_phase
 
+    # Check if warnings are enabled (permissive by default)
+    if ! is_phase_warning_enabled; then
+        return 0  # Silently pass if warnings disabled
+    fi
+
+    local project_phase
     project_phase=$(get_current_phase "$todo_file")
 
     if [[ -z "$project_phase" || -z "$task_phase" ]]; then
@@ -392,6 +440,8 @@ export -f complete_phase
 export -f advance_phase
 export -f validate_single_active_phase
 export -f validate_current_phase_consistency
+export -f get_phase_validation_config
+export -f is_phase_warning_enabled
 export -f check_phase_context
 export -f get_phase_history
 export -f count_tasks_in_phase

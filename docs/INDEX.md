@@ -42,6 +42,7 @@
 | **[configuration.md](reference/configuration.md)** | Configuration reference | Customizing system behavior |
 | **[schema-reference.md](architecture/SCHEMAS.md)** | Data schema documentation | Understanding data structures |
 | **[troubleshooting.md](reference/troubleshooting.md)** | Troubleshooting guide | Resolving issues |
+| **[disaster-recovery.md](reference/disaster-recovery.md)** | Disaster recovery procedures | Recovering from data loss and failures |
 | **[integration/CLAUDE-CODE.md](integration/CLAUDE-CODE.md)** | Claude Code integration & session workflows | Understanding process flows |
 | **[migration-guide.md](reference/migration-guide.md)** | Migration and upgrade guide | Upgrading between versions |
 | **[migration/v2.2.0-migration-guide.md](migration/v2.2.0-migration-guide.md)** | v2.2.0 migration guide | Upgrading to project phases (v2.2.0) |
@@ -53,7 +54,7 @@
 
 | Document | Purpose | When to Read |
 |----------|---------|--------------|
-| **[COMMANDS-INDEX.json](commands/COMMANDS-INDEX.json)** | **Authoritative** command catalog (JSON, 32 commands) | LLM agents: `jq '.commands[] | select(.agentRelevance=="critical")'` |
+| **[COMMANDS-INDEX.json](commands/COMMANDS-INDEX.json)** | **Authoritative** command catalog (JSON, 36 commands) | LLM agents: `jq '.commands[] | select(.agentRelevance=="critical")'` |
 | **[commands/add.md](commands/add.md)** | Add task command documentation | Creating new tasks with options |
 | **[commands/analyze.md](commands/analyze.md)** | Analyze command documentation | Task triage with leverage scoring and bottleneck detection |
 | **[commands/archive.md](commands/archive.md)** | Archive command documentation | Archiving completed tasks |
@@ -63,6 +64,7 @@
 | **[commands/commands.md](commands/commands.md)** | Commands query and discovery | LLM-first command lookup (JSON default, native filters) |
 | **[commands/config.md](commands/config.md)** | Configuration command documentation | Viewing and modifying settings (project and global) |
 | **[commands/dash.md](commands/dash.md)** | Dashboard command documentation | Using project overview features |
+| **[commands/delete.md](commands/delete.md)** | Delete/cancel task command documentation | Soft-delete tasks with child handling strategies |
 | **[commands/deps.md](commands/deps.md)** | Dependency visualization documentation | Understanding task dependencies |
 | **[commands/exists.md](commands/exists.md)** | Task existence validation documentation | Validating task IDs in scripts and CI/CD pipelines |
 | **[commands/export.md](commands/export.md)** | Export command documentation | Exporting tasks in CSV, TSV, JSON, markdown formats |
@@ -75,16 +77,21 @@
 | **[commands/list.md](commands/list.md)** | List tasks command documentation | Viewing and filtering tasks |
 | **[commands/log.md](commands/log.md)** | Log command documentation | Viewing and managing audit logs |
 | **[commands/migrate.md](commands/migrate.md)** | Schema migration command documentation | Upgrading schema versions |
-| **[commands/migrate-backups.md](commands/migrate-backups.md)** | Backup migration documentation | Migrating legacy backup structure |
+| **[commands/reorganize-backups.md](commands/reorganize-backups.md)** | Backup migration documentation | Migrating legacy backup structure |
 | **[commands/next.md](commands/next.md)** | Next command documentation | Using intelligent task suggestions |
 | **[commands/phase.md](commands/phase.md)** | Phase lifecycle command documentation | Managing project-level phase transitions (pending → active → completed) |
 | **[commands/phases.md](commands/phases.md)** | Phase management command documentation | Managing project phases and phase-based workflows |
+| **[commands/promote.md](commands/promote.md)** | Promote command documentation | Remove parent from task, making it root-level (T339 Phase 2) |
+| **[commands/reparent.md](commands/reparent.md)** | Reparent command documentation | Move task to different parent in hierarchy (T339 Phase 2) |
 | **[commands/research.md](commands/research.md)** | Research aggregation command documentation | Multi-source web research with MCP servers (Tavily, Context7, Reddit) |
 | **[commands/restore.md](commands/restore.md)** | Restore command documentation | Restoring from backups |
 | **[commands/session.md](commands/session.md)** | Session command documentation | Managing work sessions |
 | **[commands/show.md](commands/show.md)** | Single task detail view documentation | Viewing full task details, dependencies, and history |
 | **[commands/sync.md](commands/sync.md)** | TodoWrite synchronization command | Bidirectional sync with Claude Code's TodoWrite |
 | **[commands/stats.md](commands/stats.md)** | Statistics command documentation | Generating project statistics |
+| **[commands/tab-completion.md](commands/tab-completion.md)** | Tab completion setup and configuration | Setting up bash/zsh shell completions |
+| **[commands/uncancel.md](commands/uncancel.md)** | Restore cancelled tasks documentation | Restore cancelled tasks back to pending status |
+| **[commands/reopen.md](commands/reopen.md)** | Restore completed tasks documentation | Reopen done tasks (especially auto-completed epics) |
 | **[commands/update.md](commands/update.md)** | Update task command documentation | Modifying existing tasks |
 | **[commands/validate.md](commands/validate.md)** | Validate command documentation | Checking project integrity |
 
@@ -109,6 +116,7 @@
 
 | Document | Purpose | When to Read |
 |----------|---------|--------------|
+| **[jq-helpers.md](reference/jq-helpers.md)** | jq wrapper library reference (14 functions) | Working with task JSON operations in scripts |
 | **[PLUGINS.md](PLUGINS.md)** | Plugin architecture and development | Extending the CLI with custom commands |
 | **[integration/CLAUDE-CODE.md](integration/CLAUDE-CODE.md)** | TodoWrite integration & session workflows | Understanding Claude Code integration |
 | **[ci-cd-integration.md](ci-cd-integration.md)** | CI/CD pipeline integration guide | Integrating with GitHub Actions, GitLab CI, Jenkins, Azure DevOps |
@@ -480,6 +488,7 @@
 4. Review [commands/add.md](commands/add.md) for `--type`, `--parent`, `--size` flags
 5. Review [commands/list.md](commands/list.md) for `--type`, `--parent`, `--children`, `--tree` filters
 6. Run `claude-todo migrate run` to upgrade to schema v2.3.0
+7. **T339 Hierarchy Automation**: See [AGENT-3-PHASE.md](../claudedocs/rebrand/AGENT-3-PHASE.md) for reparent/promote implementation
 
 #### ...integrate with CI/CD
 1. Read [ci-cd-integration.md](ci-cd-integration.md) for complete integration guide
@@ -640,6 +649,7 @@ You understand the CLAUDE-TODO system when you can:
 - **Phase System**: [PHASE-SYSTEM-SPEC.md](specs/PHASE-SYSTEM-SPEC.md) → **AUTHORITATIVE** phase lifecycle bible
 - **Hierarchy**: [HIERARCHY-ENHANCEMENT-SPEC.md](specs/HIERARCHY-ENHANCEMENT-SPEC.md) → Epic/Task/Subtask specification
 - **Debugging**: [troubleshooting.md](reference/troubleshooting.md) → Issue resolution
+- **Disaster Recovery**: [disaster-recovery.md](reference/disaster-recovery.md) → Data recovery procedures
 - **Extending**: [ARCHITECTURE.md](architecture/ARCHITECTURE.md) → Extension points
 - **Reviewing**: [ARCHITECTURE.md](architecture/ARCHITECTURE.md) → Complete design
 - **Data Structure**: [schema-reference.md](architecture/SCHEMAS.md) → Schema reference

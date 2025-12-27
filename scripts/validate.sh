@@ -11,6 +11,9 @@ CONFIG_FILE="${CONFIG_FILE:-.claude/todo-config.json}"
 CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
 LOG_FILE="${LOG_FILE:-.claude/todo-log.json}"
 
+# Command name for error-json library
+COMMAND_NAME="validate"
+
 # Source logging library for should_use_color function
 LIB_DIR="${SCRIPT_DIR}/../lib"
 if [[ -f "$LIB_DIR/logging.sh" ]]; then
@@ -58,6 +61,12 @@ if [[ -f "$LIB_DIR/config.sh" ]]; then
   source "$LIB_DIR/config.sh"
 fi
 
+# Source hierarchy library for orphan detection (T341)
+if [[ -f "$LIB_DIR/hierarchy.sh" ]]; then
+  # shellcheck source=../lib/hierarchy.sh
+  source "$LIB_DIR/hierarchy.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
   RED='\033[0;31m'
@@ -73,6 +82,14 @@ if [[ -f "$LIB_DIR/version.sh" ]]; then
   # shellcheck source=../lib/version.sh
   source "$LIB_DIR/version.sh"
 fi
+# VERSION from central location (compliant pattern)
+if [[ -f "$CLAUDE_TODO_HOME/VERSION" ]]; then
+  VERSION="$(cat "$CLAUDE_TODO_HOME/VERSION" 2>/dev/null | tr -d '[:space:]')"
+elif [[ -f "$SCRIPT_DIR/../VERSION" ]]; then
+  VERSION="$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null | tr -d '[:space:]')"
+else
+  VERSION="${CLAUDE_TODO_VERSION:-unknown}"
+fi
 
 # Defaults
 STRICT=""  # Empty means use config, explicit true/false overrides
@@ -81,8 +98,10 @@ JSON_OUTPUT=false
 QUIET=false
 FORMAT=""
 NON_INTERACTIVE=false
-COMMAND_NAME="validate"
+CHECK_ORPHANS=""  # Empty means use config, explicit true/false overrides
+FIX_ORPHANS=""    # Empty means no fix, "unlink" or "delete" for repair mode
 
+# Track validation results
 ERRORS=0
 WARNINGS=0
 
@@ -90,11 +109,13 @@ WARNINGS=0
 declare -a DETAILS_JSON=()
 
 # Helper to add a check result to details
+# Uses jq for proper JSON escaping (handles newlines, quotes, control chars)
 add_detail() {
   local check="$1"
   local status="$2"  # ok, error, warning, fixed
   local message="$3"
-  DETAILS_JSON+=("{\"check\":\"$check\",\"status\":\"$status\",\"message\":\"$message\"}")
+  DETAILS_JSON+=("$(jq -nc --arg check "$check" --arg status "$status" --arg message "$message" \
+    '{check:$check,status:$status,message:$message}')")
 }
 
 usage() {
@@ -124,7 +145,7 @@ Validations:
   - focus.currentTask matches active task
   - Checksum integrity
 EOF
-  exit 0
+  exit "${EXIT_SUCCESS:-0}"
 }
 
 log_error() {
@@ -137,14 +158,16 @@ log_error() {
   ERRORS=$((ERRORS + 1))
 }
 
-# output_fatal - For critical errors that exit immediately
+# output_fatal - For critical errors that should stop execution immediately
 # Uses output_error from error-json.sh for format-aware error output
+# Callers must pass EXIT_* constant as third parameter for compliance
 output_fatal() {
   local error_code="${1:-$E_UNKNOWN}"
   local message="$2"
-  local exit_code="${3:-1}"
-  output_error "$error_code" "$message"
-  exit "$exit_code"
+  local exit_with="${3:-${EXIT_GENERAL_ERROR:-1}}"
+  # Use || true to prevent set -e from exiting before our explicit exit
+  output_error "$error_code" "$message" || true
+  exit "$exit_with"
 }
 
 log_warn() {
@@ -233,7 +256,7 @@ safe_json_write() {
 # Check dependencies
 check_deps() {
   if ! command -v jq &> /dev/null; then
-    output_fatal "$E_DEPENDENCY_MISSING" "jq is required but not installed" 1
+    output_fatal "$E_DEPENDENCY_MISSING" "jq is required but not installed" "${EXIT_DEPENDENCY_ERROR:-5}"
   fi
 }
 
@@ -244,18 +267,27 @@ while [[ $# -gt 0 ]]; do
     --no-strict) STRICT="false"; shift ;;
     --fix) FIX=true; shift ;;
     --non-interactive) NON_INTERACTIVE=true; shift ;;
+    --check-orphans) CHECK_ORPHANS=true; shift ;;
+    --no-check-orphans) CHECK_ORPHANS=false; shift ;;
+    --fix-orphans) 
+      FIX_ORPHANS="${2:-unlink}"
+      if [[ "$FIX_ORPHANS" != "unlink" && "$FIX_ORPHANS" != "delete" ]]; then
+        output_fatal "$E_INPUT_INVALID" "--fix-orphans must be 'unlink' or 'delete', got: $FIX_ORPHANS" "${EXIT_INVALID_INPUT:-2}"
+      fi
+      shift 2
+      ;;
     --json) JSON_OUTPUT=true; FORMAT="json"; shift ;;
     --human) JSON_OUTPUT=false; FORMAT="text"; shift ;;
-    --format|-f)
+    -f|--format)
       FORMAT="$2"
       if [[ "$FORMAT" == "json" ]]; then
         JSON_OUTPUT=true
       fi
       shift 2
       ;;
-    --quiet|-q) QUIET=true; shift ;;
+    -q|--quiet) QUIET=true; shift ;;
     -h|--help) usage ;;
-    -*) output_fatal "$E_INPUT_INVALID" "Unknown option: $1" 1 ;;
+    -*) output_fatal "$E_INPUT_INVALID" "Unknown option: $1" "${EXIT_INVALID_INPUT:-2}" ;;
     *) shift ;;
   esac
 done
@@ -280,12 +312,12 @@ check_deps
 
 # Check file exists
 if [[ ! -f "$TODO_FILE" ]]; then
-  output_fatal "$E_FILE_NOT_FOUND" "File not found: $TODO_FILE" 1
+  output_fatal "$E_FILE_NOT_FOUND" "File not found: $TODO_FILE" "${EXIT_NOT_FOUND:-4}"
 fi
 
 # 1. JSON syntax
 if ! jq empty "$TODO_FILE" 2>/dev/null; then
-  output_fatal "$E_VALIDATION_SCHEMA" "Invalid JSON syntax" 1
+  output_fatal "$E_VALIDATION_SCHEMA" "Invalid JSON syntax" "${EXIT_VALIDATION_ERROR:-6}"
 fi
 log_info "JSON syntax valid" "json_syntax"
 
@@ -362,6 +394,57 @@ if [[ -f "$ARCHIVE_FILE" ]]; then
     else
       log_info "No cross-file duplicate IDs" "cross_duplicates"
     fi
+  fi
+fi
+
+# Resolve config values for orphan detection (if not explicitly set)
+if [[ -z "$CHECK_ORPHANS" ]] && declare -f get_config_value >/dev/null 2>&1; then
+  CHECK_ORPHANS=$(get_config_value "validation.checkOrphans" "")
+fi
+
+# ORPHAN DETECTION (T341)
+# Check for orphaned tasks (parentId references non-existent parents)
+if [[ "$CHECK_ORPHANS" != false ]]; then
+  ORPHANS=$(detect_orphans "$TODO_FILE")
+  ORPHAN_COUNT=$(echo "$ORPHANS" | jq '. | length')
+  
+  if [[ "$ORPHAN_COUNT" -gt 0 ]]; then
+    # If we're going to fix orphans, don't treat them as errors since they'll be resolved
+    if [[ -n "$FIX_ORPHANS" ]]; then
+      log_warn "Found $ORPHAN_COUNT orphaned tasks (parentId references missing parent)" "orphans"
+    else
+      log_error "Found $ORPHAN_COUNT orphaned tasks (parentId references missing parent)" "orphans"
+    fi
+    
+    # Show details of orphaned tasks
+    if [[ "$JSON_OUTPUT" != true ]]; then
+      echo "$ORPHANS" | jq -r '.[] | "  - \(.id): \(.title) (missing parent: \(.parentId))"'
+    fi
+    
+    if [[ -n "$FIX_ORPHANS" ]]; then
+      case "$FIX_ORPHANS" in
+        unlink)
+          FIXED=$(repair_orphan_unlink "$TODO_FILE" "all")
+          log_info "Unlinked $FIXED orphaned tasks (set parentId=null)" "orphans_fixed"
+          ;;
+        delete)
+          FIXED=$(repair_orphan_delete "$TODO_FILE" "all")
+          log_info "Deleted $FIXED orphaned tasks" "orphans_deleted"
+          ;;
+      esac
+      
+      # Update checksum after orphan repair (file was modified)
+      if [[ "$FIXED" -gt 0 ]]; then
+        new_checksum=$(jq -c '.tasks' "$TODO_FILE" | sha256sum | cut -c1-16)
+        if safe_json_write "$TODO_FILE" '._meta.checksum = $cs' --arg cs "$new_checksum"; then
+          log_info "Updated checksum after orphan repair" "checksum_updated"
+        else
+          log_warn "Failed to update checksum after orphan repair"
+        fi
+      fi
+    fi
+  else
+    log_info "No orphaned tasks found" "orphans"
   fi
 fi
 
@@ -905,21 +988,21 @@ if [[ "$FORMAT" == "json" ]]; then
 
   # Exit with appropriate code
   if [[ "$ERRORS" -eq 0 ]]; then
-    exit 0
+    exit "${EXIT_SUCCESS:-0}"
   else
-    exit 1
+    exit "${EXIT_VALIDATION_ERROR:-6}"
   fi
 else
   # Add blank line before text summary
   echo ""
   if [[ "$ERRORS" -eq 0 ]]; then
     echo -e "${GREEN}Validation passed${NC} ($WARNINGS warnings)"
-    exit 0
+    exit "${EXIT_SUCCESS:-0}"
   else
     echo -e "${RED}Validation failed${NC} ($ERRORS errors, $WARNINGS warnings)"
     if [[ "$STRICT" == true ]] && [[ "$WARNINGS" -gt 0 ]]; then
-      exit 1
+      exit "${EXIT_VALIDATION_ERROR:-6}"
     fi
-    exit 1
+    exit "${EXIT_VALIDATION_ERROR:-6}"
   fi
 fi

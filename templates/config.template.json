@@ -1,6 +1,6 @@
 {
   "$schema": "../schemas/config.schema.json",
-  "version": "2.1.0",
+  "version": "2.2.0",
 
   "archive": {
     "enabled": true,
@@ -88,5 +88,13 @@
     "maxIncremental": 10,
     "maxArchiveBackups": 3,
     "safetyRetentionDays": 7
+  },
+
+  "cancellation": {
+    "cascadeConfirmThreshold": 10,
+    "requireReason": true,
+    "daysUntilArchive": 3,
+    "allowCascade": true,
+    "defaultChildStrategy": "block"
   }
 }

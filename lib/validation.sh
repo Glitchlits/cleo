@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 # validation.sh - Core validation library for claude-todo system
-# Provides schema validation and anti-hallucination checks
+#
+# LAYER: 2 (Core Services)
+# DEPENDENCIES: platform-compat.sh, config.sh
+# PROVIDES: validate_task, validate_json_file, validate_task_id, validate_status,
+#           validate_priority, validate_title, validate_cancel_reason, check_duplicates,
+#           validate_checksum, validate_task_hierarchy
 
-# Source guard to prevent multiple inclusion
-[[ -n "${_VALIDATION_SH_INCLUDED:-}" ]] && return 0
-readonly _VALIDATION_SH_INCLUDED=1
+#=== SOURCE GUARD ================================================
+[[ -n "${_VALIDATION_SH_LOADED:-}" ]] && return 0
+declare -r _VALIDATION_SH_LOADED=1
 
 set -euo pipefail
 
@@ -29,32 +34,56 @@ if ! check_required_tools; then
     exit 1
 fi
 
-# Source migration library for version checking (optional)
-if [[ -f "$_LIB_DIR/migrate.sh" ]]; then
-    # shellcheck source=lib/migrate.sh
-    source "$_LIB_DIR/migrate.sh"
-    MIGRATION_AVAILABLE=true
-else
-    MIGRATION_AVAILABLE=false
-fi
+# Migration library is NOT sourced at load time to avoid circular dependencies.
+# file-ops.sh → validation.sh → migrate.sh → file-ops.sh would create a cycle.
+# Migration functions (check_compatibility, detect_file_version, get_expected_version)
+# are only needed for optional version checking in validate_version().
+# Use lazy loading via _ensure_migrate_loaded() if migration support is needed.
+MIGRATION_AVAILABLE=false
+_MIGRATE_LOAD_ATTEMPTED=false
 
-# Source exit codes library for standardized error codes
-if [[ -f "$_LIB_DIR/exit-codes.sh" ]]; then
-    # shellcheck source=lib/exit-codes.sh
-    source "$_LIB_DIR/exit-codes.sh"
-    EXIT_CODES_AVAILABLE=true
-else
-    EXIT_CODES_AVAILABLE=false
-fi
+# Lazy-load migration library on demand
+# Returns: 0 if loaded successfully, 1 if not available
+_ensure_migrate_loaded() {
+    # Only attempt to load once
+    if [[ "$_MIGRATE_LOAD_ATTEMPTED" == "true" ]]; then
+        [[ "$MIGRATION_AVAILABLE" == "true" ]]
+        return $?
+    fi
+    _MIGRATE_LOAD_ATTEMPTED=true
 
-# Source hierarchy library for parent/child validation (optional)
-if [[ -f "$_LIB_DIR/hierarchy.sh" ]]; then
-    # shellcheck source=lib/hierarchy.sh
-    source "$_LIB_DIR/hierarchy.sh"
-    HIERARCHY_AVAILABLE=true
-else
-    HIERARCHY_AVAILABLE=false
-fi
+    if [[ -f "$_LIB_DIR/migrate.sh" ]]; then
+        # shellcheck source=lib/migrate.sh
+        source "$_LIB_DIR/migrate.sh"
+        MIGRATION_AVAILABLE=true
+        return 0
+    fi
+    return 1
+}
+
+# Hierarchy library is NOT sourced at load time to keep Layer 2 deps minimal.
+# Use lazy loading via _ensure_hierarchy_loaded() if hierarchy support is needed.
+HIERARCHY_AVAILABLE=false
+_HIERARCHY_LOAD_ATTEMPTED=false
+
+# Lazy-load hierarchy library on demand
+# Returns: 0 if loaded successfully, 1 if not available
+_ensure_hierarchy_loaded() {
+    # Only attempt to load once
+    if [[ "$_HIERARCHY_LOAD_ATTEMPTED" == "true" ]]; then
+        [[ "$HIERARCHY_AVAILABLE" == "true" ]]
+        return $?
+    fi
+    _HIERARCHY_LOAD_ATTEMPTED=true
+
+    if [[ -f "$_LIB_DIR/hierarchy.sh" ]]; then
+        # shellcheck source=lib/hierarchy.sh
+        source "$_LIB_DIR/hierarchy.sh"
+        HIERARCHY_AVAILABLE=true
+        return 0
+    fi
+    return 1
+}
 
 # Source config library for validation config settings (optional)
 if [[ -f "$_LIB_DIR/config.sh" ]]; then
@@ -69,15 +98,24 @@ fi
 # CONSTANTS
 # ============================================================================
 
-readonly VALID_STATUSES=("pending" "active" "done" "blocked")
-readonly VALID_OPERATIONS=("create" "update" "complete" "archive" "restore" "delete" "validate" "backup")
-readonly VALID_PHASE_STATUSES=("pending" "active" "completed")
+# Guard readonly declarations to prevent errors on re-sourcing
+if [[ -z "${VALID_STATUSES+x}" ]]; then
+    readonly VALID_STATUSES=("pending" "active" "done" "blocked" "cancelled")
+fi
+if [[ -z "${VALID_OPERATIONS+x}" ]]; then
+    readonly VALID_OPERATIONS=("create" "update" "complete" "archive" "restore" "delete" "validate" "backup")
+fi
+if [[ -z "${VALID_PHASE_STATUSES+x}" ]]; then
+    readonly VALID_PHASE_STATUSES=("pending" "active" "completed")
+fi
 
 # Exit codes (use VAL_ prefix to avoid conflicts with exit-codes.sh)
-readonly VAL_SUCCESS=0
-readonly VAL_SCHEMA_ERROR=1
-readonly VAL_SEMANTIC_ERROR=2
-readonly VAL_BOTH_ERRORS=3
+if [[ -z "${VAL_SUCCESS+x}" ]]; then
+    readonly VAL_SUCCESS=0
+    readonly VAL_SCHEMA_ERROR=1
+    readonly VAL_SEMANTIC_ERROR=2
+    readonly VAL_BOTH_ERRORS=3
+fi
 
 # ============================================================================
 # CONFIG-DRIVEN VALIDATION SETTINGS
@@ -456,12 +494,15 @@ validate_version() {
     local file="$1"
     local schema_type="$2"
 
-    # Skip if migration not available
+    # Lazy-load migration library if not already loaded
     if [[ "$MIGRATION_AVAILABLE" != "true" ]]; then
-        return 0
+        if ! _ensure_migrate_loaded; then
+            # Migration library not available - skip version checking (non-blocking)
+            return 0
+        fi
     fi
 
-    # Skip if function not available
+    # Verify required functions are available after loading
     if ! declare -f check_compatibility >/dev/null 2>&1; then
         return 0
     fi
@@ -598,7 +639,7 @@ export -f validate_title
 
 # Field length limits (defined as constants for consistency)
 readonly MAX_DESCRIPTION_LENGTH=2000
-readonly MAX_NOTE_LENGTH=500
+readonly MAX_NOTE_LENGTH=5000
 readonly MAX_BLOCKED_BY_LENGTH=300
 readonly MAX_SESSION_NOTE_LENGTH=1000
 
@@ -622,7 +663,7 @@ validate_description() {
 
 export -f validate_description
 
-# Validate note length (max 500 chars per note entry)
+# Validate note length (max 5000 chars per note entry)
 # Args: $1 = note string
 # Returns: 0 if valid, 1 if too long
 validate_note() {
@@ -683,6 +724,162 @@ validate_session_note() {
 export -f validate_session_note
 
 # ============================================================================
+# CANCELLATION VALIDATION
+# ============================================================================
+
+# Minimum and maximum length for cancellation reason
+readonly MIN_CANCEL_REASON_LENGTH=5
+readonly MAX_CANCEL_REASON_LENGTH=300
+
+# Validate cancellation reason
+# Args: $1 = reason string
+# Returns: 0 if valid, 1 if invalid (with structured error output)
+validate_cancel_reason() {
+    local reason="$1"
+
+    # Check for empty reason
+    if [[ -z "$reason" ]]; then
+        echo "[ERROR] Cancellation reason cannot be empty" >&2
+        echo "  field: cancellationReason" >&2
+        echo "  constraint: required" >&2
+        return 1
+    fi
+
+    # Check minimum length
+    if [[ ${#reason} -lt $MIN_CANCEL_REASON_LENGTH ]]; then
+        echo "[ERROR] Cancellation reason too short (${#reason}/$MIN_CANCEL_REASON_LENGTH minimum characters)" >&2
+        echo "  field: cancellationReason" >&2
+        echo "  constraint: minLength=$MIN_CANCEL_REASON_LENGTH" >&2
+        echo "  provided: ${#reason}" >&2
+        return 1
+    fi
+
+    # Check maximum length
+    if [[ ${#reason} -gt $MAX_CANCEL_REASON_LENGTH ]]; then
+        echo "[ERROR] Cancellation reason too long (${#reason}/$MAX_CANCEL_REASON_LENGTH maximum characters)" >&2
+        echo "  field: cancellationReason" >&2
+        echo "  constraint: maxLength=$MAX_CANCEL_REASON_LENGTH" >&2
+        echo "  provided: ${#reason}" >&2
+        return 1
+    fi
+
+    # Check for newlines and carriage returns (must be single-line)
+    if [[ "$reason" == *$'\n'* ]] || [[ "$reason" == *$'\r'* ]]; then
+        echo "[ERROR] Cancellation reason cannot contain newlines or carriage returns" >&2
+        echo "  field: cancellationReason" >&2
+        echo "  constraint: single-line text only" >&2
+        echo "  security: prevents injection attacks" >&2
+        return 1
+    fi
+
+    # Check for shell metacharacters that could enable injection attacks
+    # Disallowed: | ; & $ ` \ < > ( ) { } [ ] ! " '
+    if [[ "$reason" == *'|'* ]] || [[ "$reason" == *';'* ]] || \
+       [[ "$reason" == *'&'* ]] || [[ "$reason" == *'$'* ]] || \
+       [[ "$reason" == *'`'* ]] || [[ "$reason" == *'\'* ]] || \
+       [[ "$reason" == *'<'* ]] || [[ "$reason" == *'>'* ]] || \
+       [[ "$reason" == *'('* ]] || [[ "$reason" == *')'* ]] || \
+       [[ "$reason" == *'{'* ]] || [[ "$reason" == *'}'* ]] || \
+       [[ "$reason" == *'['* ]] || [[ "$reason" == *']'* ]] || \
+       [[ "$reason" == *'!'* ]] || [[ "$reason" == *'"'* ]] || \
+       [[ "$reason" == *"'"* ]]; then
+        echo "[ERROR] Cancellation reason contains disallowed characters" >&2
+        echo "  field: cancellationReason" >&2
+        echo "  constraint: no shell metacharacters (|;&\$\`\\<>(){}[]!\"')" >&2
+        echo "  security: prevents injection attacks" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+export -f validate_cancel_reason
+
+# Check cancelled fields consistency
+# When status=cancelled: cancelledAt and cancellationReason must be present
+# When status!=cancelled: these fields should not be present
+# Args: $1 = todo file path, $2 = task index
+# Returns: 0 if valid, 1 if invalid
+check_cancelled_fields() {
+    local file="$1"
+    local task_idx="$2"
+    local errors=0
+
+    # Get task status and cancellation fields
+    local status cancelled_at cancellation_reason
+    status=$(jq -r ".tasks[$task_idx].status // empty" "$file")
+    cancelled_at=$(jq -r ".tasks[$task_idx].cancelledAt // empty" "$file")
+    cancellation_reason=$(jq -r ".tasks[$task_idx].cancellationReason // empty" "$file")
+
+    if [[ "$status" == "cancelled" ]]; then
+        # Cancelled tasks MUST have cancelledAt
+        if [[ -z "$cancelled_at" ]]; then
+            echo "[ERROR] Task at index $task_idx: cancelled status requires cancelledAt timestamp" >&2
+            echo "  field: cancelledAt" >&2
+            echo "  constraint: required when status=cancelled" >&2
+            ((errors++))
+        fi
+
+        # Cancelled tasks MUST have cancellationReason
+        if [[ -z "$cancellation_reason" ]]; then
+            echo "[ERROR] Task at index $task_idx: cancelled status requires cancellationReason" >&2
+            echo "  field: cancellationReason" >&2
+            echo "  constraint: required when status=cancelled" >&2
+            ((errors++))
+        else
+            # Validate the reason content
+            if ! validate_cancel_reason "$cancellation_reason" 2>/dev/null; then
+                validate_cancel_reason "$cancellation_reason"
+                ((errors++))
+            fi
+        fi
+
+        # Validate cancelledAt timestamp format if present
+        if [[ -n "$cancelled_at" ]]; then
+            if [[ ! "$cancelled_at" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]]; then
+                echo "[ERROR] Task at index $task_idx: invalid cancelledAt timestamp format" >&2
+                echo "  field: cancelledAt" >&2
+                echo "  expected: ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)" >&2
+                echo "  provided: $cancelled_at" >&2
+                ((errors++))
+            else
+                # Check timestamp is not in the future
+                local cancelled_epoch current_epoch
+                cancelled_epoch=$(timestamp_to_epoch "$cancelled_at")
+                current_epoch=$(date +%s)
+                if [[ $cancelled_epoch -gt $current_epoch ]]; then
+                    echo "[ERROR] Task at index $task_idx: cancelledAt is in the future" >&2
+                    echo "  field: cancelledAt" >&2
+                    echo "  constraint: must not be future timestamp" >&2
+                    ((errors++))
+                fi
+            fi
+        fi
+    else
+        # Non-cancelled tasks should NOT have cancellation fields
+        if [[ -n "$cancelled_at" ]]; then
+            echo "[WARN] Task at index $task_idx: cancelledAt present but status is '$status'" >&2
+            echo "  field: cancelledAt" >&2
+            echo "  constraint: only allowed when status=cancelled" >&2
+            echo "  recommendation: remove cancelledAt or change status to cancelled" >&2
+            # Warning only, not counted as error for backward compatibility
+        fi
+
+        if [[ -n "$cancellation_reason" ]]; then
+            echo "[WARN] Task at index $task_idx: cancellationReason present but status is '$status'" >&2
+            echo "  field: cancellationReason" >&2
+            echo "  constraint: only allowed when status=cancelled" >&2
+            echo "  recommendation: remove cancellationReason or change status to cancelled" >&2
+            # Warning only, not counted as error for backward compatibility
+        fi
+    fi
+
+    [[ $errors -eq 0 ]]
+}
+
+export -f check_cancelled_fields
+
+# ============================================================================
 # TASK OBJECT VALIDATION
 # ============================================================================
 
@@ -714,7 +911,7 @@ validate_task() {
 
     if [[ -z "$status" ]]; then
         echo "ERROR: Task $task_idx missing 'status' field" >&2
-        echo "Fix: Add status field (pending|active|done|blocked)" >&2
+        echo "Fix: Add status field (pending|active|done|blocked|cancelled)" >&2
         ((errors++))
     fi
 
@@ -779,6 +976,11 @@ validate_task() {
             echo "Fix: ID should contain only alphanumeric, dash, and underscore" >&2
             ((errors++))
         fi
+    fi
+
+    # 6. Check cancelled status field consistency
+    if ! check_cancelled_fields "$file" "$task_idx"; then
+        ((errors++))
     fi
 
     [[ $errors -eq 0 ]]
@@ -955,27 +1157,35 @@ validate_status_transition() {
     case "$old_status" in
         "pending")
             case "$new_status" in
-                "active"|"blocked") return 0 ;;
+                "active"|"blocked"|"cancelled") return 0 ;;
                 *) ;;
             esac
             ;;
         "active")
             case "$new_status" in
-                "done"|"blocked"|"pending") return 0 ;;
+                "done"|"blocked"|"pending"|"cancelled") return 0 ;;
                 *) ;;
             esac
             ;;
         "done")
-            # Done tasks can only go back to pending (rare)
+            # Done tasks are terminal - can only restore to pending (rare edge case)
+            # Cannot cancel completed work - done is permanent state
             case "$new_status" in
                 "pending") return 0 ;;
                 *) ;;
             esac
             ;;
         "blocked")
-            # Blocked tasks can return to pending or active
+            # Blocked tasks can return to pending, active, or be cancelled
             case "$new_status" in
-                "pending"|"active") return 0 ;;
+                "pending"|"active"|"cancelled") return 0 ;;
+                *) ;;
+            esac
+            ;;
+        "cancelled")
+            # Cancelled is a terminal-ish state - can only restore to pending
+            case "$new_status" in
+                "pending") return 0 ;;
                 *) ;;
             esac
             ;;
@@ -983,10 +1193,11 @@ validate_status_transition() {
 
     echo "ERROR: Invalid status transition: '$old_status' → '$new_status'" >&2
     echo "Valid transitions:" >&2
-    echo "  pending → active, blocked" >&2
-    echo "  active → done, blocked, pending" >&2
-    echo "  done → pending" >&2
-    echo "  blocked → pending, active" >&2
+    echo "  pending → active, blocked, cancelled" >&2
+    echo "  active → done, blocked, pending, cancelled" >&2
+    echo "  done → pending (use archive for completed tasks)" >&2
+    echo "  blocked → pending, active, cancelled" >&2
+    echo "  cancelled → pending (restore only)" >&2
     return 1
 }
 
@@ -1048,7 +1259,7 @@ _dfs_detect_cycle() {
         if [[ "$rec_stack" == *",$current,"* ]]; then
             # Build cycle path
             cycle_path="$current (cycle back to start)"
-            echo "ERROR: Circular dependency detected involving: $current" >&2
+            echo "ERROR: circular dependency detected involving: $current" >&2
             echo "Fix: Remove dependency that creates the cycle" >&2
             return 1
         fi
@@ -1282,8 +1493,8 @@ validate_hierarchy_integrity() {
     local todo_file="$1"
     local errors=0
 
-    # Skip if hierarchy library not available
-    if [[ "$HIERARCHY_AVAILABLE" != "true" ]]; then
+    # Lazy-load hierarchy library on demand
+    if ! _ensure_hierarchy_loaded; then
         echo "INFO: Hierarchy library not available, skipping hierarchy validation" >&2
         return 0
     fi
@@ -1296,15 +1507,14 @@ validate_hierarchy_integrity() {
     fi
 
     # 1. Detect orphan tasks (parentId references non-existent task)
-    local orphans
-    orphans=$(detect_orphans "$todo_file")
-    if [[ -n "$orphans" ]]; then
+    local orphans_json
+    orphans_json=$(detect_orphans "$todo_file")
+    local orphan_count
+    orphan_count=$(echo "$orphans_json" | jq '. | length' 2>/dev/null || echo 0)
+    if [[ "$orphan_count" -gt 0 ]]; then
         echo "ERROR: Orphan tasks detected (parentId references missing task):" >&2
-        for orphan_id in $orphans; do
-            local parent_id
-            parent_id=$(get_task_parent "$orphan_id" "$todo_file")
-            echo "  - $orphan_id (references non-existent parent: $parent_id)" >&2
-        done
+        # Parse JSON array to extract orphan IDs and their missing parents
+        echo "$orphans_json" | jq -r '.[] | "  - \(.id) (references non-existent parent: \(.parentId))"' >&2
         echo "Fix: Remove parentId or restore the parent task" >&2
         ((errors++))
     fi
@@ -1395,9 +1605,9 @@ validate_all() {
     echo "Schema type: $schema_type"
     echo "----------------------------------------"
 
-    # 0. Version Check (non-blocking warning)
-    if [[ "$MIGRATION_AVAILABLE" == "true" ]]; then
-        echo "[0/10] Checking schema version..."
+    # 0. Version Check (non-blocking warning, uses lazy-loaded migrate.sh)
+    echo "[0/10] Checking schema version..."
+    if _ensure_migrate_loaded && [[ "$MIGRATION_AVAILABLE" == "true" ]]; then
         if ! validate_version "$file" "$schema_type"; then
             echo "⚠ WARNING: Version check failed"
         else
@@ -1405,6 +1615,8 @@ validate_all() {
             current_version=$(detect_file_version "$file" 2>/dev/null || echo "unknown")
             echo "✓ PASSED: Version $current_version compatible"
         fi
+    else
+        echo "  (skipped - migration library not available)"
     fi
 
     # 1. JSON Syntax Validation
@@ -1587,15 +1799,12 @@ validate_all() {
     # 9. Hierarchy Validation (v0.17.0+)
     if [[ "$schema_type" == "todo" ]]; then
         echo "[9/10] Validating task hierarchy..."
-        if [[ "$HIERARCHY_AVAILABLE" == "true" ]]; then
-            if ! validate_hierarchy_integrity "$file"; then
-                ((semantic_errors++))
-                echo "✗ FAILED: Hierarchy validation failed"
-            else
-                echo "✓ PASSED: Hierarchy valid"
-            fi
+        # validate_hierarchy_integrity handles lazy loading internally
+        if ! validate_hierarchy_integrity "$file"; then
+            ((semantic_errors++))
+            echo "✗ FAILED: Hierarchy validation failed"
         else
-            echo "[9/10] Skipping hierarchy validation (library not available)"
+            echo "✓ PASSED: Hierarchy valid"
         fi
     else
         echo "[9/10] Skipping hierarchy validation (not applicable)"

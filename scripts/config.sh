@@ -26,22 +26,41 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_DIR="$(dirname "$SCRIPT_DIR")/lib"
 
-# Source libraries
-source "$LIB_DIR/platform-compat.sh"
-source "$LIB_DIR/output-format.sh"
-source "$LIB_DIR/exit-codes.sh"
-source "$LIB_DIR/error-json.sh"
-source "$LIB_DIR/config.sh"
+# Source version library for proper version management
+if [[ -f "$LIB_DIR/version.sh" ]]; then
+  # shellcheck source=../lib/version.sh
+  source "$LIB_DIR/version.sh"
+fi
+
+# Source version from central location (fallback)
+CLAUDE_TODO_HOME="${CLAUDE_TODO_HOME:-$HOME/.claude-todo}"
+if [[ -f "$CLAUDE_TODO_HOME/VERSION" ]]; then
+  VERSION="$(cat "$CLAUDE_TODO_HOME/VERSION" | tr -d '[:space:]')"
+elif [[ -f "$SCRIPT_DIR/../VERSION" ]]; then
+  VERSION="$(cat "$SCRIPT_DIR/../VERSION" | tr -d '[:space:]')"
+else
+  VERSION="unknown"
+fi
+
+# Source libraries (with defensive checks)
+if [[ -f "$LIB_DIR/platform-compat.sh" ]]; then
+  source "$LIB_DIR/platform-compat.sh"
+fi
+if [[ -f "$LIB_DIR/output-format.sh" ]]; then
+  source "$LIB_DIR/output-format.sh"
+fi
+if [[ -f "$LIB_DIR/exit-codes.sh" ]]; then
+  source "$LIB_DIR/exit-codes.sh"
+fi
+if [[ -f "$LIB_DIR/error-json.sh" ]]; then
+  source "$LIB_DIR/error-json.sh"
+fi
+if [[ -f "$LIB_DIR/config.sh" ]]; then
+  source "$LIB_DIR/config.sh"
+fi
 
 # Command identification
 COMMAND_NAME="config"
-
-# Get version
-if [[ -f "$LIB_DIR/../VERSION" ]]; then
-    VERSION=$(cat "$LIB_DIR/../VERSION" | tr -d '[:space:]')
-else
-    VERSION="0.17.0"
-fi
 
 # ============================================================================
 # DEFAULTS
@@ -137,7 +156,7 @@ output_json() {
     timestamp=$(get_iso_timestamp 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
 
     jq -n \
-        --arg version "$VERSION" \
+        --arg version "${CLAUDE_TODO_VERSION:-$(get_version)}" \
         --arg scope "$SCOPE" \
         --arg ts "$timestamp" \
         --argjson data "$data" \
@@ -163,7 +182,7 @@ output_change_json() {
     timestamp=$(get_iso_timestamp 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
 
     jq -n \
-        --arg version "$VERSION" \
+        --arg version "${CLAUDE_TODO_VERSION:-$(get_version)}" \
         --arg scope "$SCOPE" \
         --arg ts "$timestamp" \
         --arg path "$path" \
@@ -259,7 +278,7 @@ cmd_get() {
             --arg path "$path" \
             --arg value "$value" \
             --arg timestamp "$timestamp" \
-            --arg version "$VERSION" \
+            --arg version "${CLAUDE_TODO_VERSION:-$(get_version)}" \
             '{
                 "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
                 "_meta": {

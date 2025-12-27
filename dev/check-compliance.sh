@@ -362,6 +362,14 @@ preextract_schema_patterns() {
         PATTERN_ERROR_LIB \
         <<< "$patterns" || true
 
+    # Unescape TSV-escaped backslashes (jq @tsv escapes \ as \\)
+    PATTERN_DEV_LIB_SOURCE="${PATTERN_DEV_LIB_SOURCE//\\\\/\\}"
+    PATTERN_DUAL_PATH="${PATTERN_DUAL_PATH//\\\\/\\}"
+    PATTERN_EXIT_CONSTANTS="${PATTERN_EXIT_CONSTANTS//\\\\/\\}"
+    PATTERN_EXIT_LIB="${PATTERN_EXIT_LIB//\\\\/\\}"
+    PATTERN_ERROR_LIB="${PATTERN_ERROR_LIB//\\\\/\\}"
+    PATTERN_DRY_RUN="${PATTERN_DRY_RUN//\\\\/\\}"
+
     # Export for use in sourced check scripts
     export PATTERN_DEV_LIB_SOURCE PATTERN_DUAL_PATH PATTERN_COMMAND_NAME PATTERN_VERSION_CENTRAL
     export PATTERN_FORMAT_FLAG PATTERN_QUIET_FLAG PATTERN_JSON_SHORTCUT PATTERN_HUMAN_SHORTCUT
@@ -1246,9 +1254,10 @@ main() {
     failed_cmds=$(printf '%s\n' "${all_results[@]}" | jq -s '[.[] | select(.score < 80)] | length')
 
     # Build final results
+    # NOTE: Use stdin piping for commands array to avoid "Argument list too long" error
+    # when all_results contains many command check results (jq --argjson has ARG_MAX limit)
     local final_results
-    final_results=$(jq -n \
-        --argjson commands "$(printf '%s\n' "${all_results[@]}" | jq -s '.')" \
+    final_results=$(printf '%s\n' "${all_results[@]}" | jq -s \
         --argjson totalCommands "$cmd_count" \
         --argjson passed "$passed_cmds" \
         --argjson partial "$partial_cmds" \
@@ -1262,7 +1271,7 @@ main() {
                 failed: $failed,
                 overallScore: ($overallScore | tonumber)
             },
-            commands: $commands
+            commands: .
         }')
 
     # Save cache

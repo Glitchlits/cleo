@@ -6,18 +6,27 @@
 # and phase advancement logic.
 # =============================================================================
 
+setup_file() {
+    load '../test_helper/common_setup'
+    common_setup_file
+}
+
 setup() {
     load '../test_helper/common_setup'
     load '../test_helper/assertions'
     load '../test_helper/fixtures'
-    common_setup
+    common_setup_per_test
 
     # Source the phase tracking library
     source "$LIB_DIR/phase-tracking.sh"
 }
 
 teardown() {
-    common_teardown
+    common_teardown_per_test
+}
+
+teardown_file() {
+    common_teardown_file
 }
 
 # =============================================================================
@@ -619,31 +628,96 @@ EOF
 }
 
 # =============================================================================
+# Phase Validation Config Tests
+# =============================================================================
+
+@test "get_phase_validation_config returns defaults when no config" {
+    rm -f "$CONFIG_FILE"
+    run get_phase_validation_config
+    assert_success
+    assert_output --partial '"warnPhaseContext": false'
+    assert_output --partial '"enforcePhaseOrder": false'
+}
+
+@test "get_phase_validation_config reads warnPhaseContext from config" {
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
+    run get_phase_validation_config
+    assert_success
+    assert_output --partial '"warnPhaseContext": true'
+}
+
+@test "get_phase_validation_config reads enforcePhaseOrder from config" {
+    echo '{"validation":{"phaseValidation":{"enforcePhaseOrder":true}}}' > "$CONFIG_FILE"
+    run get_phase_validation_config
+    assert_success
+    assert_output --partial '"enforcePhaseOrder": true'
+}
+
+@test "is_phase_warning_enabled returns false by default" {
+    rm -f "$CONFIG_FILE"
+    run is_phase_warning_enabled
+    assert_failure  # Returns non-zero when disabled
+}
+
+@test "is_phase_warning_enabled returns true when config enabled" {
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
+    run is_phase_warning_enabled
+    assert_success  # Returns zero when enabled
+}
+
+@test "is_phase_warning_enabled returns false when config explicitly disabled" {
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":false}}}' > "$CONFIG_FILE"
+    run is_phase_warning_enabled
+    assert_failure  # Returns non-zero when disabled
+}
+
+# =============================================================================
 # check_phase_context Tests
 # =============================================================================
 
-@test "check_phase_context passes when phases match" {
+@test "check_phase_context passes when phases match with warnings enabled" {
     create_active_phase_fixture
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
     run check_phase_context "core" "$TODO_FILE"
     assert_success
 }
 
-@test "check_phase_context warns when phases differ" {
+@test "check_phase_context warns when phases differ and warnings enabled" {
     create_active_phase_fixture
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
     run check_phase_context "setup" "$TODO_FILE"
     assert_failure
     assert_output --partial "WARN"
     assert_output --partial "differs from"
 }
 
+@test "check_phase_context silent when warnPhaseContext disabled" {
+    create_active_phase_fixture
+    # Ensure no config (defaults to disabled)
+    rm -f "$CONFIG_FILE"
+    run check_phase_context "setup" "$TODO_FILE"
+    assert_success  # Should pass silently even with mismatch
+    refute_output --partial "WARN"
+}
+
+@test "check_phase_context silent with explicit warnPhaseContext false" {
+    create_active_phase_fixture
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":false}}}' > "$CONFIG_FILE"
+    run check_phase_context "setup" "$TODO_FILE"
+    assert_success  # Should pass silently even with mismatch
+    refute_output --partial "WARN"
+}
+
 @test "check_phase_context passes when no project phase" {
     create_phase_fixture
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
     run check_phase_context "setup" "$TODO_FILE"
     assert_success
 }
 
 @test "check_phase_context passes when no task phase" {
     create_active_phase_fixture
+    echo '{"validation":{"phaseValidation":{"warnPhaseContext":true}}}' > "$CONFIG_FILE"
     run check_phase_context "" "$TODO_FILE"
     assert_success
 }
