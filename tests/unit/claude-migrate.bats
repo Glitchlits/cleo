@@ -293,10 +293,10 @@ teardown_file() {
     run "$SCRIPTS_DIR/claude-migrate.sh" --global --format text
     assert_success
 
-    # Verify migration (config files renamed: todo-config.json → cleo-config.json)
+    # Verify migration (config files renamed: todo-config.json → config.json)
     [[ -d "$HOME/.cleo" ]]
     [[ -f "$HOME/.cleo/todo.json" ]]
-    [[ -f "$HOME/.cleo/cleo-config.json" ]]
+    [[ -f "$HOME/.cleo/config.json" ]]
     [[ ! -d "$HOME/.claude-todo" ]]
 }
 
@@ -355,10 +355,10 @@ teardown_file() {
     run "$SCRIPTS_DIR/claude-migrate.sh" --global
     assert_success
 
-    # Verify all files present (config files renamed)
+    # Verify all files present (config renamed, log unchanged)
     [[ -f "$HOME/.cleo/todo.json" ]]
-    [[ -f "$HOME/.cleo/cleo-config.json" ]]
-    [[ -f "$HOME/.cleo/cleo-log.json" ]]
+    [[ -f "$HOME/.cleo/config.json" ]]
+    [[ -f "$HOME/.cleo/todo-log.json" ]]
     [[ -f "$HOME/.cleo/subdir/file.txt" ]]
 
     # Verify content preserved
@@ -404,11 +404,10 @@ teardown_file() {
     run "$SCRIPTS_DIR/claude-migrate.sh" --project --format text
     assert_success
 
-    # Verify renamed files
+    # Verify config renamed, log unchanged
     [[ -f ".cleo/config.json" ]]
-    [[ -f ".cleo/log.json" ]]
+    [[ -f ".cleo/todo-log.json" ]]
     [[ ! -f ".cleo/todo-config.json" ]]
-    [[ ! -f ".cleo/todo-log.json" ]]
 }
 
 @test "claude-migrate --project updates .gitignore" {

@@ -564,23 +564,23 @@ create_project_backup() {
     fi
 }
 
-# Rename legacy config files to CLEO naming
+# Rename config files during migration
+# Config: todo-config.json → config.json (renamed)
+# Log: todo-log.json stays as todo-log.json (unchanged)
 # Args: $1 = target directory
+# Returns: count of files renamed
 rename_project_configs() {
     local target_dir="$1"
     local renamed=0
 
-    # Rename todo-config.json → cleo-config.json
+    # Rename todo-config.json → config.json
     if [[ -f "$target_dir/todo-config.json" ]]; then
-        mv "$target_dir/todo-config.json" "$target_dir/cleo-config.json"
-        ((renamed++))
+        if mv "$target_dir/todo-config.json" "$target_dir/config.json" 2>/dev/null; then
+            ((renamed++))
+        fi
     fi
 
-    # Rename todo-log.json → cleo-log.json
-    if [[ -f "$target_dir/todo-log.json" ]]; then
-        mv "$target_dir/todo-log.json" "$target_dir/cleo-log.json"
-        ((renamed++))
-    fi
+    # Log file stays as todo-log.json - no rename needed
 
     echo "$renamed"
 }

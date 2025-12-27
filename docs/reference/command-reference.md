@@ -17,6 +17,7 @@ Complete reference for all cleo commands with usage syntax, options, examples, a
   - [archive](#archive)
   - [export](#export)
   - [validate](#validate)
+  - [claude-migrate](#claude-migrate)
 - [Reporting & Analysis](#reporting--analysis)
   - [stats](#stats)
 - [Backup & Recovery](#backup--recovery)
@@ -38,6 +39,7 @@ Complete reference for all cleo commands with usage syntax, options, examples, a
 | `archive` | Archive completed | `cleo archive --dry-run` |
 | `export` | Export tasks | `cleo export -f csv` |
 | `validate` | Validate files | `cleo validate --fix` |
+| `claude-migrate` | Migrate legacy | `cleo claude-migrate --check` |
 | `stats` | Show statistics | `cleo stats --period 7` |
 | `backup` | Create backup | `cleo backup --compress` |
 | `restore` | Restore backup | `cleo restore <dir>` |
@@ -602,6 +604,65 @@ cleo validate --verbose
 - `1`: Schema errors
 - `2`: Semantic errors
 - `3`: Both schema and semantic errors
+
+---
+
+### claude-migrate
+
+Detect and migrate legacy claude-todo installations to CLEO format.
+
+**Usage:**
+```bash
+cleo claude-migrate --check              # Detect legacy installations
+cleo claude-migrate --global             # Migrate ~/.claude-todo → ~/.cleo
+cleo claude-migrate --project            # Migrate .claude → .cleo
+cleo claude-migrate --all                # Migrate both
+```
+
+**Options:**
+| Option | Description |
+|--------|-------------|
+| `--check` | Detect legacy installations (read-only) |
+| `--global` | Migrate global installation |
+| `--project` | Migrate project directory |
+| `--all` | Migrate both global and project |
+| `--format` | Output format: text, json |
+| `--verbose`, `-v` | Show detailed output |
+
+**Examples:**
+```bash
+# Check for legacy installations
+cleo claude-migrate --check
+
+# Check with JSON output
+cleo claude-migrate --check --format json
+
+# Migrate global installation
+cleo claude-migrate --global
+
+# Migrate project
+cleo claude-migrate --project
+
+# Migrate everything
+cleo claude-migrate --all
+```
+
+**File Transformations:**
+- Config: `todo-config.json` → `config.json`
+- Log: `todo-log.json` (unchanged)
+- Directories: `.claude/` → `.cleo/`, `~/.claude-todo/` → `~/.cleo/`
+
+**Exit Codes (--check mode):**
+- `0`: Legacy found (migration needed)
+- `1`: No legacy found (clean)
+- `2`: Error
+
+**Exit Codes (migration modes):**
+- `0`: Migration successful
+- `1`: No legacy found
+- `2`: Backup failed
+- `3`: Move failed
+- `4`: Validation failed
 
 ---
 
