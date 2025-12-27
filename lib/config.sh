@@ -40,13 +40,13 @@ fi
 GLOBAL_CONFIG_DIR="${CLEO_HOME:-$HOME/.cleo}"
 GLOBAL_CONFIG_FILE="${GLOBAL_CONFIG_DIR}/config.json"
 
-# PROJECT_CONFIG_FILE can be set before sourcing, or defaults to .cleo/todo-config.json
+# PROJECT_CONFIG_FILE can be set before sourcing, or defaults to .cleo/config.json
 # This supports test environments that set CONFIG_FILE before sourcing
 if [[ -z "${PROJECT_CONFIG_FILE:-}" ]]; then
     if [[ -n "${CONFIG_FILE:-}" ]]; then
         PROJECT_CONFIG_FILE="$CONFIG_FILE"
     else
-        PROJECT_CONFIG_FILE="${CLEO_DIR:-.cleo}/todo-config.json"
+        PROJECT_CONFIG_FILE="${CLEO_DIR:-.cleo}/config.json"
     fi
 fi
 

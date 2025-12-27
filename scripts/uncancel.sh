@@ -335,7 +335,7 @@ if [[ "$CURRENT_STATUS" != "cancelled" ]]; then
             --arg currentStatus "$CURRENT_STATUS" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "uncancel",
@@ -372,7 +372,7 @@ if [[ "$CURRENT_STATUS" == "pending" ]]; then
             --arg taskId "$TASK_ID" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "uncancel",
@@ -452,7 +452,7 @@ if [[ "$DRY_RUN" == true ]]; then
             --argjson cascadeCount "$CASCADE_COUNT" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "uncancel",
@@ -600,7 +600,7 @@ if [[ "$FORMAT" == "json" ]]; then
         --argjson cascadeCount "$CASCADE_COUNT" \
         --argjson task "$RESTORED_TASK" \
         '{
-            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {
                 "format": "json",
                 "command": "uncancel",

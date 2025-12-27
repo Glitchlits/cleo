@@ -534,7 +534,7 @@ display_json() {
     --arg timestamp "$timestamp" \
     --argjson task "$task_data" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "command": "show",

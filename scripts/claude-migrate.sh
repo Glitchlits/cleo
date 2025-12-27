@@ -267,7 +267,7 @@ run_check_mode() {
     local json_output
     json_output=$(cat <<EOF
 {
-  "\$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+  "\$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
   "_meta": {
     "command": "claude-migrate --check",
     "timestamp": "${timestamp}",
@@ -492,7 +492,7 @@ run_global_migration() {
     if is_json_output "$FORMAT"; then
         cat <<EOF
 {
-  "\$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+  "\$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
   "_meta": {
     "command": "claude-migrate --global",
     "timestamp": "${timestamp}",
@@ -768,7 +768,7 @@ run_project_migration() {
     if is_json_output "$FORMAT"; then
         cat <<EOF
 {
-  "\$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+  "\$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
   "_meta": {
     "command": "claude-migrate --project",
     "timestamp": "${timestamp}",
@@ -851,7 +851,7 @@ run_all_migration() {
         if is_json_output "$FORMAT"; then
             cat <<EOF
 {
-  "\$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+  "\$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
   "_meta": {
     "command": "claude-migrate --all",
     "timestamp": "${timestamp}",
@@ -929,7 +929,7 @@ EOF
     if is_json_output "$FORMAT"; then
         cat <<EOF
 {
-  "\$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+  "\$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
   "_meta": {
     "command": "claude-migrate --all",
     "timestamp": "${timestamp}",

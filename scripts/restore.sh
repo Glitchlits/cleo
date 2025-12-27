@@ -548,7 +548,7 @@ if [[ "$DRY_RUN" == true ]]; then
       --arg from "$BACKUP_SOURCE" \
       --argjson files "$(printf '%s\n' "${WOULD_RESTORE_FILES[@]}" | jq -R . | jq -s .)" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "restore",
           "timestamp": $timestamp,
@@ -581,7 +581,7 @@ if check_no_change; then
       --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
       --arg from "$BACKUP_SOURCE" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "restore",
           "timestamp": $timestamp,
@@ -759,7 +759,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --argjson dryRun "$DRY_RUN" \
     --argjson files "$(printf '%s\n' "${RESTORED_FILES[@]}" | jq -R . | jq -s .)" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "command": "restore",
         "timestamp": $timestamp,

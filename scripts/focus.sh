@@ -252,7 +252,7 @@ cmd_set() {
         --arg oldFocus "$old_focus" \
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "focus set",
             "timestamp": $timestamp,
@@ -346,7 +346,7 @@ cmd_set() {
       --arg old_focus "${old_focus:-null}" \
       --argjson task "$task_details" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "focus set",
           "timestamp": $timestamp,
@@ -380,7 +380,7 @@ cmd_clear() {
         --arg timestamp "$current_timestamp" \
         --arg version "${CLEO_VERSION:-$(get_version)}" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "focus clear",
             "timestamp": $timestamp,
@@ -433,7 +433,7 @@ cmd_clear() {
       --arg version "${CLEO_VERSION:-$(get_version)}" \
       --arg old_focus "$old_focus" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "focus clear",
           "timestamp": $timestamp,
@@ -540,7 +540,7 @@ cmd_show() {
       --argjson task "$task_details" \
       --argjson hierarchy "$hierarchy_context" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "focus show",
           "timestamp": $timestamp,
@@ -679,7 +679,7 @@ cmd_note() {
       --arg version "${CLEO_VERSION:-$(get_version)}" \
       --arg note "$note" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "focus note",
           "timestamp": $timestamp,
@@ -737,7 +737,7 @@ cmd_next() {
       --arg version "${CLEO_VERSION:-$(get_version)}" \
       --arg action "$action" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "focus next",
           "timestamp": $timestamp,

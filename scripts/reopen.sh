@@ -419,7 +419,7 @@ if [[ "$CURRENT_STATUS" != "done" ]]; then
             --arg suggestion "$SUGGESTION" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "reopen",
@@ -484,7 +484,7 @@ if [[ "$DRY_RUN" == true ]]; then
             --arg warning "$AUTO_COMPLETE_WARNING" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "reopen",
@@ -628,7 +628,7 @@ if [[ "$FORMAT" == "json" ]]; then
         --arg warning "$AUTO_COMPLETE_WARNING" \
         --argjson task "$REOPENED_TASK" \
         '{
-            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {
                 "format": "json",
                 "command": "reopen",

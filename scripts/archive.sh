@@ -511,7 +511,7 @@ if [[ "$COMPLETED_COUNT" -eq 0 ]]; then
       --argjson effectiveExemptLabels "$EXEMPT_LABELS" \
       --argjson onlyLabelsFilter "$ONLY_LABELS_OUTPUT" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {"format": "json", "command": "archive", "timestamp": $ts, "version": $ver},
         "success": true,
         "archived": {"count": 0, "taskIds": []},
@@ -607,7 +607,7 @@ if [[ -n "$PHASE_TRIGGER" ]]; then
         --argjson excludeLabelsApplied "$EXCLUDE_LABELS_APPLIED" \
         --argjson effectiveExemptLabels "$EXEMPT_LABELS" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {"format": "json", "command": "archive", "timestamp": $ts, "version": $ver},
           "success": true,
           "archived": {"count": 0, "taskIds": []},
@@ -742,7 +742,7 @@ if [[ "$ARCHIVE_COUNT" -eq 0 && "$ALREADY_ARCHIVED_COUNT" -gt 0 ]]; then
       --argjson excludeLabelsApplied "$EXCLUDE_LABELS_APPLIED" \
       --argjson effectiveExemptLabels "$EXEMPT_LABELS" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {"format": "json", "command": "archive", "timestamp": $ts, "version": $ver},
         "success": true,
         "noChange": true,
@@ -1060,7 +1060,7 @@ if [[ "$ARCHIVE_COUNT" -eq 0 ]]; then
       --argjson cascadeFrom "$CASCADE_FROM_INFO" \
       --argjson phaseTrigger "$PHASE_TRIGGER_INFO" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {"format": "json", "command": "archive", "timestamp": $ts, "version": $ver},
         "success": true,
         "safeMode": $safeMode,
@@ -1197,7 +1197,7 @@ if [[ "$DRY_RUN" == true ]]; then
       --argjson cascadeFrom "$CASCADE_FROM_INFO" \
       --argjson phaseTrigger "$PHASE_TRIGGER_INFO" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {"format": "json", "command": "archive", "timestamp": $ts, "version": $ver},
         "success": true,
         "dryRun": true,
@@ -1643,7 +1643,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --argjson interactiveSkipped "$INTERACTIVE_SKIPPED" \
       --argjson phaseTrigger "$PHASE_TRIGGER_INFO" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {"format": "json", "command": "archive", "timestamp": $ts, "version": $ver},
       "success": true,
       "safeMode": $safeMode,

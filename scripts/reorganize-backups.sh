@@ -469,7 +469,7 @@ migrate_all_backups() {
                 --argjson dryRun "$dry_run" \
                 --arg legacyDir "$LEGACY_BACKUP_DIR" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "format": "json",
                         "version": $version,
@@ -536,7 +536,7 @@ migrate_all_backups() {
             --argjson failed "$failed" \
             --argjson skipped "$skipped" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,
@@ -593,7 +593,7 @@ cleanup_legacy_backups() {
                 --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
                 --arg legacyDir "$legacy_dir" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "format": "json",
                         "version": $version,
@@ -667,7 +667,7 @@ cleanup_legacy_backups() {
             --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             --arg legacyDir "$legacy_dir" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,
@@ -713,7 +713,7 @@ display_detected_backups() {
             --argjson backups "$backups" \
             --arg legacyDir "$LEGACY_BACKUP_DIR" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,

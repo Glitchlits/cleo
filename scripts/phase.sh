@@ -97,7 +97,7 @@ cmd_show() {
                 --arg ts "$timestamp" \
                 --arg version "${CLEO_VERSION:-$(get_version)}" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase show",
                         "timestamp": $ts,
@@ -127,7 +127,7 @@ cmd_show() {
             --arg slug "$current_phase" \
             --arg version "${CLEO_VERSION:-$(get_version)}" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "command": "phase show",
                     "timestamp": $ts,
@@ -195,7 +195,7 @@ cmd_set() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase set",
                         "timestamp": $ts
@@ -234,7 +234,7 @@ cmd_set() {
                         --argjson from_order "$old_order" \
                         --argjson to_order "$new_order" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase set",
                                 "timestamp": $ts
@@ -264,7 +264,7 @@ cmd_set() {
                     jq -n \
                         --arg ts "$timestamp" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase set",
                                 "timestamp": $ts
@@ -318,7 +318,7 @@ cmd_set() {
                 --arg prev "${old_phase:-null}" \
                 --arg curr "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase set",
                         "timestamp": $ts
@@ -370,7 +370,7 @@ cmd_set() {
                 --argjson skippedCount "$skipped_phases" \
                 --arg skipWarning "$skip_warning" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase set",
                         "timestamp": $ts
@@ -410,7 +410,7 @@ cmd_set() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase set",
                         "timestamp": $ts
@@ -439,7 +439,7 @@ cmd_start() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase start",
                         "timestamp": $ts
@@ -468,7 +468,7 @@ cmd_start() {
                 --arg slug "$slug" \
                 --arg status "$current_status" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase start",
                         "timestamp": $ts
@@ -493,7 +493,7 @@ cmd_start() {
                 --arg ts "$started_at" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase start",
                         "timestamp": $ts
@@ -516,7 +516,7 @@ cmd_start() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase start",
                         "timestamp": $ts
@@ -546,7 +546,7 @@ cmd_complete() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase complete",
                         "timestamp": $ts
@@ -575,7 +575,7 @@ cmd_complete() {
                 --arg slug "$slug" \
                 --arg status "$current_status" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase complete",
                         "timestamp": $ts
@@ -607,7 +607,7 @@ cmd_complete() {
                 --arg slug "$slug" \
                 --argjson count "$incomplete_count" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase complete",
                         "timestamp": $ts
@@ -636,7 +636,7 @@ cmd_complete() {
                 --arg slug "$slug" \
                 --arg started "$started_at" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase complete",
                         "timestamp": $ts
@@ -660,7 +660,7 @@ cmd_complete() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase complete",
                         "timestamp": $ts
@@ -697,7 +697,7 @@ cmd_advance() {
                         --arg ts "$timestamp" \
                         --arg arg "$1" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase advance",
                                 "timestamp": $ts
@@ -726,7 +726,7 @@ cmd_advance() {
             jq -n \
                 --arg ts "$timestamp" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase advance",
                         "timestamp": $ts
@@ -764,7 +764,7 @@ cmd_advance() {
                 --arg ts "$timestamp" \
                 --arg current "$current" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase advance",
                         "timestamp": $ts
@@ -820,7 +820,7 @@ cmd_advance() {
                     --arg slug "$current" \
                     --argjson count "$critical_count" \
                     '{
-                        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                         "_meta": {
                             "command": "phase advance",
                             "timestamp": $ts
@@ -862,7 +862,7 @@ cmd_advance() {
                     --argjson percent "$completion_percent" \
                     --argjson threshold "$phase_threshold" \
                     '{
-                        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                         "_meta": {
                             "command": "phase advance",
                             "timestamp": $ts
@@ -914,7 +914,7 @@ cmd_advance() {
                         --arg ts "$timestamp" \
                         --arg current "$current" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase advance",
                                 "timestamp": $ts
@@ -958,7 +958,7 @@ cmd_advance() {
                 --arg curr "$new_phase" \
                 --argjson forced "$([[ "$force_advance" == "true" ]] && echo true || echo false)" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase advance",
                         "timestamp": $ts
@@ -984,7 +984,7 @@ cmd_advance() {
                 --arg ts "$timestamp" \
                 --arg msg "$result" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase advance",
                         "timestamp": $ts
@@ -1012,7 +1012,7 @@ cmd_list() {
             --arg ts "$timestamp" \
             --arg current "$current_phase" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "command": "phase list",
                     "timestamp": $ts
@@ -1068,7 +1068,7 @@ cmd_rename() {
                 --arg ts "$timestamp" \
                 --arg slug "$old_name" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase rename",
                         "timestamp": $ts
@@ -1094,7 +1094,7 @@ cmd_rename() {
                 --arg ts "$timestamp" \
                 --arg slug "$new_name" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase rename",
                         "timestamp": $ts
@@ -1120,7 +1120,7 @@ cmd_rename() {
                 --arg ts "$timestamp" \
                 --arg slug "$new_name" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase rename",
                         "timestamp": $ts
@@ -1156,7 +1156,7 @@ cmd_rename() {
             jq -n \
                 --arg ts "$timestamp" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase rename",
                         "timestamp": $ts
@@ -1218,7 +1218,7 @@ cmd_rename() {
             jq -n \
                 --arg ts "$timestamp" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase rename",
                         "timestamp": $ts
@@ -1245,7 +1245,7 @@ cmd_rename() {
             jq -n \
                 --arg ts "$timestamp" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase rename",
                         "timestamp": $ts
@@ -1278,7 +1278,7 @@ cmd_rename() {
             jq -n \
                 --arg ts "$timestamp" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase rename",
                         "timestamp": $ts
@@ -1318,7 +1318,7 @@ cmd_rename() {
             --argjson count "$updated_count" \
             --arg current "$current_phase" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "command": "phase rename",
                     "timestamp": $ts
@@ -1359,7 +1359,7 @@ cmd_delete() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase delete",
                         "timestamp": $ts
@@ -1387,7 +1387,7 @@ cmd_delete() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase delete",
                         "timestamp": $ts
@@ -1431,7 +1431,7 @@ cmd_delete() {
                 --argjson blocked "$blocked_count" \
                 --argjson done "$done_count" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase delete",
                         "timestamp": $ts
@@ -1465,7 +1465,7 @@ cmd_delete() {
                     --arg ts "$timestamp" \
                     --arg slug "$reassign_to" \
                     '{
-                        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                         "_meta": {
                             "command": "phase delete",
                             "timestamp": $ts
@@ -1492,7 +1492,7 @@ cmd_delete() {
                 --arg ts "$timestamp" \
                 --arg slug "$slug" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase delete",
                         "timestamp": $ts
@@ -1522,7 +1522,7 @@ cmd_delete() {
             jq -n \
                 --arg ts "$timestamp" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase delete",
                         "timestamp": $ts
@@ -1582,7 +1582,7 @@ cmd_delete() {
             jq -n \
                 --arg ts "$timestamp_err" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "command": "phase delete",
                         "timestamp": $ts
@@ -1615,7 +1615,7 @@ cmd_delete() {
             --arg reassign "${reassign_to:-null}" \
             --argjson count "$task_count" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "command": "phase delete",
                     "timestamp": $ts
@@ -1757,7 +1757,7 @@ main() {
                     jq -n \
                         --arg ts "$timestamp" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase set",
                                 "timestamp": $ts
@@ -1783,7 +1783,7 @@ main() {
                     jq -n \
                         --arg ts "$timestamp" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase start",
                                 "timestamp": $ts
@@ -1809,7 +1809,7 @@ main() {
                     jq -n \
                         --arg ts "$timestamp" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase complete",
                                 "timestamp": $ts
@@ -1841,7 +1841,7 @@ main() {
                     jq -n \
                         --arg ts "$timestamp" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase delete",
                                 "timestamp": $ts
@@ -1882,7 +1882,7 @@ main() {
                                 --arg ts "$timestamp" \
                                 --arg flag "$1" \
                                 '{
-                                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                                     "_meta": {
                                         "command": "phase delete",
                                         "timestamp": $ts
@@ -1911,7 +1911,7 @@ main() {
                     jq -n \
                         --arg ts "$timestamp" \
                         '{
-                            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                             "_meta": {
                                 "command": "phase rename",
                                 "timestamp": $ts
@@ -1937,7 +1937,7 @@ main() {
                     --arg ts "$timestamp" \
                     --arg cmd "$subcommand" \
                     '{
-                        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                         "_meta": {
                             "command": "phase",
                             "timestamp": $ts

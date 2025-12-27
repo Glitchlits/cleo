@@ -601,7 +601,7 @@ output_json_format() {
                 --argjson reverse "$reverse_graph" \
                 --arg timestamp "$current_timestamp" \
                 --arg version "$VERSION" '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,
@@ -629,7 +629,7 @@ output_json_format() {
                 --argjson dependents "$dependents" \
                 --arg timestamp "$current_timestamp" \
                 --arg version "$VERSION" '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,
@@ -669,7 +669,7 @@ output_json_format() {
             ([$node_ids[] as $id | $lookup[$id] // {id: $id, title: "Unknown", status: "unknown", type: "task"}]) as $nodes |
 
             {
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,

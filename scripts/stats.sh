@@ -487,7 +487,7 @@ generate_statistics() {
 
     cat <<EOF
 {
-  "\$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+  "\$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
   "_meta": {
     "format": "json",
     "version": "$version",

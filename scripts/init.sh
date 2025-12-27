@@ -245,7 +245,7 @@ if [[ "$UPDATE_CLAUDE_MD" == true ]]; then
       --arg action "$action_taken" \
       --arg version "$VERSION" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "init",
           "subcommand": "update-claude-md",
@@ -369,7 +369,7 @@ if _project_initialized; then
                 --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
                 --argjson existingFiles "$existing_count" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/error.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/error.schema.json",
                     "_meta": {
                         "format": "json",
                         "version": $version,
@@ -412,7 +412,7 @@ if _project_initialized; then
                 --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
                 --argjson existingFiles "$existing_count" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/error.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/error.schema.json",
                     "_meta": {
                         "format": "json",
                         "version": $version,
@@ -748,7 +748,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --arg version "$VERSION" \
     --argjson files "$(printf '%s\n' "${CREATED_FILES[@]}" | jq -R . | jq -s .)" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "command": "init",
         "timestamp": $timestamp,

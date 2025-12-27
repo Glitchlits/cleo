@@ -152,7 +152,7 @@ if [[ ! -f "$ARCHIVE_FILE" ]]; then
             --arg ver "${CLEO_VERSION:-$(get_version 2>/dev/null || echo unknown)}" \
             --arg report "$REPORT_TYPE" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {"format": "json", "command": "archive-stats", "timestamp": $ts, "version": $ver},
                 "success": true,
                 "report": $report,
@@ -434,7 +434,7 @@ if [[ "$FORMAT" == "json" ]]; then
         --argjson data "$REPORT_DATA" \
         --argjson filters "$FILTER_INFO" \
         '{
-            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {"format": "json", "command": "archive-stats", "timestamp": $ts, "version": $ver},
             "success": true,
             "report": $report,

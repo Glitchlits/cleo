@@ -1248,7 +1248,7 @@ if [[ "$HAS_CHANGES" == "false" ]]; then
             --arg task_id "$TASK_ID" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": $command,
@@ -1306,7 +1306,7 @@ if [[ "$DRY_RUN" == true ]]; then
       --argjson changes "$CHANGES_JSON" \
       --argjson task "$UPDATED_TASK" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "format": "json",
           "command": $command,
@@ -1397,7 +1397,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --argjson changes "$CHANGES_JSON" \
     --argjson task "$FINAL_TASK" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "command": $command,

@@ -341,7 +341,7 @@ output_list_json() {
     --argjson labels "$label_data" \
     --arg version "$VERSION" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "version": $version,
@@ -412,7 +412,7 @@ output_show_json() {
     --argjson tasks "$tasks" \
     --arg version "$VERSION" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "version": $version,
@@ -491,7 +491,7 @@ output_stats_json() {
     --argjson cooccurrence "$cooccurrence" \
     --arg version "$VERSION" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "version": $version,

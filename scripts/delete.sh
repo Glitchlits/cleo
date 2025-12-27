@@ -503,7 +503,7 @@ if [[ "$CURRENT_STATUS" == "done" ]]; then
             --arg completedAt "$COMPLETED_AT" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "delete",
@@ -542,7 +542,7 @@ if [[ "$CURRENT_STATUS" == "cancelled" ]]; then
             --arg cancelledAt "$CANCELLED_AT" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "delete",
@@ -723,7 +723,7 @@ if [[ "$DRY_RUN" == true ]]; then
             --argjson childCount "$CHILDREN_COUNT" \
             --argjson task "$TASK" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "command": "delete",
@@ -1014,7 +1014,7 @@ if [[ "$FORMAT" == "json" ]]; then
         --argjson focusCleared "$FOCUS_CLEARED" \
         --argjson task "$CANCELLED_TASK" \
         '{
-            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {
                 "format": "json",
                 "command": "delete",

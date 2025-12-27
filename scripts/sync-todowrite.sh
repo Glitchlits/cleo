@@ -190,7 +190,7 @@ handle_status() {
                 --arg timestamp "$timestamp" \
                 --arg state_file "$STATE_FILE" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "format": "json",
                         "version": $version,
@@ -239,7 +239,7 @@ handle_status() {
             --argjson task_ids "$task_ids_json" \
             --argjson phases "$phases_json" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,
@@ -289,7 +289,7 @@ handle_clear() {
                 --arg version "$version" \
                 --arg timestamp "$timestamp" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "format": "json",
                         "version": $version,
@@ -317,7 +317,7 @@ handle_clear() {
                 --arg timestamp "$timestamp" \
                 --arg state_file "$STATE_FILE" \
                 '{
-                    "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                    "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                     "_meta": {
                         "format": "json",
                         "version": $version,
@@ -350,7 +350,7 @@ handle_clear() {
             --arg timestamp "$timestamp" \
             --arg state_file "$STATE_FILE" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {
                     "format": "json",
                     "version": $version,

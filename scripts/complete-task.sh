@@ -309,7 +309,7 @@ if [[ "$CURRENT_STATUS" == "done" ]]; then
       --arg message "Task $TASK_ID is already complete" \
       --argjson task "$TASK" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "format": "json",
           "command": "complete",
@@ -374,7 +374,7 @@ if [[ "$DRY_RUN" == true ]]; then
       --arg currentStatus "$CURRENT_STATUS" \
       --argjson task "$TASK" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "format": "json",
           "command": "complete",
@@ -899,7 +899,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --argjson task "$COMPLETED_TASK" \
     --argjson autoCompletedParents "$AUTO_COMPLETED_JSON" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "command": "complete",

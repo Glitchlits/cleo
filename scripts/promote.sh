@@ -138,7 +138,7 @@ if save_json "$TODO_FILE" "$UPDATED_JSON"; then
             --arg newType "$NEW_TYPE" \
             --arg timestamp "$TIMESTAMP" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": { "format": "json", "command": "promote", "version": $version, "timestamp": $timestamp },
                 "success": true,
                 "taskId": $taskId,

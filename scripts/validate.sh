@@ -971,7 +971,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --arg timestamp "$TIMESTAMP" \
     --argjson details "$DETAILS_ARRAY" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "version": $version,

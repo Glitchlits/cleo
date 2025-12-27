@@ -238,7 +238,7 @@ output_json() {
     # Build output based on what was requested
     if [[ "$SHOW_WORKFLOWS" == true ]]; then
         jq -n \
-            --arg schema "https://claude-todo.dev/schemas/v1/output.schema.json" \
+            --arg schema "https://cleo-dev.com/schemas/v1/output.schema.json" \
             --arg version "${CLEO_VERSION:-$(get_version)}" \
             --arg cmd "$COMMAND_NAME" \
             --arg ts "$TIMESTAMP" \
@@ -256,7 +256,7 @@ output_json() {
             }'
     elif [[ "$SHOW_LOOKUP" == true ]]; then
         jq -n \
-            --arg schema "https://claude-todo.dev/schemas/v1/output.schema.json" \
+            --arg schema "https://cleo-dev.com/schemas/v1/output.schema.json" \
             --arg version "${CLEO_VERSION:-$(get_version)}" \
             --arg cmd "$COMMAND_NAME" \
             --arg ts "$TIMESTAMP" \
@@ -275,7 +275,7 @@ output_json() {
     elif [[ -n "$COMMAND_NAME_FILTER" ]]; then
         # Single command detail
         jq -n \
-            --arg schema "https://claude-todo.dev/schemas/v1/output.schema.json" \
+            --arg schema "https://cleo-dev.com/schemas/v1/output.schema.json" \
             --arg version "${CLEO_VERSION:-$(get_version)}" \
             --arg cmd "$COMMAND_NAME" \
             --arg ts "$TIMESTAMP" \
@@ -294,7 +294,7 @@ output_json() {
     else
         # Full commands list
         jq -n \
-            --arg schema "https://claude-todo.dev/schemas/v1/output.schema.json" \
+            --arg schema "https://cleo-dev.com/schemas/v1/output.schema.json" \
             --arg version "${CLEO_VERSION:-$(get_version)}" \
             --arg cmd "$COMMAND_NAME" \
             --arg ts "$TIMESTAMP" \

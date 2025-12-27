@@ -276,7 +276,7 @@ if [[ "$ALREADY_ACTIVE_COUNT" -eq "${#TASK_IDS[@]}" ]]; then
             --arg ver "${CLEO_VERSION:-$(get_version)}" \
             --argjson taskIds "$ALREADY_ACTIVE_IDS" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {"format": "json", "command": "unarchive", "timestamp": $ts, "version": $ver},
                 "success": true,
                 "noChange": true,
@@ -321,7 +321,7 @@ if [[ "$FOUND_COUNT" -eq 0 ]]; then
             --arg ver "${CLEO_VERSION:-$(get_version)}" \
             --argjson requestedIds "$TASK_IDS_JSON" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {"format": "json", "command": "unarchive", "timestamp": $ts, "version": $ver},
                 "success": false,
                 "error": {
@@ -408,7 +408,7 @@ if [[ "$DRY_RUN" == true ]]; then
             --argjson remainingArchived "$REMAINING_ARCHIVED" \
             --argjson newTodoTotal "$NEW_TODO_TOTAL" \
             '{
-                "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+                "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
                 "_meta": {"format": "json", "command": "unarchive", "timestamp": $ts, "version": $ver},
                 "success": true,
                 "dryRun": true,
@@ -608,7 +608,7 @@ if [[ "$FORMAT" == "json" ]]; then
         --argjson remainingArchived "$REMAINING_ARCHIVED" \
         --argjson todoTotal "$TODO_TOTAL" \
         '{
-            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {"format": "json", "command": "unarchive", "timestamp": $ts, "version": $ver},
             "success": true,
             "restored": {"count": $count, "taskIds": $ids, "status": $status},

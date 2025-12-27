@@ -175,7 +175,7 @@ _init_manifest() {
         local timestamp
         timestamp=$(get_iso_timestamp)
         jq -n \
-            --arg schema "https://claude-todo.dev/schemas/v1/backup-manifest.schema.json" \
+            --arg schema "https://cleo-dev.com/schemas/v1/backup-manifest.schema.json" \
             --arg version "$MANIFEST_VERSION" \
             --arg created "$timestamp" \
             --arg modified "$timestamp" \
@@ -448,7 +448,7 @@ _rebuild_manifest() {
     temp_manifest=$(mktemp)
 
     jq -n \
-        --arg schema "https://claude-todo.dev/schemas/v1/backup-manifest.schema.json" \
+        --arg schema "https://cleo-dev.com/schemas/v1/backup-manifest.schema.json" \
         --arg version "$MANIFEST_VERSION" \
         --arg created "$timestamp" \
         --arg modified "$timestamp" \

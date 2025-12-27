@@ -286,7 +286,7 @@ cmd_start() {
         --arg ts "$timestamp" \
         --arg version "${CLEO_VERSION:-$(get_version)}" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "format": "json",
             "command": "session start",
@@ -478,7 +478,7 @@ cmd_end() {
         --arg version "${CLEO_VERSION:-$(get_version)}" \
         --arg note "$note" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "format": "json",
             "command": "session end",
@@ -626,7 +626,7 @@ cmd_status() {
       --arg note "$session_note" \
       --arg next "$next_action" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "format": "json",
           "command": "session status",
@@ -685,7 +685,7 @@ cmd_info() {
     current_timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
     jq --arg timestamp "$current_timestamp" --arg version "$VERSION" '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "format": "json",
         "command": "session info",

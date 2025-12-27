@@ -226,7 +226,7 @@ list_backups() {
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         --arg dir "$backup_dir" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "subcommand": "list",
@@ -455,7 +455,7 @@ list_backups() {
       --argjson backups "$json_backups" \
       --argjson count "$count" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "backup",
           "subcommand": "list",
@@ -559,7 +559,7 @@ verify_backup() {
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         --arg target "$target" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "subcommand": "verify",
@@ -599,7 +599,7 @@ verify_backup() {
         --arg backup_id "$backup_id" \
         --arg path "$backup_path" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "subcommand": "verify",
@@ -635,7 +635,7 @@ verify_backup() {
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         --arg backup_id "$backup_id" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "subcommand": "verify",
@@ -824,7 +824,7 @@ verify_backup() {
       --argjson files_failed "$files_failed" \
       --argjson details "$details_json" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "backup",
           "subcommand": "verify",
@@ -920,7 +920,7 @@ show_status() {
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         --arg dir "$backup_dir" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "subcommand": "status",
@@ -1263,7 +1263,7 @@ show_status() {
       --argjson checks "$health_checks_json" \
       --argjson issues "$health_issues_json" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "backup",
           "subcommand": "status",
@@ -1457,7 +1457,7 @@ if [[ "$LIST_MODE" != true && "$VERIFY_MODE" != true ]]; then
       jq -n \
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "timestamp": $timestamp,
@@ -1499,7 +1499,7 @@ if [[ "$VERIFY_MODE" == true ]]; then
       jq -n \
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "subcommand": "verify",
@@ -1557,7 +1557,7 @@ if [[ "$AUTO_MODE" == true ]]; then
           --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
           --arg path "$backup_path" \
           '{
-            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {
               "command": "backup",
               "subcommand": "auto",
@@ -1579,7 +1579,7 @@ if [[ "$AUTO_MODE" == true ]]; then
         jq -n \
           --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
           '{
-            "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+            "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {
               "command": "backup",
               "subcommand": "auto",
@@ -1603,7 +1603,7 @@ if [[ "$AUTO_MODE" == true ]]; then
         --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
         --arg lastBackup "${last_backup:-null}" \
         '{
-          "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+          "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {
             "command": "backup",
             "subcommand": "auto",
@@ -1667,7 +1667,7 @@ if [[ "$FIND_MODE" == true ]]; then
       --argjson verbose "$([[ "$VERBOSE" == true ]] && echo true || echo false)" \
       --arg subcommand "$SUBCOMMAND_NAME" \
       '{
-        "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+        "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
         "_meta": {
           "command": "backup",
           "subcommand": $subcommand,
@@ -1938,7 +1938,7 @@ if [[ "$FORMAT" == "json" ]]; then
     --argjson validationWarnings "$VALIDATION_ERRORS" \
     --argjson files "$(printf '%s\n' "${BACKED_UP_FILES[@]}" | jq -R . | jq -s .)" \
     '{
-      "$schema": "https://claude-todo.dev/schemas/v1/output.schema.json",
+      "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
       "_meta": {
         "command": "backup",
         "timestamp": $timestamp,
