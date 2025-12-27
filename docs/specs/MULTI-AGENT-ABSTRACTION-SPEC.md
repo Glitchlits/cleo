@@ -133,7 +133,7 @@ When a legacy variable is used:
 | Todo file | `.cleo/todo.json` | `.cleo/todo.json` |
 | Archive file | `.cleo/todo-archive.json` | `.cleo/todo-archive.json` |
 | Log file | `.cleo/todo-log.json` | `.cleo/todo-log.json` |
-| Config file | `.cleo/config.json` | `.cleo/todo-config.json` |
+| Config file | `.cleo/config.json` | `.cleo/config.json` |
 | Backups | `.cleo/backups/` | `.cleo/backups/` |
 | Sync state | `.cleo/sync/` | `.cleo/sync/` |
 
@@ -298,7 +298,7 @@ The following data formats MUST remain unchanged:
 - `todo.json` schema
 - `todo-archive.json` schema
 - `todo-log.json` schema
-- `todo-config.json` schema (renamed to `config.json`)
+- `config.json` schema (renamed to `config.json`)
 
 ### 7.2 Schema Location
 

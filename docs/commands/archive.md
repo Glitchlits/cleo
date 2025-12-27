@@ -87,7 +87,7 @@ The archive system provides:
 
 ## Configuration
 
-Configure archive behavior in `.cleo/todo-config.json`:
+Configure archive behavior in `.cleo/config.json`:
 
 ```json
 {

@@ -320,7 +320,7 @@ fi
 # Command flag
 cleo sync --extract --auto-advance
 
-# Config option (.cleo/todo-config.json)
+# Config option (.cleo/config.json)
 {
   "sync": {
     "autoAdvancePhase": false,  # default
@@ -588,7 +588,7 @@ get_session_phase(): No phases exist
 
 ## Configuration Options
 
-**New Section**: `.cleo/todo-config.json`
+**New Section**: `.cleo/config.json`
 
 ```json
 {

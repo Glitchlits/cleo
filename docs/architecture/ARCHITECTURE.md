@@ -179,7 +179,7 @@ cleo/                        # Git repository (system files only)
 your-project/.cleo/               # Per-project instance (NOT in git)
 ├── todo.json                       # Active tasks
 ├── todo-archive.json               # Completed tasks
-├── todo-config.json                # Project configuration
+├── config.json                # Project configuration
 ├── todo-log.json                   # Change history
 └── .backups/                       # Tier 1: Operational backups (atomic writes)
     ├── todo.json.1                 # Most recent
@@ -195,7 +195,7 @@ your-project/.cleo/               # Per-project instance (NOT in git)
 ┌─────────────────────────────────────────────────────────┐
 │                  Configuration Layer                    │
 │                                                         │
-│  todo-config.json ──► Controls behavior of all scripts │
+│  config.json ──► Controls behavior of all scripts │
 │    ├─ daysUntilArchive: 7                             │
 │    ├─ strictMode: true                                │
 │    └─ maxBackups: 10                                  │
@@ -233,7 +233,7 @@ your-project/.cleo/               # Per-project instance (NOT in git)
 |------|---------|------------|-------------------|
 | `todo.json` | list, stats, complete, archive | add-task, complete-task, archive | todo.schema.json |
 | `todo-archive.json` | stats, list (--all) | archive | archive.schema.json |
-| `todo-config.json` | ALL scripts | init, user edit | config.schema.json |
+| `config.json` | ALL scripts | init, user edit | config.schema.json |
 | `todo-log.json` | stats, troubleshooting | add-task, complete-task, archive | log.schema.json |
 
 ---
@@ -485,7 +485,7 @@ User Input → Validate → Generate ID → Add to todo.json → Backup → Log
 ```
 
 **Workflow Steps**:
-1. Load todo-config.json for settings
+1. Load config.json for settings
 2. Parse command arguments
 3. Validate inputs (anti-hallucination)
 4. Load current todo.json
@@ -510,7 +510,7 @@ User Request → Find Task → Update Status → Validate → Write → Log → 
 ```
 
 **Workflow Steps**:
-1. Load todo-config.json
+1. Load config.json
 2. Load todo.json
 3. Find task by ID
 4. Validate task exists
@@ -538,7 +538,7 @@ Trigger → Load Config → Filter Tasks → Validate → Update Both Files → 
 ```
 
 **Workflow Steps**:
-1. Load todo-config.json
+1. Load config.json
 2. Read archive policy (daysUntilArchive)
 3. Load todo.json
 4. Filter completed tasks older than threshold
@@ -580,7 +580,7 @@ Trigger → Load Config → Filter Tasks → Validate → Update Both Files → 
 
 ## Configuration System
 
-### Default Configuration (todo-config.json)
+### Default Configuration (config.json)
 
 ```json
 {
@@ -625,7 +625,7 @@ Configuration values are resolved in this order (later overrides earlier):
          ↓
 2. Global Config (~/.cleo/config.json)
          ↓
-3. Project Config (.cleo/todo-config.json)
+3. Project Config (.cleo/config.json)
          ↓
 4. Environment Variables (CLEO_*)
          ↓

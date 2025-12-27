@@ -496,7 +496,7 @@ ct validate
 
 ### 10.1 Phase Validation Config
 
-**Location**: `todo-config.json → validation.phaseValidation`
+**Location**: `config.json → validation.phaseValidation`
 
 ```json
 {
@@ -520,7 +520,7 @@ ct validate
 
 ### 10.2 Default Phase Config
 
-**Location**: `todo-config.json → defaults.phase`
+**Location**: `config.json → defaults.phase`
 
 ```json
 {

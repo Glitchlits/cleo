@@ -17,7 +17,7 @@
 │ Project: .cleo/                                   │
 │ ├── todo.json (active tasks)                       │
 │ ├── todo-archive.json (completed)                  │
-│ ├── todo-config.json (settings)                    │
+│ ├── config.json (settings)                    │
 │ ├── todo-log.json (audit trail)                    │
 │ └── .backups/ (Tier 1: operational backups)        │
 └─────────────────────────────────────────────────────┘

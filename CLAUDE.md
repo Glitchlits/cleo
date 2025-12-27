@@ -66,7 +66,7 @@ ct list --phase $(ct phase show -q)  # Focus on current phase tasks
 
 **Phase progression awareness:**
 - Core phase: Feature development and main implementation
-- Testing phase: Validation, testing, and quality assurance  
+- Testing phase: Validation, testing, and quality assurance
 - Polish phase: Refinement, documentation, and final touches
 - Maintenance phase: Bug fixes and ongoing support
 

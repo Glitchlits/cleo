@@ -133,7 +133,7 @@ All backup-related paths MUST be relative to the project's `.cleo/` directory:
 │   │       ├── metadata.json
 │   │       ├── todo.json
 │   │       ├── todo-archive.json
-│   │       ├── todo-config.json
+│   │       ├── config.json
 │   │       └── todo-log.json
 │   ├── safety/
 │   │   └── safety_{timestamp}_{operation}/
@@ -415,7 +415,7 @@ If backup operations fail, LLM agents SHOULD:
 
 ### 10.1 Backup Configuration
 
-The following configuration options MUST be supported in `todo-config.json`:
+The following configuration options MUST be supported in `config.json`:
 
 ```json
 {

@@ -9,7 +9,7 @@ Template files used by `init.sh` to initialize new projects with the CLEO task m
 | `todo.template.json` | `.cleo/todo.json` | Active tasks storage with focus management and metadata |
 | `archive.template.json` | `.cleo/todo-archive.json` | Completed tasks archive (immutable after archival) |
 | `log.template.json` | `.cleo/todo-log.json` | Append-only change log for audit trail |
-| `config.template.json` | `.cleo/todo-config.json` | Project configuration (archive, validation, display settings) |
+| `config.template.json` | `.cleo/config.json` | Project configuration (archive, validation, display settings) |
 | `CLEO.todo.md` | (documentation) | Agent markdown section template for task management integration |
 | `AGENT-INJECTION.md` | CLAUDE.md | Default injection template for CLAUDE.md (works with any agent doc) |
 

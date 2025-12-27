@@ -51,7 +51,7 @@ cleo init
 This creates `.cleo/` directory with:
 - `todo.json` - Active tasks
 - `todo-archive.json` - Completed tasks
-- `todo-config.json` - Configuration
+- `config.json` - Configuration
 - `todo-log.json` - Change history
 
 ### 3. Verify Installation
@@ -203,7 +203,7 @@ cleo list --format markdown
 
 ## Essential Configuration
 
-Edit `.cleo/todo-config.json`:
+Edit `.cleo/config.json`:
 
 ```json
 {

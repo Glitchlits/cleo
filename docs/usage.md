@@ -350,7 +350,7 @@ cleo archive --force
 cleo archive --all
 ```
 
-**Automatic Archive** - Configure in `.cleo/todo-config.json`:
+**Automatic Archive** - Configure in `.cleo/config.json`:
 
 ```json
 {
@@ -504,7 +504,7 @@ Complete configuration documentation covering:
 
 ### Configuration File Location
 
-`.cleo/todo-config.json` (per-project)
+`.cleo/config.json` (per-project)
 
 ### Configuration Options
 
@@ -622,7 +622,7 @@ cat .cleo/todo-archive.json | jq '.tasks[] | select(.id == "<task-id>")'
 **Solution**:
 ```bash
 # Check archive configuration
-cat .cleo/todo-config.json | jq '.archive'
+cat .cleo/config.json | jq '.archive'
 
 # Force archive all completed tasks
 cleo archive --force

@@ -53,7 +53,7 @@ Schema Migration Status
 File                    Current    Expected   Status
 ----                    -------    --------   ------
 todo.json               2.0.0      2.0.0      ✓ Current
-todo-config.json        1.5.0      2.0.0      ⚠ Upgrade needed
+config.json        1.5.0      2.0.0      ⚠ Upgrade needed
 todo-archive.json       2.0.0      2.0.0      ✓ Current
 todo-log.json           2.0.0      2.0.0      ✓ Current
 
@@ -111,7 +111,7 @@ Migrating config...
 
 ```bash
 # Migrate only the config file
-cleo migrate file .cleo/todo-config.json config
+cleo migrate file .cleo/config.json config
 
 # Migrate todo file
 cleo migrate file .cleo/todo.json todo
@@ -129,7 +129,7 @@ cleo migrate run --force
 | Type | File | Description |
 |------|------|-------------|
 | `todo` | `todo.json` | Active tasks |
-| `config` | `todo-config.json` | Configuration |
+| `config` | `config.json` | Configuration |
 | `archive` | `todo-archive.json` | Archived tasks |
 | `log` | `todo-log.json` | Audit log |
 
@@ -360,7 +360,7 @@ Backup Information:
   Created: 2025-12-16T12:00:00Z
   Files:
     - todo.json
-    - todo-config.json
+    - config.json
     - todo-archive.json
     - todo-log.json
 
@@ -374,7 +374,7 @@ Creating safety backup before rollback...
 
 Restoring files from backup...
 ✓ Restored todo.json
-✓ Restored todo-config.json
+✓ Restored config.json
 ✓ Restored todo-archive.json
 ✓ Restored todo-log.json
 

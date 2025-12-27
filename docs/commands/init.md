@@ -63,7 +63,7 @@ Output:
 [INFO] Initializing cleo in /path/to/project
 [INFO] Created .cleo/ directory
 [INFO] Created .cleo/todo.json
-[INFO] Created .cleo/todo-config.json
+[INFO] Created .cleo/config.json
 [INFO] Created .cleo/todo-archive.json
 [INFO] Created .cleo/todo-log.json
 [INFO] Updated CLAUDE.md with task management injection
@@ -102,7 +102,7 @@ cleo init
 # [WARN] Found 4 data file(s) that would be WIPED:
 # [WARN]   - .cleo/todo.json
 # [WARN]   - .cleo/todo-archive.json
-# [WARN]   - .cleo/todo-config.json
+# [WARN]   - .cleo/config.json
 # [WARN]   - .cleo/todo-log.json
 # [WARN] To reinitialize, use BOTH flags: --force --confirm-wipe
 ```
@@ -153,7 +153,7 @@ cleo init --force --confirm-wipe
     "context": {
       "existingFiles": 4,
       "dataDirectory": ".claude",
-      "affectedFiles": ["todo.json", "todo-archive.json", "todo-config.json", "todo-log.json"]
+      "affectedFiles": ["todo.json", "todo-archive.json", "config.json", "todo-log.json"]
     }
   }
 }
@@ -190,7 +190,7 @@ cleo init --force --confirm-wipe
 | File | Description |
 |------|-------------|
 | `.cleo/todo.json` | Active tasks with metadata |
-| `.cleo/todo-config.json` | Project configuration |
+| `.cleo/config.json` | Project configuration |
 | `.cleo/todo-archive.json` | Archived completed tasks |
 | `.cleo/todo-log.json` | Audit log of all operations |
 | `.cleo/schemas/` | JSON Schema files for validation |
@@ -203,7 +203,7 @@ cleo init --force --confirm-wipe
 project/
 ├── .cleo/
 │   ├── todo.json          # Active tasks
-│   ├── todo-config.json   # Configuration
+│   ├── config.json   # Configuration
 │   ├── todo-archive.json  # Archived tasks
 │   ├── todo-log.json      # Audit log
 │   ├── schemas/           # JSON Schema files
@@ -225,7 +225,7 @@ When reinitializing with `--force --confirm-wipe`, a safety backup is automatica
 **Files Backed Up**:
 - `todo.json` - All active tasks
 - `todo-archive.json` - All archived tasks
-- `todo-config.json` - Configuration
+- `config.json` - Configuration
 - `todo-log.json` - Audit log
 
 **Metadata**: Includes `metadata.json` with backup timestamp, file count, and total size.

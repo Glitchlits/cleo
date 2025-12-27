@@ -190,7 +190,7 @@ Ordered from highest to lowest:
 | Field | Type | Description |
 |-------|------|-------------|
 | `checksum` | string | SHA-256 truncated hash of tasks array (pattern: `^[a-f0-9]{16}$`) |
-| `configVersion` | string | Version of todo-config.json used |
+| `configVersion` | string | Version of config.json used |
 | `lastSessionId` | string or null | Session ID that last modified this file |
 | `activeSession` | string or null | Currently active session (null if none) |
 
@@ -860,7 +860,7 @@ ajv validate -s schemas/todo.schema.json -d todo.json --strict
 ajv validate -s schemas/archive.schema.json -d archive.json --strict
 
 # Validate config
-ajv validate -s schemas/config.schema.json -d todo-config.json --strict
+ajv validate -s schemas/config.schema.json -d config.json --strict
 
 # Validate log
 ajv validate -s schemas/log.schema.json -d todo-log.json --strict

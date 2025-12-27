@@ -24,7 +24,7 @@ Your CI environment needs:
 
 ### Repository Setup
 
-1. **Check in configuration**: Commit `.cleo/todo-config.json` to version control
+1. **Check in configuration**: Commit `.cleo/config.json` to version control
 2. **Include task files**: Add `.cleo/todo.json` to repository (optional)
 3. **Exclude sensitive data**: Add `.cleo/.backups/` and `.cleo/todo-log.json` to `.gitignore` if needed
 

@@ -179,7 +179,7 @@ Override precedence (highest to lowest):
 
 1. CLI flags (`--option=value`)
 2. Environment variables (`CLEO_*`)
-3. Project config (`.cleo/todo-config.json`)
+3. Project config (`.cleo/config.json`)
 4. Global config (`~/.cleo/config.json`)
 5. Hardcoded defaults
 

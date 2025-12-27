@@ -519,7 +519,7 @@ cleo list --phase core
 Values resolved in order (later overrides earlier):
 
 ```
-Defaults → Global (~/.cleo/config.json) → Project (.cleo/todo-config.json) → Environment (CLEO_*) → CLI Flags
+Defaults → Global (~/.cleo/config.json) → Project (.cleo/config.json) → Environment (CLEO_*) → CLI Flags
 ```
 
 ### Key Options
@@ -580,7 +580,7 @@ your-project/.cleo/        # Per-project instance
 ├── todo.json               # Active tasks (source of truth)
 ├── todo-archive.json       # Completed tasks (immutable)
 ├── todo-log.json           # Audit trail (append-only)
-├── todo-config.json        # Project configuration
+├── config.json        # Project configuration
 └── .backups/               # Automatic versioned backups
 ```
 

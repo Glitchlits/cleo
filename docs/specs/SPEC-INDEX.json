@@ -99,7 +99,7 @@
       "type": "SPEC",
       "domain": "configuration",
       "category": "core-system",
-      "synopsis": "Configuration system with global (~/.claude-todo/config.json) and project (.claude/todo-config.json) configs. Priority resolution, environment variables.",
+      "synopsis": "Configuration system with global (~/.cleo/config.json) and project (.cleo/config.json) configs. Priority resolution, environment variables.",
       "lastUpdated": "2025-12-19",
       "dependsOn": [],
       "dependedOnBy": ["TASK-HIERARCHY-SPEC.md"],
@@ -258,7 +258,7 @@
       "type": "SPEC",
       "domain": "rcsd-pipeline",
       "category": "architecture",
-      "synopsis": "Unified Research→Consensus→Spec→Decompose pipeline. Task-anchored directory structure (.claude/rcsd/), 9 guardrailed agents, schema-validated outputs. Supersedes T204/T215-T221 plugin approach.",
+      "synopsis": "Unified Research→Consensus→Spec→Decompose pipeline. Task-anchored directory structure (.cleo/rcsd/), 9 guardrailed agents, schema-validated outputs. Supersedes T204/T215-T221 plugin approach.",
       "lastUpdated": "2025-12-23",
       "dependsOn": ["SPEC-BIBLE-GUIDELINES.md", "LLM-AGENT-FIRST-SPEC.md", "CONSENSUS-FRAMEWORK-SPEC.md", "TASK-DECOMPOSITION-SPEC.md", "PHASE-SYSTEM-SPEC.md", "LLM-TASK-ID-SYSTEM-DESIGN-SPEC.md"],
       "dependedOnBy": [],
@@ -396,7 +396,7 @@
       "file": "RCSD-PIPELINE-SPEC.md",
       "changeType": "Created",
       "version": "1.0.0",
-      "description": "Unified Research→Consensus→Spec→Decompose pipeline. Task-anchored .claude/rcsd/ directory, 9 guardrailed agents, 5 JSON schemas. Supersedes T204/T215-T221 plugin approach."
+      "description": "Unified Research→Consensus→Spec→Decompose pipeline. Task-anchored .cleo/rcsd/ directory, 9 guardrailed agents, 5 JSON schemas. Supersedes T204/T215-T221 plugin approach."
     },
     {
       "date": "2025-12-23",

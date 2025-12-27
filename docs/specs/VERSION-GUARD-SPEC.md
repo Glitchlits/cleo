@@ -156,7 +156,7 @@ can_write_safely() {
 
 ## Configuration Options
 
-Add to `todo-config.json` schema:
+Add to `config.json` schema:
 
 ```json
 {

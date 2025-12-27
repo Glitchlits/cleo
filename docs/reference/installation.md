@@ -188,7 +188,7 @@ your-project/
 └── .cleo/
     ├── todo.json              # Active tasks list
     ├── todo-archive.json      # Completed/archived tasks
-    ├── todo-config.json       # Project-specific configuration
+    ├── config.json       # Project-specific configuration
     └── todo-log.json          # Change history log
 ```
 
@@ -206,7 +206,7 @@ your-project/
 - Cycle time metrics
 - **Never modify manually**
 
-**`todo-config.json`** - Configuration
+**`config.json`** - Configuration
 - Archive settings (retention, auto-archive)
 - Validation rules (strict mode, checksums)
 - Logging preferences
@@ -231,8 +231,8 @@ Add to `.gitignore`:
 .cleo/.backups/
 
 # Optional: Keep config in version control
-# Remove this line to track todo-config.json
-.cleo/todo-config.json
+# Remove this line to track config.json
+.cleo/config.json
 ```
 
 **Alternative**: Track only configuration
@@ -242,7 +242,7 @@ Add to `.gitignore`:
 .cleo/todo-archive.json
 .cleo/todo-log.json
 .cleo/.backups/
-# Note: todo-config.json is tracked for team consistency
+# Note: config.json is tracked for team consistency
 ```
 
 ### Step 5: CLAUDE.md Integration (Optional)
@@ -257,7 +257,7 @@ If your project has a `CLAUDE.md` file, the initialization script automatically 
 Tasks in `.cleo/todo.json`. **Read at session start, verify checksum.**
 
 ### Protocol
-- **START**: Read .cleo/todo-config.json → Read .cleo/todo.json → Verify checksum → Log session_start
+- **START**: Read .cleo/config.json → Read .cleo/todo.json → Verify checksum → Log session_start
 - **WORK**: ONE active task only → Update notes → Log changes to .cleo/todo-log.json
 - **END**: Update sessionNote → Update checksum → Log session_end
 
@@ -270,7 +270,7 @@ Tasks in `.cleo/todo.json`. **Read at session start, verify checksum.**
 ### Files
 - `.cleo/todo.json` - Active tasks
 - `.cleo/todo-archive.json` - Completed (immutable)
-- `.cleo/todo-config.json` - Settings
+- `.cleo/config.json` - Settings
 - `.cleo/todo-log.json` - Audit trail
 <!-- CLAUDE-TODO:END -->
 ```
@@ -313,7 +313,7 @@ cd /path/to/your/project
 
 # Check .claude directory
 ls -la .cleo/
-# Expected: todo.json, todo-archive.json, todo-config.json, todo-log.json
+# Expected: todo.json, todo-archive.json, config.json, todo-log.json
 
 # Validate todo.json structure
 cleo validate
@@ -635,7 +635,7 @@ rm -rf .cleo/
 After successful installation and initialization:
 
 1. **Read Quick Reference**: `~/.cleo/docs/QUICK-REFERENCE.md`
-2. **Configure settings**: Edit `.cleo/todo-config.json` for your workflow
+2. **Configure settings**: Edit `.cleo/config.json` for your workflow
 3. **Add first task**: Manually edit `.cleo/todo.json` or use Claude Code
 4. **Learn workflows**: See `usage.md` for complete task management patterns
 5. **Understand schemas**: Review `architecture/SCHEMAS.md` for data structures
@@ -670,7 +670,7 @@ After successful installation and initialization:
 - `~/.cleo/` - Global installation directory
 - `.cleo/todo.json` - Active tasks (per-project)
 - `.cleo/todo-archive.json` - Completed tasks (per-project)
-- `.cleo/todo-config.json` - Configuration (per-project)
+- `.cleo/config.json` - Configuration (per-project)
 - `.cleo/todo-log.json` - Change history (per-project)
 
 **Task Status Values:**

@@ -13,7 +13,7 @@ The cleo plugin system enables extensibility through auto-discovered shell scrip
 1. **Zero-Dependency Extension**: Plugins are standalone shell scripts - no compilation or installation
 2. **Auto-Discovery**: Drop scripts in plugin directories and they're immediately available
 3. **Future-Proof Foundation**: Architecture supports evolution toward a robust microservice CLI
-4. **Configuration Integration**: Plugins respect and can extend `todo-config.json`
+4. **Configuration Integration**: Plugins respect and can extend `config.json`
 5. **Non-Invasive**: Core commands are never modified by plugins
 
 ---
@@ -172,7 +172,7 @@ jq -r '.tasks[] | select(.status == "pending") |
 
 ## Plugin Configuration
 
-Plugins can be configured in `todo-config.json`:
+Plugins can be configured in `config.json`:
 
 ```json
 {

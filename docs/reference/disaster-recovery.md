@@ -28,7 +28,7 @@ Located in `.cleo/.backups/`, these are numbered backups created automatically b
 ├── todo.json.1          # Most recent (newest)
 ├── todo.json.2
 ├── todo.json.3          # Oldest
-├── todo-config.json.1
+├── config.json.1
 └── ...
 ```
 
@@ -52,7 +52,7 @@ Each backup directory contains:
 - `metadata.json` - Backup info, checksums, timestamps
 - `todo.json` - Active tasks
 - `todo-archive.json` - Archived tasks
-- `todo-config.json` - Configuration
+- `config.json` - Configuration
 - `todo-log.json` - Audit log
 
 ---
@@ -268,7 +268,7 @@ A schema migration failed partway through, leaving data in an inconsistent state
 ```bash
 # Step 1: Check current schema version
 jq '.version' .cleo/todo.json
-jq '.version' .cleo/todo-config.json
+jq '.version' .cleo/config.json
 
 # Step 2: Check expected version
 cleo migrate status
@@ -544,7 +544,7 @@ cleo list
 ```bash
 # 1. Try to extract what's readable
 # Some JSON files may be valid even if others are not
-for file in todo.json todo-archive.json todo-config.json; do
+for file in todo.json todo-archive.json config.json; do
   if jq empty ".cleo/backups/snapshot/snapshot_20251213_120000/$file" 2>/dev/null; then
     echo "Extracting valid file: $file"
     cp ".cleo/backups/snapshot/snapshot_20251213_120000/$file" ".cleo/$file"

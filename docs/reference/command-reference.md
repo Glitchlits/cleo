@@ -78,7 +78,7 @@ cleo init --template ~/my-todo-template.json
 - `.cleo/` directory
 - `todo.json` (active tasks)
 - `todo-archive.json` (completed tasks)
-- `todo-config.json` (configuration)
+- `config.json` (configuration)
 - `todo-log.json` (change history)
 
 **Side Effects:**
@@ -445,7 +445,7 @@ cleo archive --count 20
 ```
 
 **Configuration:**
-Controlled by `.cleo/todo-config.json`:
+Controlled by `.cleo/config.json`:
 ```json
 {
   "archive": {
@@ -691,7 +691,7 @@ cleo backup --name "before-major-refactor"
 **Backs Up:**
 - `todo.json`
 - `todo-archive.json`
-- `todo-config.json`
+- `config.json`
 - `todo-log.json`
 
 **Side Effects:**

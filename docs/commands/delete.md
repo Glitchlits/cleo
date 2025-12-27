@@ -97,7 +97,7 @@ cleo delete T001 --reason "Full cleanup" --children cascade --force
 
 ## Configuration
 
-Configure cancellation behavior in `.cleo/todo-config.json`:
+Configure cancellation behavior in `.cleo/config.json`:
 
 ```json
 {

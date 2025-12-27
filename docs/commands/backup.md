@@ -102,7 +102,7 @@ Each backup includes:
 
 - `todo.json` - Active tasks and focus state
 - `todo-archive.json` - Completed and archived tasks
-- `todo-config.json` - Configuration and settings
+- `config.json` - Configuration and settings
 - `todo-log.json` - Audit trail and session history
 - `backup-metadata.json` - Backup metadata (timestamp, file count, size)
 
@@ -115,7 +115,7 @@ Each backup includes:
 ├── snapshot_20251213_120000/
 │   ├── todo.json
 │   ├── todo-archive.json
-│   ├── todo-config.json
+│   ├── config.json
 │   ├── todo-log.json
 │   └── backup-metadata.json
 ```
@@ -162,7 +162,7 @@ Output:
   Files Included:
     ✓ todo.json
     ✓ todo-archive.json
-    ✓ todo-config.json
+    ✓ config.json
     ✓ todo-log.json
 
   Total Size: 12.4KiB
@@ -209,7 +209,7 @@ Output:
   Files Included:
     ✓ todo.json
     ✓ todo-archive.json
-    ✓ todo-config.json
+    ✓ config.json
     ✓ todo-log.json
 
   Total Size: 12.4KiB
@@ -269,8 +269,8 @@ Output:
 [DEBUG] Backed up todo.json (4.2KiB)
 [DEBUG] todo-archive.json validated successfully
 [DEBUG] Backed up todo-archive.json (3.8KiB)
-[DEBUG] todo-config.json validated successfully
-[DEBUG] Backed up todo-config.json (1.1KiB)
+[DEBUG] config.json validated successfully
+[DEBUG] Backed up config.json (1.1KiB)
 [DEBUG] todo-log.json validated successfully
 [DEBUG] Backed up todo-log.json (3.3KiB)
 [DEBUG] Created metadata file
@@ -340,7 +340,7 @@ Output:
 ✓ Verifying backup: snapshot_20251215
 ✓ todo.json: checksum valid
 ✓ todo-archive.json: checksum valid
-✓ todo-config.json: checksum valid
+✓ config.json: checksum valid
 ✓ todo-log.json: checksum valid
 
 Backup integrity: VERIFIED
@@ -404,7 +404,7 @@ cleo backup --list
 BACKUP_DIR=".cleo/backups/snapshot/snapshot_20251213_120000"
 cp "$BACKUP_DIR/todo.json" .cleo/
 cp "$BACKUP_DIR/todo-archive.json" .cleo/
-cp "$BACKUP_DIR/todo-config.json" .cleo/
+cp "$BACKUP_DIR/config.json" .cleo/
 cp "$BACKUP_DIR/todo-log.json" .cleo/
 
 # 3. Validate restored files
@@ -435,7 +435,7 @@ BACKUP_DIR=".cleo/backups/snapshot/snapshot_20251213_120000"
 cp "$BACKUP_DIR/todo.json" .cleo/
 
 # Restore just config
-cp "$BACKUP_DIR/todo-config.json" .cleo/
+cp "$BACKUP_DIR/config.json" .cleo/
 
 # Validate after partial restore
 cleo validate
@@ -456,7 +456,7 @@ Automatic cleanup of old backups is controlled by configuration:
 
 ```bash
 # View current retention setting
-jq '.backups.maxBackups' .cleo/todo-config.json
+jq '.backups.maxBackups' .cleo/config.json
 # Output: 10 (default)
 ```
 
@@ -529,7 +529,7 @@ Each backup includes `backup-metadata.json`:
   "files": [
     "todo.json",
     "todo-archive.json",
-    "todo-config.json",
+    "config.json",
     "todo-log.json"
   ],
   "totalSize": 12688,
@@ -787,7 +787,7 @@ cleo backup --compress --destination ~/Dropbox/cleo-backups
 
 ## Scheduled Backups (v0.30.0+)
 
-Configure automatic backups via `todo-config.json`:
+Configure automatic backups via `config.json`:
 
 ```json
 {

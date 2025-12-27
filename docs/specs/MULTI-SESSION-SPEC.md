@@ -38,7 +38,7 @@ This specification defines the multi-session architecture for cleo, enabling mul
 .cleo/
 ├── todo.json              # Tasks (shared across sessions)
 ├── sessions.json          # Session registry (NEW)
-├── todo-config.json       # Configuration
+├── config.json       # Configuration
 ├── todo-log.json          # Audit log (session-aware)
 ├── todo-archive.json      # Archived tasks
 └── .current-session       # Optional: current session hint file

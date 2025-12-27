@@ -48,7 +48,7 @@ cleo init
 Creates `.cleo/` directory with:
 - `todo.json` - Active tasks
 - `todo-archive.json` - Completed tasks
-- `todo-config.json` - Configuration
+- `config.json` - Configuration
 - `todo-log.json` - Change history
 
 ### 3. Inject Agent Instructions
@@ -163,7 +163,7 @@ The same CLEO template is injected into the specified file.
 
 ## Configuration
 
-Edit `.cleo/todo-config.json`:
+Edit `.cleo/config.json`:
 
 ```json
 {

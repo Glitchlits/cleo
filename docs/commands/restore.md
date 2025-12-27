@@ -37,7 +37,7 @@ The restore command can restore any or all of these files:
 
 - `todo.json` - Active tasks and focus state
 - `todo-archive.json` - Completed and archived tasks
-- `todo-config.json` - Configuration and settings
+- `config.json` - Configuration and settings
 - `todo-log.json` - Audit trail and session history
 
 ## Restore Process
@@ -79,7 +79,7 @@ Output:
   Files:
     ✓ todo.json
     ✓ todo-archive.json
-    ✓ todo-config.json
+    ✓ config.json
     ✓ todo-log.json
 
 ⚠  WARNING: This will overwrite current todo system files!
@@ -91,7 +91,7 @@ Are you sure you want to restore from this backup? (yes/no): yes
 [INFO] Restoring files...
 [INFO] ✓ Restored todo.json
 [INFO] ✓ Restored todo-archive.json
-[INFO] ✓ Restored todo-config.json
+[INFO] ✓ Restored config.json
 [INFO] ✓ Restored todo-log.json
 [INFO] Validating restored files...
 
@@ -102,7 +102,7 @@ Are you sure you want to restore from this backup? (yes/no): yes
   Restored Files:
     ✓ todo.json
     ✓ todo-archive.json
-    ✓ todo-config.json
+    ✓ config.json
     ✓ todo-log.json
 
   Safety Backup:
@@ -144,7 +144,7 @@ Output:
   Files:
     ✓ todo.json
     ✓ todo-archive.json
-    ✓ todo-config.json
+    ✓ config.json
     ✓ todo-log.json
 
 ⚠  WARNING: This will overwrite current todo system files!
@@ -172,7 +172,7 @@ Are you sure you want to restore from this backup? (yes/no): yes
 **Valid file options**:
 - `todo.json`
 - `todo-archive.json`
-- `todo-config.json`
+- `config.json`
 - `todo-log.json`
 
 ### Non-Interactive Restore
@@ -211,7 +211,7 @@ Output:
   Files:
     ✓ todo.json
     ✓ todo-archive.json
-    ✓ todo-config.json
+    ✓ config.json
     ✓ todo-log.json
 
 ⚠  WARNING: This will overwrite current todo system files!
@@ -221,7 +221,7 @@ Are you sure you want to restore from this backup? (yes/no): yes
 [INFO] Creating safety backup before restore...
 [DEBUG] Backed up todo.json
 [DEBUG] Backed up todo-archive.json
-[DEBUG] Backed up todo-config.json
+[DEBUG] Backed up config.json
 [DEBUG] Backed up todo-log.json
 [INFO] Safety backup created: .cleo/backups/safety/pre-restore_20251213_144000
 [INFO] Restoring files...
@@ -230,14 +230,14 @@ Are you sure you want to restore from this backup? (yes/no): yes
 [INFO] ✓ Restored todo.json
 [DEBUG] todo-archive.json validated successfully
 [INFO] ✓ Restored todo-archive.json
-[DEBUG] todo-config.json validated successfully
-[INFO] ✓ Restored todo-config.json
+[DEBUG] config.json validated successfully
+[INFO] ✓ Restored config.json
 [DEBUG] todo-log.json validated successfully
 [INFO] ✓ Restored todo-log.json
 [INFO] Validating restored files...
 [DEBUG] todo.json validated successfully
 [DEBUG] todo-archive.json validated successfully
-[DEBUG] todo-config.json validated successfully
+[DEBUG] config.json validated successfully
 [DEBUG] todo-log.json validated successfully
 
 ╔══════════════════════════════════════════════════════════╗
@@ -247,7 +247,7 @@ Are you sure you want to restore from this backup? (yes/no): yes
   Restored Files:
     ✓ todo.json
     ✓ todo-archive.json
-    ✓ todo-config.json
+    ✓ config.json
     ✓ todo-log.json
 
   Safety Backup:
@@ -307,10 +307,10 @@ cleo validate
 
 ```bash
 # Restore only config, keep current tasks and log
-cleo restore .cleo/backups/snapshot/snapshot_20251213_120000 --file todo-config.json
+cleo restore .cleo/backups/snapshot/snapshot_20251213_120000 --file config.json
 
 # Verify configuration
-jq '.' .cleo/todo-config.json
+jq '.' .cleo/config.json
 ```
 
 ### Cross-System Migration
@@ -362,7 +362,7 @@ Every restore operation automatically creates a safety backup before making any 
 .cleo/backups/safety/pre-restore_YYYYMMDD_HHMMSS/
 ├── todo.json
 ├── todo-archive.json
-├── todo-config.json
+├── config.json
 └── todo-log.json
 ```
 
@@ -412,7 +412,7 @@ When restore fails, automatic rollback preserves system integrity:
 [WARN] Rolling back restore operation...
 [DEBUG] Rolled back todo.json
 [DEBUG] Rolled back todo-archive.json
-[DEBUG] Rolled back todo-config.json
+[DEBUG] Rolled back config.json
 [DEBUG] Rolled back todo-log.json
 [INFO] Rollback completed successfully
 [ERROR] Restore rolled back to original state
@@ -455,16 +455,16 @@ cleo list
 
 ### Scenario 2: Corrupted Configuration
 
-**Problem**: Manual edit broke todo-config.json
+**Problem**: Manual edit broke config.json
 
 **Solution**:
 ```bash
 # Restore only configuration
-cleo restore .cleo/backups/snapshot/snapshot_20251213_120000 --file todo-config.json --force
+cleo restore .cleo/backups/snapshot/snapshot_20251213_120000 --file config.json --force
 
 # Verify configuration
 cleo validate
-jq '.' .cleo/todo-config.json
+jq '.' .cleo/config.json
 ```
 
 ### Scenario 3: Failed Archive Operation
@@ -746,7 +746,7 @@ Restore only what you need:
 ```bash
 # Instead of full restore, restore specific files
 cleo restore backup --file todo.json      # Just tasks
-cleo restore backup --file todo-config.json  # Just config
+cleo restore backup --file config.json  # Just config
 
 # Preserves other current data
 ```

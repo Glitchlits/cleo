@@ -26,7 +26,7 @@ This specification defines the configuration system for cleo, including global a
 
 The cleo configuration system provides:
 - **Global Configuration**: User preferences at `~/.cleo/config.json`
-- **Project Configuration**: Project-specific settings at `.cleo/todo-config.json`
+- **Project Configuration**: Project-specific settings at `.cleo/config.json`
 - **Priority Resolution**: Deterministic override hierarchy
 - **Environment Variables**: Runtime overrides via `CLEO_*` variables
 - **Config Command**: LLM-agent-friendly interface for reading/modifying settings
@@ -43,7 +43,7 @@ Configuration values MUST be resolved in this priority order (highest to lowest)
 |----------|--------|-------------|
 | 1 (Highest) | CLI Flags | Command-line arguments |
 | 2 | Environment Variables | `CLEO_*` variables |
-| 3 | Project Config | `.cleo/todo-config.json` |
+| 3 | Project Config | `.cleo/config.json` |
 | 4 | Global Config | `~/.cleo/config.json` |
 | 5 (Lowest) | Defaults | Schema-defined defaults |
 
@@ -91,7 +91,7 @@ Global config MUST validate against `schemas/global-config.schema.json`.
 
 ### 3.1 Location
 
-- Project config MUST be stored at `.cleo/todo-config.json`
+- Project config MUST be stored at `.cleo/config.json`
 - Project config MUST be created during `ct init` if not present
 - Project config MUST use the template at `templates/config.template.json`
 

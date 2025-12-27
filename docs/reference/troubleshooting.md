@@ -49,7 +49,7 @@ ls -la .cleo/
 
 # Fix file permissions (readable by all, writable by owner)
 chmod 644 .cleo/todo.json
-chmod 644 .cleo/todo-config.json
+chmod 644 .cleo/config.json
 chmod 644 .cleo/todo-archive.json
 chmod 644 .cleo/todo-log.json
 
@@ -766,7 +766,7 @@ time cleo list
 **Step 4: Configure automatic archiving**
 ```bash
 # Edit config
-nano .cleo/todo-config.json
+nano .cleo/config.json
 
 # Set:
 {
@@ -850,7 +850,7 @@ Validating: .cleo/todo-archive.json
 ✓ All archived tasks have status=done
 ✓ No ID conflicts with todo.json
 
-Validating: .cleo/todo-config.json
+Validating: .cleo/config.json
 ✓ File exists
 ✓ JSON syntax valid
 ✓ Schema validation passed
@@ -880,7 +880,7 @@ cat > /tmp/integrity-check.sh << 'EOF'
 echo "=== File Integrity Check ==="
 
 # Check file existence
-for file in todo.json todo-config.json todo-archive.json todo-log.json; do
+for file in todo.json config.json todo-archive.json todo-log.json; do
   if [ -f ".cleo/$file" ]; then
     echo "✓ $file exists"
   else

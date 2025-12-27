@@ -38,7 +38,7 @@ Location: `~/.cleo/config.json`
 Create this file to override defaults across all projects. Useful for personal preferences like logging levels or display settings.
 
 ### Project Configuration
-Location: `.cleo/todo-config.json`
+Location: `.cleo/config.json`
 
 Project-specific configuration. Created automatically during initialization from the default template.
 
@@ -48,7 +48,7 @@ Configuration values are resolved in this order (later overrides earlier):
 
 1. **Defaults** - Built-in defaults from schema
 2. **Global** - `~/.cleo/config.json` (if exists)
-3. **Project** - `.cleo/todo-config.json`
+3. **Project** - `.cleo/config.json`
 4. **Environment** - `CLEO_*` environment variables
 5. **CLI Flags** - Command-line arguments (highest priority)
 
@@ -824,7 +824,7 @@ See also: [schema-reference.md](../architecture/SCHEMAS.md)
 **Check override hierarchy:**
 ```bash
 # Verify project config exists
-cat .cleo/todo-config.json
+cat .cleo/config.json
 
 # Check environment variables
 env | grep CLEO_
@@ -835,7 +835,7 @@ cleo list --help
 
 **Validate configuration:**
 ```bash
-cleo validate .cleo/todo-config.json
+cleo validate .cleo/config.json
 ```
 
 ### Invalid Configuration Values
@@ -865,13 +865,13 @@ If operations are slow:
 When upgrading between versions:
 ```bash
 # Backup current config
-cp .cleo/todo-config.json .cleo/todo-config.backup.json
+cp .cleo/config.json .cleo/todo-config.backup.json
 
 # Re-initialize to get new defaults (preserves existing data)
 cleo init --force
 
 # Validate migrated config
-cleo validate .cleo/todo-config.json
+cleo validate .cleo/config.json
 ```
 
 > **Note**: For automated schema migrations, see the [Migration Guide](migration-guide.md). The `cleo migrate` command handles version upgrades automatically with backup and rollback support.
@@ -884,7 +884,7 @@ cleo validate .cleo/todo-config.json
 4. **Enforce focus** - Keep `maxActiveTasks: 1` unless you have compelling reason
 5. **Regular archiving** - Set reasonable `daysUntilArchive` (7-14 days typical)
 6. **Log appropriately** - Use `standard` logging unless you need `verbose` for auditing
-7. **Version control** - Commit `.cleo/todo-config.json` to share team standards
+7. **Version control** - Commit `.cleo/config.json` to share team standards
 8. **Test changes** - Validate configuration after editing
 9. **Document overrides** - Comment why you changed defaults (JSON doesn't support comments, use separate docs)
 10. **Review periodically** - Adjust settings as project needs evolve

@@ -11,14 +11,14 @@ ct cfg <subcommand> [args] [options]  # Alias
 
 ## Description
 
-The `config` command provides a unified interface for viewing and modifying cleo configuration settings. It supports both project-level configuration (`.cleo/todo-config.json`) and global user-level configuration (`~/.cleo/config.json`).
+The `config` command provides a unified interface for viewing and modifying cleo configuration settings. It supports both project-level configuration (`.cleo/config.json`) and global user-level configuration (`~/.cleo/config.json`).
 
 ### Configuration Priority
 
 Settings are resolved in this order (highest to lowest priority):
 1. **CLI flags** - Command-line arguments
 2. **Environment variables** - `CLEO_*` variables
-3. **Project config** - `.cleo/todo-config.json`
+3. **Project config** - `.cleo/config.json`
 4. **Global config** - `~/.cleo/config.json`
 5. **Built-in defaults** - Schema defaults
 

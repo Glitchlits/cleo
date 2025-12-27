@@ -33,7 +33,7 @@ cleo validate --fix    # Auto-fix simple issues
 ### Session Start
 
 ```
-1. Read todo-config.json
+1. Read config.json
 2. Read todo.json
 3. Verify _meta.checksum (log if mismatch, don't block)
 4. Generate session ID: session_YYYYMMDD_HHMMSS_<random>
@@ -314,7 +314,7 @@ cleo export --format todowrite  # Export for Claude Code
 |------|---------|------------|
 | `todo.json` | Active tasks | cleo CLI |
 | `todo-archive.json` | Completed tasks | archive command only |
-| `todo-config.json` | Configuration | Manual edit |
+| `config.json` | Configuration | Manual edit |
 | `todo-log.json` | Audit trail | Automatic (append-only) |
 
 ---

@@ -80,7 +80,7 @@ Release management is **opt-in**. When disabled, the feature has zero impact on 
 
 ### 1.2 Full Configuration Schema
 
-Config location: `.cleo/todo-config.json` under `releases` key.
+Config location: `.cleo/config.json` under `releases` key.
 
 ```json
 {
