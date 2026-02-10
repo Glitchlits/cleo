@@ -40,6 +40,8 @@ source "${_OS_LIB_DIR}/research-manifest.sh"
 source "${_OS_LIB_DIR}/paths.sh"
 # shellcheck source=lib/token-inject.sh
 source "${_OS_LIB_DIR}/token-inject.sh"
+# shellcheck source=lib/platform-compat.sh
+source "${_OS_LIB_DIR}/platform-compat.sh"
 
 # ============================================================================
 # CONFIGURATION
@@ -307,10 +309,12 @@ orchestrator_check_pending() {
     task_count=$(echo "$cleo_followup_tasks" | jq -r '.result.count // 0')
 
     # Build response
-    # Use --slurpfile with process substitution to avoid ARG_MAX limits
+    # Use --slurpfile with temp files to avoid ARG_MAX limits and Windows compat
+    _sf_manifest=$(slurpfile_tmp "$manifest_pending")
+    _sf_followup=$(slurpfile_tmp "$cleo_followup_tasks")
     jq -n \
-        --slurpfile manifest_pending <(echo "$manifest_pending") \
-        --slurpfile followup_tasks <(echo "$cleo_followup_tasks") \
+        --slurpfile manifest_pending "$_sf_manifest" \
+        --slurpfile followup_tasks "$_sf_followup" \
         --argjson manifest_count "$manifest_count" \
         --argjson task_count "$task_count" \
         '{
@@ -327,6 +331,7 @@ orchestrator_check_pending() {
                 "followupTaskCount": $task_count
             }
         }'
+    rm -f "$_sf_manifest" "$_sf_followup"
 
     return 0
 }
@@ -388,7 +393,8 @@ orchestrator_session_init() {
         reason="No session, no pending work - await user direction"
     fi
 
-    # Use --slurpfile with process substitution to avoid ARG_MAX limits
+    # Use --slurpfile with temp file to avoid ARG_MAX limits and Windows compat
+    _sf_pending=$(slurpfile_tmp "$pending_result")
     jq -n \
         --argjson active_sessions "$active_sessions" \
         --arg active_session_id "$active_session_id" \
@@ -396,7 +402,7 @@ orchestrator_session_init() {
         --argjson has_focus "$has_focus" \
         --arg focused_task "$focused_task" \
         --argjson has_pending "$has_pending" \
-        --slurpfile pending <(echo "$pending_result") \
+        --slurpfile pending "$_sf_pending" \
         --arg action "$action" \
         --arg reason "$reason" \
         --arg epic_id "$epic_id" \
@@ -422,6 +428,7 @@ orchestrator_session_init() {
                 "requestedEpic": (if $epic_id != "" then $epic_id else null end)
             }
         }'
+    rm -f "$_sf_pending"
 
     return 0
 }

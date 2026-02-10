@@ -41,6 +41,13 @@ fi
 LIB_DIR="${SCRIPT_DIR}/../lib"
 [[ ! -f "$CLEO_HOME/lib/file-ops.sh" && -f "$LIB_DIR/file-ops.sh" ]] && source "$LIB_DIR/file-ops.sh"
 
+# Source platform-compat library for Windows compatibility
+if [[ -f "$CLEO_HOME/lib/platform-compat.sh" ]]; then
+  source "$CLEO_HOME/lib/platform-compat.sh"
+elif [[ -f "$LIB_DIR/platform-compat.sh" ]]; then
+  source "$LIB_DIR/platform-compat.sh"
+fi
+
 # Source output-format library for format resolution
 if [[ -f "$CLEO_HOME/lib/output-format.sh" ]]; then
   source "$CLEO_HOME/lib/output-format.sh"
@@ -484,11 +491,13 @@ cmd_start() {
     fi
 
     # Build context JSON
-    # Use --slurpfile with process substitution to avoid ARG_MAX limits
+    # Use --slurpfile with temp files for Windows compatibility (T2074)
     local context_json
+    _sf_sessions=$(slurpfile_tmp "$existing_sessions")
+    _sf_epics=$(slurpfile_tmp "$available_epics")
     context_json=$(jq -nc \
-      --slurpfile sessions <(echo "$existing_sessions") \
-      --slurpfile epics <(echo "$available_epics") \
+      --slurpfile sessions "$_sf_sessions" \
+      --slurpfile epics "$_sf_epics" \
       --argjson activeCount "$active_count" \
       --argjson epicCount "$epic_count" \
       '{
@@ -497,6 +506,7 @@ cmd_start() {
         "sessions": $sessions[0],
         "epics": $epics[0]
       }')
+    rm -f "$_sf_sessions" "$_sf_epics"
 
     # Output structured error using LLM-agent-first format
     output_error_actionable \
@@ -1590,13 +1600,15 @@ cmd_archive() {
       if [[ "$output_format" == "json" ]]; then
         local timestamp
         timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-        # Use --slurpfile with process substitution to avoid ARG_MAX limits
+        # Use --slurpfile with temp files for Windows compatibility (T2074)
         # when archiving many sessions (242+ sessions = potentially large array)
+        _sf_data=$(printf '%s\n' "${to_archive[@]}" | jq -R . | jq -s .)
+        _sf_sessions=$(slurpfile_tmp "$_sf_data")
         jq -nc \
           --arg ts "$timestamp" \
           --arg version "${CLEO_VERSION:-$(get_version)}" \
           --argjson count "$archive_count" \
-          --slurpfile sessions <(printf '%s\n' "${to_archive[@]}" | jq -R . | jq -s .) \
+          --slurpfile sessions "$_sf_sessions" \
           '{
             "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
             "_meta": {"format": "json", "command": "session archive", "timestamp": $ts, "version": $version},
@@ -1605,6 +1617,7 @@ cmd_archive() {
             "wouldArchive": $count,
             "sessions": $sessions[0]
           }'
+        rm -f "$_sf_sessions"
       else
         log_info "[DRY-RUN] Would archive $archive_count session(s):"
         for sid in "${to_archive[@]}"; do
@@ -1796,12 +1809,13 @@ cmd_list() {
   if [[ "$output_format" == "json" ]]; then
     local timestamp
     timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-    # Use --slurpfile with process substitution to avoid ARG_MAX limits
+    # Use --slurpfile with temp files for Windows compatibility (T2074)
     # when sessions.json is large (>130KB can hit "Argument list too long")
+    _sf_sessions=$(slurpfile_tmp "$sessions")
     jq -nc \
       --arg ts "$timestamp" \
       --arg version "${CLEO_VERSION:-$(get_version)}" \
-      --slurpfile sessions <(echo "$sessions") \
+      --slurpfile sessions "$_sf_sessions" \
       --arg filter "$status_filter" \
       '{
         "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
@@ -1816,6 +1830,7 @@ cmd_list() {
         "count": ($sessions[0] | length),
         "sessions": $sessions[0]
       }'
+    rm -f "$_sf_sessions"
   else
     local count
     count=$(echo "$sessions" | jq 'length')
@@ -2036,13 +2051,15 @@ cmd_cleanup() {
     timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
     if [[ "$dry_run" == "true" ]]; then
-      # Use --slurpfile with process substitution to avoid ARG_MAX limits
+      # Use --slurpfile with temp files for Windows compatibility (T2074)
       # when removing many sessions (242+ sessions = potentially large array)
+      _sf_data=$(printf '%s\n' "${to_remove[@]}" | jq -R . | jq -s .)
+      _sf_sessions=$(slurpfile_tmp "$_sf_data")
       jq -nc \
         --arg ts "$timestamp" \
         --arg version "${CLEO_VERSION:-$(get_version)}" \
         --argjson count "$removed_count" \
-        --slurpfile sessions <(printf '%s\n' "${to_remove[@]}" | jq -R . | jq -s .) \
+        --slurpfile sessions "$_sf_sessions" \
         '{
           "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {"format": "json", "command": "session cleanup", "timestamp": $ts, "version": $version},
@@ -2051,6 +2068,7 @@ cmd_cleanup() {
           "wouldRemove": $count,
           "sessions": $sessions[0]
         }'
+      rm -f "$_sf_sessions"
     else
       # Actually remove sessions
       for sid in "${to_remove[@]}"; do
@@ -2059,13 +2077,15 @@ cmd_cleanup() {
             save_json "$sessions_file" "$_cleanup_content"
       done
 
-      # Use --slurpfile with process substitution to avoid ARG_MAX limits
+      # Use --slurpfile with temp files for Windows compatibility (T2074)
       # when removing many sessions (242+ sessions = potentially large array)
+      _sf_data=$(printf '%s\n' "${to_remove[@]}" | jq -R . | jq -s .)
+      _sf_sessions=$(slurpfile_tmp "$_sf_data")
       jq -nc \
         --arg ts "$timestamp" \
         --arg version "${CLEO_VERSION:-$(get_version)}" \
         --argjson count "$removed_count" \
-        --slurpfile sessions <(printf '%s\n' "${to_remove[@]}" | jq -R . | jq -s .) \
+        --slurpfile sessions "$_sf_sessions" \
         '{
           "$schema": "https://cleo-dev.com/schemas/v1/output.schema.json",
           "_meta": {"format": "json", "command": "session cleanup", "timestamp": $ts, "version": $version},
@@ -2073,6 +2093,7 @@ cmd_cleanup() {
           "removed": $count,
           "sessions": $sessions[0]
         }'
+      rm -f "$_sf_sessions"
     fi
   else
     if [[ "$removed_count" -eq 0 ]]; then

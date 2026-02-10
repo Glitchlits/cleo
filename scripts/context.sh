@@ -25,6 +25,9 @@ source "$LIB_DIR/exit-codes.sh"
 # Source centralized flag parsing
 [[ -f "$LIB_DIR/flags.sh" ]] && source "$LIB_DIR/flags.sh"
 
+# Source platform compatibility for slurpfile_tmp
+[[ -f "$LIB_DIR/platform-compat.sh" ]] && source "$LIB_DIR/platform-compat.sh"
+
 TODO_DIR="${TODO_DIR:-.cleo}"
 COMMAND_NAME="context"
 
@@ -228,8 +231,10 @@ list_sessions() {
             local session_id=$(echo "$state" | jq -r '.sessionId // ""')
             sessions=$(echo "$sessions" | jq --arg fn "$filename" --argjson state "$state" '. + [($state + {file: $fn})]')
         done
-        # Use --slurpfile with process substitution to avoid ARG_MAX limits
-        jq -nc --slurpfile sessions <(echo "$sessions") '{success: true, sessions: $sessions[0]}'
+        # Use --slurpfile with temp file to avoid ARG_MAX limits and Windows compat
+        _sf_sessions=$(slurpfile_tmp "$sessions")
+        jq -nc --slurpfile sessions "$_sf_sessions" '{success: true, sessions: $sessions[0]}'
+        rm -f "$_sf_sessions"
     else
         echo "Context state files:"
         for f in "${files[@]}"; do

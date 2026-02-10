@@ -506,6 +506,23 @@ create_temp_file() {
     echo "$temp_file"
 }
 
+# Write data to a temp file for use with jq --slurpfile
+# Replaces process substitution (<(echo "$data")) which breaks on Windows
+# because jq.exe cannot read /proc/<pid>/fd/<N> pseudo-files.
+# Args: $1 = data to write
+# Returns: temp file path (caller must clean up with rm -f)
+# Usage:
+#   _sf=$(slurpfile_tmp "$json_data")
+#   jq --slurpfile var "$_sf" '...' file.json
+#   rm -f "$_sf"
+slurpfile_tmp() {
+    local data="$1"
+    local tmp
+    tmp="$(create_temp_file)"
+    printf '%s\n' "$data" > "$tmp"
+    echo "$tmp"
+}
+
 # ============================================================================
 # EXPORTS
 # ============================================================================
@@ -529,6 +546,7 @@ export -f safe_find_sorted_by_mtime
 export -f safe_checksum
 export -f safe_checksum_stdin
 export -f create_temp_file
+export -f slurpfile_tmp
 
 # Export platform constant
 export PLATFORM

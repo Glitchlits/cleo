@@ -38,6 +38,11 @@ if [[ -f "$_SM_LIB_DIR/config.sh" ]]; then
     source "$_SM_LIB_DIR/config.sh"
 fi
 
+# Source platform compatibility for slurpfile_tmp
+if [[ -f "$_SM_LIB_DIR/platform-compat.sh" ]]; then
+    source "$_SM_LIB_DIR/platform-compat.sh"
+fi
+
 # ============================================================================
 # MIGRATION DETECTION
 # ============================================================================
@@ -133,13 +138,14 @@ migrate_to_epic_sessions() {
     fi
 
     # Step 4: Create sessions.json
-    # Use --slurpfile with process substitution to avoid ARG_MAX limits
+    # Use --slurpfile with temp file to avoid ARG_MAX limits and Windows compat
     local sessions_content
+    _sf_sessions=$(slurpfile_tmp "$initial_sessions")
     sessions_content=$(jq -nc \
         --arg version "1.0.0" \
         --arg project "$project_name" \
         --arg ts "$timestamp" \
-        --slurpfile sessions <(echo "$initial_sessions") \
+        --slurpfile sessions "$_sf_sessions" \
         '{
             "$schema": "./schemas/sessions.schema.json",
             "version": $version,
@@ -159,6 +165,7 @@ migrate_to_epic_sessions() {
             "sessions": $sessions[0],
             "sessionHistory": []
         }')
+    rm -f "$_sf_sessions"
 
     # Write sessions.json using atomic write if available
     if declare -f save_json >/dev/null 2>&1; then

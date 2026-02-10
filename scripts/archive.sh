@@ -31,6 +31,12 @@ if [[ -f "$LIB_DIR/version.sh" ]]; then
   source "$LIB_DIR/version.sh"
 fi
 
+# Source platform compatibility library for slurpfile_tmp and other platform utilities
+if [[ -f "$LIB_DIR/platform-compat.sh" ]]; then
+  # shellcheck source=../lib/platform-compat.sh
+  source "$LIB_DIR/platform-compat.sh"
+fi
+
 TODO_FILE="${TODO_FILE:-.cleo/todo.json}"
 ARCHIVE_FILE="${ARCHIVE_FILE:-.cleo/todo-archive.json}"
 CONFIG_FILE="${CONFIG_FILE:-.cleo/config.json}"
@@ -877,11 +883,14 @@ fi
 # Cascade-from mode: Archive specific task and ALL its completed descendants
 # This is different from --cascade: we start from a specified root task and include all descendants
 if [[ -n "$CASCADE_FROM" ]]; then
-  # NOTE: Using --slurpfile with process substitution to avoid "Argument list too long" error
+  # NOTE: Using --slurpfile with temp file to avoid "Argument list too long" error
   # when tasks array exceeds ARG_MAX (~128KB-2MB)
+  # Process substitution creates /proc/pid/fd/N paths that jq.exe on Windows can't read
 
   # Recursively find all descendants (children, grandchildren, etc.)
-  ALL_DESCENDANTS=$(jq --arg rootId "$CASCADE_FROM" --slurpfile tasks <(jq '.tasks' "$TODO_FILE") '
+  _sf_data=$(jq '.tasks' "$TODO_FILE")
+  _sf_tasks=$(slurpfile_tmp "$_sf_data")
+  ALL_DESCENDANTS=$(jq --arg rootId "$CASCADE_FROM" --slurpfile tasks "$_sf_tasks" '
     # Recursive function to find all descendants (slurpfile wraps in array, use [0])
     def descendants($id):
       [$tasks[0][] | select(.parentId == $id) | .id] as $children |
@@ -892,6 +901,7 @@ if [[ -n "$CASCADE_FROM" ]]; then
     # Include root task plus all descendants
     [$rootId] + descendants($rootId) | unique
   ' <<< 'null')
+  rm -f "$_sf_tasks"
 
   TOTAL_DESCENDANTS=$(echo "$ALL_DESCENDANTS" | jq 'length - 1')  # Exclude root from count
 
@@ -1511,9 +1521,11 @@ cleanup_temp_files() {
 trap cleanup_temp_files EXIT
 
 # Step 1: Generate archive file update with full statistics
-# NOTE: Using --slurpfile with process substitution instead of --argjson to avoid
+# NOTE: Using --slurpfile with temp file instead of --argjson to avoid
 # "Argument list too long" error when tasks array exceeds ARG_MAX (~128KB-2MB)
-if ! jq --slurpfile tasks <(echo "$TASKS_WITH_METADATA") --arg ts "$TIMESTAMP" '
+# Process substitution creates /proc/pid/fd/N paths that jq.exe on Windows can't read
+_sf_tasks=$(slurpfile_tmp "$TASKS_WITH_METADATA")
+if ! jq --slurpfile tasks "$_sf_tasks" --arg ts "$TIMESTAMP" '
   # Add tasks to archive (slurpfile wraps in array, so use [0])
   .archivedTasks += $tasks[0] |
   ._meta.totalArchived += ($tasks[0] | length) |
@@ -1564,6 +1576,7 @@ if ! jq --slurpfile tasks <(echo "$TASKS_WITH_METADATA") --arg ts "$TIMESTAMP" '
     }) | from_entries
   )
 ' "$ARCHIVE_FILE" > "$ARCHIVE_TMP"; then
+  rm -f "$_sf_tasks"
   if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then
     output_error "E_FILE_WRITE_ERROR" "Failed to generate archive update" "${EXIT_FILE_ERROR:-3}" false
   else
@@ -1571,6 +1584,7 @@ if ! jq --slurpfile tasks <(echo "$TASKS_WITH_METADATA") --arg ts "$TIMESTAMP" '
   fi
   exit "${EXIT_FILE_ERROR:-3}"
 fi
+rm -f "$_sf_tasks"
 
 # Step 2: Remove archived tasks from todo.json and clean up orphaned dependencies
 REMAINING_TASKS=$(jq --argjson ids "$(echo "$ARCHIVE_IDS" | jq -R . | jq -s .)" '
@@ -1586,12 +1600,15 @@ REMAINING_TASKS=$(jq --argjson ids "$(echo "$ARCHIVE_IDS" | jq -R . | jq -s .)" 
 
 NEW_CHECKSUM=$(echo "$REMAINING_TASKS" | jq -c '.' | sha256sum | cut -c1-16)
 
-# NOTE: Using --slurpfile with process substitution to avoid ARG_MAX limit
-if ! jq --slurpfile tasks <(echo "$REMAINING_TASKS") --arg checksum "$NEW_CHECKSUM" --arg ts "$TIMESTAMP" '
+# NOTE: Using --slurpfile with temp file to avoid ARG_MAX limit
+# Process substitution creates /proc/pid/fd/N paths that jq.exe on Windows can't read
+_sf_tasks=$(slurpfile_tmp "$REMAINING_TASKS")
+if ! jq --slurpfile tasks "$_sf_tasks" --arg checksum "$NEW_CHECKSUM" --arg ts "$TIMESTAMP" '
   .tasks = $tasks[0] |
   ._meta.checksum = $checksum |
   .lastUpdated = $ts
 ' "$TODO_FILE" > "$TODO_TMP"; then
+  rm -f "$_sf_tasks"
   if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then
     output_error "E_FILE_WRITE_ERROR" "Failed to generate todo update" "${EXIT_FILE_ERROR:-3}" false
   else
@@ -1599,6 +1616,7 @@ if ! jq --slurpfile tasks <(echo "$REMAINING_TASKS") --arg checksum "$NEW_CHECKS
   fi
   exit "${EXIT_FILE_ERROR:-3}"
 fi
+rm -f "$_sf_tasks"
 
 # Step 3: Generate log entry
 if [[ -f "$LOG_FILE" ]]; then

@@ -70,6 +70,12 @@ fi
 # Source centralized flag parsing
 source "$LIB_DIR/flags.sh"
 
+# Source platform compatibility for slurpfile_tmp
+if [[ -f "$LIB_DIR/platform-compat.sh" ]]; then
+    # shellcheck source=../lib/platform-compat.sh
+    source "$LIB_DIR/platform-compat.sh"
+fi
+
 # Colors (respects NO_COLOR and FORCE_COLOR environment variables per https://no-color.org)
 if declare -f should_use_color >/dev/null 2>&1 && should_use_color; then
     RED='\033[0;31m'
@@ -487,11 +493,13 @@ if [[ "$CONFLICT_COUNT" -gt 0 ]]; then
 fi
 
 # Build updated todo with restored tasks
-if ! jq --slurpfile tasks <(echo "$TASKS_PREPARED") --arg ts "$TIMESTAMP" '
+_sf_tasks=$(slurpfile_tmp "$TASKS_PREPARED")
+if ! jq --slurpfile tasks "$_sf_tasks" --arg ts "$TIMESTAMP" '
     .tasks += $tasks[0] |
     .lastUpdated = $ts |
     ._meta.checksum = ((.tasks | tojson) | @base64 | .[0:16])
 ' "$TODO_FILE" > "$TODO_TMP"; then
+    rm -f "$_sf_tasks"
     if [[ "$FORMAT" == "json" ]] && declare -f output_error >/dev/null 2>&1; then
         output_error "E_FILE_WRITE_ERROR" "Failed to generate todo update" "${EXIT_FILE_ERROR:-3}" false
     else
@@ -499,6 +507,7 @@ if ! jq --slurpfile tasks <(echo "$TASKS_PREPARED") --arg ts "$TIMESTAMP" '
     fi
     exit "${EXIT_FILE_ERROR:-3}"
 fi
+rm -f "$_sf_tasks"
 
 # Step 3: Generate log entry
 if [[ -f "$LOG_FILE" ]]; then
